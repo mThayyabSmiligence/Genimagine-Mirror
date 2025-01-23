@@ -1,4 +1,5 @@
 # config file
+/config
 
 # dependencies
 /node_modules
