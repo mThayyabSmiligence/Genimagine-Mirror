@@ -5,7 +5,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
-console.log("hello world");
+console.log("hate smiligence")
 
 app.listen(process.env.PORT,() => {
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
