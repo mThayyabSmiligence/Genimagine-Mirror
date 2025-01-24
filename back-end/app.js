@@ -1,10 +1,12 @@
 const express = require('express');
+const cookie = require('cookie');
 
 const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const { type } = require('os');
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
 const corsOptions = {
@@ -33,7 +35,11 @@ app.get( "/get-token", ( req, res ) => {
 });
 
 app.post('/post-token', (req, res) => {
-    console.log(req.headers.cookie)
+    const cookies = cookie.parse(req.headers.cookie||"")
+
+    const token = cookies.token
+    console.log(token)
+    console.log(type(token))
 })
 
 app.listen(process.env.PORT,() => {
