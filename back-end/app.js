@@ -1,19 +1,32 @@
 const express = require('express');
-
 const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const db = require('./config/connectDatabase')
+const usersRouter = require('./routes/Users')
+const generateImageRouter = require('./routes/GenerateImage') 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
+// middleware's
 const corsOptions = {
     origin: "http://localhost:3000",
     credentials: true
 };
 app.use( cors(corsOptions) );
-
+app.use(express.json());
 app.use(cookieParser());
+// middleware's
+
+// api's --start
+app.use('/api/v1/',usersRouter);
+app.use('api/v1/',generateImageRouter)
+
+// api's --end
+
+
+// http only cookie test
 
 app.get( "/get-token", ( req, res ) => {
     // Our `token` cookie should be parsed into `req.cookies.token`
