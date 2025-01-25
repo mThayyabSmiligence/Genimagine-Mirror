@@ -1,0 +1,9 @@
+GuestUser =
+{
+  id: 23,
+  ip_address: '::1',
+  generation_date: 2025-01-24T18:30:00.000Z,
+  image_count: 0,
+  created_at: 2025-01-25T04:17:06.000Z,
+  updated_at: 2025-01-25T04:17:06.000Z
+}
