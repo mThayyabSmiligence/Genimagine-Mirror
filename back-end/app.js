@@ -24,8 +24,8 @@ app.use(cookieParser());
 // middleware's
 
 // api's --start
-app.use('/api/v1/',usersRouter);
-app.use('api/v1/',generateImageRouter)
+app.use('/api/v1',usersRouter);
+app.use('/api/v1',generateImageRouter)
 
 // api's --end
 
