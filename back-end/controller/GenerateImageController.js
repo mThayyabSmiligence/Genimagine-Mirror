@@ -1,4 +1,4 @@
-const { GuestUserHandler } = require('../service/GuestUserService')
+git const { GuestUserHandler } = require('../service/GuestUserService')
 const cookie = require('cookie')
 
 exports.generateImageApiCall = async(req, res) => {

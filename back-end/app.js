@@ -4,6 +4,7 @@ const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors')
+const cookie = require("cookie")
 
 const cookieParser = require('cookie-parser')
 const db = require('./config/connectDatabase')
@@ -50,10 +51,9 @@ app.get( "/get-token", ( req, res ) => {
 
 app.post('/post-token', (req, res) => {
     const cookies = cookie.parse(req.headers.cookie||"")
-
     const token = cookies.token
     console.log(token)
-    console.log(type(token))
+    console.log(typeof(token))
 })
 
 app.listen(process.env.PORT,() => {
