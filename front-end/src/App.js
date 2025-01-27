@@ -8,6 +8,7 @@ import SubTopbar from './Components/SubTopbar';
 import { useEffect, useState } from 'react';
 import PromptInPutContainer from './Components/CommonComponents/PromptInputContainer';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
+import Imagetest from './Pages/Imagetest';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -35,6 +36,7 @@ function App() {
           <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar}></SubTopbar>
           <Routes>
             <Route path="/" element={<GuestContentPage></GuestContentPage>}></Route>
+            <Route path='/test' element={<Imagetest></Imagetest>}></Route>
           </Routes>
         </div>
       </Router>
