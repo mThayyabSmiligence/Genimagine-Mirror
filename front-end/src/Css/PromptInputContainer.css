@@ -1,0 +1,15 @@
+.send-button{
+    vertical-align: middle;
+    background-color: black;
+    height: 35px;
+    width: 35px;
+    margin: 0;
+    padding: 0;
+}
+.send-button span{
+    color: rgb(238, 238, 238);
+}
+
+.prompt-input-container{
+    width: 95%;
+}
