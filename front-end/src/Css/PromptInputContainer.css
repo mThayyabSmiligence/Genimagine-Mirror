@@ -13,3 +13,8 @@
 .prompt-input-container{
     width: 95%;
 }
+.prompt-outer-container{
+    position: fixed;
+    bottom: 0;
+}
+
