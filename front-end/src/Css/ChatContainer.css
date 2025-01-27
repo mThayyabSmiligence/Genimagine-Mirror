@@ -1,0 +1,13 @@
+.chat-prompt-container{
+    padding: 10px;
+    border-radius: 10px;
+    background: rgb(238,238, 238);
+    margin-bottom: 10px;
+    max-width: 500px;
+    height: auto;
+    right: 0;
+    position: relative;
+}
+.chat-prompt-container p{
+    margin: 0;
+}

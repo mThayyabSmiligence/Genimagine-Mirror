@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 
-export default function PromptInPutContainer() {
-  const[promptText,setPromptText]=useState("")
+export default function PromptInPutContainer({promptText,setPromptText,generateImage}) {
+
   const handelInput=(e)=>{
     setPromptText(e.target.innerText)
+  }
+  const handelClick=()=>{
+    if(promptText==""){
+      alert("fill the prompt")
+      return
+    }
+    generateImage()
   }
   return (
     <div className='prompt-outer-container w-75 light-grey-bg br-10 d-flex  align-items-end p-2 mb-2'   >

@@ -8,8 +8,11 @@
 
 .sub-top-bar{
   height: 40px;
-
+  position: fixed;
+  background:white;
   padding-left: 0px;
+  z-index: 2;
+  transition: margin-left 0.3s ease-in-out;
 }
 
 
@@ -27,10 +30,10 @@
   transition: margin-left 0.3s ease-in-out;
   
 }
-.content-section.big{
+.content-section.big,.sub-top-bar.big{
   margin-left:0px ;
 }
-.content-section.short{
+.content-section.short ,.sub-top-bar.short{
   margin-left: 250px;
 }
 
