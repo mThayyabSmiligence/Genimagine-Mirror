@@ -1,13 +1,29 @@
 import 'bootstrap/dist/css/bootstrap.css';
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import "./Css/common.css"
 import './App.css';
 import {BrowserRouter as Router , Routes,Route} from "react-router-dom" 
 import SideNavBar from './Components/SideNavBar';
 import SubTopbar from './Components/SubTopbar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PromptInPutContainer from './Components/CommonComponents/PromptInputContainer';
+import GuestContentPage from './Pages/Guest/GuestContentPage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
+  const [width, setWidth] = useState(window.innerWidth);
+          
+        useEffect(() => {
+          const handleResize = () => {
+            setWidth(window.innerWidth);
+          };
+              
+          window.addEventListener('resize', handleResize);
+              
+          return () => {
+            window.removeEventListener('resize', handleResize);
+          };
+    }, []);
   return (
     <div className="App">
       <Router>
@@ -15,10 +31,10 @@ function App() {
 
 
         
-        <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar}></SubTopbar>
-        <div className={`content-section ${showNavBar?"short":"big"}`}>
+        <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${showNavBar?width-250:width}px` }}>
+          <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar}></SubTopbar>
           <Routes>
-            <Route path="guest/generate-image" element={<PromptInPutContainer></PromptInPutContainer>}></Route>
+            <Route path="/" element={<GuestContentPage></GuestContentPage>}></Route>
           </Routes>
         </div>
       </Router>

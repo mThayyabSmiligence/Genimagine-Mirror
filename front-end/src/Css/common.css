@@ -1,0 +1,78 @@
+/* logo */
+.big-logo{
+    width: 200px;
+    height: 40px;
+    transition: width 0.5s ease;
+}
+
+/* buttons */
+.button{
+    margin: 5px 5px;
+    font-size: var(--primary-font-size-1366);
+    height: 30px;
+    padding: 0;
+    width: fit-content;
+    padding: 2px 23px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+
+}
+.button:hover{
+    background-color: transparent;
+    padding: 2px 23px;
+}
+.light-button{
+    color: black;
+    border: solid 2px black;
+}
+.light-button:hover{
+    background: rgb(0, 0, 0);
+    color: white;
+}
+.dark-button{
+    background-color: black;
+    border: solid 2px black;
+    color: white;
+}
+.dark-button:hover{
+    background-color: white;
+    color: black;
+}
+
+.p-input {
+    padding: 5px 20px;
+    min-height: 20px;
+    outline: none;
+    cursor: text;
+    width: 100%;
+    margin: 0;
+    text-align: start;
+}
+  
+.p-input:empty::before {
+    content: "Click to edit..."; /* Placeholder text */
+    color: #aaa; /* Gray color for placeholder */
+}
+.p-input:focus::before {
+    content: ""; /* Remove placeholder when focused */
+}
+
+/* background */
+
+.light-grey-bg{
+    background: rgb(238, 238, 238);
+}
+
+/* border-radius */
+.br-5{
+    border-radius: 5px;
+}
+.br-10{
+    border-radius: 10px;
+}
+.br-20{
+    border-radius: 20px;
+}
