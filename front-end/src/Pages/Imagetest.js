@@ -8,14 +8,14 @@ export default function Imagetest() {
 
   useEffect(() => {
     generateImage();
-  }, []);
+  }, [0]);
 
   const generateImage = async () => {
     setLoading(true); // Start loading
     try {
       const response = await axios.post(
         'http://localhost:3001/api/v1/generate-image',
-        { prompt: 'super cow' },
+        { prompt: 'lion king' },
         { responseType: 'arraybuffer' } // Ensure the response is handled as binary
       );
 
@@ -24,6 +24,7 @@ export default function Imagetest() {
         new Uint8Array(response.data)
           .reduce((data, byte) => data + String.fromCharCode(byte), '')
       )}`;
+      console.log("1")
 
       setImage(base64Image);
     } catch (error) {

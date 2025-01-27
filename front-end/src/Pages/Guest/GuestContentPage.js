@@ -10,23 +10,10 @@ export default function GuestContentPage() {
 
     const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
-    const [chat,setChat]= useState([
-      {
-        generatedImage:null,
-        prompt:"testing prompt"
-      }
-      ,{
-        generatedImage:null,
-        prompt:"testing prompt"
-      },
-      {
-        generatedImage:null,
-        prompt:"testing prompt"
-      }
-    ])
+    const [chat,setChat]= useState([])
     const [image, setImage] = useState(null);
     const [error, setError] = useState(null); // Handle errors gracefully
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [dummyData,setDummyData]=useState(
       {
         generatedImage:null,
@@ -37,8 +24,8 @@ export default function GuestContentPage() {
   
 
       const boxStyle = {
-        width: '200px',
-        height: '200px',
+        width: '300px',
+        height: '300px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -61,13 +48,15 @@ export default function GuestContentPage() {
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
         window.scrollTo(0, document.body.scrollHeight);
-      }, []); 
+      }, [loading]); 
 
     const generateImage = async () => {
       setDummyData({
         prompt:promptText
       })
-      setLoading(true); // Start loading
+      
+      setLoading(true);
+      setPromptText("") // Start loading
       try {
         
         const response = await axios.post(
@@ -83,7 +72,7 @@ export default function GuestContentPage() {
         )}`;
   
         setImage(base64Image);
-        setPromptText("")
+ 
         setChat((prevItems)=>[...prevItems,
           {
             prompt:promptText,
