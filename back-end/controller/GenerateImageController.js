@@ -30,7 +30,7 @@ exports.generateImageApiCall = async(req, res, next) => {
                     message:"something went worng with server"
                 })
             }
-            
+                
         }else{
 
             console.log("daily limit exceeded")
@@ -41,6 +41,10 @@ exports.generateImageApiCall = async(req, res, next) => {
     } else {
         type="user"
         console.log(token);
+        console.log("registred user is generating image")
+        res.status(200).json({
+            message: "registred yuser is generating image"
+        })
     }
 
 } 
@@ -49,7 +53,7 @@ const generateImage = async(type, data,inputs) => {
     try{
 
         const response = await axios.post(
-            'https://api.cloudflare.com/client/v4/accounts/81d90c9d5df5eef4295c5d4529e5bfa4/ai/run/@cf/stabilityai/stable-diffusion-xl-base-1.0',
+            'https://api.cloudflare.com/client/v4/accounts/81d90c9d5df5eef4295c5d4529e5bfa4/ai/run/@cf/bytedance/stable-diffusion-xl-lightning',
             inputs,
             {
               headers: {
@@ -57,9 +61,12 @@ const generateImage = async(type, data,inputs) => {
                 'Content-Type': 'application/json',
               },
               responseType: 'arraybuffer',
+            
             }
         );
-
+        // console.log(response.data.result.image)
+        // const decodedString= atob(response.data.result.image)
+        // const imageBuffer = Uint8Array.from(decodedString,(m)=>m.codePointAt(0))
         const imageBuffer= Buffer(response.data,'base64')
         if (type == "guest") {
             const guestImageCount = GuestImageCount(data);     
