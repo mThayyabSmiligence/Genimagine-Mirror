@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import "../../Css/PromptInputContainer.css"
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage}) {

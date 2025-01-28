@@ -8,7 +8,7 @@ export default function Imagetest() {
 
   useEffect(() => {
     generateImage();
-  }, [0]);
+  }, []);
 
   const generateImage = async () => {
     setLoading(true); // Start loading
