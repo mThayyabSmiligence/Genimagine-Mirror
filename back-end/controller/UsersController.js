@@ -1,5 +1,8 @@
 const db = require('../config/connectDatabase')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { generateToken, generateRefreshToken} = require('../service/JWTtokenGeneration');
+const cookie = require("cookie")
+const jwt = require("jsonwebtoken")
 
 // get all users api - api/v1/users/list
 
@@ -84,11 +87,29 @@ exports.userRegister = async(req, res, next) => {
             message: "user registered successfully",
             userId: rows.insertId
         });
-    } catch (error) {
-        console.error(error);
+    } catch (err) {
+        console.error(err);
+
+        if (err.code === 'ER_NO_REFERENCED_ROW') {
+            return res.status(400).json({ message: 'Invalid foreign key reference' });
+        }
+
+        if (err.code === 'ER_DUP_ENTRY') {
+           return res.status(409).json({ message: 'user with this email already exist' });
+           
+        }
+        
+        if (err.code === 'ER_DATA_TOO_LONG') {
+            return res.status(400).json({ message: 'Input value too long' });
+        }
+
+        if (err.code === 'ER_BAD_NULL_ERROR') {
+            return res.status(400).json({ message: 'Required field is missing' });
+        }
+
         res.status(500).json({
             success: false,
-            message: "Error :"+error.sqlMessage ,
+            message: "Error :"+err.sqlMessage ,
         });
     }
 };
@@ -103,6 +124,7 @@ exports.userLogin = async (req, res, next) => {
         const query = "Select * from users WHERE email = ?"
     
         const [oldUser] = await db.execute(query,[email]);
+        
 
        
         const isPasswordMatch = await bcrypt.compare(password,oldUser[0].password_hash)
@@ -119,11 +141,64 @@ exports.userLogin = async (req, res, next) => {
             })
             return
         }
+
+        console.log("test1 "+oldUser)
+
+        const token =generateToken(oldUser[0]) ;
+        const refreshToken= await generateRefreshToken(oldUser[0])
+        
+
+        let options = {
+            maxAge: 1000 * 60 * 60, // expire after 60 minutes
+            httpOnly: true, // Cookie will not be exposed to client side code
+            sameSite: "none", // If client and server origins are different
+            secure: true // use with HTTPS only
+        }
+        let refreshTokenOptions={
+            maxAge: 1000 * 60 * 60 * 24 * 7, // expire after 1 week
+            httpOnly: true, // Cookie will not be exposed to client side code
+            sameSite: "none", // If client and server origins are different
+            secure: true // use with HTTPS only
+        }
+        console.log("token   :"+token)
+        console.log("refresh token 2  "+refreshToken)
+
+        res.cookie( "token", token, options );
+        res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+        
         res.status(200).json({
             success: true,
-            message: "login successfully"
+            message: "login successfully",
+            
         });
     } catch(error){
         console.log(error)
     }
+}
+
+exports.userLogout= async (req,res,next)=>{
+    try{
+        const cookies= cookie.parse(req.headers.cookie||"")
+        const refresh_token= cookies.refresh_token
+
+        const decoded_refresh_token = jwt.decode(refresh_token)
+        console.log(decoded_refresh_token)
+        const query ="DELETE FROM refresh_token where user_id=?"
+
+        const row =await db.execute(query,[decoded_refresh_token.id])
+        
+
+        res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'Strict' });
+        res.clearCookie('refresh_token',{ httpOnly: true, secure: true, sameSite: 'Strict' })
+        res.status(200).json({
+            message:"succesfully logged out"
+        }) 
+        return
+    }
+    catch(err){
+        console.log("error loggingout : "+err)
+        res.status(400).json({
+            error:err
+        })
+    }   
 }
