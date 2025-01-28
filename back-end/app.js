@@ -11,6 +11,7 @@ const db = require('./config/connectDatabase')
 const usersRouter = require('./routes/Users')
 const generateImageRouter = require('./routes/GenerateImage') 
 const crypto = require('crypto');
+const jwtRouter= require("./routes/JWTRoute")
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
@@ -27,6 +28,7 @@ app.use(cookieParser());
 // api's --start
 app.use('/api/v1',usersRouter);
 app.use('/api/v1',generateImageRouter);
+app.use('/api/v1',jwtRouter)
 
 // api's --end
 
@@ -39,7 +41,7 @@ app.get( "/get-token", ( req, res ) => {
     
     // Configure the `token` HTTPOnly cookie
     let options = {
-        maxAge: 1000 * 60 * 60, // expire after 15 minutes
+        maxAge: 1000 * 60 * 60, // expire after 60 minutes
         httpOnly: true, // Cookie will not be exposed to client side code
         sameSite: "none", // If client and server origins are different
         secure: true // use with HTTPS only
@@ -59,6 +61,6 @@ app.post('/post-token', (req, res) => {
 
 app.listen(process.env.PORT,() => {
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
-    // const secretKey = crypto.randomBytes(64).toString('hex');
-    // console.log('Generated Secret Key:', secretKey);
+    const secretKey = crypto.randomBytes(64).toString('hex');
+    console.log('Generated Secret Key:', secretKey);
 });
