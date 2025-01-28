@@ -16,7 +16,7 @@ exports.generateImageApiCall = async(req, res, next) => {
     const token = cookies.token
     let type=""
     if(!token) {
-        type="guest"
+        type="guest" 
         const canGenerate=await GuestUserHandler(req.ip);
         console.log(canGenerate)
         if(canGenerate){

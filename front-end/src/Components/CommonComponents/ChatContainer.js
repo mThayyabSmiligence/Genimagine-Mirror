@@ -4,8 +4,8 @@ import "../../Css/ChatContainer.css"
 export default function ChatContainer({data}) {
 
     const boxStyle = {
-        width: '300px',
-        height: '300px',
+        width: '400px',
+        height: '400px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -41,7 +41,7 @@ export default function ChatContainer({data}) {
                   }
                 `}</style>
               </div>
-              :<img src={data.image} ></img>
+              :<img src={data.image}  style={boxStyle}></img>
             }
         </div>
         
