@@ -11,10 +11,7 @@ export default function GuestContentPage() {
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
     const [chat,setChat]= useState([
-      {
-        image:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAIAAADwf7zUAAEAAElEQVR4nMz955MkTZrgh7kMHal1ZmnV1fLtfrWY2ZndWXG3tzju0UgAxg+E8R+jEQbaAWY0AjicwC13xI58devuEl06tQ4t3Z0fsqu7+hUzs3sAj27W1ZEeHi4iPDJ/j/DH4bNnXzLGIYAAgkUSAkAgALz8/DoJAL6d+XtOLTLFGxlX/n/z3Ou0yIdwcT18VfpqG+Ib/3/HoYAAiss+XB5fGefrXvz+oX1vggAKIQC8rOQ7B/Nm7UJc7Ri4HCEUQoiX+S/LCQEABIxxzjkXHCEkOOOMMSHiKHZmNufMcz0IAUtilvA0TQUARMJUkmRZprIkyzJCCBFKCBaCpwmL4xgSkiYJYIJzBiAEgElU0gxdkiVJliilQgCIEUYoTRlLue+Hs8ks8kNKkZHLYAzTOAEChnE0Hc/suRUFPqUYQVGp1z...",
-        prompt:"lion"
-      }
+      
     ])
     const [image, setImage] = useState(null);
     const [error, setError] = useState(null); // Handle errors gracefully
@@ -48,8 +45,12 @@ export default function GuestContentPage() {
         const response = await axios.post(
           'http://localhost:3001/api/v1/generate-image',
           { prompt: promptText },
-          { responseType: 'arraybuffer' } // Ensure the response is handled as binary
+          { 
+            responseType: 'arraybuffer',
+            withCredentials:true,
+           } // Ensure the response is handled as binary
         );
+        console.log(response)
   
         // Convert binary data to a base64-encoded string
         const base64Image = `data:image/png;base64,${btoa(
@@ -71,7 +72,7 @@ export default function GuestContentPage() {
         setError('Failed to generate image. Please try again later.');
       } finally {
         setLoading(false);
-        setPromptText(promptText)
+        setPromptText("")
         console.log(error)
         console.log(image)
       }
