@@ -85,7 +85,7 @@ const addRefreshToken= async(user, refreshToken)=> {
     console.log("Expires At:", expires_at);
 
     try {
-        const query = `INSERT INTO refresh_tokenss (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
+        const query = `INSERT INTO refresh_token (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
         // const query = "SELECT * from users WHERE user_id =?";
 
         console.log('Query:', query);
@@ -97,6 +97,6 @@ const addRefreshToken= async(user, refreshToken)=> {
         return rows;
     } catch (err) {
         console.error("Add refresh token error:", err.message); // Log the error message
-        throw new Error("Failed to add refresh token to the database.");
+        throw new Error("Failed to add refresh token to the database."); 
     }
 }

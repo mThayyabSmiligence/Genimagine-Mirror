@@ -8,9 +8,11 @@ import ChatContainer from '../../Components/CommonComponents/ChatContainer'
 export default function GuestContentPage() {
 
 
-    const [chatList,setChatList]= useState([])
+    // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
-    const [chat,setChat]= useState([])
+    const [chat,setChat]= useState([
+      
+    ])
     const [image, setImage] = useState(null);
     const [error, setError] = useState(null); // Handle errors gracefully
     const [loading, setLoading] = useState(false);
@@ -23,26 +25,7 @@ export default function GuestContentPage() {
 // Track loading state
   
 
-      const boxStyle = {
-        width: '300px',
-        height: '300px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        border: '1px solid #ccc',
-        borderRadius: '10px',
-        position: 'relative',
-        backgroundColor: '#f9f9f9',
-      };
-    
-      const spinnerStyle = {
-        width: '40px',
-        height: '40px',
-        border: '4px solid #ccc',
-        borderTop: '4px solid #3498db',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-      };
+      
 
     
       useEffect(() => {
@@ -62,8 +45,12 @@ export default function GuestContentPage() {
         const response = await axios.post(
           'http://localhost:3001/api/v1/generate-image',
           { prompt: promptText },
-          { responseType: 'arraybuffer' } // Ensure the response is handled as binary
+          { 
+            responseType: 'arraybuffer',
+            withCredentials:true,
+           } // Ensure the response is handled as binary
         );
+        console.log(response)
   
         // Convert binary data to a base64-encoded string
         const base64Image = `data:image/png;base64,${btoa(
@@ -85,7 +72,9 @@ export default function GuestContentPage() {
         setError('Failed to generate image. Please try again later.');
       } finally {
         setLoading(false);
-        setPromptText(promptText)
+        setPromptText("")
+        console.log(error)
+        console.log(image)
       }
     };
 

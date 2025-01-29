@@ -1,6 +1,5 @@
 import React, {  useEffect, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
-import shortLogo from "../images/genimagin_short_logo.png"
 import { Link } from 'react-router-dom'
 import "../Css/SideNavBar.css"
 
