@@ -10,8 +10,13 @@ const cookieParser = require('cookie-parser')
 const db = require('./config/connectDatabase')
 const usersRouter = require('./routes/Users')
 const generateImageRouter = require('./routes/GenerateImage') 
+const AuthenticationRoutes = require('./routes/AuthenticationRoute')
+const jwtRouter= require("./routes/JWTRoute");
+
 const crypto = require('crypto');
-const jwtRouter= require("./routes/JWTRoute")
+const verifyToken= require('./middle_ware/VerifyToken');
+const verifyRefreshToken = require('./middle_ware/VerifyRefreshToken');
+
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
@@ -26,9 +31,10 @@ app.use(cookieParser());
 // middleware's
 
 // api's --start
-app.use('/api/v1',usersRouter);
+app.use('/api/v1/user',verifyToken,usersRouter);
 app.use('/api/v1',generateImageRouter);
-app.use('/api/v1',jwtRouter)
+app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
+app.use('/api/v1/auth',AuthenticationRoutes)
 
 // api's --end
 

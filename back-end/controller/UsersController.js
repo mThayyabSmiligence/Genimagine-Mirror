@@ -178,8 +178,20 @@ exports.userLogin = async (req, res, next) => {
 }
 
 exports.userLogout= async (req,res,next)=>{
+    let  cookies =null   
+
     try{
-        const cookies= cookie.parse(req.headers.cookie||"")
+    
+            const cookies1= cookie.parse(req.headers.cookie)
+            cookies=cookies1;
+        }
+        catch(err){
+            res.status(401).json({ message: 'User is already logged out' }) 
+            return;
+        }
+
+    try{
+        
         const refresh_token= cookies.refresh_token
 
         const decoded_refresh_token = jwt.decode(refresh_token)
