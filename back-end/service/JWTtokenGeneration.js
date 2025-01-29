@@ -18,20 +18,7 @@ exports.generateToken = (user) => {
     return token;
 };
 
-// const user = {id}
-exports.verifyToken = (token) => {
-
-    if (!token) return res.status(401).json({ message: 'Access Denied. No token provided.' });
-
-    const secretKey = process.env.JWT_SECRET_KEY;
-    try {
-        const verified = jwt.verify(token, secretKey);
-        req.user = verified; 
-        next();
-    } catch (err) {
-        res.status(403).json({ message: 'Invalid token.' });
-    }
-};  
+ 
 
 
 
