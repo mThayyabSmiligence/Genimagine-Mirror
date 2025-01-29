@@ -45,7 +45,7 @@ exports.generateRefreshToken = async (user) => {
     };
     const refreshToken = jwt.sign(payload, secretKey, { expiresIn: '7d' });
     console.log("refresh token"+refreshToken) // Valid for 7 days
-    const row =addRefreshToken(user,refreshToken)
+    const row = addRefreshToken(user,refreshToken)
     return refreshToken; 
 
 };
@@ -85,7 +85,7 @@ const addRefreshToken= async(user, refreshToken)=> {
     console.log("Expires At:", expires_at);
 
     try {
-        const query = `INSERT INTO refresh_tokenss (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
+        const query = `INSERT INTO refresh_token (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
         // const query = "SELECT * from users WHERE user_id =?";
 
         console.log('Query:', query);
