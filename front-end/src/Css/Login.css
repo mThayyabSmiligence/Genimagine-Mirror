@@ -1,0 +1,254 @@
+/* 
+    base styling is done based on 720p(1366×768) desktop screen 
+*/
+/* overall page */
+
+
+.login-page{
+    margin-top: 40px;
+}
+.login-page-container{
+    width: 100%;
+    position: relative;
+    min-height: 100vh;
+
+}
+/* left side section */
+.login-logo {
+    position: absolute;
+    padding: 10px;
+}
+.logo-text{
+    color: white;
+}
+.login-side-section {
+    width: 40% ;
+    
+    background: var(--primary-theme-background-color);
+
+}
+.login-side-section img{
+    position: relative;
+    width: 500px;
+    height: 500px;
+    top: 60px;
+    left: -6px;
+    gap: 0px;
+    opacity: 0px;
+    
+}
+
+/* right side section */
+.login-from-container{
+    width: 800px;
+    padding-top:90px;
+    padding-bottom: auto;
+}
+
+
+.login-form{
+    margin-top: 300px;
+    width: 400px;
+}
+.login-form-top-text{
+    width: 400px;
+}
+
+
+.login-text{
+    color: rgb(0,0, 0, 0.4);
+}
+
+.form-label,.login-welcome,.login-welcome{
+    display: block ;
+    width: fit-content;
+}
+
+.email-input{
+    border: none;
+}
+
+.password-input{
+    border: none;
+    width: 90%;   
+}
+.password-input:focus{
+    outline: none;
+}
+.password-input-container,.email-input-container{
+    border-radius: 5px;
+    border:solid  1px  rgb(0,0, 0, 0.1);
+}
+
+
+.password-visibility-toggle {
+    border: none;
+    background-color: white;
+    height: 24px;
+    width: 24px; /* Adjust as needed */
+    cursor: pointer;
+    position: relative; /* Establish a positioning context for child elements */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center icons within the toggle */
+}
+
+.visibility-icon {
+    position: absolute;
+    font-size: 20px; /* Adjust as needed */
+    color:  rgba(0, 0, 0,0.6);
+    z-index: 1; /* Base icon */
+}
+
+.visibility-icon-cross {
+    position: absolute;
+    height: 2px; /* Horizontal line thickness */
+    width: 20px; /* Line width */
+    background-color: rgba(0, 0, 0,0.6);
+    transform: rotate(45deg); /* Add rotation for a "cross" effect */
+    z-index: 2; /* Ensure it appears above the base icon */
+}
+
+
+input.password-input:focus,input.email-input:focus{
+    outline: none;
+    box-shadow: none;
+   
+}
+
+
+.login-button{
+    background-color: var(--primary-theme-color);
+    color: white;
+    border-radius: 20px;
+    width: 100% ;
+}
+.login-button:hover{
+    color: var(--primary-theme-color)    ;
+    background-color: white;
+    border:solid 1px var(--primary-theme-color);
+}
+.login-button:focus{
+    background-color:var(--primary-theme-color);
+}
+
+
+.forgot-password-container{
+    width: 100%;
+
+}
+.forgot-password-button{
+    background-color: white;
+    border: none;
+    color: var(--primary-theme-color);
+    
+}
+.forgot-password-button:hover{
+    text-decoration: underline;
+}
+@media (max-width: 830px) {
+    .login-page-container{
+        background:var(--primary-theme-background-color);
+    }
+    .logo-text{
+    background: var(--primary-themed-font-color);
+    -webkit-background-clip: text; 
+    color: transparent; /* Make text transparent to show the background gradient */
+    }
+    .login-side-section{
+        display: none;
+    }
+    .login-from-container {
+        width: 600px; 
+        margin-top: 90px;
+    }
+
+    .login-form {
+        width: 300px; 
+    }
+
+    .login-form-top-text {
+        width: 300px; /* Adjusted width to match form */
+    }
+    .password-input-container{
+        background-color: white;
+    }
+    .forgot-password-button{
+        background-color: transparent;
+    }
+    
+}
+@media (min-width: 830px) and  (max-width: 1000px) {
+    .login-side-section img{
+
+        width: 300px;
+        height: 300px;
+        top:120px
+        
+    }
+}
+@media  (min-width: 1000px) and (max-width: 1200px) {
+    .login-side-section img{
+
+        width: 400px;
+        height: 400px;
+        top:90px;
+        
+    }
+}
+
+
+/* 1080p(1920*1080) screen*/
+@media (min-width: 1367px) and (max-width: 1920px) {
+    .login-logo {
+        padding: 20px; /* Increased padding */
+    }
+
+    .login-side-section {
+        width: 50%; /* Increased width for a balanced layout */
+    }
+
+    .login-side-section img {
+        width: 600px; /* Larger image size */
+        height: 600px; /* Larger image size */
+        top: 100px; /* Adjusted positioning */
+        left: -20px; /* Adjusted positioning */
+        opacity: 1; /* Set image visibility */
+    }
+
+    .login-from-container {
+        width: 900px; /* Increased width */
+        padding-top: 200px; /* Increased spacing */
+        padding-bottom: 40px; /* Added bottom padding */
+    }
+
+    .login-form {
+        margin-top: 60px; /* Adjusted spacing */
+        width: 500px; /* Increased form width */
+    }
+
+    .login-form-top-text {
+        width: 500px; /* Adjusted width to match form */
+    }
+
+    .password-input-container, .email-input-container {
+        border-radius: 8px; /* Slightly increased border-radius */
+    }
+
+    .password-visibility-toggle {
+        height: 28px; /* Adjusted size */
+        width: 28px; /* Adjusted size */
+    }
+
+    .visibility-icon {
+        font-size: 24px; /* Larger icon size */
+    }
+
+    .visibility-icon-cross {
+        width: 24px; /* Adjusted cross width */
+    }
+
+    .login-button {
+        width: 90%; /* Slightly reduced width for alignment */
+    }
+}

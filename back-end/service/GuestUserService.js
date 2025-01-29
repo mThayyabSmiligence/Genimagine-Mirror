@@ -53,7 +53,7 @@ async function createGuestUser(ipAddress) {
     try {
         const currentDate = new Date()
         const [result] = await db.execute(
-            'INSERT INTO Guest_Image_Limits (ip_address, i33mage_count) VALUES (?,?)',
+            'INSERT INTO Guest_Image_Limits (ip_address, image_count) VALUES (?,?)',
             [ipAddress, 0]
         );
         return result; 

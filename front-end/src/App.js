@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import PromptInPutContainer from './Components/CommonComponents/PromptInputContainer';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
+import Login from './Pages/Login';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -36,6 +37,7 @@ function App() {
         <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${showNavBar?width-250:width}px` }}>
           <Routes>
             <Route path="/" element={<GuestContentPage></GuestContentPage>}></Route>
+            <Route path='/login' element={<Login></Login>}></Route>
             <Route path='/test' element={<Imagetest></Imagetest>}></Route>
           </Routes>
         </div>

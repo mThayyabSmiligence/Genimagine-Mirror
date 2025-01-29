@@ -127,7 +127,7 @@ exports.userLogin = async (req, res, next) => {
         
 
        
-        const isPasswordMatch = await bcrypt.compare(password,oldUser[0].password_hash)
+        
         if(oldUser.length==0){
             res.status(404).json({
                 message:"user not found"
@@ -135,6 +135,7 @@ exports.userLogin = async (req, res, next) => {
             return
         }
           console.log(oldUser[0].password_hash)
+          const isPasswordMatch = await bcrypt.compare(password,oldUser[0].password_hash)
         if(!isPasswordMatch){
             res.status(401).json({
                 message:"unAuthorised"

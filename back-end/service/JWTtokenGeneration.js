@@ -97,6 +97,6 @@ const addRefreshToken= async(user, refreshToken)=> {
         return rows;
     } catch (err) {
         console.error("Add refresh token error:", err.message); // Log the error message
-        throw new Error("Failed to add refresh token to the database.");
+        throw new Error("Failed to add refresh token to the database."); 
     }
 }
