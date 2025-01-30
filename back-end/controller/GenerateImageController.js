@@ -3,6 +3,17 @@ const { GuestUserHandler } = require('../service/GuestUserService')
 const cookie = require('cookie');
 const db = require('../config/connectDatabase');
 const axios = require('axios')
+
+const dotenv =require('dotenv')
+const path =require('path')
+
+dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
+
+
+const cloud_flare_acc_id= process.env.CLOUD_FLARE_ACC_ID
+const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
+
+
 exports.generateImageApiCall = async(req, res, next) => {
     const {prompt}=req.body
     console.log("generate image is running")
@@ -20,7 +31,7 @@ exports.generateImageApiCall = async(req, res, next) => {
         const canGenerate=await GuestUserHandler(req.ip);
         console.log(canGenerate)
         if(canGenerate){
-            const isGenerated=await generateImage(type, req.ip,input)
+            const isGenerated=await generateImageGuest(type, req.ip,input)
             if(isGenerated){
                 res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
@@ -49,19 +60,19 @@ exports.generateImageApiCall = async(req, res, next) => {
 
 } 
 
-const generateImage = async(type, data,inputs) => {
+const generateImageGuest = async(type, data,inputs) => {
     try{
 
         const response = await axios.post(
-            'https://api.cloudflare.com/client/v4/accounts/81d90c9d5df5eef4295c5d4529e5bfa4/ai/run/@cf/bytedance/stable-diffusion-xl-lightning',
+            `https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`,
             inputs,
             {
               headers: {
-                'Authorization': `Bearer danQcMub1AoOvmYBEuL5SwNUgQ0gPIXbPhGGtPww`,
+                'Authorization': `Bearer ${cloud_flare_api_key}`,
                 'Content-Type': 'application/json',
               },
               responseType: 'arraybuffer',
-            
+              
             }
         );
         // console.log(response.data.result.image)

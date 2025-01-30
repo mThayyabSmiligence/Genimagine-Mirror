@@ -11,7 +11,7 @@ export default function Login() {
     const handleSubmit=async(e)=>{
         e.preventDefault()
         try{
-            const response =await axios.post("http://localhost:3001/api/v1/user/login",
+            const response =await axios.post("http://localhost:3001/api/v1/auth/login",
                 {
                     password:password,
                     email:email
@@ -29,7 +29,7 @@ export default function Login() {
     const handelLogout=async(e)=>{
         e.preventDefault()
         try{
-            const response =await axios.get("http://localhost:3001/api/v1/user/logout",
+            const response =await axios.get("http://localhost:3001/api/v1/auth/logout",
                 {
                     withCredentials: true,
                 }

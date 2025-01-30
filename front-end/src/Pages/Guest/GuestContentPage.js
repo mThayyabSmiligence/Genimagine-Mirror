@@ -47,7 +47,7 @@ export default function GuestContentPage() {
           { prompt: promptText },
           { 
             responseType: 'arraybuffer',
-            withCredentials:true,
+            withCredentials:false,
            } // Ensure the response is handled as binary
         );
         console.log(response)
