@@ -1,4 +1,15 @@
 const db = require('../config/connectDatabase');
+
+const dotenv =require('dotenv')
+const path =require('path')
+
+dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
+
+
+const cloud_flare_acc_id= process.env.CLOUD_FLARE_ACC_ID
+const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
+
+
 exports.GuestUserHandler = async (ipAddress) => {
     try {
         const dataExists = await checkDataExists(ipAddress);

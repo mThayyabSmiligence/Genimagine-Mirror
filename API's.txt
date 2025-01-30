@@ -1,0 +1,30 @@
+1.Authentication APis 
+
+    1.1Login (POST) :  "http://localhost:3001/api/v1/auth/login"  
+
+        1.1.1 Request Data:{ 
+
+            email:  (String Email) , 
+
+            password: (String) 
+
+        } 
+
+        
+
+        1.1.2 Response   
+
+            1.1.2.1 Corrects Credentials: Status – 200 – ok  
+
+                { 
+                    Success: true, 
+                    Message: "login Successfully" 
+                } 
+
+            1.1.2.2 Wrong Credentials: status- 404 
+
+                {
+                    "message": "user not found"
+                } 
+
+    1.2 Register (Post) : " "
