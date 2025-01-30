@@ -3,10 +3,10 @@ const { GuestUserHandler } = require('../service/GuestUserService')
 const cookie = require('cookie');
 const db = require('../config/connectDatabase');
 const axios = require('axios')
-
+const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
-const path =require('path')
-
+const path =require('path');
+const { handleGenerateImageUser, canUserGenerateFree } = require('../service/GenerateImageService');
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
 
@@ -15,16 +15,18 @@ const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
 
 
 exports.generateImageApiCall = async(req, res, next) => {
-    const {prompt}=req.body
+    const {prompt,model}=req.body
+    console.log(model)
     console.log("generate image is running")
     const input={
          prompt:prompt||"cat"
     }
     
     // console.log(req.headers.cookie)
-    const cookies = cookie.parse(req.headers.cookie||"")
-    // console.log(cookies)
+    const cookies = cookie.parse(req.headers.cookie)
+    console.log(req.headers)
     const token = cookies.token
+
     let type=""
     if(!token) {
         type="guest" 
@@ -51,11 +53,40 @@ exports.generateImageApiCall = async(req, res, next) => {
         }
     } else {
         type="user"
-        console.log(token);
-        console.log("registred user is generating image")
-        res.status(200).json({
-            message: "registred user is generating image"
-        })
+
+        const isTokenValid=verifyToken(token)
+
+        if(isTokenValid){
+
+            const decodedtoken= jwt.decode(token)
+
+            const canGenerate =await canUserGenerateFree(decodedtoken.id)
+            console.log(decodedtoken)
+            console.log(canGenerate)
+            if(!canGenerate){
+                    console.log("daily limit exceeded")
+                res.status(429).json({
+                    message: "You Reached Today's limit, Try Tomorrow"
+                })
+                return
+            }
+
+            const image = await handleGenerateImageUser(req.body,token)
+
+            if(!image){
+                res.status(500).json({message:"something went wronng with generating image"})
+                return
+            }
+             res.status(200)
+                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
+                .send(image);
+                return
+        }
+        else{
+            res.status(401).json({
+                message:"token invalid" 
+            })
+        }
     }
 
 } 
@@ -117,3 +148,20 @@ const GuestImageCount = async (ipAddress) => {
         throw err;
     }
 };
+
+const verifyToken = (jwtToken)=> {
+
+    
+    
+    if (!jwtToken) return false;
+
+    const secretKey = process.env.JWT_SECRET_KEY;
+    try {
+        const verified = jwt.verify(jwtToken, secretKey);
+        
+        return true;
+    } catch (err) {
+        
+        return false
+    }
+}; 
