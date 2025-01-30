@@ -43,7 +43,7 @@ exports.generateImageApiCall = async(req, res, next) => {
         console.log(token);
         console.log("registred user is generating image")
         res.status(200).json({
-            message: "registred yuser is generating image"
+            message: "registred user is generating image"
         })
     }
 
