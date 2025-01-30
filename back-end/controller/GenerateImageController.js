@@ -111,7 +111,8 @@ const GuestImageCount = async (ipAddress) => {
         const [result] = await db.execute(query, [userId]);
         console.log('Image count updated successfully');
         return result;
-    } catch (err) {
+    } catch (err) { 
+        
         console.error('Error incrementing image count:', err.message);
         throw err;
     }
