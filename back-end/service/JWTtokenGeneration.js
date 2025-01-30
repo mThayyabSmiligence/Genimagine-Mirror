@@ -20,8 +20,6 @@ exports.generateToken = (user) => {
 
  
 
-
-
 const refreshTokens = []; 
 exports.generateRefreshToken = async (user) => {
     const secretKey = process.env.REFRESH_TOKEN_SECRET ||   'refresh-secret-key';
