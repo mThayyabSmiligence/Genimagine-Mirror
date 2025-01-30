@@ -215,3 +215,9 @@ exports.userLogout= async (req,res,next)=>{
         })
     }   
 }
+
+exports.firstTimeVerification = async(req,res,next) => {
+    res.status(200).json({
+        message: "user with successfull token"
+    })
+}

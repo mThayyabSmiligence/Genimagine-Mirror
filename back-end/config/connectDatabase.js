@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const path = require('path')
 dotenv.config({path: path.join(__dirname,"config.env")})
 
-const connection = mysql.createPool({
+const connection = mysql.createPool({ 
     host: process.env.HOST,
     port: process.env.DB_PORT,
     user: process.env.USER,

@@ -20,8 +20,6 @@ exports.generateToken = (user) => {
 
  
 
-
-
 const refreshTokens = []; 
 exports.generateRefreshToken = async (user) => {
     const secretKey = process.env.REFRESH_TOKEN_SECRET ||   'refresh-secret-key';
@@ -32,7 +30,7 @@ exports.generateRefreshToken = async (user) => {
     };
     const refreshToken = jwt.sign(payload, secretKey, { expiresIn: '7d' });
     console.log("refresh token"+refreshToken) // Valid for 7 days
-    const row =addRefreshToken(user,refreshToken)
+    const row = addRefreshToken(user,refreshToken)
     return refreshToken; 
 
 };

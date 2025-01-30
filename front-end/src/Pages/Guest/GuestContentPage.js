@@ -27,7 +27,7 @@ export default function GuestContentPage() {
 
       
 
-    
+
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
         window.scrollTo(0, document.body.scrollHeight);
