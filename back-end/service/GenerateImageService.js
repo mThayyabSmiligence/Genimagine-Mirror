@@ -26,21 +26,39 @@ exports.handleGenerateImageUser = async(data, token) => {
 
 exports.canUserGenerateFree=async(id)=>{
     try{
-        const query = "SELECT free_generation_count FROM users WHERE user_id = ?"
+        const query = "SELECT * FROM users WHERE user_id = ?"
         const [data] =await db.execute(query, [id]);
         
+
         if(data[0].free_generation_count<20){
-            console.log(typeof(data[0].free_generation_count))
             return true
         }else{
-            return false
-    
+            
+            let currentDate = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+            let generatedDate = data[0].last_free_generated.toISOString().split('T')[0]; 
+
+            if(currentDate==generatedDate){
+                return false
+            }
+            else{
+                await resetFreeGenerationCount(data[0].user_id)
+                return true
+            }
         }
     }catch(err){
         console.log(err )
     }
 }
 
+const resetFreeGenerationCount =async(id)=>{
+    try{
+        const query ="UPDATE users SET free_generation_count =0, last_free_generated = NOW() WHERE id = ?;"
+        const [data]=db.execute(query,[id])
+        console.log("free generation is resested for user")
+    }catch(err){
+        console.log("error reseting the free generation count for user")
+    }
+}
 
 const increaseFreeGenerationCount=async(id)=>{
     try{
