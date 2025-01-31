@@ -6,8 +6,9 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
+const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
@@ -63,6 +64,45 @@ exports.userGenerateImageController=async(req,res,next)=>{
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
                 .send(image);
+
+        return
+    }else{
+        const inputs ={
+            prompt:prompt
+        }
+        const model_data=handelModel(model)
+        console.log(model_data)
+
+        const enoghCredits =await  checkCreditBalance(id,model_data.cp_required)
+
+        if(!enoghCredits){
+            res.status(402).json({
+                message:"not enough credits"
+            })
+            return
+        }
+
+        const image=await paidGenerateImageService(inputs,model_data)
+
+
+        if(!image){
+            res.status(429).json({
+                message:"somthing went worng with paid image generation"
+            })
+            return
+        }   
+
+        await deductCredit(id,model_data.cp_required) ;
+
+        res.status(200)
+                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
+                .send(image);
+
+        return
+
+
+
+
     }
-    res.status(200).json({message:"the user is generating image"})
+    
 }

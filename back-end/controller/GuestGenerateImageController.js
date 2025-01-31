@@ -2,7 +2,7 @@ const express = require('express')
 const { GuestUserHandler } = require('../service/GuestUserService')
 const db = require('../config/connectDatabase');
 const { freeGenerateImage } = require('../service/FreeGenerateImageService');
-
+ 
 exports.guestGenerateImageController = async(req, res, next) => {
     const {prompt}=req.body
     console.log("generate image is running")
