@@ -24,31 +24,31 @@ exports.handleGenerateImageUser = async(data, token) => {
 
 }
 
-exports.canUserGenerateFree=async(id)=>{
-    try{
-        const query = "SELECT * FROM users WHERE user_id = ?"
-        const [data] =await db.execute(query, [id]);
+// exports.canUserGenerateFree=async(id)=>{
+//     try{
+//         const query = "SELECT * FROM users WHERE user_id = ?"
+//         const [data] =await db.execute(query, [id]);
         
 
-        if(data[0].free_generation_count<20){
-            return true
-        }else{
+//         if(data[0].free_generation_count<20){
+//             return true
+//         }else{
             
-            let currentDate = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-            let generatedDate = data[0].last_free_generated.toISOString().split('T')[0]; 
+//             let currentDate = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+//             let generatedDate = data[0].last_free_generated.toISOString().split('T')[0]; 
 
-            if(currentDate==generatedDate){
-                return false
-            }
-            else{
-                await resetFreeGenerationCount(data[0].user_id)
-                return true
-            }
-        }
-    }catch(err){
-        console.log(err )
-    }
-}
+//             if(currentDate==generatedDate){
+//                 return false
+//             }
+//             else{
+//                 await resetFreeGenerationCount(data[0].user_id)
+//                 return true
+//             }
+//         }
+//     }catch(err){
+//         console.log(err )
+//     }
+// }
 
 const resetFreeGenerationCount =async(id)=>{
     try{
@@ -60,16 +60,16 @@ const resetFreeGenerationCount =async(id)=>{
     }
 }
 
-const increaseFreeGenerationCount=async(id)=>{
-    try{
-        const query = "UPDATE users SET free_generation_count = free_generation_count + 1, last_free_generated = NOW() WHERE user_id = ?;"
-        const [data] =await db.execute(query, [id]);
-        console.log("free image generation count for user is increased")
-        return true;
-    }catch(err){
-        console.log(err)
-    }
-}
+// const increaseFreeGenerationCount=async(id)=>{
+//     try{
+//         const query = "UPDATE users SET free_generation_count = free_generation_count + 1, last_free_generated = NOW() WHERE user_id = ?;"
+//         const [data] =await db.execute(query, [id]);
+//         console.log("free image generation count for user is increased")
+//         return true;
+//     }catch(err){
+//         console.log(err)
+//     }
+// }
 
 
 
