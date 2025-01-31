@@ -96,7 +96,7 @@ const handelModel=(modelType)=>{
             cp_required=0;
             break
         }
-        
+       
         case 2:{
             model_url=process.env.MODEL_2   
             cp_required=5;
@@ -108,6 +108,7 @@ const handelModel=(modelType)=>{
             cp_required=10;
             break
         }
+
         default:{
             model_url=process.env.MODEL_1
             cp_required=0;

@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { handleGenerateImageUser, canUserGenerateFree } = require('../service/GenerateImageService');
+const {  handleGenerateImageUser, canUserGenerateFree } = require('../service/GenerateImageService');
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
 
@@ -54,7 +54,7 @@ exports.generateImageApiCall = async(req, res, next) => {
     } else {
         type="user"
 
-        const isTokenValid=verifyToken(token)
+        const isTokenValid = verifyToken(token)
 
         if(isTokenValid){
 
@@ -150,8 +150,6 @@ const GuestImageCount = async (ipAddress) => {
 
 const verifyToken = (jwtToken)=> {
 
-    
-    
     if (!jwtToken) return false;
 
     const secretKey = process.env.JWT_SECRET_KEY;
