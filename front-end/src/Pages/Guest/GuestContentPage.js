@@ -44,10 +44,13 @@ export default function GuestContentPage() {
         
         const response = await axios.post(
           'http://localhost:3001/api/v1/generate-image',
-          { prompt: promptText },
+          { 
+            prompt: promptText ,
+            model:3      
+          },
           { 
             responseType: 'arraybuffer',
-            withCredentials:false,
+            withCredentials:true,
            } // Ensure the response is handled as binary
         );
         console.log(response)
@@ -73,8 +76,6 @@ export default function GuestContentPage() {
       } finally {
         setLoading(false);
         setPromptText("")
-        console.log(error)
-        console.log(image)
       }
     };
 

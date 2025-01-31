@@ -17,7 +17,7 @@
     border: none;
     border-radius: 10px;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 400;
 
 }
 .button:hover{
@@ -34,7 +34,7 @@
 }
 .dark-button{
     background-color: black;
-    border: solid 2px black;
+    border: solid 1px black;
     color: white;
 }
 .dark-button:hover{
@@ -75,4 +75,9 @@
 }
 .br-20{
     border-radius: 20px;
+}
+
+
+.flex-1{
+    flex: 1;
 }

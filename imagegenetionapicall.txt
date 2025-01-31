@@ -15,14 +15,19 @@ const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
 
 
 exports.generateImageApiCall = async(req, res, next) => {
+
+
+    //initializing the inputs
     const {prompt,model}=req.body
     console.log(model)
     console.log("generate image is running")
     const input={
-         prompt:prompt||"cat"
+         prompt:prompt||"cat",
     }
     
-    // console.log(req.headers.cookie)
+    
+
+    //getting token from cookies
     let cookies =null
     let token =null
     
@@ -36,6 +41,8 @@ exports.generateImageApiCall = async(req, res, next) => {
         console.log(err)
     }
 
+
+    //if there is no token 
     let type=""
     if(!token) {
         type="guest" 

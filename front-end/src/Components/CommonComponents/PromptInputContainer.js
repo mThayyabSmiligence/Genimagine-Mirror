@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage}) {
@@ -17,8 +17,22 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       return
     }
     generateImage()
-    setPromptText("")
+    
   }
+  const [width, setWidth] = useState(window.innerWidth);
+          
+        useEffect(() => {
+          const handleResize = () => {
+            setWidth(window.innerWidth);
+          };
+              
+          window.addEventListener('resize', handleResize);
+              
+          return () => {
+            window.removeEventListener('resize', handleResize);
+          };
+    }, []);
+
   return (
     <div className='prompt-outer-container w-75 light-grey-bg br-10 d-flex  align-items-end p-2 mb-2'   >
 

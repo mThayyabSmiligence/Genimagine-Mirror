@@ -5,6 +5,7 @@ const router = express.Router();
 router.route('/list').get(getUsersList);
 router.route('/id/:id').get(getSingleUser);
 router.route('/verify-token').get(firstTimeVerification);
+router.route('/generate-image').get
 
 
 module.exports = router;
