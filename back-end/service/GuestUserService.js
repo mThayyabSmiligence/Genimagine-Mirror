@@ -9,7 +9,6 @@ dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 const cloud_flare_acc_id= process.env.CLOUD_FLARE_ACC_ID
 const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
 
-
 exports.GuestUserHandler = async (ipAddress) => {
     try {
         const dataExists = await checkDataExists(ipAddress);
@@ -19,18 +18,13 @@ exports.GuestUserHandler = async (ipAddress) => {
             return true;
         } else {
             let guestUserData = await GetGuestUser(ipAddress);
-            let currentDate = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-            let generatedDate = guestUserData.generation_date.toISOString().split('T')[0]; // Already 'YYYY-MM-DD' from SQL query
-            console.log("OLD data"+generatedDate+"currrent date"+currentDate)
-            
-            if (currentDate == generatedDate) {
-                console.log("Checking if user has the limit");
-                return guestUserData.image_count < 10?true:false;
-            } else {
-                console.log("Updating the guest data");
-                const result = await UpdateGuestUser(guestUserData.id);
-                console.log(result);
+
+            if (guestUserData.image_count < 10) {
+                console.log("user has enough limits to generate image");
                 return true;
+            } else {
+                console.log("Not enough limits to generate image");
+                return false
             }
         }
     } catch (err) {
