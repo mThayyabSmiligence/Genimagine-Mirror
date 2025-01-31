@@ -1,7 +1,7 @@
 const express = require('express')
-const { generateImageApiCall } = require('../controller/GenerateImageController')
+const { guestGenerateImageController } = require('../controller/GuestGenerateImageController');
 const router = express.Router();
 
-router.route('/generate-image').post(generateImageApiCall);
+router.route('/generate-image').post(guestGenerateImageController);
 
 module.exports = router;
