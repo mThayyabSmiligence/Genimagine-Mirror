@@ -107,7 +107,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
                 .send(image);
-
         return
 
     }
