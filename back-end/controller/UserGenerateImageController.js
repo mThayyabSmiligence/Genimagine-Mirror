@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 
@@ -25,8 +25,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         try{
             const cookies1 = cookie.parse(req.headers.cookie)
-            cookies=cookies1
-            console.log(req.headers)
+            cookies=cookies1    
             const token1 = cookies.token
             token= token1
             decodeToken= jwt.decode(token)
@@ -42,7 +41,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     
         
-    if(model==1){
+    if(model==1 || model==null){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
         
         //exiting if the limit exceeded
@@ -65,11 +64,24 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }
         await increaseFreeGenerationCountForUser(id)
         
-        
+        let chatId= null
         if(chat_id==null){
-            const chatId= await createChat(id);
+            const newChatId= await createChat(id);
             const insertedImage = 0;
+            chatId=newChatId
+        }else{
+            chatId=chat_id
         }
+        const generated_image_data={
+            user_id:id,
+            prompt:prompt,
+            model:model!=null?model:1,
+            chat_id:chatId,
+            image_url:"storage is not defined"
+        }
+
+        const insertImage = await StoreImageInTabel(generated_image_data)
+        
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
