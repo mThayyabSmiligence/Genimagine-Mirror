@@ -6,14 +6,16 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
-    const {prompt,model} =req.body;
+    const {prompt,model,chat_id} =req.body;
     console.log("prompt :"+prompt+"model :"+model)
+
+    
     
 
     //getting jwt token from cookies
@@ -35,8 +37,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
     const {id,username,role}= decodeToken
 
     console.log(id)
-    console.log(username)
+    console.log(username) 
     console.log(role)
+
+    
         
     if(model==1){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
@@ -60,6 +64,12 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
         await increaseFreeGenerationCountForUser(id)
+        
+        
+        if(chat_id==null){
+            const chatId= await createChat(id);
+            const insertedImage = 0;
+        }
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
@@ -82,7 +92,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
 
-        const image=await paidGenerateImageService(inputs,model_data)
+        const image=await paidGenerateImageService(inputs,model_data.model_url)
 
 
         if(!image){
@@ -99,9 +109,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
                 .send(image);
 
         return
-
-
-
 
     }
     

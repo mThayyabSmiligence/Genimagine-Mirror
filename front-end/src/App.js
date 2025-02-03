@@ -36,7 +36,8 @@ function App() {
           <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></SubTopbar>
         <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${showNavBar?width-250:width}px` }}>
           <Routes>
-            <Route path="/" element={<GuestContentPage></GuestContentPage>}></Route>
+            <Route path="/image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
+            
             <Route path='/login' element={<Login></Login>}></Route>
             <Route path='/test' element={<Imagetest></Imagetest>}></Route>
           </Routes>

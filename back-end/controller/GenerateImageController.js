@@ -41,7 +41,7 @@
 //         type="guest" 
 //         const canGenerate=await GuestUserHandler(req.ip);
 //         console.log(canGenerate)
-//         if(canGenerate){
+//         if(canGenerate){ 
 //             const isGenerated=await generateImageGuest(type, req.ip,input)
 //             if(isGenerated){
 //                 res.status(200)
