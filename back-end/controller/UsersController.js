@@ -26,7 +26,6 @@ exports.getUsersList = async (req, res, next) => {
 }
 
 
-
 // get user by id api - api/v1/user/:id
 
 exports.getSingleUser = async (req, res, next)=> {
