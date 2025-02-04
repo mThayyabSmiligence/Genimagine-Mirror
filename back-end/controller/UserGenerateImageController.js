@@ -16,7 +16,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log("prompt :"+prompt+"model :"+model)
 
     
-    
+     
 
     //getting jwt token from cookies
         let cookies =null
@@ -112,7 +112,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
                 message:"somthing went worng with paid image generation"
             })
             return
-        }   
+        }
 
         await deductCredit(id,model_data.cp_required) ;
 
@@ -122,5 +122,4 @@ exports.userGenerateImageController=async(req,res,next)=>{
         return
 
     }
-    
 }
