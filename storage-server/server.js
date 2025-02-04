@@ -3,14 +3,20 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+
+const { PORT,NODE_ENV } =  require('./config/config');
+
 const { verifyToken } = require('./middleWare/authMiddleware');
+
 
 const app = express();
 
 require('dotenv').config();
 
 
-console.log(process.env.PORT)
+app.listen(PORT, () => {
+  console.log(`server listening to port ${PORT} in ${NODE_ENV}`)
+})
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -34,6 +40,9 @@ const storage = multer.diskStorage({
       cb(null, req.body.image_id); 
     },
 }); 
+
+
+app.post('/')
 
 const upload=multer({storage:storage})
 
