@@ -115,6 +115,23 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }   
 
         await deductCredit(id,model_data.cp_required) ;
+        let chatId= null
+        if(chat_id==null){
+            const newChatId= await createChat(id);
+            const insertedImage = 0;
+            chatId=newChatId
+        }else{
+            chatId=chat_id
+        }
+        const generated_image_data={
+            user_id:id,
+            prompt:prompt,
+            model:model!=null?model:1,
+            chat_id:chatId,
+            image_url:"storage is not defined"
+        }
+
+        const insertImage = await StoreImageInTabel(generated_image_data)
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
