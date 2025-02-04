@@ -89,7 +89,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
 
-        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'explore',token,req)
+        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
