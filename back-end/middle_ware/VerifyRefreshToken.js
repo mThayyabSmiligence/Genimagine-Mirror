@@ -10,11 +10,12 @@ const verifyRefreshToken = (req, res, next)=> {
     try{
 
         const cookies= cookie.parse(req.headers.cookie)
-        const token = cookies.token
+        const token = cookies.refresh_token
         refreshToken= token
+  
     }
     catch(err){
-        res.status(401).json({ message: 'Access Denied. No token provided.' }) 
+        res.status(401).json({ message: 'Access Denied. No refresh token provided.' }) 
         return;
     }
 
@@ -25,9 +26,12 @@ const verifyRefreshToken = (req, res, next)=> {
     try {
         const verified = jwt.verify(refreshToken, secretKey);
         req.user = verified; 
+        console.log(verified)  
+        console.log(refreshToken)
         next();
+        console.log("nothing")
     } catch (err) {
-        res.status(401).json({ message: 'Invalid token.' });
+        res.status(401).json({ message: 'Invalid refresh jdij token.' });
     }
 }; 
 

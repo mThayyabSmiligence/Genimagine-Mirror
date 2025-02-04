@@ -9,9 +9,10 @@ exports.generateToken = (user) => {
         role: user.role,
     };
 
+    console.log()
     const secretKey = process.env.JWT_SECRET_KEY || '80676218f9466f7e32dd5e6ba01a9bddb29d624d45e67269362a49a66c1b38e7e2387893f17ae2374f4740c490fc0fc6a449510da9ebdc3906f9236192ab2bf4'
     const options = {
-        expiresIn:'1h',
+        expiresIn:'10s',
 
     };
 
@@ -23,7 +24,9 @@ exports.generateToken = (user) => {
 
 const refreshTokens = []; 
 exports.generateRefreshToken = async (user) => {
-    const secretKey = process.env.REFRESH_TOKEN_SECRET ||   'refresh-secret-key';
+    const secretKey = process.env.JWT_REFRESH_SECRET_KEY ||   'refresh-secret-key';
+    console.log("checking refrsh token secret key")
+        console.log(secretKey)
     const payload = {
         id: user.user_id,
         username: user.username,
@@ -38,18 +41,20 @@ exports.generateRefreshToken = async (user) => {
 
 exports.refreshToken = async (req, res) => {
        const cookies = cookie.parse(req.headers.cookie||"")
+       console.log(cookies.refresh_token)
         const token = cookies.refresh_token
 
 
-    if (!token || !refreshTokens.includes(token)) {
-        return res.status(403).json({ message: 'Invalid refresh token.' });
+    if (!token) {
+        return res.status(403).json({ message: 'Invalid refresh 422 token.' });
     }
 
     try {
-        const user = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY || 'refresh-secret-key');
+        const user = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY);
         
-        console.log("refresh token "+user)
-        const accessToken = generateToken({ id: user.user_id, username: user.username });
+        console.log(user)
+        const accessToken = this.generateToken({ id: user.id, username: user.username ,role:user.role});
+        console.log("checking")
         
         let options = {
             maxAge: 1000 * 60 * 60, // expire after 60 minutes
@@ -60,7 +65,7 @@ exports.refreshToken = async (req, res) => {
         res.cookie("token",accessToken,options)
         res.status(200).json({message:"new access token has been generted with refresh token"})
     } catch (err) {
-        res.status(403).json({ message: 'Invalid refresh token.' });
+        res.status(403).json({ message: 'Invalid refresh fsf token.' });
     }
 };
 
@@ -68,7 +73,7 @@ const addRefreshToken= async(user, refreshToken)=> {
     let expires_at = new Date();
     expires_at.setDate(expires_at.getDate() + 7);
     const formattedExpiresAt = expires_at.toISOString().slice(0, 19).replace('T', ' ');
-    console.log("Expires At:", expires_at);
+
 
     try {
         const query = `INSERT INTO refresh_token (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
