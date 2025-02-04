@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { generateToken, generateRefreshToken} = require('../service/JWTtokenGeneration');
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
+const axios =require('axios')
 const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
 
 // get all users api - api/v1/users/list
@@ -124,7 +125,7 @@ exports.userLogin = async (req, res, next) => {
         const query = "Select * from users WHERE email = ?"
     
         const [oldUser] = await db.execute(query,[email]);
-        
+        const response =null
 
        
         
@@ -170,6 +171,7 @@ exports.userLogin = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "login successfully",
+         
             
         });
     } catch(error){

@@ -1,5 +1,5 @@
 const express = require('express');
-const multer = require('multer');
+const fileupload=require('express-fileupload')
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -10,6 +10,7 @@ const { verifyToken } = require('./middleWare/authMiddleware');
 
 
 const app = express();
+app.use(fileupload())
 
 require('dotenv').config();
 
@@ -18,49 +19,45 @@ app.listen(PORT, () => {
   console.log(`server listening to port ${PORT} in ${NODE_ENV}`)
 })
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      const { userId, chatId ,isChat,isExplore,isLibrary} = req.body;
 
-      let folderPath=null;
-      if(isChat){
-        folderPath= `./uploads/users/${userId}/${chatId}`
-      }else if( isExplore){
-        folderPath =`./uploads/explore/${userId}`
-      }else if(isLibrary){
-        folderPath=`./uploads/library/${userId}`
+
+app.post('/upload',verifyToken,(req,res)=>{
+
+      if (!req.files || !req.files.image) {
+        return res.status(400).json({ message: 'No file uploaded' });
       }
-
-      // Ensure the directory exists 
-      fs.mkdirSync(folderPath, { recursive: true });
   
-      cb(null, folderPath); // Destination folder
-    },
-    filename: (req, file, cb) => {
-      cb(null, req.body.image_id); 
-    },
-}); 
 
+    const { userId, chatId, imageId, type } = req.body;
+    const uploadedImage = req.files.image;
 
-app.post('/')
-
-const upload=multer({storage:storage})
-
-app.post('/upload',verifyToken,upload.single('image'),(req,res)=>{
-
-    const {userId,chatId,imageId}=req.body;
-
-    if(!req.file){
-        return res.status(400).json({
-            message:"no file is uploaded"
-        })
+    let folderPath = `./uploads/users/${userId}/${chatId}`;
+    if (type === 'chat') {
+      folderPath = `./uploads/users/${userId}/${chatId}`;
+    } else if (type === 'explore') {
+      folderPath = `./uploads/explore/${userId}`;
+    } else if (type === 'library') {
+      folderPath = `./uploads/library/${userId}`;
     }
 
-    const imagePath= `uploads/users/${userId}/${chatId}/${imageId}`
+    fs.mkdirSync(folderPath, { recursive: true });
 
-    const imageUrl=`/chat/image/${userId}/${chatId}/${imageId}`
+    const filePath = path.join(folderPath, `${imageId}.png`);
 
-    res.status(200).json({message:"file is uploaded",imagePath:imagePath,imageUrl:imageUrl})
+    uploadedImage.mv(filePath, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error saving file' });
+      }
+    })
+      
+      const imagePath= `uploads/users/${userId}/${chatId}/${imageId}`
+
+      const imageUrl=`/chat/image/${userId}/${chatId}/${imageId}`
+      console.log(4)
+
+      res.status(200).json({message:"file is uploaded",imagePath:imagePath,imageUrl:imageUrl})
+    
 })
 
 
@@ -88,3 +85,8 @@ app.get(`/chat/image/:userId/:chatId/:fileName`,verifyToken,(req,res)=>{
 
 })
 
+
+app.get("/testimage",(req,res)=>{
+  console.log("testing")
+  res.status(300).json({message:"just testing"})
+})

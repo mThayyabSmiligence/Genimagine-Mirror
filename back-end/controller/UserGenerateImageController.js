@@ -9,6 +9,7 @@ const path =require('path');
 const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
+const { uploadImageToServer } = require('../service/UploadToServerService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
@@ -81,7 +82,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)
-        
+        const image_id= insertImage.insertId
+
+        console.log(insertImage.insertId)
+        console.log(Buffer.isBuffer(image)?"true ":"false")
+
+        //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
+
+        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'explore',token,req)
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
