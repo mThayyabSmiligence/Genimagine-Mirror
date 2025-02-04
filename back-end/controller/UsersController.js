@@ -2,7 +2,8 @@ const db = require('../config/connectDatabase')
 const bcrypt = require('bcrypt');
 const { generateToken, generateRefreshToken} = require('../service/JWTtokenGeneration');
 const cookie = require("cookie")
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
 
 // get all users api - api/v1/users/list
 
@@ -218,5 +219,68 @@ exports.userLogout= async (req,res,next)=>{
 exports.firstTimeVerification = async(req,res,next) => {
     res.status(200).json({
         message: "user with successfull token"
+    })
+}
+
+
+
+exports.getChatsList=async(req,res,next)=>{
+    //getting jwt token from cookies
+    let cookies =null
+    let token =null
+    let decodeToken=null
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+    }catch(err){
+        console.log(err)
+    }
+
+    const {id,username,role}= decodeToken;
+
+    const chatsList= await getChatsByUserId(id)
+
+    if(!chatsList){
+        res.status(404).json("error retriving chats List");
+        return
+    }
+
+    res.status(200).json({
+        messsage:"retrived chats list successfully",
+        data:chatsList
+    })
+}
+
+exports.getChatsData=async(req,res,next)=>{
+
+    const {chat_id}=req.body;
+
+    let cookies =null
+    let token =null
+    let decodeToken=null
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+    }catch(err){
+        console.log(err)
+    }
+
+    const {id,username,role}= decodeToken;
+    //getting jwt token from cookies
+  
+
+    const chatData=await getImagesByChatId(chat_id,id)
+
+
+    res.status(chatData.status).json({
+        message:chatData.message
     })
 }
