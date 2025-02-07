@@ -39,33 +39,27 @@ exports.generateRefreshToken = async (user) => {
 
 };
 
-exports.refreshToken = async (req, res) => {
-       const cookies = cookie.parse(req.headers.cookie||"")
-       console.log(cookies.refresh_token)
-        const token = cookies.refresh_token
+exports.generateTokenWithRefreshToken = async (refreshToken) => {
 
 
-    if (!token) {
+    if (!refreshToken) {
         return res.status(403).json({ message: 'Invalid refresh 422 token.' });
     }
 
     try {
         const user = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY);
         
+
+        console.log("regenerating token with refresh token")
         console.log(user)
         const accessToken = this.generateToken({ id: user.id, username: user.username ,role:user.role});
         console.log("checking")
         
-        let options = {
-            maxAge: 1000 * 60 * 60, // expire after 60 minutes
-            httpOnly: true, // Cookie will not be exposed to client side code
-            sameSite: "none", // If client and server origins are different
-            secure: true // use with HTTPS only
-        }
-        res.cookie("token",accessToken,options)
-        res.status(200).json({message:"new access token has been generted with refresh token"})
+        
+        return accessToken;
+        
     } catch (err) {
-        res.status(403).json({ message: 'Invalid refresh fsf token.' });
+        return false
     }
 };
 
