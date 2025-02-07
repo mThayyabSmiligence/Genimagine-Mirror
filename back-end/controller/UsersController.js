@@ -7,6 +7,7 @@ const axios =require('axios')
 const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const admin = require('../config/firebaseConfig')
 
 // get all users api - api/v1/users/list
 
@@ -135,6 +136,12 @@ exports.userLogin = async (req, res, next) => {
             res.status(404).json({
                 message:"user not found"
             })
+            return
+        }
+        if(oldUser[0].register_type!="password"){
+            res.status(409).json({
+                message:"sign-in with google"
+            });
             return
         }
           console.log(oldUser[0].password_hash)
@@ -302,23 +309,34 @@ exports.emailOtpRequest = async(req, res, next) => {
     const {email} = req.body;
     const otp = crypto.randomInt(100000, 999999).toString(); // Generate a 6-digit OTP
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); ///expires at 5 minutes
+    let userdata=null;
 
     try{
-        const query = "SELECT 1 FROM users WHERE email = ?"
+        const query = "SELECT * FROM users WHERE email = ?"
         const [rows] = await db.execute(query, [email])
         console.log(rows)
+        userdata=rows
 
         if (rows.length === 0) {
             return res.status(400).json({
                 success: false,
                 message: "Email is not registered. Please sign up first."
             });
+            return
         }
     } catch(err){
         console.error(err)
         res.status(500).json({
             messgae: "error verifying user"
         })
+        return
+    }
+
+    if(userdata[0].register_type!="password"){
+        res.status(409).json({
+            message:"sign-in with google"
+        });
+        return
     }
 
     try{
@@ -380,13 +398,8 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 const [userRows] = await db.execute(queryUser, [email])
                 console.log(userRows)
                 
-                const user = {
-                    id: userRows[0].user_id,
-                    username: userRows[0].username,
-                    role: userRows[0].role
-                }
-    
-                const token = jwt.generateToken(user);
+                
+                const token = generateToken(userRows[0]);
 
                 res.cookie("auth_token", token, {
                     httpOnly: true,  
@@ -414,3 +427,75 @@ exports.verifyEmailOtp = async(req, res, next) => {
         message: "otp verified succesfully"
     })
 }
+
+exports.VerifyGoogleSignInToken = async(req, res, next) => {
+    try {
+        const token = req.headers['authorization']?.split("Bearer ")[1] || req.body.token;
+
+        console.log("Received Token:", token); // Debugging
+
+        if (!token) {
+            return res.status(400).json({ success: false, message: "Token is missing!" });
+        }
+
+        const decodedToken = await admin.auth().verifyIdToken(token);   
+        console.log("decoded token")
+        console.log(decodedToken)         //decodes the generated id from firebase on frontend
+        const userid = decodedToken.uid;
+        const useremail = decodedToken.email;
+
+        const query = "SELECT * FROM users WHERE email = ?"
+        const [rows] = await db.execute(query, [useremail]);
+
+        console.log("logging in user")
+        console.log(rows)
+
+        if(rows.length==0){
+            try{
+                const insertQuery = "INSERT INTO users (email,username,age,password_hash,register_type) VALUES (?,?,?,?,CAST(? AS CHAR))";
+                await db.execute(insertQuery, [useremail,decodedToken.name,0," ","google-sign-in"]);
+                    res.status(200).json({
+                        success: true,
+                        message: "New user created and logged in"
+                    })
+                    return
+            }catch (err){
+                console.error("error registering user")
+                console.error(err)
+                res.status(500).json({
+                    success: false,
+                    message: "error registering user"
+                })
+                return
+            }  
+        }
+
+        if(rows[0].register_type!="google-sign-in"){
+            res.status(409).json({
+                message:"sign-in with email and password"
+            });
+            return
+        }
+
+        if(rows.length > 0){
+            console.log('user logged in')
+            res.status(200).json({
+                message:"user logged in"
+            })
+            return 
+        }
+            
+            // db.query(insertQuery, [uid, email], (err) => {
+            //     if (err) {
+            //         return res.status(500).json({ success: false, message: "Database error", error: err });
+            //     }
+            //     res.json({ success: true, message: "New user created and logged in", user: { uid, email } });
+            // });
+        
+
+
+    } catch (error) {
+        console.error("Firebase Token Verification Error:", error);
+        res.status(401).json({ success: false, message: "Invalid Token", error });
+    }
+};
