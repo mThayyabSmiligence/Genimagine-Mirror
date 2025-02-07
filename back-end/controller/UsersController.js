@@ -400,12 +400,21 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 
                 
                 const token = generateToken(userRows[0]);
+                const refreshToken = generateRefreshToken(userRows[0]);
 
-                res.cookie("auth_token", token, {
+
+                res.cookie("token", token, {
                     httpOnly: true,  
                     secure: true,    
                     sameSite: "none",
                     maxAge: 1000 * 60 * 60 
+                });
+
+                res.cookie("refresh_token", refreshToken, {
+                    maxAge: 1000 * 60 * 60 * 24 * 7, 
+                    httpOnly: true, 
+                    sameSite: "none", 
+                    secure: true 
                 });
             
                 return res.status(200).json({
@@ -453,7 +462,34 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
         if(rows.length==0){
             try{
                 const insertQuery = "INSERT INTO users (email,username,age,password_hash,register_type) VALUES (?,?,?,?,CAST(? AS CHAR))";
-                await db.execute(insertQuery, [useremail,decodedToken.name,0," ","google-sign-in"]);
+
+                const [response] = await db.execute(insertQuery, [useremail,decodedToken.name,0," ","google-sign-in"]);
+                console.log(response);
+
+                const user={
+                    user_id: response.insertId,
+                    username: decodedToken.name,
+                    role: "user"
+                }
+                
+                const token = generateToken(user);
+                const refreshToken = generateRefreshToken(user);
+
+                res.cookie("token", token, {
+                    httpOnly: true,  
+                    secure: true,    
+                    sameSite: "none",
+                    maxAge: 1000 * 60 * 60
+                });
+
+                res.cookie("refresh_token", refreshToken, {
+                    maxAge: 1000 * 60 * 60 * 24 * 7, 
+                    httpOnly: true, 
+                    sameSite: "none", 
+                    secure: true 
+                });
+
+
                     res.status(200).json({
                         success: true,
                         message: "New user created and logged in"
@@ -478,6 +514,23 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
         }
 
         if(rows.length > 0){
+            const token = generateToken(rows[0]);
+            const refreshToken = generateRefreshToken(rows[0])
+
+            res.cookie("token", token, {
+                httpOnly: true,  
+                secure: true,    
+                sameSite: "none",
+                maxAge: 1000 * 60 * 60 
+            });
+
+            res.cookie("refresh_token", refreshToken, {
+                maxAge: 1000 * 60 * 60 * 24 * 7, 
+                httpOnly: true, 
+                sameSite: "none", 
+                secure: true 
+            });
+
             console.log('user logged in')
             res.status(200).json({
                 message:"user logged in"
