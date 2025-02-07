@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -34,6 +34,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             console.log(err)
         }
 
+    
     const {id,username,role}= decodeToken
 
     console.log(id)
@@ -90,6 +91,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+        
+        
+        const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
         res.status(200)
                 .set('Content-Type', 'image/png') // Ensure the image MIME type is set
@@ -103,9 +107,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const model_data=handelModel(model)
         console.log(model_data)
 
-        const enoghCredits =await  checkCreditBalance(id,model_data.cp_required)
+        const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
 
-        if(!enoghCredits){
+        if(!enoughCredits){
             res.status(402).json({
                 message:"not enough credits"
             })

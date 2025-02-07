@@ -298,15 +298,16 @@ exports.getChatsData=async(req,res,next)=>{
 
 exports.emailOtpRequest = async(req, res, next) => {
 
+    const {email} = req.body;
+
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth:{
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
-        }
+        } 
     });
 
-    const {email} = req.body;
     const otp = crypto.randomInt(100000, 999999).toString(); // Generate a 6-digit OTP
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); ///expires at 5 minutes
     let userdata=null;
@@ -398,10 +399,10 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 const [userRows] = await db.execute(queryUser, [email])
                 console.log(userRows)
                 
-                
+
                 const token = generateToken(userRows[0]);
 
-                res.cookie("auth_token", token, {
+                res.cookie("token", token, {
                     httpOnly: true,  
                     secure: true,    
                     sameSite: "none",
