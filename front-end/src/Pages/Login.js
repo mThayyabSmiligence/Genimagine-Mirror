@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
+import { auth, provider } from '../firebase'   //
+import { signInWithPopup } from 'firebase/auth'
 
 export default function Login() {
     const[password,setPassword]= useState("")
@@ -39,6 +41,33 @@ export default function Login() {
             console.error(err)
         }
     }
+
+    const handleGoogleSignIn = async () => {
+        try{
+            const result = await signInWithPopup(auth, provider);
+            const idToken = await result.user.getIdToken(); // Get Firebase Token
+            console.log("google sigin token:",idToken);
+            console.log("User Info:", result.user);
+            
+            // Send token to backend for verification
+            const response = await axios.post("http://localhost:3001/api/v1/auth/verify-google-token", 
+                { token: idToken },  
+                {
+                    headers: {
+                        "Authorization": `Bearer ${idToken}`, 
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+    
+            
+            console.log("Backend Response:", response.data);
+                    
+        }catch(error){
+            console.error("Error during sign-in");
+        } 
+    }
+
   return (
     <div className='login-page'>
         <form clasame="login-form " onSubmit={(e) => handleSubmit(e)}>
@@ -75,8 +104,12 @@ export default function Login() {
             </div>
             <button type="submit" className=" button dark-button">Login</button>
             
+            
         </form>
         <button onClick={(e)=>handelLogout(e)} className=" button dark-button">Logout</button>
+        <div>
+            <button  onClick={handleGoogleSignIn}>signin with google</button>
+        </div>
     </div>
   )
 }

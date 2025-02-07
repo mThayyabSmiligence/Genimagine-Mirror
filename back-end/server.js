@@ -21,6 +21,11 @@ const verifyRefreshToken = require('./middle_ware/VerifyRefreshToken');
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 
 // middleware's
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next();
+});
 const corsOptions = {
     origin: "http://localhost:3000",
     credentials: true
@@ -28,6 +33,8 @@ const corsOptions = {
 app.use( cors(corsOptions) );
 app.use(express.json());
 app.use(cookieParser());
+
+
 // middleware's
 
 // api's --start
