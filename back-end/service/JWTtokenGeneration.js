@@ -19,7 +19,6 @@ exports.generateToken = (user) => {
     const token = jwt.sign(payload, secretKey, options);
     return token;
 };
-
  
 
 const refreshTokens = []; 
