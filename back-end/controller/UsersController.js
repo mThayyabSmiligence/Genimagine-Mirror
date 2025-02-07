@@ -5,6 +5,8 @@ const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const axios =require('axios')
 const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 // get all users api - api/v1/users/list
 
@@ -284,5 +286,131 @@ exports.getChatsData=async(req,res,next)=>{
 
     res.status(chatData.status).json({
         message:chatData.message
+    })
+}
+
+exports.emailOtpRequest = async(req, res, next) => {
+
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth:{
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const {email} = req.body;
+    const otp = crypto.randomInt(100000, 999999).toString(); // Generate a 6-digit OTP
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); ///expires at 5 minutes
+
+    try{
+        const query = "SELECT 1 FROM users WHERE email = ?"
+        const [rows] = await db.execute(query, [email])
+        console.log(rows)
+
+        if (rows.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is not registered. Please sign up first."
+            });
+        }
+    } catch(err){
+        console.error(err)
+        res.status(500).json({
+            messgae: "error verifying user"
+        })
+    }
+
+    try{
+        const query = 'INSERT INTO otp_verifications (email, otp, expires_at) VALUES (?, ?, ?)'
+        const rows = await db.execute(query, [email, otp, expiresAt])
+
+    } catch (err) {
+
+        if (err) 
+            return res.status(500).json({
+            message: 'Database error', error: err 
+        });
+    }
+
+    try{
+
+        const mailOptions = {
+                       from: process.env.EMAIL_USER,
+                       to: email,
+                       subject: 'Your OTP for Login',
+                       text: `Your OTP is ${otp}. It expires in 5 minutes.`
+                   };
+       
+                  await transporter.sendMail(mailOptions)
+                   console.log('otp has sent')
+    } catch (err){
+        console.error(err);
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "otp sended"
+    });
+}
+
+exports.verifyEmailOtp = async(req, res, next) => {
+    const {email, otp} = req.body
+
+    const query = "SELECT * FROM otp_verifications WHERE email = ? ORDER BY created_at DESC LIMIT 1"
+
+    try{ 
+        const [rows] = await db.execute(query, [email])
+        
+        if (rows.length === 0) {
+            return res.status(400).json({ message: 'No OTP found for this email. Please request a new one.' });
+        }
+
+        const dbOtp = rows[0].otp;
+            const expiresAt = new Date(rows[0].expires_at);
+
+            if (expiresAt < new Date()) {
+                return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
+            }
+
+            if (dbOtp != otp) {
+                return res.status(400).json({ message: 'Invalid OTP' });
+            } 
+                const queryUser = "SELECT * from users WHERE email = ?"
+                const [userRows] = await db.execute(queryUser, [email])
+                console.log(userRows)
+                
+                const user = {
+                    id: userRows[0].user_id,
+                    username: userRows[0].username,
+                    role: userRows[0].role
+                }
+    
+                const token = jwt.generateToken(user);
+
+                res.cookie("auth_token", token, {
+                    httpOnly: true,  
+                    secure: true,    
+                    sameSite: "none",
+                    maxAge: 1000 * 60 * 60 
+                });
+            
+                return res.status(200).json({
+                    success: true,
+                    message: "OTP verified successfully. You are now logged in.",
+                    token
+                });
+
+    }catch(err){
+        console.error(err)
+        res.status(500).json({
+            message: "error verifying otp"
+        })
+    }
+
+
+    res.status(200).json({
+        success: true,
+        message: "otp verified succesfully"
     })
 }
