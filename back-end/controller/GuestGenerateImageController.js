@@ -5,7 +5,7 @@ const { freeGenerateImage } = require('../service/FreeGenerateImageService');
  
 exports.guestGenerateImageController = async(req, res, next) => {
     const {prompt}=req.body
-    console.log("generate image is running")
+    console.log("generate image is running") 
     const input={
          prompt:prompt||"cat"
     }
