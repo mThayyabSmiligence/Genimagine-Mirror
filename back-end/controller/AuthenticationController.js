@@ -7,7 +7,6 @@ const { generateToken, generateRefreshToken} = require('../service/JWTtokenGener
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const { use } = require('../routes/AuthenticationRoute');
-const bcrypt = require('bcrypt');
 const { sendMail, sendMailHTML } = require('../service/emailService');
 const crypto = require('crypto')
 const admin = require('../config/firebaseConfig')
@@ -482,7 +481,7 @@ exports.forgotPassword=async(req,res)=>{
     }   
 
 
-    const resetLink=`http://localhost:3001/rest-password/${resetToken}`
+    const resetLink=`http://localhost:3000/rest-password/${resetToken}`
 
     const subject = "rest password link for your account on Genimagine"
 
