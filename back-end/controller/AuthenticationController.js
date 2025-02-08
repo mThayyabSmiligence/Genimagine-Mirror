@@ -439,6 +439,27 @@ exports.forgotPassword=async(req,res)=>{
     let user=null;
 
     try{
+
+
+        const query = 'select * from password_reset_tokens where email =? and expires_at > NOW()'
+
+        const [rows]= await db.execute(query,[email])
+
+        if(rows.length >0){
+            return res.status(402).json({
+                message:"link to reset passowrd has been already sent to your email , you have to wait 15 mins after last rest password request"
+            })
+        }
+        console.log(rows)
+    }catch(err){
+        console.error("error in checking validity of token with database", err)
+
+        res.status(500).json({
+            message:"error checking if reset link already sent"
+        })
+        return
+    }
+    try{
         const query = "Select * from users where email=?"
 
         const [rows]= await db.execute(query,[email])
@@ -525,7 +546,7 @@ exports.resetPassword=async(req,res)=>{
     }
 
 
-    
+
     const password_hash = await bcrypt.hash(new_password, 10)
     let email=null;
 

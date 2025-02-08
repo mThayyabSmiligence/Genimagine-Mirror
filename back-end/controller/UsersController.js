@@ -102,7 +102,7 @@ exports.getChatsData=async(req,res,next)=>{
     const {chat_id}=req.body;
 
     let cookies =null
-    let token =null
+    let token =null 
     let decodeToken=null
             
     try{
