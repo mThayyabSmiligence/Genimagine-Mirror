@@ -549,6 +549,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
 
 
     } catch (error) {
+        
         console.error("Firebase Token Verification Error:", error);
         res.status(401).json({ success: false, message: "Invalid Token", error });
     }
