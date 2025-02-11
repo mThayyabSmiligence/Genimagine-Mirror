@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PromptInPutContainer from '../../Components/CommonComponents/PromptInputContainer'
 import "../../Css/GuestContentContainer.css"
-import axios from 'axios'
 import SuggestionPrompts from '../../Components/CommonComponents/SuggestionPrompts'
 import ChatContainer from '../../Components/CommonComponents/ChatContainer'
+import { useAxiosGenerateImage } from '../../API\'s/axios'
+import { useNavigate } from 'react-router-dom'
+import useAuth from '../../Hooks/useAuth'
+import AuthContext from '../../Context/AuthProvider'
+import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function GuestContentPage() {
 
-
+    const navigate =useNavigate()
+    const {loggedIn} = useContext(AuthContext)
+    const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext) 
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
     const [chat,setChat]= useState([
@@ -22,12 +28,10 @@ export default function GuestContentPage() {
         prompt:"nothing just testing"
       }
     )
+
+
+    const axiosGenerateImage=useAxiosGenerateImage()
 // Track loading state
-  
-
-      
-
-
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
         window.scrollTo(0, document.body.scrollHeight);
@@ -42,32 +46,22 @@ export default function GuestContentPage() {
       setPromptText("") // Start loading
       try {
         
-        const response = await axios.post(
-          'http://localhost:3001/api/v1/generate-image',
+        const response = await axiosGenerateImage.post(
+          '/',
           { 
             prompt: promptText ,
-            model:3      
-          },
-          { 
-            responseType: 'arraybuffer',
-            withCredentials:true,
-           } // Ensure the response is handled as binary
+            // chat_id:'yAapotOMwl43XVu1pj-Jz'
+            // model:3      
+          }, // Ensure the response is handled as binary
         );
-        console.log(response)
-  
-        // Convert binary data to a base64-encoded string
-        const base64Image = `data:image/png;base64,${btoa(
-          new Uint8Array(response.data)
-            .reduce((data, byte) => data + String.fromCharCode(byte), '')
-        )}`;
-  
-        setImage(base64Image);
+        console.log(response.data)
+        if(response.data.chat_id){
+          setRefreshChatList(!refreshChatList)
+          navigate(`/c/${response.data.chat_id}`)
+        }
  
         setChat((prevItems)=>[...prevItems,
-          {
-            prompt:promptText,
-            image:base64Image,
-          }
+          response.data
         ])
  
       } catch (error) {

@@ -1,6 +1,6 @@
 1.Authentication APis 
 
-    1.1Login (POST) :  "http://localhost:3001/api/v1/auth/login"  
+    1.1 Login (POST) :  "http://localhost:3001/api/v1/auth/login"  
 
         1.1.1 Request Data:{ 
 

@@ -1,11 +1,24 @@
-import React, {  useEffect, useState } from 'react'
+import React, {  useContext, useEffect, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import "../Css/SideNavBar.css"
+import useAuth from '../Hooks/useAuth'
+import { axiosPrivate } from '../API\'s/axios'
+import AuthContext from '../Context/AuthProvider'
+import RefreshDataContext from '../Context/RefreshDataProvider'
 
-export default function SideNavBar({showNavBar}) {
+export default function SideNavBar({showNavBar}){
 
     const [showNavBar2,setShowNavBar2]=useState(true)
+    const location=useLocation()
+
+    const path = location.pathname;
+    const currentChatId= path.split('/')[2]
+
+
+
+    const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext)
+    const {loggedIn} =useContext(AuthContext)
 
     useEffect(()=>{
         if(showNavBar){
@@ -16,6 +29,12 @@ export default function SideNavBar({showNavBar}) {
             setShowNavBar2(showNavBar)
         }
     },[showNavBar])
+    useEffect(()=>{
+        if(loggedIn){
+            getChatList()
+        }
+    },[loggedIn,refreshChatList])
+
 
 
 
@@ -38,49 +57,22 @@ export default function SideNavBar({showNavBar}) {
         {
             title:"title 5"
         },
-        {
-            title:"title 1"
-        },
-        {
-            title:"title 2"
-        },
-        {
-            title:"title 3"
-        },
-        {
-            title:"title 4"
-        },
-        {
-            title:"title 5"
-        },
-        {
-            title:"title 5"
-        },
-        {
-            title:"title 1"
-        },
-        {
-            title:"title 2"
-        },
-        {
-            title:"title 3"
-        },
-        {
-            title:"title 4"
-        },
-        {
-            title:"title 5"
-        },
-        {
-            title:"title 5"
-        },
+       
         
        
     ])
     
-    useEffect(()=>{
-        setChatList(chatList)
-    },[chatList])
+   
+
+    const getChatList = async ()=>{
+        try{
+            const response=await axiosPrivate.get("/get-chats-list")
+            console.log(response.data)
+            setChatList(response.data.data)
+        }catch(err){
+            console.error("error getting chat list",err)
+        }
+    }
 
     const [height, setHeight] = useState(window.innerHeight);
           
@@ -108,12 +100,23 @@ export default function SideNavBar({showNavBar}) {
             <div className='side-nav-middle-section p-relative h-auto ' style={{ height:`${height-150}px`} }>
 
                 <div className='sub-mid-section '>
-                    <div className=' nav-list-item'>
-                    <span className="material-symbols-outlined">explore</span>
-                        <Link to={"/exprole" } className='link nav-options'>Explore</Link>
-                    </div>
+                    <Link to={"/explore" } className='link' >
+                        <div className=' nav-list-item'>
+                        <span className="material-symbols-outlined">explore</span>
+                            <div to={"/image-generation" } className='link nav-options'>Explore</div>
+                        </div>
+                    </Link>
+                    <Link to={"/image-generation" } className='link' >
+                        <div className=' nav-list-item'>
+                        <span className="material-symbols-outlined">add_circle</span>
+                            <div to={"/image-generation" } className='link nav-options'>New Chat</div>
+                        </div>
+                    </Link>
+
                 </div>
                 <div className=' sub-mid-section '>
+                    {   loggedIn&&
+                        
                         <div className='accordion w-100'>
                             <div className='accordion-item'>
                                 <h2 className="accordion-header">
@@ -124,35 +127,38 @@ export default function SideNavBar({showNavBar}) {
                                 <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                                     <div className="accordion-collapse d-flex flex-column align-items-center">
                                         {
-                                            chatList.map((item,index)=>(
-                                                <Link className='link nav-list-item' key={index}>{item.title}</Link>
+                                            Object.entries(chatList).map(([key,value],index)=>(
+                                                <Link to={`/c/${value.chat_id}`} className={`link nav-list-item ${value.chat_id==currentChatId&&"active"}`} key={index}>{value.chat_id}</Link>
                                             ))
                                         }
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    }
                 </div>
             </div>
-            <div className='side-nav-bottom-items d-flex flex-column align-items-center ' style={{ height:"85px" }}>
-                <div className='side-nav-bottom-item d-flex justify-content-between align-items-center '>
-                    <div className='d-flex '>
-                        <span className="material-symbols-outlined">child_care</span>
-                        <label htmlFor=' kids-mode-switch'>Kid's Mode</label>
+            {loggedIn&&
+                <div className='side-nav-bottom-items d-flex flex-column align-items-center ' style={{ height:"85px" }}>
+                    <div className='side-nav-bottom-item d-flex justify-content-between align-items-center '>
+                        <div className='d-flex '>
+                            <span className="material-symbols-outlined">child_care</span>
+                            <label htmlFor=' kids-mode-switch'>Kid's Mode</label>
+                        </div>
+                            <label className='switch kids-mode-switch'>
+                                <input type="checkbox"></input>
+                                <span className='slider round'></span>
+                            </label>
                     </div>
-                        <label className='switch kids-mode-switch'>
-                            <input type="checkbox"></input>
-                            <span className='slider round'></span>
-                        </label>
-                </div>
-                <div className='side-nav-bottom-item d-flex justify-content-start align-items-center ' >
+                    <div className='side-nav-bottom-item d-flex justify-content-start align-items-center ' >
 
-                    <button className='d-flex justify-content-center align-items-center border-0 p-0  bg-light'>
-                            <span className="material-symbols-outlined">settings</span>
-                            <>Settings</>
-                    </button>
+                        <button className='d-flex justify-content-center align-items-center border-0 p-0  bg-light'>
+                                <span className="material-symbols-outlined">settings</span>
+                                <>Settings</>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </nav>
   )

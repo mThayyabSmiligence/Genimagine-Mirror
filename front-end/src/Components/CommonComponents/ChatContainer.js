@@ -25,14 +25,16 @@ export default function ChatContainer({data}) {
       };
   return (
     <div className='chat-container d-flex flex-column w-75 m-2 my-4 px-4'>
+
         <div className=' chat-prompt-outer-container d-flex justify-content-end'>
             <div className='chat-prompt-container'>
                 <p className='chat-prompt'>{data.prompt}</p>
             </div>
         </div>
+
         <div className='chat-image-container d-flex justify-content-start'>
             {
-                data.image==null?<div style={boxStyle}>
+                data.image_url==null?<div style={boxStyle}>
                 <div style={spinnerStyle}></div>
                 <style>{`
                   @keyframes spin {
@@ -41,7 +43,7 @@ export default function ChatContainer({data}) {
                   }
                 `}</style>
               </div>
-              :<img src={data.image}  style={boxStyle}></img>
+              :<img src={`${data.image_url}`} alt={data.prompt} style={boxStyle}></img>
             }
         </div>
         

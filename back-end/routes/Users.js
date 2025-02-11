@@ -9,7 +9,8 @@ router.route('/id/:id').get(getSingleUser);
 router.route('/verify-token').get(firstTimeVerification);
 router.route('/generate-image').post(userGenerateImageController);
 router.route('/get-chats-list').get(getChatsList)
-router.route('/get-chat-data').get(getChatsData)
+router.route('/get-chat-data/:chatId').get(getChatsData)
+
 
 
 module.exports = router;

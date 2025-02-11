@@ -49,6 +49,12 @@
     border-radius: 5px;
     
 }
+.nav-list-item.active{
+    background-color: rgb(238, 238, 238);
+    border: solid 1px rgb(204, 204, 204);
+
+    padding: 7px  9px;
+}
 .nav-list-item:hover,.side-nav .side-nav-bottom-items .side-nav-bottom-item:hover{
     background-color: rgb(238, 238, 238);
     border: solid 1px rgb(204, 204, 204);

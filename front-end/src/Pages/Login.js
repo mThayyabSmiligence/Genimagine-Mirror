@@ -4,8 +4,10 @@ import "../Css/Login.css"
 import axios from 'axios'
 import { auth, provider } from '../firebase'   //
 import { signInWithPopup } from 'firebase/auth'
+import useAuth from '../Hooks/useAuth'
 
 export default function Login() {
+    const {setLoggedIn}= useAuth()
     const[password,setPassword]= useState("")
     const [email,setEmail]=useState("")
     const [passwordVisibility,setPasswordVisibility]=useState(false)
@@ -24,6 +26,7 @@ export default function Login() {
                 }
             )
             console.log(response)
+            setLoggedIn(true)
         }catch(err){
             console.error(err)
         }
@@ -37,6 +40,7 @@ export default function Login() {
                 }
             )
             console.log(response)
+            setLoggedIn(false)
         }catch(err){
             console.error(err)
         }

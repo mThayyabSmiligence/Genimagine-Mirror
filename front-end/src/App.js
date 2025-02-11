@@ -10,6 +10,9 @@ import PromptInPutContainer from './Components/CommonComponents/PromptInputConta
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
 import Login from './Pages/Login';
+import UserLayout from './Layouts/UserLayout';
+import UserContentPage from './Pages/User/UserContentPage';
+import ChatPage from './Pages/User/ChatPage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -40,6 +43,10 @@ function App() {
             
             <Route path='/login' element={<Login></Login>}></Route>
             <Route path='/test' element={<Imagetest></Imagetest>}></Route>
+            <Route path='/c/:chatId' element={<ChatPage></ChatPage>}></Route>
+            <Route path='/u' element={<UserLayout></UserLayout>}>
+              <Route path='image-generation' element={<UserContentPage></UserContentPage>}></Route>
+            </Route>
           </Routes>
         </div>
       </Router>

@@ -95,9 +95,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
-        res.status(200)
-                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
-                .send(image);
+        res.status(200).json({
+            image_id: image_id,
+            user_id: id,
+            chat_id:chatId,
+            image_url: imageUpload.imageUrl,
+            model:1,
+            prompt:prompt
+          });
 
         return
     }else{
@@ -145,9 +150,12 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         const insertImage = await StoreImageInTabel(generated_image_data)
 
-        res.status(200)
-                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
-                .send(image);
+        res.status(200).json({
+            image: `data:image/png;base64,${image.toString('base64')}`,
+            message: 'Image generated successfully',
+            imageId: image_id,
+            chatId:chatId
+          });
         return
 
     }

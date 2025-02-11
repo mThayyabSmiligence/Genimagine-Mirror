@@ -448,7 +448,8 @@ exports.forgotPassword=async(req,res)=>{
         if(rows.length >0){
             return res.status(402).json({
                 message:"link to reset passowrd has been already sent to your email , you have to wait 15 mins after last rest password request"
-            })
+            }) 
+            
         }
         console.log(rows)
     }catch(err){
