@@ -46,7 +46,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       <div>
         <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
                 onClick={handelClick}
-         ><span class="material-symbols-outlined">arrow_forward</span></button>
+         ><span className="material-symbols-outlined">arrow_forward</span></button>
       </div>
     </div>
   )

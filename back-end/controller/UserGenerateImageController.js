@@ -85,9 +85,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
 
-        console.log(insertImage.insertId)
-        console.log(Buffer.isBuffer(image)?"true ":"false")
-
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
@@ -95,9 +92,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
-        res.status(200)
-                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
-                .send(image);
+        res.status(200).json({
+            image_id: image_id,
+            user_id: id,
+            chat_id:chatId,
+            image_url: imageUpload.imageUrl,
+            model:1,
+            prompt:prompt
+          });
 
         return
     }else{
@@ -144,10 +146,21 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)
+        const image_id= insertImage.insertId;
 
-        res.status(200)
-                .set('Content-Type', 'image/png') // Ensure the image MIME type is set
-                .send(image);
+        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+        
+        
+        const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
+
+        res.status(200).json({
+            image_id: image_id,
+            user_id: id,
+            chat_id:chatId,
+            image_url: imageUpload.imageUrl,
+            model:1,
+            prompt:prompt
+          });
         return
 
     }

@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
 import { auth, provider } from '../firebase'   //
 import { signInWithPopup } from 'firebase/auth'
+import useAuth from '../Hooks/useAuth'
 
 export default function Login() {
+    const {setLoggedIn}= useAuth()
+    const navigate=useNavigate()
     const[password,setPassword]= useState("")
     const [email,setEmail]=useState("")
     const [passwordVisibility,setPasswordVisibility]=useState(false)
@@ -24,6 +27,10 @@ export default function Login() {
                 }
             )
             console.log(response)
+            setLoggedIn(true)
+            localStorage.setItem("user_data",JSON.stringify(response.data.user_data))
+            navigate("/image-generation")
+            
         }catch(err){
             console.error(err)
         }
@@ -37,6 +44,8 @@ export default function Login() {
                 }
             )
             console.log(response)
+            setLoggedIn(false)
+            localStorage.removeItem('user_data');
         }catch(err){
             console.error(err)
         }

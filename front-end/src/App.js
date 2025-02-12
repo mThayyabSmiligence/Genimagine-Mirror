@@ -10,6 +10,10 @@ import PromptInPutContainer from './Components/CommonComponents/PromptInputConta
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
 import Login from './Pages/Login';
+import UserLayout from './Layouts/UserLayout';
+import UserContentPage from './Pages/User/UserContentPage';
+import ChatPage from './Pages/User/ChatPage';
+import NavLayout from './Layouts/NavLayout';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -29,19 +33,25 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <SideNavBar showNavBar={showNavBar}></SideNavBar>
-
-
-        
-          <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></SubTopbar>
-        <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${showNavBar?width-250:width}px` }}>
+          
+       
           <Routes>
-            <Route path="/image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
+          <Route path='/login' element={<Login></Login>}></Route> 
+            <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
+              
+                <Route path="/image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
+                
+              
+                <Route path='/test' element={<Imagetest showNavBar={showNavBar}></Imagetest>}></Route>
+                <Route path='/c/:chatId' element={<ChatPage></ChatPage>}></Route>
+                <Route path='/u' element={<UserLayout></UserLayout>}>
+                  <Route path='image-generation' element={<UserContentPage></UserContentPage>}></Route>
+                </Route>
+             
+            </Route>
             
-            <Route path='/login' element={<Login></Login>}></Route>
-            <Route path='/test' element={<Imagetest></Imagetest>}></Route>
           </Routes>
-        </div>
+   
       </Router>
     </div>
   );

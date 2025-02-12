@@ -15,9 +15,11 @@ exports.guestGenerateImageController = async(req, res, next) => {
                 const isGenerated=await freeGenerateImage(input)
                 if(isGenerated){
                     const guestImageCount = increaseGuestImageCount(req.ip); 
-                    res.status(200)
-                    .set('Content-Type', 'image/png') // Ensure the image MIME type is set
-                    .send(isGenerated);
+                    res.status(200).json({
+                        image: `data:image/png;base64,${isGenerated.toString('base64')}`,
+                        message: 'Image generated successfully',
+                        
+                      });
                 }else{
                     res.status(429).json({
                         message:"something went worng with server"

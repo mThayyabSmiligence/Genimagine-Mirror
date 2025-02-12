@@ -54,7 +54,7 @@ app.post('/upload',verifyToken,(req,res)=>{
       
       const imagePath= `uploads/users/${userId}/${chatId}/${imageId}`
 
-      const imageUrl=`/chat/image/${userId}/${chatId}/${imageId}`
+      const imageUrl=`http://localhost:3002/chat/image/${userId}/${chatId}/${imageId}.png`
       console.log(4)
 
       res.status(200).json({message:"file is uploaded",imagePath:imagePath,imageUrl:imageUrl})
@@ -73,7 +73,7 @@ app.get(`/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=
         return res.status(403).json({
             message:"you are not aurthorised to acces this image"
         })
-    }
+    } 
     // If authorized, send the image file
     const imagePath = path.join(__dirname, 'uploads', 'users', userId, chatId, fileName);
 
