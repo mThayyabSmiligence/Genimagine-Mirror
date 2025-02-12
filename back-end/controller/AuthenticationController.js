@@ -9,7 +9,9 @@ const nodemailer = require('nodemailer');
 const { use } = require('../routes/AuthenticationRoute');
 const { sendMail, sendMailHTML } = require('../service/emailService');
 const crypto = require('crypto')
-const admin = require('../config/firebaseConfig')
+const admin = require('../config/firebaseConfig');
+const { generateUserVerificationToken, verifyUserWithVerificationToken } = require('../service/AuthenticationService');
+const { deleteUser } = require('../service/UserService');
 
 // user register api - api/v1/users/register
 
@@ -28,11 +30,46 @@ exports.userRegister = async(req, res, next) => {
         const [rows] = await db.execute(query, [username, hashedPassword, age, email, role, 0]) 
 
         console.log(rows);
+        const user_id = rows.insertId
+       
+
+        const verification_token= await generateUserVerificationToken(user_id,email)
+        if (!verification_token){
+            const rows = await deleteUser(user_id)
+
+            return res.status(500).json({
+                success:  flase,
+                message: "error registering user"
+            });
+        }
+
+        const VerificationLink=`http://localhost:3000/user-email-verification/${verification_token}`
+
+        const subject = "Verify Your Email – Genimagine"
+
+        const htmlContent= `
+        <p>Dear <strong>${username}</strong>,</p>
+        <p>Thank you for signing up for <strong>Genimagine</strong>! To complete your registration and start generating stunning images, please verify your email by clicking the link below:</p>
+        <p><a href="${VerificationLink}" style="color: #007bff; text-decoration: none; font-weight: bold;">Verify My Email</a></p>
+        <p>If you did not sign up for Genimagine, please ignore this email. The link will expire in 1 hour after register request for security reasons.</p>
+        <p>Happy creating!<br>
+        <strong>Genimagine Team</strong></p>
+    `
+
+        const emailResponce = await sendMailHTML(email,subject,htmlContent)
+
+        if(!emailResponce){
+        return res.status(500).json({
+                success:false,
+                message:"error sending verification link to email"
+            })
+            
+        }
  
         res.status(200).json({
             success:  true,
-            message: "user registered successfully",
-            userId: rows.insertId
+            message: "verification link sent successfully",
+            verification_token:verification_token
         });
     } catch (err) {
         console.error(err);
@@ -61,7 +98,31 @@ exports.userRegister = async(req, res, next) => {
     }
 };
 
+exports.verifyUser=async(req,res)=>{
+    const {verification_token} = req.params
+    console.log(verification_token)
 
+    const response = await verifyUserWithVerificationToken(verification_token)
+    if(response.status === 404){
+        res.status(response.status).json({
+            message: "verification token expired"
+        });
+        return;
+    }
+    if(response.status ===500){
+        res.status(response.status).json({
+            message: "server error"
+        });
+        return;
+    }
+    if(response.status ===200){
+        res.status(response.status).json({
+            message: "user verified successfully",
+            user_id: response.user_id
+        })
+        return
+    }
+}
 
 // user login api - api/v1/user/login
 
@@ -85,6 +146,12 @@ exports.userLogin = async (req, res, next) => {
             res.status(409).json({
                 message:"sign-in with google"
             });
+            return
+        }
+        if(oldUser[0].is_verified==0){
+            res.status(401).json({
+                message:"user not verified"
+            })
             return
         }
           console.log(oldUser[0].password_hash)
