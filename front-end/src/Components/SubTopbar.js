@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
 import { Link } from 'react-router-dom'
 import AuthContext from '../Context/AuthProvider'
+import ModelSelector from './CommonComponents/ModelSelector'
 
 
 export default function SubTopbar({setShowNavBar,showNavBar,width}) {
@@ -17,8 +18,10 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
   return (
     <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between`} style={{width:`${showNavBar?width-250:width}px` }} >
 
+
         <div className='flex-1 d-flex justify-content-start align-items-center'>
           <button className='button p-0' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<span className="material-symbols-outlined">left_panel_close</span>:<span className="material-symbols-outlined">left_panel_open</span>}</button>
+          <ModelSelector/>
 
         </div>
         <div className='flex-1'>
