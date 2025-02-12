@@ -6,7 +6,7 @@
 }
 
 /* buttons */
-.button{
+.button, .button-wh{
     margin: 5px 5px;
     font-size: var(--primary-font-size-1366);
     height: 30px;
@@ -20,6 +20,7 @@
     font-weight: 400;
 
 }
+
 .button:hover{
     background-color: transparent;
     padding: 2px 23px;
@@ -28,15 +29,20 @@
     color: black;
     border: solid 2px black;
 }
+.light-button-wh{
+    color: black;
+    border: solid 2px black;
+}
 .light-button:hover{
     background: rgb(0, 0, 0);
     color: white;
 }
-.dark-button{
+.dark-button, .dark-button-wh{
     background-color: black;
     border: solid 1px black;
     color: white;
 }
+
 .dark-button:hover{
     background-color: white;
     color: black;

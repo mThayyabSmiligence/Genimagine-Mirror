@@ -2,8 +2,6 @@ const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
-const crypto = require('crypto');
-
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -27,7 +25,7 @@ exports.getUsersList = async (req, res, next) => {
 
 
 // get user by id api - api/v1/user/:id
-
+ 
 exports.getSingleUser = async (req, res, next)=> {
     const userId = req.params.id;
     // console.log(userId);
@@ -129,4 +127,6 @@ exports.getChatsData=async(req,res,next)=>{
     res.status(chatData.status).json({
         message:chatData.message
     })
+
 }
+
