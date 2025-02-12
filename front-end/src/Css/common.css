@@ -114,6 +114,14 @@
     margin: 0px 10px;  
 }
 
+
+.divider-genimagin{
+    margin: 0px 10px; 
+}
+
+.link-button{
+    display: inline-block;
+
 .instructions {
     font-size: 0.75rem;
     border-radius: 0.5rem;
@@ -132,4 +140,5 @@
 .offscreen {
     position: absolute;
     left: -9999px;
+
 }
