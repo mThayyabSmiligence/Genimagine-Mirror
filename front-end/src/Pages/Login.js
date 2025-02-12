@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
 import { auth, provider } from '../firebase'   //
@@ -124,12 +124,17 @@ export default function Login() {
                         <span className='divider-line flex-1'></span>
                     </div>
                     <div className='google-sign-in mt-3 d-flex justify-content-between'> 
-                        <button className='google-sign-in-button d-flex align-items-center justify-content-center gap-2 pb-1 px-3 br-100 w-100 button button-white' onClick={handleGoogleSignIn}>
+                        <button className='google-sign-in-button d-flex align-items-center justify-content-center gap-2 pb-1 px-3 br-100 w-100 button button-white mb-4' onClick={handleGoogleSignIn}>
                             <img className='google-sign-in-logo' src={google} alt='google'/>
                             <p className='m-0 flex-1'>signin with google</p>
                         </button>
                     </div>
-                    
+                    <div className='divider d-flex align-items-center  '>
+                        <span className='divider-line flex-1'></span>
+                        <p className='divider-genimagin'>New to genimagin ?</p>
+                        <span className='divider-line flex-1'></span>
+                    </div>
+                    <Link className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Create account on Genimagin</Link>
                 </form>
                 {/* <button onClick={(e)=>handelLogout(e)} className=" button dark-button">Logout</button> */}
             </div>
