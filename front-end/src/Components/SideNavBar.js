@@ -127,7 +127,7 @@ export default function SideNavBar({showNavBar}){
                                     <div className="accordion-collapse d-flex flex-column align-items-center">
                                         {
                                             Object.entries(chatList).map(([key,value],index)=>(
-                                                <Link to={`/c/${value.chat_id}`} className={`link nav-list-item ${value.chat_id==currentChatId&&"active"}`} key={index}>{value.chat_id}</Link>
+                                                <Link to={`/u/c/${value.chat_id}`} className={`link nav-list-item ${value.chat_id==currentChatId&&"active"}`} key={index}>{value.chat_id}</Link>
                                             ))
                                         }
                                     </div>

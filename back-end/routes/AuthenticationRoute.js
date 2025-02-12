@@ -1,6 +1,6 @@
 const express = require('express')
 
-const { forgotPassword, userRegister, userLogin, emailOtpRequest, verifyEmailOtp, VerifyGoogleSignInToken, userLogout , resetPassword, testSendMail} = require('../controller/AuthenticationController');
+const { forgotPassword, userRegister, userLogin, emailOtpRequest, verifyEmailOtp, VerifyGoogleSignInToken, userLogout , resetPassword, testSendMail, verifyUser} = require('../controller/AuthenticationController');
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.route('/verify-google-token').post((req, res, next) => {
     next();
 }, VerifyGoogleSignInToken);
 router.route('/register').post(userRegister);
+router.route('/verify-user/:verification_token').get(verifyUser)
 router.route('/logout').get(userLogout)
 
 router.route('/forgot-password').post(forgotPassword)
