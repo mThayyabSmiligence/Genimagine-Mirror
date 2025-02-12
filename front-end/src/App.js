@@ -11,6 +11,7 @@ import UserLayout from './Layouts/UserLayout';
 import UserContentPage from './Pages/User/UserContentPage';
 import ChatPage from './Pages/User/ChatPage';
 import NavLayout from './Layouts/NavLayout';
+import RegisterUser from './Pages/RegisterUser';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -34,6 +35,7 @@ function App() {
        
           <Routes>
             <Route path='/login' element={<Login></Login>}></Route> 
+            <Route path='/register' element={<RegisterUser></RegisterUser>}></Route>
 
 
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
