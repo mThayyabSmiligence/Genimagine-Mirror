@@ -75,7 +75,6 @@ export default function SideNavBar({showNavBar}) {
             title:"title 5"
         },
         
-       
     ])
     
     useEffect(()=>{
