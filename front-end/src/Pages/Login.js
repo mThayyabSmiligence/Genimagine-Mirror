@@ -14,8 +14,23 @@ export default function Login() {
     const[password,setPassword]= useState("")
     const [email,setEmail]=useState("")
     const [passwordVisibility,setPasswordVisibility]=useState(false)
+    const [isOtpLogin, setIsOtpLogin] = useState(false);  // State to toggle between password and OTP login
+    // const [otp, setOtp] = useState("");
+    const [otpSent,setOtpSent] = useState(false); // State to toggle between
 
     const handleSubmit=async(e)=>{
+        if(!isOtpLogin){
+            await handlePasswordLogin(e)
+            return
+        }
+        if(!otpSent){
+            await handleOtpLogin(e)
+            return
+        }
+        await handleVerifyOtp(e);
+    }
+
+    const handlePasswordLogin = async(e)=> {
         e.preventDefault()
         try{
             const response =await axios.post("http://localhost:3001/api/v1/auth/login",
@@ -37,19 +52,52 @@ export default function Login() {
             console.error(err)
         }
     }
-    const handelLogout=async(e)=>{
-        e.preventDefault()
+    // const handelLogout=async(e)=>{
+    //     e.preventDefault()
+    //     try{
+    //         const response =await axios.get("http://localhost:3001/api/v1/auth/logout",
+    //             {
+    //                 withCredentials: true,
+    //             }
+    //         )
+    //         console.log(response)
+    //         setLoggedIn(false)
+    //         localStorage.removeItem('user_data');
+    //     }catch(err){
+    //         console.error(err)
+    //     }
+    // }
+
+    const handleOtpLogin = async (e) => {
+        e.preventDefault();
+        try {
+            // Send OTP to user's email
+            const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-request",
+                { email },
+                { withCredentials: true }
+            );
+            console.log(response);
+            alert("OTP sent to your email");
+            setOtpSent(true);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleVerifyOtp = async (e) => {
+        e,preventDefault();
         try{
-            const response =await axios.get("http://localhost:3001/api/v1/auth/logout",
-                {
-                    withCredentials: true,
-                }
-            )
-            console.log(response)
-            setLoggedIn(false)
-            localStorage.removeItem('user_data');
-        }catch(err){
-            console.error(err)
+            const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-verify",
+                { email, otp },
+                { withCredentials: true }
+            );
+            console.log(response);
+            alert("Logged in successfully");
+            setLoggedIn(true);
+            localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
+            navigate("/image-generation");
+        }catch(error){
+            console.error("Error verifying OTP", error);
         }
     }
 
@@ -85,13 +133,30 @@ export default function Login() {
                 <img className='login-logo' src={logo} alt='genimagin'/>
             
             <div className='login-page br-10'>
+            <div className='toggle-auth-method text-end'>
+                    <p 
+                        className='toggle-password' 
+                        onClick={() => setIsOtpLogin(!isOtpLogin)}
+                        style={{cursor: "pointer"}}
+                    >
+                        {isOtpLogin ? "Use Password Instead" : "Use OTP Instead"}
+                    </p>
+                </div>
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
                         <label htmlFor="exampleInputEmail1" className="form-label ">Email</label>
                         <div className='email-input-container'>
                             <input type="email" placeholder='email' className="form-control email-input" id="exampleInputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} />
                         </div>
-                    </div>
+                    </div> 
+                    {isOtpLogin?
+                        <div className="d-flex flex-column justify-content-start email-container">
+                            <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
+                            <div className='email-input-container'>
+                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                            </div>
+                        </div> 
+                    :
                     <div className='password-container'>
                         <label htmlFor="exampleInputPassword1" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
@@ -114,10 +179,14 @@ export default function Login() {
                             </div>
                         </div>
                     </div>
+
+                    }
+
+
                     <div className='forgot-password-container text-end'>
-                        <button className='forgot-password-button mb-4 '>Forgot Password?</button>
+                        <button className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</button>
                     </div>
-                    <button type="submit" className=" button dark-button w-100 br-100 mb-3">Login</button>
+                    <button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
                     <div className='divider d-flex align-items-center  '>
                         <span className='divider-line flex-1'></span>
                         <p className='divider-or'>OR</p>
@@ -141,3 +210,26 @@ export default function Login() {
         </div>
     </>
 }
+
+
+// <div className='password-container'>
+                        //     <label className="form-label">{isOtpLogin ? "Enter OTP" : "Password"}</label>
+                        //         <div className='password-input-container d-flex align-items-center justify-content-center'>
+                        //             <input 
+                        //                 type={isOtpLogin ? "text" : passwordVisibility ? "text" : "password"} 
+                        //                 placeholder={isOtpLogin ? "Enter OTP" : "Enter Password"} 
+                        //                 className="form-control password-input" 
+                        //                 value={isOtpLogin ? otp : password} 
+                        //                 onChange={(e) => isOtpLogin ? setOtp(e.target.value) : setPassword(e.target.value)} 
+                                        
+                        //                 />
+                        //             {!isOtpLogin && (
+                        //                 <div className='password-visibility-toggle' onClick={() => setPasswordVisibility(!passwordVisibility)}>
+                        //                     <span className="visibility-icon material-symbols-outlined">
+                        //                         visibility
+                        //                     </span>
+                        //                     {passwordVisibility && <span className='visibility-icon-cross'></span>}
+                        //                 </div>
+                        //             )}
+                        //         </div>
+                        // </div>
