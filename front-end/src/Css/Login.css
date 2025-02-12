@@ -3,10 +3,12 @@
 */
 /* overall page */
 
-
 .login-page{
-    margin-top: 40px;
+    border: solid 1px rgb(0, 0, 0, 0.3);
+    box-shadow: 1px 1px 10px rgba(54, 54, 54, 0.3);
+    padding: 10px 5px 15px 5px;
 }
+
 .login-page-container{
     width: 100%;
     position: relative;
@@ -15,8 +17,10 @@
 }
 /* left side section */
 .login-logo {
-    position: absolute;
-    padding: 10px;
+    margin: 10px 0 10px 0;
+    width: 200px;
+    /* height: 40px;
+    transition: width 0.5s ease; */
 }
 .logo-text{
     color: white;
@@ -47,7 +51,7 @@
 
 
 .login-form{
-    margin-top: 300px;
+
     width: 400px;
 }
 .login-form-top-text{
@@ -146,6 +150,17 @@ input.password-input:focus,input.email-input:focus{
 .forgot-password-button:hover{
     text-decoration: underline;
 }
+
+.google-sign-in-button{
+    border: solid 1px  rgb(0,0, 0, 0.3);
+    /* box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); */
+}
+
+.google-sign-in-logo{
+    width: 20px;
+    height: 20px;
+}
+
 @media (max-width: 830px) {
     .login-page-container{
         background:var(--primary-theme-background-color);
@@ -200,9 +215,9 @@ input.password-input:focus,input.email-input:focus{
 
 /* 1080p(1920*1080) screen*/
 @media (min-width: 1367px) and (max-width: 1920px) {
-    .login-logo {
-        padding: 20px; /* Increased padding */
-    }
+    /* .login-logo {
+        padding: 20px; 
+    } */
 
     .login-side-section {
         width: 50%; /* Increased width for a balanced layout */
@@ -222,10 +237,9 @@ input.password-input:focus,input.email-input:focus{
         padding-bottom: 40px; /* Added bottom padding */
     }
 
-    .login-form {
-        margin-top: 60px; /* Adjusted spacing */
-        width: 500px; /* Increased form width */
-    }
+    /* .login-form {
+
+    } */
 
     .login-form-top-text {
         width: 500px; /* Adjusted width to match form */

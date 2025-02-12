@@ -16,6 +16,7 @@ function ModelSelector() {
                                     <div className="accordion-collapse d-flex flex-column align-items-center">
                                       <div className="accordion-body">
                                         <div className="">
+                                        <div className="">
                                           <h3>Model 1</h3>
                                         </div>
                                         <div className="">
@@ -23,6 +24,7 @@ function ModelSelector() {
                                         </div>
                                         <div className="">
                                           <h3>Model 3</h3>
+                                        </div>
                                         </div>
                                       </div>
                                     </div>
