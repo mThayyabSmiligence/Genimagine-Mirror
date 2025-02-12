@@ -14,8 +14,6 @@ export default function ChatPage() {
 
 
     const {chatId}= useParams()
-
-    console.log("chat id : ",chatId)
     
 
     const {loggedIn} = useContext(AuthContext)
@@ -39,8 +37,10 @@ export default function ChatPage() {
         window.scrollTo(0, document.body.scrollHeight);
     }, [loading]); 
     useEffect(() => {
-        // Scroll to the bottom of the page when the component mounts
-        window.scrollTo(0, document.body.scrollHeight);
+        
+        setTimeout(() => {
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 500);
     }, [chatId]);
 
     useEffect(()=>{
@@ -98,7 +98,7 @@ export default function ChatPage() {
     
             <div className=' d-flex flex-column align-items-center justify-content-end mb-5 mt-3 w-100'>
               {
-                chat.map((item,index)=>(<ChatContainer data={item}></ChatContainer>))
+                chat.map((item,index)=>(<ChatContainer key={index} data={item}></ChatContainer>))
               }
               {
                 loading&&

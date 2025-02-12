@@ -73,7 +73,7 @@ app.get(`/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=
         return res.status(403).json({
             message:"you are not aurthorised to acces this image"
         })
-    }
+    } 
     // If authorized, send the image file
     const imagePath = path.join(__dirname, 'uploads', 'users', userId, chatId, fileName);
 

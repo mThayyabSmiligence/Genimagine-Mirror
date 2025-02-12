@@ -81,3 +81,17 @@
 .flex-1{
     flex: 1;
 }
+
+.profile-pic-small{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    align-items: center;
+    background-color: red;
+}
+
+.profile-pic-small p{
+    font-size: 22px;
+    height: fit-content;
+    color: white;
+}   

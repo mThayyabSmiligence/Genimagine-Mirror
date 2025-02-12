@@ -123,7 +123,17 @@ exports.userLogin = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "login successfully",
-         
+            user_data:{
+
+                user_id: oldUser[0].user_id,
+                username: oldUser[0].username,
+                email: oldUser[0].email,
+                role: oldUser[0].role,
+                age: oldUser[0].age,
+                credits: oldUser[0].credits,
+                register_type: oldUser[0].register_type,
+                free_generation_count: oldUser[0].free_generation_count
+            }         
             
         });
     } catch(error){
@@ -202,6 +212,7 @@ exports.emailOtpRequest = async(req, res, next) => {
     } catch(err){
         console.error(err)
         res.status(500).json({
+
             messgae: "error verifying user"
         })
         return
