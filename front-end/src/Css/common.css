@@ -97,13 +97,14 @@
     width: 40px;
     border-radius: 50%;
     align-items: center;
-    background-color: red;
+    background-color: rgb(0, 111, 185);
 }
 
 .profile-pic-small p{
     font-size: 22px;
     height: fit-content;
     color: white;
+    margin: 0;
 }   
 
 .divider-line{

@@ -11,7 +11,7 @@ const { sendMail, sendMailHTML } = require('../service/emailService');
 const crypto = require('crypto')
 const admin = require('../config/firebaseConfig');
 const { generateUserVerificationToken, verifyUserWithVerificationToken } = require('../service/AuthenticationService');
-const { deleteUser } = require('../service/UserService');
+const { deleteUser, getUserById } = require('../service/UserService');
 
 // user register api - api/v1/users/register
 
@@ -353,7 +353,7 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 
 
                 const token = generateToken(userRows[0]);
-                const refreshToken = generateRefreshToken(userRows[0]);
+                const refreshToken =await generateRefreshToken(userRows[0]);
 
 
                 res.cookie("token", token, {
@@ -373,7 +373,17 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 return res.status(200).json({
                     success: true,
                     message: "OTP verified successfully. You are now logged in.",
-                    token
+                    user_data:{
+
+                        user_id: userRows[0].user_id,
+                        username: userRows[0].username,
+                        email: userRows[0].email,
+                        role: userRows[0].role,
+                        age: userRows[0].age,
+                        credits: userRows[0].credits,
+                        register_type: userRows[0].register_type,
+                        free_generation_count: userRows[0].free_generation_count
+                    }    
                 });
 
     }catch(err){
@@ -426,7 +436,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 }
                 
                 const token = generateToken(user);
-                const refreshToken = generateRefreshToken(user);
+                const refreshToken =await generateRefreshToken(user);
 
                 res.cookie("token", token, {
                     httpOnly: true,  
@@ -442,10 +452,26 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                     secure: true 
                 });
 
+                    const userData =await getUserById(response.insertId)
+
+                
 
                     res.status(200).json({
                         success: true,
-                        message: "New user created and logged in"
+                        message: "New user created and logged in",
+                        token:token,
+                        refreshToken: refreshToken,
+                        user_data:{
+
+                            user_id: userData[0].user_id,
+                            username: userData[0].username,
+                            email: userData[0].email,
+                            role: userData[0].role,
+                            age: userData[0].age,
+                            credits: userData[0].credits,
+                            register_type: userData[0].register_type,
+                            free_generation_count: userData[0].free_generation_count
+                        }        
                     })
                     return
             }catch (err){
@@ -468,7 +494,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
 
         if(rows.length > 0){
             const token = generateToken(rows[0]);
-            const refreshToken = generateRefreshToken(rows[0])
+            const refreshToken =await generateRefreshToken(rows[0])
 
             res.cookie("token", token, {
                 httpOnly: true,  
@@ -483,10 +509,22 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 sameSite: "none", 
                 secure: true 
             });
-
             console.log('user logged in')
             res.status(200).json({
-                message:"user logged in"
+                message:"user logged in",
+                token:token,
+                refreshToken: refreshToken,
+                user_data:{
+
+                    user_id: rows[0].user_id,
+                    username: rows[0].username,
+                    email: rows[0].email,
+                    role: rows[0].role,
+                    age: rows[0].age,
+                    credits: rows[0].credits,
+                    register_type: rows[0].register_type,
+                    free_generation_count: rows[0].free_generation_count
+                }        
             })
             return 
         }

@@ -52,21 +52,6 @@ export default function Login() {
             console.error(err)
         }
     }
-    // const handelLogout=async(e)=>{
-    //     e.preventDefault()
-    //     try{
-    //         const response =await axios.get("http://localhost:3001/api/v1/auth/logout",
-    //             {
-    //                 withCredentials: true,
-    //             }
-    //         )
-    //         console.log(response)
-    //         setLoggedIn(false)
-    //         localStorage.removeItem('user_data');
-    //     }catch(err){
-    //         console.error(err)
-    //     }
-    // }
 
     const handleOtpLogin = async (e) => {
         e.preventDefault();
@@ -116,11 +101,17 @@ export default function Login() {
                         "Authorization": `Bearer ${idToken}`, 
                         "Content-Type": "application/json",
                     },
+                    withCredentials:true
                 }
             );
-    
+
+
+            setLoggedIn(true)
+            console.log("Response from Google API:", response.data);
             
             console.log("Backend Response:", response.data);
+            localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
+            navigate("/image-generation");
                     
         }catch(error){
             console.error("Error during sign-in");
@@ -153,7 +144,7 @@ export default function Login() {
                         <div className="d-flex flex-column justify-content-start email-container">
                             <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
                             <div className='email-input-container'>
-                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} />
                             </div>
                         </div> 
                     :
