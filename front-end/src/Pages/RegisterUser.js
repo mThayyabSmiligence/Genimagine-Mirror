@@ -19,7 +19,7 @@ export default function RegisterUser() {
 console.log("faInfoCircle:", faInfoCircle);
     const [username, setUserName] = useState('');
     const [email, setEmail] = useState('');
-    const [age, setAge] =useState('');
+    const [dob, setDob] =useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -38,6 +38,7 @@ console.log("faInfoCircle:", faInfoCircle);
     const [emailValidity, setEmailValidity] = useState(false)
     const [passwordValidity, setPasswordValidity] = useState(false)
     const [confirmPasswordValidity, setConfirmPasswordValidity] = useState(false)
+    const [dobValidity, setDobValidity] = useState(true)
 
     const [usernameFocus, setUsernameFocus] = useState(false)
     const [passwordFocus, setPasswordFocus] = useState(false)
@@ -54,6 +55,37 @@ console.log("faInfoCircle:", faInfoCircle);
         setEmailValidity(EMAIL_REGEX.test(email));
     },[email])
 
+    useEffect(() => {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate())
+            .toISOString()
+            .split("T")[0]; // Setting max date as today - 5 years
+
+        const minDate = new Date(1900, 0, 1).toISOString().split("T")[0]; // Set a reasonable minimum date
+
+        document.getElementById("dob").setAttribute("max", maxDate);
+        document.getElementById("dob").setAttribute("min", minDate);
+    }, []);
+
+    useEffect(() => {
+        if (!dob) return; // Prevent running on the initial render when dob is empty
+
+        const today = new Date();
+        const maxDate = new Date(today.setFullYear(today.getFullYear() - 5)) // 5 years ago
+            .toISOString()
+            .split("T")[0];
+
+        const dobDate = new Date(dob);
+
+        if (dobDate > new Date(maxDate)) {
+            setDobValidity(false)
+        }
+        else{
+            setDobValidity(true)
+        }
+    }, [dob]);
+
+
     useEffect(()=>{
         setUsernameValidity(USER_REGEX.test(username));
     },[username])
@@ -65,7 +97,7 @@ console.log("faInfoCircle:", faInfoCircle);
                     "username": username,
                     "password": password,
                     "confirmPassword": confirmPassword,
-                    "age": age,
+                    "dob": dob,
                     "email": email
                 });
             console.log(response);
@@ -168,20 +200,37 @@ console.log("faInfoCircle:", faInfoCircle);
                         </div>
                         {/* age */}
                         <div className="mb-2 d-flex flex-column justify-content-start email-container">
-                            <label htmlFor="exampleInputEmail1" className="form-label ">Age:</label>
+                            <label htmlFor="exampleInputEmail1" className="form-label d-flex">Date of Birth:
+                            {
+                                    dobValidity?
+                                    dob&&
+                                    <span class="material-symbols-outlined">
+                                     check
+                                    </span>
+                                    :
+                                    dob&&
+                                    <span class="material-symbols-outlined">
+                                        close
+                                    </span>
+                                }
+                            </label>
                             <div className='email-input-container'>
                                 <input 
-                                    type="number" 
-                                    placeholder='age' 
+                                    type="date" 
+                                    placeholder='(DD/MM/YYYY)' 
                                     className="form-control 
                                     email-input" 
-                                    id="exampleInputEmail1" 
-                                    value={age} 
-                                    onChange={(e) => { setAge(e.target.value) }} 
+                                    id="dob" 
+                                    value={dob} 
+                                    onChange={(e) => { setDob(e.target.value) }} 
                                     autoComplete='off'
                                     required/>
                             </div>
                         </div>
+                        <p id="pwdnote" className={ !dobValidity ? "instructions" : "offscreen"}>
+                                    
+                            user must be at least5 years old
+                        </p>
                         {/* password */}
                         <div className='password-container'>
                             <label htmlFor="exampleInputPassword1" className="d-flex form-label ">
@@ -275,7 +324,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                 </div>
                             </div>
                         </div>
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
+                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
                         
                     </form>
                 </div>
