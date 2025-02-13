@@ -158,7 +158,7 @@ exports.userLogin = async (req, res, next) => {
           const isPasswordMatch = await bcrypt.compare(password,oldUser[0].password_hash)
         if(!isPasswordMatch){
             res.status(401).json({
-                message:"unAuthorised"
+                message:"incorrect passoword or  username"
             })
             return
         }

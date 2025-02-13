@@ -18,6 +18,12 @@ export default function Login() {
     const [otp, setOtp] = useState("");
     const [otpSent,setOtpSent] = useState(false); // State to toggle between
 
+    const [succcess,setSucccess] = useState(false)
+    const [successMessage, setSuccessMessage] = useState(null)
+
+    const [error,setError]=useState(false)
+    const [errorMessage, setErrorMessage] = useState(null)
+
     const handleSubmit=async(e)=>{
         if(!isOtpLogin){
             await handlePasswordLogin(e)
@@ -32,6 +38,8 @@ export default function Login() {
 
     const handlePasswordLogin = async(e)=> {
         e.preventDefault()
+        setError(false)
+        setSucccess(false) //
         try{
             const response =await axios.post("http://localhost:3001/api/v1/auth/login",
                 {
@@ -50,27 +58,36 @@ export default function Login() {
             
         }catch(err){
             console.error(err)
+            setError(true)
+            setErrorMessage(err.response.data.message)
         }
     }
 
     const handleOtpLogin = async (e) => {
         e.preventDefault();
+        setError(false)
+        setSucccess(false) 
         try {
             // Send OTP to user's email
             const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-request",
                 { email },
                 { withCredentials: true }
             );
-            console.log(response);
-            alert("OTP sent to your email");
+            
             setOtpSent(true);
+            setSucccess(true)
+            setSuccessMessage("OTP sent successfully");
         } catch (err) {
             console.error(err);
+            setError(true)
+            setErrorMessage(err.response.data.message)
         }
     };
 
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
+        setError(false)
+        setSucccess(false) 
         try{
             const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-verify",
                 { email, otp },
@@ -81,12 +98,15 @@ export default function Login() {
             setLoggedIn(true);
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             navigate("/image-generation");
-        }catch(error){
-            console.error("Error verifying OTP", error);
+        }catch(err){
+            setError(true)
+            setErrorMessage(err.response.data.message)
         }
     }
 
     const handleGoogleSignIn = async () => {
+        setError(false)
+        setSucccess(false) 
         try{
             const result = await signInWithPopup(auth, provider);
             const idToken = await result.user.getIdToken(); // Get Firebase Token
@@ -112,9 +132,12 @@ export default function Login() {
             console.log("Backend Response:", response.data);
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             navigate("/image-generation");
+            
                     
-        }catch(error){
+        }catch(err){
             console.error("Error during sign-in");
+            setError(true)
+            setErrorMessage(err.response.data.message)
         } 
     }
 
@@ -124,14 +147,25 @@ export default function Login() {
                 <img className='login-logo' src={logo} alt='genimagin'/>
             
             <div className='login-page br-10'>
-            <div className='toggle-auth-method text-end'>
-                    <p 
-                        className='toggle-password' 
-                        onClick={() => setIsOtpLogin(!isOtpLogin)}
-                        style={{cursor: "pointer"}}
-                    >
-                        {isOtpLogin ? "Use Password Instead" : "Use OTP Instead"}
-                    </p>
+                {
+                    error&&
+                    <div className='alert alert-danger'>{errorMessage}</div>
+                }
+                {
+                    succcess&&
+                    <div className='alert alert-success'>{successMessage}</div>
+                }
+                <div className='d-flex justify-content-between'>
+                    <h3 className='text-start ms-2'>Sign-In</h3>
+                    <div className='toggle-auth-method text-end'>
+                        <p 
+                            className='toggle-password' 
+                            onClick={() => setIsOtpLogin(!isOtpLogin)}
+                            style={{cursor: "pointer"}}
+                        >
+                            {isOtpLogin ? "Use Password Instead" : "Use OTP Instead"}
+                        </p>
+                    </div>
                 </div>
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
