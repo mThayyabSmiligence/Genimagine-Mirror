@@ -15,7 +15,7 @@ export default function Login() {
     const [email,setEmail]=useState("")
     const [passwordVisibility,setPasswordVisibility]=useState(false)
     const [isOtpLogin, setIsOtpLogin] = useState(false);  // State to toggle between password and OTP login
-    // const [otp, setOtp] = useState("");
+    const [otp, setOtp] = useState("");
     const [otpSent,setOtpSent] = useState(false); // State to toggle between
 
     const handleSubmit=async(e)=>{
@@ -85,7 +85,7 @@ export default function Login() {
     };
 
     const handleVerifyOtp = async (e) => {
-        e,preventDefault();
+        e.preventDefault();
         try{
             const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-verify",
                 { email, otp },
@@ -203,7 +203,7 @@ export default function Login() {
                         <p className='divider-genimagin'>New to genimagin ?</p>
                         <span className='divider-line flex-1'></span>
                     </div>
-                    <Link className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Create account on Genimagin</Link>
+                    <Link to="/register" className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Create account on Genimagin</Link>
                 </form>
                 {/* <button onClick={(e)=>handelLogout(e)} className=" button dark-button">Logout</button> */}
             </div>
