@@ -16,8 +16,16 @@ const { deleteUser, getUserById } = require('../service/UserService');
 // user register api - api/v1/users/register
 
 exports.userRegister = async(req, res, next) => {
-    const {username, password, age, email, confirmPassword, role='user'} = req.body
+    const {username, password, dob, email, confirmPassword, role='user'} = req.body
+
+    
+
+    const today = new Date();
+    const dobDate=new Date(dob)
+    const age = today.getFullYear() - dobDate.getFullYear() - ((today.getMonth() < dobDate.getMonth() || (today.getMonth() === dobDate.getMonth() && today.getDate() < dobDate.getDate()))? 1 : 0);
+    console.log(age);
     try{
+        
 
         if(password != confirmPassword){
             res.status(404).json({success: false, message: "Password do not match"})
@@ -25,9 +33,9 @@ exports.userRegister = async(req, res, next) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-        const query = `INSERT INTO users (username, password_hash, age, email, role, credits) 
-                    VALUES (?,?,?,?,?,?)`;
-        const [rows] = await db.execute(query, [username, hashedPassword, age, email, role, 0]) 
+        const query = `INSERT INTO users (username, password_hash, age, email, role, credits,dob) 
+                    VALUES (?,?,?,?,?,?,?)`;
+        const [rows] = await db.execute(query, [username, hashedPassword, age, email, role, 0,dob]) 
 
         console.log(rows);
         const user_id = rows.insertId
@@ -69,7 +77,7 @@ exports.userRegister = async(req, res, next) => {
         res.status(200).json({
             success:  true,
             message: "verification link sent successfully",
-            verification_token:verification_token
+            // verification_token:verification_token
         });
     } catch (err) {
         console.error(err);
@@ -158,7 +166,7 @@ exports.userLogin = async (req, res, next) => {
           const isPasswordMatch = await bcrypt.compare(password,oldUser[0].password_hash)
         if(!isPasswordMatch){
             res.status(401).json({
-                message:"unAuthorised"
+                message:"incorrect passoword or  username"
             })
             return
         }
