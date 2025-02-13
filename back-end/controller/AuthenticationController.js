@@ -38,7 +38,7 @@ exports.userRegister = async(req, res, next) => {
             const rows = await deleteUser(user_id)
 
             return res.status(500).json({
-                success:  flase,
+                success:  false,
                 message: "error registering user"
             });
         }
