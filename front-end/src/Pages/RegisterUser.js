@@ -29,6 +29,9 @@ console.log("faInfoCircle:", faInfoCircle);
 
 
     const [next,setNext] = useState(false);
+
+    const [errorCode, setErrorCode] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null);
     const [error, setError] = useState(null);
 
     const [usernameValidity, setUsernameValidity] = useState(false)
@@ -57,13 +60,22 @@ console.log("faInfoCircle:", faInfoCircle);
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/api/v1/auth/register', {
-                email,
-                password
-            });
+            const response = await axios.post('http://localhost:3001/api/v1/auth/register', 
+                {
+                    "username": username,
+                    "password": password,
+                    "confirmPassword": confirmPassword,
+                    "age": age,
+                    "email": email
+                });
             console.log(response);
+            setNext(true);
+            setError(null)
         } catch (error) {
             setError(error.message);
+            console.log(error)
+            setErrorMessage(error?.response?.data?.message)
+            setErrorCode(error?.response?.status)
         }
     };
   return (
@@ -73,6 +85,14 @@ console.log("faInfoCircle:", faInfoCircle);
                     <img className='login-logo' src={logo} alt='genimagin'/>
                 
                 <div className='login-page br-10'>
+                    {
+                        error &&
+                        <div className='alert alert-danger'>{errorMessage}</div>
+                    }
+                    {
+                        next &&
+                        <div className='alert alert-success'>Link has been sent to your email to Verify the Email.</div>
+                    }
                     <div>
                         <h3 className='text-start ms-2'>Create Account</h3>
                     </div>
@@ -255,7 +275,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                 </div>
                             </div>
                         </div>
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
+                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
                         
                     </form>
                 </div>
