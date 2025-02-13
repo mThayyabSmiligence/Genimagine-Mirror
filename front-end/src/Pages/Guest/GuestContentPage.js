@@ -57,7 +57,7 @@ export default function GuestContentPage() {
         console.log(response.data)
         if(response.data.chat_id){
           setRefreshChatList(!refreshChatList)
-          navigate(`/c/${response.data.chat_id}`)
+          navigate(`/u/c/${response.data.chat_id}`)
         }
  
         setChat((prevItems)=>[...prevItems,
