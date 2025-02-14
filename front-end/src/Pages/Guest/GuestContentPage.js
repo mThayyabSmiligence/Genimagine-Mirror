@@ -11,7 +11,7 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function GuestContentPage() {
 
-     const [trackmodel,setTrackModel] = useState('')
+    const [trackmodel,setTrackModel] = useState('')
     const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
 
     const navigate =useNavigate()
