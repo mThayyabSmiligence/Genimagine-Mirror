@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../../Css/IGSettingPopUp.css'
 
-function IGSettingPopUp({closePopup}) {
+function IGSettingPopUp({closePopup,trackmodel,setTrackModel,selectedAspectRatio, setSelectedAspectRatio}) {
 
-  const [trackmodel,setTrackModel] = useState('1')
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
+
+  const [tempTrackModel, setTempTrackModel] = useState(trackmodel);
+  const [tempSelectedAspectRatio, setTempSelectedAspectRatio] = useState(selectedAspectRatio);
+  
+
 
   const modelsList = [
     {
@@ -74,6 +77,14 @@ function IGSettingPopUp({closePopup}) {
     }
   ]
 
+
+  
+  const handlesubmit = () => {  
+    setTrackModel(tempTrackModel);
+    setSelectedAspectRatio(tempSelectedAspectRatio);
+    closePopup();
+  }
+
   return (
     <div className="settings-pop-up pop-up-container white-bg">
         <div className="pop-up-title d-flex justify-content-between align-items-center">
@@ -87,7 +98,7 @@ function IGSettingPopUp({closePopup}) {
                 {  
                   modelsList.map((model) => (
 
-                      <div key={model.model_id} onClick={() => setTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == trackmodel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3`}>
+                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3`}>
                         <div>   
                           <h5>{model.model_name}</h5>
                           <p className="m-0">{model.model_resolution}</p>
@@ -104,7 +115,7 @@ function IGSettingPopUp({closePopup}) {
                 <div className="d-flex justify-content-start flex-wrap mt-2">
                   {
                     aspectRatioList.map((shape) => (
-                      <div key={shape.id} onClick={() => setSelectedAspectRatio(shape.id)}className={`aspect-ratio-box ${selectedAspectRatio === shape.id && "active"} mb-3`}
+                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape.id)}className={`aspect-ratio-box ${tempSelectedAspectRatio === shape.id && "active"} mb-3`}
                       style={{ width: `${shape.width}px`, height: `${shape.height}px` }}
                     >
                       {shape.aspectRatio}
@@ -112,9 +123,13 @@ function IGSettingPopUp({closePopup}) {
                     ))
                   }
                 </div>
+
                 <h5 className="pop-up-headings">Style</h5>
                 <div className="d-flex">
-                  
+                </div>
+
+                <div className="pop-up-done d-flex justify-content-end me-3">
+                  <button onClick={handlesubmit} className="pop-up-done-button dark-button br-10 px-3 py-1">DONE</button>
                 </div>
             </div>
         </div>
