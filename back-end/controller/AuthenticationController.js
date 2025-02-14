@@ -698,7 +698,7 @@ exports.resetPassword=async(req,res)=>{
         return
     }
 
-    try{
+    try{ 
         const query = "update users set password_hash = ? where email = ?"
 
         const [rows]= await db.execute(query,[password_hash,email])

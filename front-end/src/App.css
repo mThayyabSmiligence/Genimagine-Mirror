@@ -11,7 +11,7 @@
   position: fixed;
   background:white;
   padding-left: 0px;
-  z-index: 2;
+  z-index: 2;   
   transition: margin-left 0.3s ease-in-out;
 }
 

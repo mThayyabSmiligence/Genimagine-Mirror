@@ -123,7 +123,7 @@ export default function Login() {
                     },
                     withCredentials:true
                 }
-            );
+            ); 
 
 
             setLoggedIn(true)
@@ -137,7 +137,7 @@ export default function Login() {
         }catch(err){
             console.error("Error during sign-in");
             setError(true)
-            setErrorMessage(err.response.data.message)
+            setErrorMessage(err?.response?.data?.message)
         } 
     }
 
@@ -212,6 +212,7 @@ export default function Login() {
                         <button className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</button>
                     </div>
                     <button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
+                </form>
                     <div className='divider d-flex align-items-center  '>
                         <span className='divider-line flex-1'></span>
                         <p className='divider-or'>OR</p>
@@ -229,7 +230,6 @@ export default function Login() {
                         <span className='divider-line flex-1'></span>
                     </div>
                     <Link to="/register" className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Create account on Genimagin</Link>
-                </form>
                 {/* <button onClick={(e)=>handelLogout(e)} className=" button dark-button">Logout</button> */}
             </div>
         </div>
