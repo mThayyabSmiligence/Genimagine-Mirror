@@ -1,5 +1,6 @@
 
 const express= require('express');
+const CryptoJS = require('crypto-js')
 const db = require('../config/connectDatabase');
 const bcrypt = require('bcrypt');
 const cookie = require("cookie");
@@ -277,13 +278,21 @@ exports.emailOtpRequest = async(req, res, next) => {
         console.log(rows)
         userdata=rows
 
-        if (rows.length === 0) {
+        
+        if (rows.length == 0) {
             return res.status(400).json({
                 success: false,
                 message: "Email is not registered. Please sign up first."
             });
+            
+        }
+        if(rows[0].is_verified==0){
+            res.status(401).json({
+                message:"user not verified"
+            }) 
             return
         }
+
     } catch(err){
         console.error(err)
         res.status(500).json({
@@ -563,6 +572,25 @@ exports.forgotPassword=async(req,res)=>{
     let user=null;
 
     try{
+        const query = "Select * from users where email=?"
+
+        const [rows]= await db.execute(query,[email])
+        user=rows
+        if(user.length==0){
+            return res.status(404).json({
+                message:"user not found"
+            })
+        }
+
+    }catch(err){
+        console.error("error fetching users",err)
+        res.status(200).json({
+         message:"this reset password route"
+        })
+
+    }
+
+    try{
 
 
         const query = 'select * from password_reset_tokens where email =? and expires_at > NOW()'
@@ -571,7 +599,7 @@ exports.forgotPassword=async(req,res)=>{
 
         if(rows.length >0){
             return res.status(402).json({
-                message:"link to reset passowrd has been already sent to your email , you have to wait 15 mins after last rest password request"
+                message:"link to reset passowrd has been already sent to your email , you have to wait 15 mins after last reset password request"
             }) 
             
         }
@@ -584,19 +612,7 @@ exports.forgotPassword=async(req,res)=>{
         })
         return
     }
-    try{
-        const query = "Select * from users where email=?"
-
-        const [rows]= await db.execute(query,[email])
-        user=rows
-
-    }catch(err){
-        console.error("error fetching users",err)
-        res.status(200).json({
-         message:"this reset password route"
-        })
-
-    }
+    
 
     if(user[0].register_type!="password"){
         return res.status(409).json({
@@ -624,10 +640,13 @@ exports.forgotPassword=async(req,res)=>{
             message:"error in storing rest token into table"
         })
         return
-    }   
+    }  
+
+    const encrypted = CryptoJS.AES.encrypt(email, "031ebf4c74af22bb6ec5eeaf8efa4d99acd3b9d4d7463fd07a8bc2c91f7bab7e").toString();
+    const encryptedEmail= encodeURIComponent(encrypted); 
 
 
-    const resetLink=`http://localhost:3000/rest-password/${resetToken}`
+    const resetLink=`http://localhost:3000/reset-password/${encryptedEmail}/${resetToken}`
 
     const subject = "rest password link for your account on Genimagine"
 

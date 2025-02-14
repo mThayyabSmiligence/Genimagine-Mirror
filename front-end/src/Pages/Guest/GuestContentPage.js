@@ -20,7 +20,7 @@ export default function GuestContentPage() {
       
     ])
     const [image, setImage] = useState(null);
-    const [error, setError] = useState(null); // Handle errors gracefully
+    
     const [loading, setLoading] = useState(false);
     const [dummyData,setDummyData]=useState(
       {
@@ -30,6 +30,10 @@ export default function GuestContentPage() {
     )
 
 
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null)
+
+
     const axiosGenerateImage=useAxiosGenerateImage()
 // Track loading state
       useEffect(() => {
@@ -37,11 +41,13 @@ export default function GuestContentPage() {
         window.scrollTo(0, document.body.scrollHeight);
       }, [loading]); 
 
+
     const generateImage = async () => {
       setDummyData({
         prompt:promptText
       })
-      
+
+      setError(false)
       setLoading(true);
       setPromptText("") // Start loading
       try {
@@ -65,8 +71,10 @@ export default function GuestContentPage() {
         ])
  
       } catch (error) {
-        console.error('Error generating image:', error);
-        setError('Failed to generate image. Please try again later.');
+        console.error('Error generating image:', error.response);
+       
+        setError(true);
+        setErrorMessage(error?.response?.data?.message);
       } finally {
         setLoading(false);
         setPromptText("")
@@ -84,8 +92,13 @@ export default function GuestContentPage() {
             loading&&
             <ChatContainer data={dummyData}></ChatContainer>
           }
+          {
+            error&&
+            <div className='alert alert-danger w-100'>{errorMessage}</div>
+          }
+          
         </div>
-
+        
 
         <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}></PromptInPutContainer>
         {

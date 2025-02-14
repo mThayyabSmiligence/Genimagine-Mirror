@@ -209,7 +209,7 @@ export default function Login() {
 
 
                     <div className='forgot-password-container text-end'>
-                        <button className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</button>
+                        <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</Link>
                     </div>
                     <button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
                     <div className='divider d-flex align-items-center  '>

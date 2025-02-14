@@ -13,6 +13,8 @@ import ChatPage from './Pages/User/ChatPage';
 import NavLayout from './Layouts/NavLayout';
 import RegisterUser from './Pages/RegisterUser';
 import VerifyUser from './Pages/VerifyUser';
+import ForgotPassword from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -38,16 +40,19 @@ function App() {
             <Route path='/login' element={<Login></Login>}></Route> 
             <Route path='/register' element={<RegisterUser></RegisterUser>}></Route>
             <Route path='/user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
+            <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
+            <Route path='/reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
+            
 
 
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
-                
-                <Route path='test' element={<Imagetest showNavBar={showNavBar}></Imagetest>}></Route>
+                <Route path="explore"></Route>
+                <Route path='credit-shop'></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
-                  <Route path=""></Route>
+                  <Route path='library'></Route>
                 </Route>
              
             </Route>

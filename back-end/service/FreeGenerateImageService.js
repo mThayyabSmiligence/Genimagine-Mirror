@@ -12,7 +12,12 @@ exports.freeGenerateImage = async(inputs) => {
     try{
         const response = await axios.post(
             `https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`,
-            inputs,
+            {
+              prompt: inputs.prompt,
+              negative_prompt: inputs.negative_prompt,
+              width: inputs.width,
+              height: inputs.height,
+            },
             {
               headers: {
                 'Authorization': `Bearer ${cloud_flare_api_key}`,
@@ -28,7 +33,8 @@ exports.freeGenerateImage = async(inputs) => {
        
         return  Buffer.from(response.data)
     }catch(error){
-        console.log("error generating images:" +error)
+        console.log("error generating images:" ,error)
+        console.log(typeof(inputs.width),typeof(inputs.height));
         return false;
     }
 

@@ -13,11 +13,8 @@ const { uploadImageToServer } = require('../service/UploadToServerService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
-    const {prompt,model,chat_id} =req.body;
+    const {prompt,model,chat_id,ratio} =req.body;
     console.log("prompt :"+prompt+"model :"+model)
-
-    
-     
 
     //getting jwt token from cookies
         let cookies =null
@@ -54,7 +51,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
         const inputs={
-            prompt:prompt
+            prompt:prompt,
+            negative_prompt:"skull",
+            width: 1088,
+            height: 1088,
         }
 
         const image =await freeGenerateImage(inputs)
