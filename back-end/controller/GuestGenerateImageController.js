@@ -7,7 +7,9 @@ exports.guestGenerateImageController = async(req, res, next) => {
     const {prompt}=req.body
     console.log("generate image is running") 
     const input={
-         prompt:prompt||"cat"
+         prompt:prompt||"cat",
+         width:480,
+         height:480
     }
     const canGenerate=await GuestUserHandler(req.ip);
             console.log(canGenerate)

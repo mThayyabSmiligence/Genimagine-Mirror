@@ -75,6 +75,10 @@ app.post('/post-token', (req, res) => {
 app.listen(process.env.PORT,() => {
 
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
-    // const secretKey = crypto.randomBytes(64).toString('hex');
-    // console.log('Generated Secret Key:', secretKey); 
+
+
+// Generate a 32-byte (256-bit) secret key
+const secretKey = crypto.randomBytes(32).toString("hex");
+
+console.log("Secret Key:", secretKey);
 });
