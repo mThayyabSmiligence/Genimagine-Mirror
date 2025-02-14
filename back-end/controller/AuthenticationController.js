@@ -47,7 +47,7 @@ exports.userRegister = async(req, res, next) => {
             const rows = await deleteUser(user_id)
 
             return res.status(500).json({
-                success:  flase,
+                success:  false,
                 message: "error registering user"
             });
         }
@@ -717,7 +717,7 @@ exports.resetPassword=async(req,res)=>{
         return
     }
 
-    try{
+    try{ 
         const query = "update users set password_hash = ? where email = ?"
 
         const [rows]= await db.execute(query,[password_hash,email])
