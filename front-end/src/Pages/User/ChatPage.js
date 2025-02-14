@@ -26,7 +26,7 @@ export default function ChatPage() {
     const [promptText,setPromptText]=useState("")
     const [chat,setChat]= useState([])
     const [model,setModel]= useState(1)
-    const [error, setError] = useState(null); // Handle errors gracefully
+   
     const [loading, setLoading] = useState(false);
     const [dummyData,setDummyData]=useState(
       {
@@ -34,6 +34,11 @@ export default function ChatPage() {
         prompt:"nothing just testing"
       }
     )
+
+    const [error, setError] = useState(false); // Handle errors gracefully
+    const [errorMessage, setErrorMessage] = useState(null); // Handle errors
+
+
     useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
         window.scrollTo(0, document.body.scrollHeight);
@@ -48,6 +53,12 @@ export default function ChatPage() {
     useEffect(()=>{
         getChatData()
     },[chatId])
+
+    useEffect(()=>{
+      setTimeout(() => {
+        setError(false)
+      },5000)
+    },[error])
 
 
     const getChatData=async()=>{
@@ -89,7 +100,8 @@ export default function ChatPage() {
    
         } catch (error) {
           console.error('Error generating image:', error);
-          setError('Failed to generate image. Please try again later.');
+          setError(true);
+          setErrorMessage(error?.response?.data?.message);
         } finally {
           setLoading(false);
           setPromptText("")
@@ -98,7 +110,7 @@ export default function ChatPage() {
   return (
      <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
     
-            <div className=' d-flex flex-column align-items-center justify-content-end mb-5 mt-3 w-100'>
+            <div className=' d-flex flex-column align-items-center justify-content-end mb-9 mt-3 w-100'>
               {
                 chat.map((item,index)=>(<ChatContainer key={index} data={item}></ChatContainer>))
               }
@@ -106,6 +118,10 @@ export default function ChatPage() {
                 loading&&
                 <ChatContainer data={dummyData}></ChatContainer>
               }
+              {
+            error&&
+            <div className='alert alert-danger w-100'>{errorMessage}</div>
+          }
             </div>
     
     
