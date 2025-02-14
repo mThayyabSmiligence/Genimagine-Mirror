@@ -6,15 +6,18 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
-    const {prompt,model,chat_id,ratio} =req.body;
+    const {prompt,model,chat_id,aspect_ratio} =req.body;
     console.log("prompt :"+prompt+"model :"+model)
+
+    const w_h = handelAspectRatio(model,aspect_ratio)
+    console.log("w_h",w_h)
 
     //getting jwt token from cookies
         let cookies =null
@@ -53,8 +56,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const inputs={
             prompt:prompt,
             negative_prompt:"skull",
-            width: 1088,
-            height: 1088,
+            width:w_h.width,
+            height:w_h.height,
         }
 
         const image =await freeGenerateImage(inputs)
@@ -79,7 +82,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             prompt:prompt,
             model:model!=null?model:1,
             chat_id:chatId,
-            image_url:"storage is not defined"
+            image_url:"storage is not defined",
+            aspect_ratio:aspect_ratio,
+            resolution:`${w_h.width}*${w_h.height}`
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)
@@ -98,13 +103,18 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId,
             image_url: imageUpload.imageUrl,
             model:1,
-            prompt:prompt
+            prompt:prompt,
+            aspect_ratio:aspect_ratio,
+            resolution:`${w_h.width}*${w_h.height}`
           });
 
         return
     }else{
-        const inputs ={
-            prompt:prompt
+        const inputs={
+            prompt:prompt,
+            negative_prompt:"skull",
+            width:w_h.width,
+            height:w_h.height,
         }
         const model_data=handelModel(model)
         console.log(model_data)
@@ -142,7 +152,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             prompt:prompt,
             model:model!=null?model:1,
             chat_id:chatId,
-            image_url:"storage is not defined"
+            image_url:"storage is not defined",
+            aspect_ratio:aspect_ratio,
+            resolution:`${w_h.width}*${w_h.height}`
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)
@@ -159,7 +171,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId,
             image_url: imageUpload.imageUrl,
             model:1,
-            prompt:prompt
+            prompt:prompt,
+            aspect_ratio:aspect_ratio,
+            resolution:`${w_h.width}*${w_h.height}`
           });
         return
 

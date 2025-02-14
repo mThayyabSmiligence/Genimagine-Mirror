@@ -108,7 +108,7 @@ export default function ChatPage() {
   return (
      <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
     
-            <div className=' d-flex flex-column align-items-center justify-content-end mb-5 mt-3 w-100'>
+            <div className=' d-flex flex-column align-items-center justify-content-end mb-9 mt-3 w-100'>
               {
                 chat.map((item,index)=>(<ChatContainer key={index} data={item}></ChatContainer>))
               }

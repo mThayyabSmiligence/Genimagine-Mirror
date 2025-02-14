@@ -4,7 +4,7 @@ import '../../Css/IGSettingPopUp.css'
 function IGSettingPopUp({closePopup}) {
 
   const [trackmodel,setTrackModel] = useState('1')
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState(null);
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
 
   const modelsList = [
     {

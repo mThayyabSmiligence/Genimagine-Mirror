@@ -27,7 +27,7 @@
 }
 
 .pop-up-model-content.active{
-  outline: solid 2px black;
+  outline: solid 2px rgba(0, 0, 0, 0.5);
 }
 
 .aspect-ratio-box {
@@ -44,6 +44,5 @@
 }
 
 .aspect-ratio-box.active{
-  border-color: #007bff;
-  background-color: #cce5ff;
+  border: solid 2px rgba(0, 0, 0, 0.5);
 }
