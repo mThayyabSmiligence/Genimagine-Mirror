@@ -12,6 +12,8 @@ import ChatContainer from '../../Components/CommonComponents/ChatContainer'
 
 export default function ChatPage() {
 
+    const [trackmodel,setTrackModel] = useState('')
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
 
     const {chatId}= useParams()
     
@@ -107,7 +109,7 @@ export default function ChatPage() {
             </div>
     
     
-            <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}></PromptInPutContainer>
+            <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio}></PromptInPutContainer>
             {
               1&&
               <SuggestionPrompts></SuggestionPrompts>

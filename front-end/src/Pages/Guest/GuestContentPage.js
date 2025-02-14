@@ -11,6 +11,9 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function GuestContentPage() {
 
+     const [trackmodel,setTrackModel] = useState('')
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
+
     const navigate =useNavigate()
     const {loggedIn} = useContext(AuthContext)
     const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext) 
@@ -87,7 +90,7 @@ export default function GuestContentPage() {
         </div>
 
 
-        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}></PromptInPutContainer>
+        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio}></PromptInPutContainer>
         {
           1&&
           <SuggestionPrompts></SuggestionPrompts>
