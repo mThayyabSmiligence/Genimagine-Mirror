@@ -7,10 +7,9 @@ export default function UserLayout() {
     const {loggedIn}= useContext(AuthContext)
   return (
     <div>
-        {   loggedIn?
+        { 
             <Outlet></Outlet>
-            :
-            <Navigate to="/login"></Navigate>
+            
         }
     </div>
   )

@@ -57,7 +57,9 @@ function App() {
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library'></Route>
                 </Route>
+
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
+
             </Route>
             
           </Routes>

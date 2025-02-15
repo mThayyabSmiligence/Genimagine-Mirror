@@ -11,12 +11,13 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function GuestContentPage() {
 
-    const [trackmodel,setTrackModel] = useState('')
-    const [selectedAspectRatio, setSelectedAspectRatio] = useState('');
+
+     const [trackmodel,setTrackModel] = useState(1)
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
 
     const navigate =useNavigate()
     const {loggedIn} = useContext(AuthContext)
-    const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext) 
+    const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
     const [chat,setChat]= useState([
@@ -38,6 +39,35 @@ export default function GuestContentPage() {
 
 
     const axiosGenerateImage=useAxiosGenerateImage()
+
+    const aspectRatioList = [
+      {
+        id: 1,
+        aspectRatio: "16:9",
+        width: 80, 
+        height: 45
+      },
+      // {
+      //   id: 2,
+      //   aspectRatio: "3:2"
+      // },
+      {
+        id: 2,
+        aspectRatio: "1:1",
+        width: 50,
+        height: 50
+      },
+      // {
+      //   id: 4,
+      //   aspectRatio: "4:5"
+      // },
+      {
+        id: 3,
+        aspectRatio: "9:16",
+        width: 45,
+        height: 80 
+      },
+    ]
 // Track loading state
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
@@ -45,6 +75,11 @@ export default function GuestContentPage() {
       }, [loading]); 
 
 
+    const getAspectRatio=(id)=>{
+      const aspectRatioObject = Object.values(aspectRatioList).find((values)=>values.id=id)
+      return aspectRatioObject.aspectRatio;
+    }
+    
     const generateImage = async () => {
       setDummyData({
         prompt:promptText
@@ -53,19 +88,24 @@ export default function GuestContentPage() {
       setError(false)
       setLoading(true);
       setPromptText("") // Start loading
+
+  
       try {
         
         const response = await axiosGenerateImage.post(
           '/',
           { 
             prompt: promptText ,
-            // chat_id:'yAapotOMwl43XVu1pj-Jz'
-            // model:3      
+            model:trackmodel,
+            aspect_ratio: getAspectRatio(selectedAspectRatio)
+          
           }, // Ensure the response is handled as binary
         );
         console.log(response.data)
         if(response.data.chat_id){
           setRefreshChatList(!refreshChatList)
+          setRefreshCreditBalance(!refreshCreditBalance)
+          localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
           navigate(`/u/c/${response.data.chat_id}`)
         }
  

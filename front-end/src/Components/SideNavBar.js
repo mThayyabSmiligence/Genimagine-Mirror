@@ -13,7 +13,7 @@ export default function SideNavBar({showNavBar}){
     const location=useLocation()
 
     const path = location.pathname;
-    const currentChatId= path.split('/')[2]
+    const currentChatId= path.split('/')[3]
 
 
 

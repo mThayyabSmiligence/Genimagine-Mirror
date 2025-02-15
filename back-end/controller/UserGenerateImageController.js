@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -14,6 +14,7 @@ const { uploadImageToServer } = require('../service/UploadToServerService');
 
 exports.userGenerateImageController=async(req,res,next)=>{
     const {prompt,model,chat_id,aspect_ratio} =req.body;
+    console.log(aspect_ratio)
     console.log("prompt :"+prompt+"model :"+model)
 
     const w_h = handelAspectRatio(model,aspect_ratio)
@@ -41,7 +42,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log(username) 
     console.log(role)
 
-    
+     
         
     if(model==1 || model==null){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
@@ -165,6 +166,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
+        const credits=await getCreditByUserId(id)
+        
         res.status(200).json({
             image_id: image_id,
             user_id: id,
@@ -173,7 +176,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
             model:1,
             prompt:prompt,
             aspect_ratio:aspect_ratio,
-            resolution:`${w_h.width}*${w_h.height}`
+            resolution:`${w_h.width}*${w_h.height}`,
+            credits:credits[0].credits,
           });
         return
 

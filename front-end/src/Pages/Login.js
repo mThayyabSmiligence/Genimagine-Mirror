@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
@@ -7,6 +7,7 @@ import { signInWithPopup } from 'firebase/auth'
 import useAuth from '../Hooks/useAuth'
 import logo from '../images/genimagin_logo.png'
 import google from '../images/pngwing.com.png'
+import RefreshDataContext from '../Context/RefreshDataProvider'
 
 export default function Login() {
     const {setLoggedIn}= useAuth()
@@ -23,6 +24,7 @@ export default function Login() {
 
     const [error,setError]=useState(false)
     const [errorMessage, setErrorMessage] = useState(null)
+    const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
 
     const handleSubmit=async(e)=>{
         if(!isOtpLogin){
@@ -54,6 +56,7 @@ export default function Login() {
             console.log(response)
             setLoggedIn(true)
             localStorage.setItem("user_data",JSON.stringify(response.data.user_data))
+            localStorage.setItem("credit_balance",JSON.stringify(response.data.user_data.credits))
             navigate("/image-generation")
             
         }catch(err){
@@ -97,6 +100,8 @@ export default function Login() {
             alert("Logged in successfully");
             setLoggedIn(true);
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
+            localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
+            setRefreshCreditBalance(!refreshCreditBalance)
             navigate("/image-generation");
         }catch(err){
             setError(true)
@@ -129,8 +134,10 @@ export default function Login() {
             setLoggedIn(true)
             console.log("Response from Google API:", response.data);
             
-            console.log("Backend Response:", response.data);
+           
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
+            localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
+            
             navigate("/image-generation");
             
                     
