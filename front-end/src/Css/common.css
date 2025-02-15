@@ -116,6 +116,10 @@
     height: 1px;
     background-color: grey ;
 }
+.divider-line-2{
+    height: 2px;
+    background-color: rgb(58, 58, 58) ;
+}
 .divider-or{
     margin: 0px 10px;  
 }

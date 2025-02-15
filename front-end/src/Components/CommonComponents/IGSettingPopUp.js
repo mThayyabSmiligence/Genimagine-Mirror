@@ -77,7 +77,6 @@ function IGSettingPopUp({closePopup,trackmodel,setTrackModel,selectedAspectRatio
     }
   ]
 
-
   
   const handlesubmit = () => {  
     setTrackModel(tempTrackModel);

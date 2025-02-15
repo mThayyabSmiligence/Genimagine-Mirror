@@ -15,6 +15,8 @@ import RegisterUser from './Pages/RegisterUser';
 import VerifyUser from './Pages/VerifyUser';
 import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
+import CreditPurchasePage from './Pages/Purchase/CreditPurchasePage';
+import ProfilePage from './Pages/User/ProfilePage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -51,11 +53,13 @@ function App() {
                 <Route path="explore"></Route>
                 <Route path='credit-shop'></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
+                  <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library'></Route>
                 </Route>
-                
-             
+
+                <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
+
             </Route>
             
           </Routes>
