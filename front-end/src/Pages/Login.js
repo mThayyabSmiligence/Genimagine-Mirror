@@ -169,9 +169,9 @@ export default function Login() {
                 </div>
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
-                        <label htmlFor="exampleInputEmail1" className="form-label ">Email</label>
+                        <label htmlFor="InputEmail1" className="form-label ">Email</label>
                         <div className='email-input-container'>
-                            <input type="email" placeholder='email' className="form-control email-input" id="exampleInputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                            <input type="email" placeholder='email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} />
                         </div>
                     </div> 
                     {isOtpLogin?
