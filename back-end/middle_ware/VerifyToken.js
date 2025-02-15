@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
 const { generateTokenWithRefreshToken } = require('../service/JWTtokenGeneration');
 
-
+ 
 // const user = {id}
 const verifyToken =async (req, res, next)=> {
 

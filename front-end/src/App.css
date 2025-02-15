@@ -21,10 +21,7 @@
 .button span{
   color: rgb(80, 80, 80);
 }
-.content-section{
-
-  
-  padding: 10px;
+.content-section{ 
   height: 100%;
   width: 100%;
   min-height: 100vh;
