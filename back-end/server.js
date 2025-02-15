@@ -12,6 +12,7 @@ const usersRouter = require('./routes/Users')
 const generateImageRouter = require('./routes/GenerateImage') 
 const AuthenticationRoutes = require('./routes/AuthenticationRoute')
 const jwtRouter= require("./routes/JWTRoute");
+const NoAuthRouter= require("./routes/NoAuthRoute")
 
 const crypto = require('crypto'); 
 const verifyToken= require('./middle_ware/VerifyToken');
@@ -42,6 +43,7 @@ app.use('/api/v1/user',verifyToken,usersRouter);
 app.use('/api/v1',generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes)
+app.use('/api/v1/no-auth',NoAuthRouter)
 
 // api's --end
 
