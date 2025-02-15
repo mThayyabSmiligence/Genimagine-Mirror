@@ -3,9 +3,32 @@ import "../../Css/ChatContainer.css"
 
 export default function ChatContainer({data}) {
 
+    const getWidth=(aspect_ratio)=>{
+        if(aspect_ratio=="16:9"){
+         return 432
+        }else if(aspect_ratio=="9:16"){
+          return  243;
+         }
+         else if(aspect_ratio=="1:1"){
+          return  400;
+         }
+
+    }
+    const getHeight=(aspect_ratio)=>{
+      if(aspect_ratio=="16:9"){
+       return 243
+      }else if(aspect_ratio=="9:16"){
+        return  432;
+       }
+       else if(aspect_ratio=="1:1"){
+        return  400;
+       }
+
+  }
+
     const boxStyle = {
-        width: '400px',
-        height: '400px',
+        width: getWidth(data.aspect_ratio||"1:1"),
+        height:getHeight(data.aspect_ratio||"1:1"),
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

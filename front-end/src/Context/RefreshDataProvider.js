@@ -5,12 +5,15 @@ const RefreshDataContext = createContext()
 export const RefreshDataProvider =({children})=>{
 
     const [refreshChatList,setRefreshChatList] = useState(true);
+    const [refreshCreditBalance,setRefreshCreditBalance] = useState(true)
 
 
     return (
         <RefreshDataContext.Provider value={{
             refreshChatList,
-            setRefreshChatList
+            setRefreshChatList,
+            refreshCreditBalance,
+            setRefreshCreditBalance
         }}>
             {children}
         </RefreshDataContext.Provider>
