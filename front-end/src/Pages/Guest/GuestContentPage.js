@@ -87,7 +87,7 @@ export default function GuestContentPage() {
 
       setError(false)
       setLoading(true);
-      setPromptText("") // Start loading
+      // Start loading
 
   
       try {
@@ -107,12 +107,18 @@ export default function GuestContentPage() {
           setRefreshCreditBalance(!refreshCreditBalance)
           localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
           navigate(`/u/c/${response.data.chat_id}`)
+          setChat((prevItems)=>[...prevItems,
+            response.data
+          ])
+          return
         }
  
-        setChat((prevItems)=>[...prevItems,
-          response.data
+        setChat((prevItems)=>[...prevItems,{
+          "prompt":promptText,
+          image:response.data.image
+        }
         ])
- 
+        setPromptText("") 
       } catch (error) {
         console.error('Error generating image:', error.response);
        

@@ -1,25 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import CreditPurchaseCard from '../../Components/CreditPurchase/CreditPurchaseCard';
 import '../../Css/CreditPurchasePage.css'
+import { axiosInstance } from '../../API\'s/axios';
 
 
 function CreditPurchasePage() {
 
     const [credits, setCredits] = useState("") 
     const [Amount, setAmount] = useState("")
+    const[CreditPurchaseOptions,setCreditPurchaseOptions] = useState({})
+
+
+    const[error,setError] = useState(false)
+    const[errorMessage,setErrorMessage] = useState("")
     
     useEffect(() => {
         setAmount(credits)
     },[credits])
 
-    const CreditPurchaseOptions = [
-        { credit_points: "10", required_rupees: 10.00, package_name: "Basic", description: "Start with 10 credits" },
-        { credit_points: "50", required_rupees: 50.00, package_name: "Plus", description: "Ideal for small tasks" },
-        { credit_points: "100", required_rupees: 100.00, package_name: "Pro", description: "Best for frequent users" },
-        { credit_points: "250", required_rupees: 250.00, package_name: "Premium", description: "More credits, better value" },
-        { credit_points: "500", required_rupees: 500.00, package_name: "Elite", description: "For power users" },
-        { credit_points: "1000", required_rupees: 1000.00, package_name: "Ultimate", description: "Bulk purchase, best savings" },
-    ]
+
+
+    useEffect(() => {
+        if(localStorage.getItem('creditPurchaseOptions')){
+            const purchaseOptions = localStorage.getItem('creditPurchaseOptions')
+            setCreditPurchaseOptions(JSON.parse(purchaseOptions))
+        return
+        }
+        getCreditPurchaseOptions()
+    }, [])
+    
+    const getCreditPurchaseOptions = async () => {
+        try {
+            const response = await axiosInstance.get('/no-auth/get-packages');
+            console.log(response.data)
+            setCreditPurchaseOptions(response.data.data);
+            localStorage.setItem('creditPurchaseOptions', JSON.stringify(response.data.data))
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
   return (
     <div className='mt-5'>
@@ -27,12 +46,18 @@ function CreditPurchasePage() {
             <div className='text-center mb-4'>
                 <h3>Purchase Credits</h3>
             </div>
+            {
+                error &&
+                <div className="alert alert-danger" role="alert">
+                    {errorMessage}
+                </div>
+            }
             <div className='row'>
-                {CreditPurchaseOptions.map((option, index) => (
+                {/* {CreditPurchaseOptions.map((option, index) => (
                     <div key={index} className='col-md-4 mb-4'>
                         <CreditPurchaseCard data={option} />
                     </div>
-                ))}
+                ))} */}
             </div>
         </div>
 
