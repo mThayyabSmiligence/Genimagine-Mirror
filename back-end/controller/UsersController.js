@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId } = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService } = require('../service/UserService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -130,3 +130,43 @@ exports.getChatsData=async(req,res,next)=>{
 
 }
 
+exports.addToLibraryController=async(req,res)=>{
+    const {image_id}=req.params;
+    const {id}=req.user;
+
+    if(image_id==null){
+        return res.status(400).json({
+            message:"image_id is required"
+        })
+    }
+
+    const result = await addtoLibraryService(id, image_id);
+    
+    return res.status(result.status).json({
+        message:result.message,
+        success:result.success
+    })
+}
+
+exports.getLibraryImagesController=async(req,res)=>{
+    const {id}=req.user;
+    
+    const libraryImages= await getLibraryImagesService(id);
+    
+    return res.status(libraryImages.status).json({
+        message:libraryImages.message,
+        success:libraryImages.success,
+        data:libraryImages.data
+    })
+}
+
+exports.deleteFromLibraryController =async(req,res)=>{
+    const {image_id}=req.params;
+
+    const result = await deleteFromLibraryService(image_id);
+    
+    return res.status(result.status).json({
+        message:result.message,
+        success:result.success
+    }) 
+}
