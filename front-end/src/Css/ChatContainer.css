@@ -11,3 +11,84 @@
 .chat-prompt-container p{
     margin: 0;
 }
+.chat-image-container{
+    width: fit-content;
+}
+
+.image-section{
+    position: relative;
+    width: fit-content;
+}
+.full-screen-button{
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    color: rgb(3, 3, 3,0.3);
+    padding: 4px;
+    display: flex;
+    position: absolute;
+    top: 40px;
+    right:-35px;
+    background:rgb(34, 34, 34,0.1);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.image-dot-options{
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    color: rgb(3, 3, 3,0.3);
+    padding: 4px;
+    display: flex;
+    position: absolute;
+    top: 0;
+    right:-35px;
+    background:rgb(34, 34, 34,0.1);
+    border-radius: 50%;
+  
+    cursor: pointer;
+}
+
+.image-dot-options:hover, .full-screen-button:hover{
+    background:rgb(34, 34, 34,0.3);
+}
+/* .image-options{
+    height: fit-content;
+} */
+
+
+.options-dropdown   {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    border-radius: 5px;
+    margin-top: 35px;
+    margin-left: 5px;
+    cursor: pointer;
+    height: fit-content;
+    width: 140px ;
+    border: solid 1px rgb(3, 3, 3,0.3);
+}
+.option-item{
+    text-align: start;
+    width: 100%;
+    padding: 5PX;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    border: none;
+}
+.option-item span{
+    color: grey;
+}
+.option-item:hover{
+    background: rgb(3, 3, 3,0.1);
+}
+.option-divider{
+    height: 1px;
+    width: 100%;
+    background-color: rgb(3, 3, 3,0.3);
+}
