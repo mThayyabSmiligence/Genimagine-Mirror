@@ -102,23 +102,32 @@ export default function GuestContentPage() {
           }, // Ensure the response is handled as binary
         );
         console.log(response.data)
+        if(response.data.credits){
+          
+          localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
+          setRefreshCreditBalance(!refreshCreditBalance)
+        }
+
         if(response.data.chat_id){
           setRefreshChatList(!refreshChatList)
-          setRefreshCreditBalance(!refreshCreditBalance)
-          localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
+          
           navigate(`/u/c/${response.data.chat_id}`)
           setChat((prevItems)=>[...prevItems,
             response.data
           ])
           return
         }
+
+        
  
         setChat((prevItems)=>[...prevItems,{
           "prompt":promptText,
           image:response.data.image
         }
         ])
+
         setPromptText("") 
+
       } catch (error) {
         console.error('Error generating image:', error.response);
        
