@@ -111,6 +111,20 @@
     color: white;
     margin: 0;
 }   
+.profile-pic-big{
+    height: 160px;
+    width: 160px;
+    border-radius: 50%;
+    align-items: center;
+    background-color: rgb(0, 111, 185);
+}
+
+.profile-pic-big p{
+    font-size: 88px;
+    height: fit-content;
+    color: white;
+    margin: 0;
+}   
 
 .divider-line{
     height: 1px;

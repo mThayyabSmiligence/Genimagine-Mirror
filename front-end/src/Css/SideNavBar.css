@@ -10,6 +10,7 @@
     height: 100vh;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1); /* Right shadow */
     width: 250px;
+
 }
 
 .side-nav .big-logo{
@@ -23,6 +24,7 @@
 }
 .side-nav.active{
     display: flex;
+    z-index: 1  ;
 }
 .side-nav.in-active{
     z-index: -1;

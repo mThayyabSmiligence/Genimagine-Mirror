@@ -29,7 +29,7 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
         { loggedIn?
           <div className='me-2 mt-2 d-flex align-items-center'>
             <CreditBalance></CreditBalance>
-            <Link className='buy-credits-link button-wh h-40p dark-button-wh d-flex align-items-center br-100'>
+            <Link to={"/credit-purchase"} className='buy-credits-link button-wh h-40p dark-button-wh d-flex align-items-center br-100'>
               <span className="material-symbols-outlined">
                 shopping_bag
               </span>
@@ -37,8 +37,10 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
               Buy Credits
               </p>
             </Link>
+            <Link to={'/u/profile'}>
             {userData?<div className='profile-pic-small'><p className='pt-1'>{userData.username[0]}</p></div>:<div></div>}
-          </div>
+            </Link>
+          </div>   
         :
           <div className='flex-1 d-flex align-items-center justify-content-end'>
             <Link to={"/register"} className='button dark-button me-4' >Sign Up</Link>

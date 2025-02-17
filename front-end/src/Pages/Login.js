@@ -62,7 +62,7 @@ export default function Login() {
         }catch(err){
             console.error(err)
             setError(true)
-            setErrorMessage(err.response.data.message)
+            setErrorMessage(err?.response?.data?.message)
         }
     }
 
@@ -178,21 +178,21 @@ export default function Login() {
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
                         <label htmlFor="InputEmail1" className="form-label ">Email</label>
                         <div className='email-input-container'>
-                            <input type="email" placeholder='email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                            <input type="email" placeholder='email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} required />
                         </div>
                     </div> 
                     {isOtpLogin?
                         <div className="d-flex flex-column justify-content-start email-container">
                             <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
                             <div className='email-input-container'>
-                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} />
+                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} required/>
                             </div>
                         </div> 
                     :
                     <div className='password-container'>
                         <label htmlFor="exampleInputPassword1" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
-                            <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} requierd/>
                             <div    type='none' 
                                     onClick={(e) =>{ 
                                         
