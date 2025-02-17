@@ -564,7 +564,6 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
 
 
 
-
 exports.forgotPassword=async(req,res)=>{
 
     const {email}= req.body;
