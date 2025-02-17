@@ -57,8 +57,7 @@ export default function ChatContainer({data}) {
 
         <div className='chat-image-container d-flex justify-content-start'>
             {
-                data.image_url==null?
-                data.image?<img src={data.image} alt={data.prompt} style={boxStyle}></img>:
+                data.image_url==null&&data.image==null?
                 <div style={boxStyle}>
                 <div style={spinnerStyle}></div>
                 <style>{`
@@ -68,9 +67,10 @@ export default function ChatContainer({data}) {
                   }
                 `}</style>
               </div>
-              :<img src={`${data.image_url}`} alt={data.prompt} style={boxStyle}></img>
+              :<img src={data.image?data.image:`${data.image_url}`} alt={data.prompt} style={boxStyle}></img>
               
             }
+
         </div>
         
     </div>
