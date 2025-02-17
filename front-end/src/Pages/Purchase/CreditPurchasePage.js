@@ -57,7 +57,7 @@ function CreditPurchasePage() {
     }
     const buyCredits=async(package_id)=>{
         try {
-            const response = await axiosInstance.get(`/user/buy-credits/${package_id}`, { package_id: Amount });
+            const response = await axiosInstance.put(`/user/buy-credits/${package_id}`, { package_id: Amount });
 
             setCredits(response.data.credits)
             setErrorMessage("")
@@ -67,7 +67,7 @@ function CreditPurchasePage() {
 
 
             const currentCreditsBalance= localStorage.getItem('credit_balance')
-            
+
             localStorage.setItem("credit_balance",response.data.credits_purchased+Number(currentCreditsBalance))
 
             setRefreshCreditBalance(!refreshCreditBalance)
