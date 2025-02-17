@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "../../Css/ChatContainer.css"
 
 export default function ChatContainer({data}) {
+
+  const [showOptions, setShowOptions] = useState(false);
+
+  const handleToggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
@@ -55,7 +61,7 @@ export default function ChatContainer({data}) {
             </div>
         </div>
 
-        <div className='chat-image-container d-flex justify-content-start'>
+        <div className='chat-image-container image-section d-flex justify-content-start'>
             {
                 data.image_url==null&&data.image==null?
                 <div style={boxStyle}>
@@ -69,8 +75,31 @@ export default function ChatContainer({data}) {
               </div>
               :<img src={data.image?data.image:`${data.image_url}`} alt={data.prompt} style={boxStyle}></img>
               
+            }{
+              (data.image_url||data.image)&&
+              !showOptions&&
+              <button className='full-screen-button' onClick={()=>window.open(data.image?data.image:data.image_url  ,"_blank")}><span className="material-symbols-outlined">fullscreen</span></button>
+              
             }
-
+            {
+              (data.image_url||data.image)&&
+              <div className='image-options'>
+              <span onClick={handleToggleOptions} className="material-symbols-outlined image-dot-options">more_vert</span>
+              {showOptions && (
+                <div className="options-dropdown">
+                  <a download="download" href={data.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
+                  <span className='option-divider'></span>
+                  <div className="option-item"><span class="material-symbols-outlined">bookmark</span>Add to Library</div>
+                  <span className='option-divider'></span>
+                  <div className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
+                  <span className='option-divider'></span>
+                  <div className="option-item"><span class="material-symbols-outlined">delete</span>Delete</div>
+                </div>
+              )}
+            </div>
+              
+            }
+           
         </div>
         
     </div>
