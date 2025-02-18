@@ -1,12 +1,19 @@
 import React, { useState } from 'react'
 import "../../Css/ChatContainer.css"
+
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios';
+
 
 export default function ChatContainer({data}) {
   
 
   const [showOptions, setShowOptions] = useState(false);
+
+  const [success,setSuccess]=useState(false)
+  const [errorMessage,setErrorMessage]=useState(null)
+  const [error,setError]=useState(false)
+  const [successMessage,setSuccessMessage]=useState("")
 
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);
@@ -61,6 +68,24 @@ export default function ChatContainer({data}) {
         borderRadius: '50%',
         animation: 'spin 1s linear infinite',
       };
+
+      const handelDeleteImage=async ()=>{
+        try{
+            const response =await axios.delete(`http://localhost:3001/api/v1/user/delete-image/${data.image_id}`,
+              {withCredentials:true 
+
+              }
+            );
+            setSuccess(true)
+            setSuccessMessage("Image deleted successfully")
+            window.location.reload(false);
+            console.log("Image deleted successfully",response.data)
+        }catch(error){
+            setError(true)
+            setErrorMessage("Failed to delete image")
+            console.log("Failed to delete image",error.response)
+        }
+      }
   return (
     <div className='chat-container d-flex flex-column w-75 m-2 my-4 px-4'>
 
@@ -102,7 +127,7 @@ export default function ChatContainer({data}) {
                   <span className='option-divider'></span>
                   <div className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
-                  <div className="option-item"><span class="material-symbols-outlined">delete</span>Delete</div>
+                  <button onClick={()=>handelDeleteImage()} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                 </div>
               )}
             </div>

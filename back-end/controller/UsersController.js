@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService } = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService } = require('../service/UserService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -64,6 +64,34 @@ exports.firstTimeVerification = async(req,res,next) => {
     res.status(200).json({
         message: "user with successfull token"
     })
+}
+
+exports.deleteImageController = async(req,res)=>{
+    const {image_id}=req.params;
+    const {id}=req.user;
+
+            let cookies =null
+            let token =null
+            let decodeToken=null
+            
+            try{
+                const cookies1 = cookie.parse(req.headers.cookie)
+                cookies=cookies1    
+                const token1 = cookies.token
+                token= token1
+                decodeToken= jwt.decode(token)
+            }catch(err){
+                console.log(err)
+            }
+
+    const response = await deleteImageService(id,image_id,token)
+
+    console.log('token: ' + token)
+    res.status(response.status).json({
+        message:response.message,
+        success:response.success
+    })
+
 }
 
 exports.getChatsList=async(req,res,next)=>{
