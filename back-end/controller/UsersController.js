@@ -84,6 +84,8 @@ exports.deleteImageController = async(req,res)=>{
                 console.log(err)
             }
 
+    
+
     const response = await deleteImageService(id,image_id,token)
 
     console.log('token: ' + token)
@@ -191,8 +193,9 @@ exports.getLibraryImagesController=async(req,res)=>{
 
 exports.deleteFromLibraryController =async(req,res)=>{
     const {image_id}=req.params;
+    const {id}=req.user;
 
-    const result = await deleteFromLibraryService(image_id);
+    const result = await deleteFromLibraryService(id,image_id);
     
     return res.status(result.status).json({
         message:result.message,

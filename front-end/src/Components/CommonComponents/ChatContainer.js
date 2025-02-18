@@ -4,6 +4,7 @@ import "../../Css/ChatContainer.css"
 
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios';
+import { axiosInstance } from '../../API\'s/axios';
 
 
 export default function ChatContainer({data}) {
@@ -18,15 +19,14 @@ export default function ChatContainer({data}) {
   const [error,setError]=useState(false)
   const [successMessage,setSuccessMessage]=useState("")
 
+  const [isLibrary,setIsLibrary]= useState(false)
+
+
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);
   };
 
-  const addToLibrary = async() => {
-    const response = await axios.put(`http://localhost:3001/api/v1/user/add-to-library/${data.image_id}`, {
-      withCredentials: true
-    })
-  }
+ 
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
@@ -95,6 +95,36 @@ export default function ChatContainer({data}) {
             console.log("Failed to delete image",error.response)
         }
       }
+
+      const addToLibrary = async() => {
+        try{
+          const response = await axiosInstance.put(`/user/add-to-library/${data.image_id}`);
+        setSuccess(true);
+        setSuccessMessage("Image added to library successfully");
+        console.log("Image added to library successfully",response.data)
+        setIsLibrary(true)
+        data.library=1
+        }catch(error){
+          setError(true)
+          setErrorMessage("Failed to add to library ");
+          console.log("Failed to add to library",error.response)
+        }
+      }
+
+      const deleteFromLibrary= async()=>{
+        try{
+          const response = await axiosInstance.delete(`/user/delete-from-library/${data.image_id}`);
+          setSuccess(true);
+          setSuccessMessage("Image deleted from library successfully");
+          console.log(" ",response.data)
+          setIsLibrary(false)
+          data.library=0
+        }catch(error){
+          setError(true)
+          setErrorMessage("Failed to delete image")
+          console.log("Failed to delete image",error.response)
+        }
+      }
   return (
     <div className='chat-container d-flex flex-column w-75 m-2 my-4 px-4'>
 
@@ -132,7 +162,12 @@ export default function ChatContainer({data}) {
                 <div className="options-dropdown">
                   <a download="download" href={data.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
                   <span className='option-divider'></span>
-                  <div onClick={addToLibrary} className="option-item"><span class="material-symbols-outlined">bookmark</span>Add to Library</div>
+                  {(isLibrary||data.library==1)?
+                      <div onClick={deleteFromLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
+                      :
+                      <div onClick={addToLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_add</span>Add to Library</div>
+                  }
+                  
                   <span className='option-divider'></span>
                   <div className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
