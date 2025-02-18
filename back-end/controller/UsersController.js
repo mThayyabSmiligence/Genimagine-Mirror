@@ -199,3 +199,8 @@ exports.deleteFromLibraryController =async(req,res)=>{
         success:result.success
     }) 
 }
+
+exports.publishToExploreController=async(req,res)=>{
+    const {image_id,image_path,caption}= req.body;
+    
+}

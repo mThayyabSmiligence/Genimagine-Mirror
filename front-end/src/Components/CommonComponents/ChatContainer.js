@@ -130,11 +130,8 @@ export default function ChatContainer({data}) {
                 </div>
               )}
             </div>
-              
             }
-           
         </div>
-        
     </div>
   )
 }

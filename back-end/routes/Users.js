@@ -21,6 +21,8 @@ router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
 
+router.route('/publish-to-explore').get();
+
 
 
 module.exports = router;
