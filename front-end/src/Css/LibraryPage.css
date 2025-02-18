@@ -1,0 +1,42 @@
+.library-image-container {
+    height: 250px;
+    width: 250px;
+    position: relative;
+}
+.library-image-container img{
+    max-width: 250px;
+    max-height: 250px;
+
+}
+.library-image-container{
+    margin: 15px;
+}
+.library-image-container img{
+    
+    object-fit: contain;
+    border-radius: 10px;
+}
+.library-image-container .image-options .options-dropdown {
+    top:40px;
+    margin: 0;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.library-image-container .image-options .options-dropdown .option-item{
+   background-color: white;
+    z-index: 2;
+}
+
+.library-image-container .image-options .image-dot-options{
+    top:2px;
+    right: 2px;
+    background-color: rgba(246, 246, 246, 0.574);
+    color: rgb(112, 112, 112);
+    border: 1px solid grey;
+}
+
+.library-image-container .image-options .image-dot-options:hover{
+    background-color: rgb(226, 226, 226);
+}
+

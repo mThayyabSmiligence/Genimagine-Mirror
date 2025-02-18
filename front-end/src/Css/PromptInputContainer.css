@@ -1,0 +1,40 @@
+.send-button{
+    vertical-align: middle;
+    background-color: black;
+    height: 35px;
+    width: 35px;
+    margin: 0;
+    padding: 0;
+}
+.send-button span{
+    color: rgb(238, 238, 238);
+}
+
+.prompt-input-container{
+    width: 95%;
+}
+
+/* .chat-bottom-part {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px;
+    background: #f5f5f5;
+  } */
+
+.prompt-outer-container{
+    position: fixed;
+    bottom: 0;
+    z-index: 2  ;
+}
+.image-setting-tag{
+    border: solid 1px rgb(0, 0, 0);
+    padding: 5px;
+    width: 150px;
+}
+
+.image-setting-tag span{
+    color: rgb(58, 58, 58);
+}
+

@@ -1,25 +1,74 @@
-import logo from './logo.svg';
+import 'bootstrap/dist/css/bootstrap.css';
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import "./Css/common.css"
 import './App.css';
+import {BrowserRouter as Router , Routes,Route} from "react-router-dom" 
+import { useEffect, useState } from 'react';
+import GuestContentPage from './Pages/Guest/GuestContentPage';
+import Imagetest from './Pages/Imagetest';
+import Login from './Pages/Login';
+import UserLayout from './Layouts/UserLayout';
+import UserContentPage from './Pages/User/UserContentPage';
+import ChatPage from './Pages/User/ChatPage';
+import NavLayout from './Layouts/NavLayout';
+import RegisterUser from './Pages/RegisterUser';
+import VerifyUser from './Pages/VerifyUser';
+import ForgotPassword from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
+import CreditPurchasePage from './Pages/Purchase/CreditPurchasePage';
+import ProfilePage from './Pages/User/ProfilePage';
+import LibraryPage from './Pages/User/LibraryPage';
 
 function App() {
+  const[showNavBar,setShowNavBar]=useState(true)
+  const [width, setWidth] = useState(window.innerWidth);
+          
+        useEffect(() => {
+          const handleResize = () => {
+            setWidth(window.innerWidth);
+          };
+              
+          window.addEventListener('resize', handleResize);
+              
+          return () => {
+            window.removeEventListener('resize', handleResize);
+          };
+    }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+          
+       
+          <Routes>
+            <Route path='/login' element={<Login></Login>}></Route> 
+            <Route path='/register' element={<RegisterUser></RegisterUser>}></Route>
+            <Route path='/user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
+            <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
+            <Route path='/reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
+            
+
+
+            <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
+              
+                <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
+                <Route path="explore"></Route>
+                <Route path='credit-shop'></Route>
+                <Route path='u' element={<UserLayout></UserLayout>}>
+                  <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
+                  <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
+                  <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
+                </Route>
+
+                <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
+
+            </Route>
+            
+          </Routes>
+   
+      </Router>
     </div>
   );
 }
 
 export default App;
+

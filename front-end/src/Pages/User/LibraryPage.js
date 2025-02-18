@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from 'react'
+import { axiosInstance } from '../../API\'s/axios'
+import '../../Css/LibraryPage.css'
+import LibraryImageContainer from '../../Components/UserComponents/LibraryImageContainer'
+
+export default function LibraryPage() {
+
+  const [error,setError]=useState(false)
+  const [errorMessage,setErrorMessage]=useState(null)
+  const [success,setSuccess]=useState(false)
+  const [successMessage,setSuccessMessage]=useState(null)
+
+  const [libraryImages,setLibraryImages]= useState([{
+    id:0,
+    image_url:""}
+  ])
+
+  useEffect(()=>{
+    if( sessionStorage.getItem('libraryImages')){
+      console.log("Library Images retrived from local storage")
+      setLibraryImages(JSON.parse(sessionStorage.getItem('libraryImages')))
+      return
+    }
+
+    GetLibraryImages()
+
+  },[])
+
+
+  const removeImageFromLibraryArray= (index)=>{
+    const newLibraryImages = [...libraryImages]
+    newLibraryImages.splice(index,1)
+    setLibraryImages(newLibraryImages)
+    sessionStorage.setItem('libraryImages', JSON.stringify(newLibraryImages))
+  }
+  const GetLibraryImages= async()=>{
+    try{
+      const response = await axiosInstance.get('/user/get-library-images')
+
+      setLibraryImages(response.data.data)
+      sessionStorage.setItem('libraryImages', JSON.stringify(response.data.data))
+      console.log(response.data)
+      console.log("Library Images retrived succesfully")
+    }catch(err){
+      console.error(err)
+    }
+  }
+
+  
+  
+  return (
+    <div className='mt-5'>
+      <div className='d-flex justify-content-between pt-3'>
+        <h2 className='ms-3 text-start'>Library</h2>
+        <button onClick={()=>GetLibraryImages()} className='button-wh dark-button-wh me-3'>Refresh</button>
+      </div>
+
+        <div className='my-library-sample d-flex mt-2 flex-wrap'>
+
+                        {libraryImages.map((library,index) => (
+                            <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
+                        ))
+                        }
+                    </div>
+    </div>
+  )
+}

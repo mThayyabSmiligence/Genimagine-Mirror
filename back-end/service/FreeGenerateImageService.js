@@ -1,0 +1,41 @@
+const express = require('express')
+
+const axios = require('axios')
+const dotenv =require('dotenv')
+const path =require('path');  
+dotenv.config({path: path.join(__dirname, 'config', 'config.env')})     
+
+const cloud_flare_acc_id= process.env.CLOUD_FLARE_ACC_ID
+const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
+
+exports.freeGenerateImage = async(inputs) => {
+    try{
+        const response = await axios.post(
+            `https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning`,
+            {
+              prompt: inputs.prompt,
+              negative_prompt: inputs.negative_prompt,
+              width: inputs.width,
+              height: inputs.height,
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${cloud_flare_api_key}`,
+                'Content-Type': 'application/json',
+              },
+              responseType: 'arraybuffer',
+              
+            }
+        );
+        // console.log(response.data.result.image)
+        // const decodedString= atob(response.data.result.image)
+        // const imageBuffer = Uint8Array.from(decodedString,(m)=>m.codePointAt(0))
+       
+        return  Buffer.from(response.data)
+    }catch(error){
+        console.log("error generating images:" ,error)
+        console.log(typeof(inputs.width),typeof(inputs.height));
+        return false;
+    }
+
+}
