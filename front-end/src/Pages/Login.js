@@ -43,7 +43,7 @@ export default function Login() {
         setError(false)
         setSucccess(false) //
         try{
-            const response =await axios.post("http://localhost:3001/api/v1/auth/login",
+            const response =await axios.post("http://localhost:3000/api/v1/auth/login",
                 {
                     password:password,
                     email:email
