@@ -34,12 +34,12 @@ function CreditPurchasePage() {
 
 
     useEffect(() => {
-        if(sessionStorage.getItem('creditPurchaseOptions')){
-            const purchaseOptions = sessionStorage.getItem('creditPurchaseOptions')
-            setCreditPurchaseOptions(JSON.parse(purchaseOptions))
-            setLoading(false)
-        return
-        }
+        // if(sessionStorage.getItem('creditPurchaseOptions')){
+        //     const purchaseOptions = sessionStorage.getItem('creditPurchaseOptions')
+        //     setCreditPurchaseOptions(JSON.parse(purchaseOptions))
+        //     setLoading(false)
+        // return
+        // }
         getCreditPurchaseOptions()
     }, [])
     
@@ -116,6 +116,7 @@ function CreditPurchasePage() {
                 <h3 className='divider-or '>Customise Credit Purchase</h3>
                 <span className='divider-line-2 flex-1'></span>
             </div>
+            <button onClick={()=>getCreditPurchaseOptions()}>load option list</button>
 
             <div className='customise-credit-purchase card shadow-sm p-2 mt-3'>
                 <div className='d-flex flex-wrap my-3 row justify-content-center'>

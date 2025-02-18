@@ -97,7 +97,7 @@ export default function GuestContentPage() {
           { 
             prompt: promptText ,
             model:trackmodel,
-            aspect_ratio: getAspectRatio(selectedAspectRatio)
+            aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
           
           }, // Ensure the response is handled as binary
         );
