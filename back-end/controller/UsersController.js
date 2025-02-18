@@ -89,7 +89,8 @@ exports.deleteImageController = async(req,res)=>{
     console.log('token: ' + token)
     res.status(response.status).json({
         message:response.message,
-        success:response.success
+        success:response.success,
+        chat_deleted:response.chat_deleted
     })
 
 }

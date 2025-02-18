@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import "../../Css/ChatContainer.css"
 import axios from "axios"
 
 export default function ChatContainer({data}) {
+
+  const navigate = useNavigate();
 
   const [showOptions, setShowOptions] = useState(false);
 
@@ -65,10 +68,16 @@ export default function ChatContainer({data}) {
               {withCredentials:true 
 
               }
-            );
+            ).then((response) => {
+              if(response.data.chat_deleted){
+                navigate("/image-generation")
+              }
+            })
+            
             setSuccess(true)
             setSuccessMessage("Image deleted successfully")
             window.location.reload(false);
+            
             console.log("Image deleted successfully",response.data)
         }catch(error){
             setError(true)
