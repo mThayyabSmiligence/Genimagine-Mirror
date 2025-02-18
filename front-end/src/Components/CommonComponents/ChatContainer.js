@@ -1,13 +1,22 @@
 import React, { useState } from 'react'
 import "../../Css/ChatContainer.css"
+import {useNavigate} from 'react-router-dom'
+import axios from 'axios';
 
 export default function ChatContainer({data}) {
+  
 
   const [showOptions, setShowOptions] = useState(false);
 
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);
   };
+
+  const addToLibrary = async() => {
+    const response = await axios.put(`http://localhost:3001/api/v1/user/add-to-library/${data.image_id}`, {
+      withCredentials: true
+    })
+  }
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
@@ -89,7 +98,7 @@ export default function ChatContainer({data}) {
                 <div className="options-dropdown">
                   <a download="download" href={data.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
                   <span className='option-divider'></span>
-                  <div className="option-item"><span class="material-symbols-outlined">bookmark</span>Add to Library</div>
+                  <div onClick={addToLibrary} className="option-item"><span class="material-symbols-outlined">bookmark</span>Add to Library</div>
                   <span className='option-divider'></span>
                   <div className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
