@@ -3,6 +3,7 @@ const fileupload=require('express-fileupload')
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const { PORT,NODE_ENV } =  require('./config/config');
 
@@ -12,6 +13,12 @@ const verifyTokenWithCookie = require('./middleWare/verifyTokenWithCookie');
 
 const app = express();
 app.use(fileupload())
+
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true, // Allow cookies and authentication headers
+}));
+
 
 require('dotenv').config();
 
@@ -68,27 +75,34 @@ app.post('/publish-to-explore', verifyToken, async (req, res) => {
   try {
       const { userId, imagePath} = req.body;
 
+      console.log(1)
       if (!userId || !imagePath) {
           return res.status(400).json({ message: "User ID and image path are required" });
       }
-
+      console.log(2)
       // Get the image file name from the path
       const imageFileName = path.basename(imagePath);
       const explorePath = `./uploads/explore/${userId}`;
 
+      console.log(3)
       // Ensure explore folder exists
       fs.mkdirSync(explorePath, { recursive: true });
 
+      console.log(4)
       // Copy image from chat/library to explore
       const newImagePath = path.join(explorePath, imageFileName);
       fs.copyFileSync(imagePath, newImagePath);
 
+      console.log(5)
       // Generate public image URL
       const imageUrl = `http://localhost:3002/explore/image/${userId}/${imageFileName}`;
 
      
 
+      console.log(6)
       res.status(200).json({
+          status:200,  
+          success: true,
           message: "Image successfully added to Explore",
           imagePath: newImagePath,
           imageUrl: imageUrl
@@ -96,7 +110,10 @@ app.post('/publish-to-explore', verifyToken, async (req, res) => {
 
   } catch (error) {
       console.error("Error adding image to Explore:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ 
+        success: false,
+        status: 500,
+        message: "Internal server error in storage server" });
   }
 });
 
@@ -127,7 +144,7 @@ app.get(`/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=
 
 
 //api to retrive images from explore
-app.get(`/explore/image/:userId/:fileName`,verifyTokenWithCookie,(req,res)=>{
+app.get(`/explore/image/:userId/:fileName`,(req,res)=>{
   const {userId,chatId,fileName}= req.params
 
 

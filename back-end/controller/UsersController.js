@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService } = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService} = require('../service/UserService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -203,7 +203,3 @@ exports.deleteFromLibraryController =async(req,res)=>{
     }) 
 }
 
-exports.publishToExploreController=async(req,res)=>{
-    const {image_id,image_path,caption}= req.body;
-    
-}
