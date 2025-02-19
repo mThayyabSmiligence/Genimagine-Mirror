@@ -3,6 +3,7 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 import "../../Css/ChatContainer.css"
 
 import { useNavigate} from 'react-router-dom'
+
 import axios from 'axios';
 import { axiosInstance } from '../../API\'s/axios';
 
@@ -12,6 +13,8 @@ export default function ChatContainer({data}) {
   const Navigate = useNavigate();
   
   const { setTempImageData } = useContext(RefreshDataContext); 
+
+  const navigate = useNavigate();
 
   const [showOptions, setShowOptions] = useState(false);
 
@@ -73,16 +76,45 @@ export default function ChatContainer({data}) {
         animation: 'spin 1s linear infinite',
       };
 
+      const download = (e) => {
+        e.preventDefault(); // Prevent default behavior
+    
+        axios.get(data.image_url, {
+            responseType: "blob", // Ensure the response is a binary blob
+            withCredentials: true, // Include credentials if needed
+        })
+        .then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `${data.prompt+data.image_id}.png`); // Set the file name
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link); // Cleanup
+            URL.revokeObjectURL(url); // Free memory
+        })
+        .catch((error) => {
+            console.error("Error downloading the image:", error);
+        });
+    };
+    
+
       const handelDeleteImage=async ()=>{
         try{
             const response =await axios.delete(`http://localhost:3001/api/v1/user/delete-image/${data.image_id}`,
               {withCredentials:true 
 
               }
-            );
+            ).then((response) => {
+              if(response.data.chat_deleted){
+                navigate("/image-generation")
+              }
+            })
+            
             setSuccess(true)
             setSuccessMessage("Image deleted successfully")
             window.location.reload(false);
+            
             console.log("Image deleted successfully",response.data)
         }catch(error){
             setError(true)
@@ -161,7 +193,7 @@ export default function ChatContainer({data}) {
               <span onClick={handleToggleOptions} className="material-symbols-outlined image-dot-options">more_vert</span>
               {showOptions && (
                 <div className="options-dropdown">
-                  <a download="download" href={data.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
+                  <a onClick={(e)=>download(e)} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
                   <span className='option-divider'></span>
                   {(isLibrary||data.library==1)?
                       <div onClick={deleteFromLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
@@ -176,11 +208,8 @@ export default function ChatContainer({data}) {
                 </div>
               )}
             </div>
-              
             }
-           
         </div>
-        
     </div>
   )
 }

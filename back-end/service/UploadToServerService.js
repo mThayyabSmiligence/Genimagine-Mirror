@@ -36,3 +36,31 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
         console.error("Error from imageUpload API:", err.response?.data || err.message);
     }
 };
+
+exports.uploadImageToExplore=async (user_id,image_path,token)=>{
+    try {
+        const response = await axios.post(
+            "http://localhost:3002/publish-to-explore",{
+                userId:user_id,
+                imagePath:image_path
+            },
+           
+            {
+                headers: {// Include FormData-specific headers
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+ 
+        console.log("Response from imageUpload API:", response.data);
+        return response.data;
+
+    } catch (err) {
+        console.error("Error from imageUpload API:", err.response?.data || err.message);
+        return{
+            status:false,
+            message:"error uploading image to explore deom UploadToServerService",
+            status:500
+        }
+    }
+}
