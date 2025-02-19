@@ -20,12 +20,16 @@
     font-weight: 400;
 
 }
+.button:disabled, .button-wh:disabled{  
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 .button:hover{
     background-color: transparent;
     padding: 2px 23px;
 }
-.light-button{
+.light-button{  
     color: black;
     border: solid 2px black;
 }
@@ -41,6 +45,11 @@
     background-color: black;
     border: solid 1px black;
     color: white;
+}
+.success-button-wh{
+    background-color: rgb(69, 143, 79);
+    color: white;       
+    border: solid 2px rgb(69, 143, 79)  ;
 }
 
 .dark-button:hover{
@@ -227,3 +236,9 @@
     padding-bottom: 80px;
 }
 
+.w-ft{
+    width: fit-content;
+}
+.h-ft{
+    height: fit-content;
+}

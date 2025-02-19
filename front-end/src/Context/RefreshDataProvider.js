@@ -6,6 +6,8 @@ export const RefreshDataProvider =({children})=>{
 
     const [refreshChatList,setRefreshChatList] = useState(true);
     const [refreshCreditBalance,setRefreshCreditBalance] = useState(true)
+    const [tempImageData,setTempImageData] = useState(true)
+
 
 
     return (
@@ -13,7 +15,9 @@ export const RefreshDataProvider =({children})=>{
             refreshChatList,
             setRefreshChatList,
             refreshCreditBalance,
-            setRefreshCreditBalance
+            setRefreshCreditBalance,
+            tempImageData,
+            setTempImageData
         }}>
             {children}
         </RefreshDataContext.Provider>

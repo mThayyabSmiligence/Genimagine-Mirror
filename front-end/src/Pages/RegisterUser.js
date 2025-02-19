@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MathCaptcha from "../Components/Captcha/MathCaptcha";
 
 // Add icons to the library
 library.add(faCheck, faTimes, faInfoCircle);
@@ -15,6 +16,21 @@ const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export default function RegisterUser() {
+
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+
+    const handleCaptchaVerify = (status) => {
+      setIsCaptchaVerified(status);
+    };
+  
+    // const handleCaptcha = (e) => {
+    //   e.preventDefault();
+    //   if (!isCaptchaVerified) {
+    //     alert("Please solve the CAPTCHA correctly.");
+    //     return;
+    //   }
+    //   alert("Registration successful!");
+    // };
 
 console.log("faInfoCircle:", faInfoCircle);
     const [username, setUserName] = useState('');
@@ -89,8 +105,15 @@ console.log("faInfoCircle:", faInfoCircle);
     useEffect(()=>{
         setUsernameValidity(USER_REGEX.test(username));
     },[username])
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!isCaptchaVerified) {
+            alert("Please solve the CAPTCHA correctly.");
+            return;
+        }
+
         try {
             const response = await axios.post('http://localhost:3001/api/v1/auth/register', 
                 {
@@ -324,7 +347,14 @@ console.log("faInfoCircle:", faInfoCircle);
                                 </div>
                             </div>
                         </div>
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
+                        <div className='d-flex justify-content-center align-items-center'>
+
+                        {
+                            isCaptchaVerified?<div className='button-wh  success-button-wh   d-flex align-items-center w-ft '><span className="material-symbols-outlined me-2"> task_alt</span>Verification Success</div>:
+                            <MathCaptcha onVerify={handleCaptchaVerify}/>
+                        }
+                        </div>
+                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-100 br-100 mb-3">Create</button>
                         
                     </form>
                 </div>

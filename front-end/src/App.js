@@ -18,6 +18,7 @@ import ResetPassword from './Pages/ResetPassword';
 import CreditPurchasePage from './Pages/Purchase/CreditPurchasePage';
 import ProfilePage from './Pages/User/ProfilePage';
 import LibraryPage from './Pages/User/LibraryPage';
+import PublishImagePage from './Pages/User/PublishImagePage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -57,6 +58,7 @@ function App() {
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
+                  <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
                 </Route>
 
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>

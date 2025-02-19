@@ -1,12 +1,18 @@
-import React, { useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import RefreshDataContext from '../../Context/RefreshDataProvider'
 import "../../Css/ChatContainer.css"
+
+import { useNavigate} from 'react-router-dom'
+
 import axios from 'axios';
 import { axiosInstance } from '../../API\'s/axios';
 
 
 export default function ChatContainer({data}) {
+
+  const Navigate = useNavigate();
   
+  const { setTempImageData } = useContext(RefreshDataContext); 
 
   const navigate = useNavigate();
 
@@ -146,6 +152,12 @@ export default function ChatContainer({data}) {
           console.log("Failed to delete image",error.response)
         }
       }
+
+      const handlePublish=()=>{
+        setTempImageData(data); 
+        Navigate('/u/publish')
+      }
+
   return (
     <div className='chat-container d-flex flex-column w-75 m-2 my-4 px-4'>
 
@@ -190,7 +202,7 @@ export default function ChatContainer({data}) {
                   }
                   
                   <span className='option-divider'></span>
-                  <div className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
+                  <div onClick={handlePublish} className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
                   <button onClick={()=>handelDeleteImage()} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                 </div>
