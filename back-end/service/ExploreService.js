@@ -22,6 +22,7 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
     try{
         const query ="INSERT INTO Explore (user_id, caption,image_id, image_url, image_path) VALUES (?, ?, ?, ?,?)"
         const [rows] = await db.execute(query,[user_id,caption,image_id,image_data.imageUrl,image_data.imagePath])
+
         if (rows.affectedRows == 0) {
              return {
                 status:400,
