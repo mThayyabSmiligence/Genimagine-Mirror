@@ -1,50 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import SortSection from '../../Components/Explore/SortSection';
-import { axiosNoAUth } from '../../API\'s/axios';
-import '../../Css/ExplorePage.css';
-import { Pagination } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import SortSection from "../../Components/Explore/SortSection";
+import { axiosNoAUth } from "../../API's/axios";
+import "../../Css/ExplorePage.css";
+import { useInView } from "react-intersection-observer";
 
 function ExplorePage() {
-
     const [images, setImages] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMoreImages, setHasMoreImages] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        getImages();
-    },[])
-    
+    const [sortSelectedIndex, setSortSelectedIndex] = useState(0);
+    const [topSelectedIndex, setTopSelectedIndex] = useState(0);
+    const [sort, setSort] = useState(""); // Sorting method (recent/top)
+    const [top, setTop] = useState(""); // Time filter (day/week/month)
 
-    const getImages = async () => {
+    const { ref, inView } = useInView(); // Detects when user reaches bottom
+
+    // 🔹 Fetch Explore Images
+    const getImages = async (pageNumber, reset = false) => {
+        if (!hasMoreImages || loading) return;
+
+        setLoading(true);
+
+        let query = `?page=${pageNumber}`;
+        if (sort) query += `&sort=${sort}`;
+        if (top) query += `&time=${top}`;
+
         try {
-            const response = await axiosNoAUth.get('explore');
-            console.log(response.data);
-            setImages(response.data.images);
-        } catch (error) {
-            console.error("error in fetching explore images", error)
-        }
-    }
+            console.log("Fetching:", query);
+            const response = await axiosNoAUth.get(`explore${query}`);
+            console.log("Response:", response.data);
 
-  return (
-    <div className='mt-5 explore-page-container'>
-        <div className='explore-heading text-start ms-3 mb-3'>
-            <h1>Explore</h1>
-        </div>
-        <div className='explore-sort-section'>
-            <SortSection></SortSection>
-        </div>
-        <div className='explore-body'>
-            <div className='explore-image-container d-flex flex-wrap justify-content-start my-4'>
-                {
-                    images.map((image, index) => (
-                        <div key={index} className='explore-image mx-3 d-flex justify-content-center align-items-center my-2'>
+            if (response.data.success) {
+                setImages((prevImages) => reset ? response.data.images : [...prevImages, ...response.data.images]);
+                setHasMoreImages(!!response.data.pagination.nextPage);
+                setCurrentPage(pageNumber + 1);
+            }
+        } catch (error) {
+            console.error("Error fetching explore images", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 🔹 Load first page when sort or top changes
+    useEffect(() => {
+        setImages([]); // ✅ Clear images
+        setCurrentPage(1); // ✅ Reset pagination
+        setHasMoreImages(true); // ✅ Enable loading new data
+        getImages(1, true); // ✅ Fetch fresh images
+    }, [sort, top]);
+
+    // 🔹 Load next page when user reaches bottom
+    useEffect(() => {
+        if (inView && hasMoreImages && !loading) {
+            getImages(currentPage);
+        }
+    }, [inView]);
+
+    return (
+        <div className="mt-5 explore-page-container">
+            <div className="explore-heading text-start ms-3 mb-3">
+                <h1>Explore</h1>
+            </div>
+            <div className="explore-sort-section">
+                <SortSection
+                    sort={sort}
+                    setSort={setSort}
+                    sortSelectedIndex={sortSelectedIndex}
+                    setSortSelectedIndex={setSortSelectedIndex}
+                    top={top}
+                    setTop={setTop}
+                    topSelectedIndex={topSelectedIndex}
+                    setTopSelectedIndex={setTopSelectedIndex}
+                />
+            </div>
+            <div className="explore-body">
+                <div className="explore-image-container d-flex flex-wrap justify-content-start my-4">
+                    {images.map((image, index) => (
+                        <div key={index} className="explore-image mx-3 d-flex justify-content-center align-items-center my-2">
                             <img src={image.image_url} alt={image.caption} />
                         </div>
-                    ))
-                }
+                    ))}
+                </div>
             </div>
+
+            {/* Loading Spinner */}
+            {loading && <p>Loading more images...</p>}
+
+            {/* Invisible div for detecting scroll */}
+            <div ref={ref} style={{ height: "10px", background: "transparent" }}></div>
         </div>
-        <Pagination></Pagination>
-    </div>
-  )
+    );
 }
 
-export default ExplorePage
+export default ExplorePage;
