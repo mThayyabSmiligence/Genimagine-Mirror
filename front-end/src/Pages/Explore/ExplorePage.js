@@ -42,7 +42,9 @@ function ExplorePage() {
                 }
             </div>
         </div>
-        <Pagination></Pagination>
+        <Pagination>
+            
+        </Pagination>
     </div>
   )
 }
