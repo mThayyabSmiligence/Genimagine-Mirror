@@ -20,8 +20,8 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
         }
     }
     try{
-        const query ="INSERT INTO Explore (user_id, caption, image_url, image_path) VALUES (?, ?, ?, ?)"
-        const [rows] = await db.execute(query,[user_id,caption,image_data.imageUrl,image_data.imagePath])
+        const query ="INSERT INTO Explore (user_id, caption,image_id, image_url, image_path) VALUES (?, ?, ?, ?,?)"
+        const [rows] = await db.execute(query,[user_id,caption,image_id,image_data.imageUrl,image_data.imagePath])
         if (rows.affectedRows == 0) {
              return {
                 status:400,
@@ -68,32 +68,106 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
 }
 
 
-exports.getAllExploreImagesService=async()=>{
-    try{
-        const query ="SELECT * FROM Explore"
-        const [rows] = await db.execute(query)
-        if (rows.length == 0) {
-             return {
-                status:404,
-                message:"No images found",
-                success:false
+exports.getExploreImagesService = async ({ sort, time, page }) => {
+    try {
+        let query = `SELECT e.*, em.likes_count, em.views_count, em.ranking_score 
+                     FROM Explore e 
+                     JOIN ExploreMetrics em ON e.published_id = em.published_id`;
+        let conditions = [];
+        let params = [];
+
+        // 🟢 1️⃣ Filter by Time (Day, Week, Month, Year, All-Time)
+        if (time) {
+            if (time === "day") {
+                conditions.push("e.published_date >= NOW() - INTERVAL 1 DAY");
+            } else if (time === "week") {
+                conditions.push("e.published_date >= NOW() - INTERVAL 1 WEEK");
+            } else if (time === "month") {
+                conditions.push("e.published_date >= NOW() - INTERVAL 1 MONTH");
+            } else if (time === "year") {
+                conditions.push("e.published_date >= NOW() - INTERVAL 1 YEAR");
             }
         }
-        return {
-            status:200,
-            message:"images found successfully",
-            success:true,
-            images:rows
+
+        // 🔹 Apply `WHERE` only if we have conditions
+        if (conditions.length > 0) {
+            query += ` WHERE ` + conditions.join(" AND ");
         }
-    }catch( err){
-        console.error("error fetching images",err)
-        return {
-            status:500,
-            message:"internal server error",
-            success:false
+
+        // 🟢 2️⃣ Sorting (Recent or Top by Ranking)
+        if (sort === "recent") {
+            query += ` ORDER BY e.published_date DESC`;
+        } else if (sort === "top") {
+            query += ` ORDER BY em.likes_count  DESC`;
+        } else {
+            query += ` ORDER BY e.published_date DESC`; // Default to recent
         }
+
+        // 🟢 3️⃣ Pagination (Lazy Loading with Fixed Limit)
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageSize = 10; // 🔹 Fixed page size (e.g., 10 images per page)
+        const offset = (pageNumber - 1) * pageSize;
+
+        query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+        params.push(Number(pageSize) ,Number(offset) );
+
+        // 🟢 4️⃣ Execute Query
+
+        
+        const [rows] = await db.execute(query);
+
+        if (rows.length === 0) {
+            return {
+                status: 404,
+                message: "No images found",
+                success: false,
+            };
+        }
+
+        return {
+            status: 200,
+            message: "Images fetched successfully",
+            success: true,
+            images: rows,
+            pagination: {
+                currentPage: pageNumber,
+                pageSize: pageSize, // 🔹 Always fixed
+                nextPage: rows.length === pageSize ? pageNumber + 1 : null,
+            },
+        };
+    } catch (err) {
+        console.error("Error fetching explore images:", err);
+        return {
+            status: 500,
+            message: "Internal server error",
+            success: false,
+        };
     }
-}
+};
+// try{
+//     const query ="SELECT * FROM Explore"
+//     const [rows] = await db.execute(query)
+//     if (rows.length == 0) {
+//          return {
+//             status:404,
+//             message:"No images found",
+//             success:false
+//         }
+//     }
+//     return {
+//         status:200,
+//         message:"images found successfully",
+//         success:true,
+//         images:rows
+//     }
+// }catch( err){
+//     console.error("error fetching images",err)
+//     return {
+//         status:500,
+//         message:"internal server error",
+//         success:false
+//     }
+// }
 
 exports.getExploreImageByIdService=async(explore_id)=>{
     try{
@@ -167,14 +241,37 @@ exports.ViewExploreImageService=async(published_id)=>{
         }
     }
 }
-exports.LikeExploreImageService=async(published_id)=>{
+exports.LikeExploreImageService=async(published_id,user_id)=>{
+    try{
+        const query="Insert into explorelikes (user_id,published_id) values (?,?)"
+        const [rows] = await db.execute(query,[user_id,published_id])
+        console.log("User liked the image")
+       
+    }catch(err){
+        console.error("error inserting user like",err)
+        if(err.code=="ER_DUP_ENTRY"){
+            console.log("user already liked the image")
+            return {
+                status:400,
+                message:"user already liked the image",
+                success:false
+            }
+        }
+        return {
+            status:500,
+            message:"like is counted but user is not",
+            success:false
+        }
+    }
+    
     try{
         const query ="UPDATE ExploreMetrics SET likes_count = likes_count + 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
         console.log("Like count for image is updated")
+        
         return{
             status:200,
-            message:"like count updated successfully",
+            message:"user liked the image",
             success:true
         }
     }catch(err){
@@ -185,6 +282,7 @@ exports.LikeExploreImageService=async(published_id)=>{
             success:false
         }
     }
+   
 }
 exports.UnlikeExploreImageService=async(published_id)=>{
     try{
