@@ -77,10 +77,10 @@ function ExplorePage() {
                 />
             </div>
             <div className="explore-body">
-                <div className="explore-image-container d-flex flex-wrap justify-content-start my-4">
+                <div className="explore-image-container  my-4">
                     {images.map((image, index) => (
-                        <div key={index} className="explore-image mx-3 d-flex justify-content-center align-items-center my-2">
-                            <img src={image.image_url} alt={image.caption} />
+                        <div key={index} className="explore-image  d-flex justify-content-center align-items-center my-2">
+                            <img src={image.image_url} alt={image.caption} className="br-10" />
                         </div>
                     ))}
                 </div>

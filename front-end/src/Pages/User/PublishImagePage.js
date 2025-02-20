@@ -19,13 +19,14 @@ function PublishImagePage() {
         image_path: tempImageData.image_path,
         caption: caption
       })
+      console.log(response.data)
       if(response.status==200){
         setSuccess(true)
         setSuccessMessage(response.data.message)
         setErrorMessage(null)
       }
     }catch(error){
-      console.error("", error)
+      console.error("error in publishing image", error)
       setError(true)
       setErrorMessage(error.response?.data?.message)
     }
