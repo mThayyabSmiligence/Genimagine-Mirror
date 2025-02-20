@@ -2,7 +2,9 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
+
 const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService } = require("../service/ExploreService");
+
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,image_path,caption}= req.body;
@@ -24,7 +26,7 @@ exports.publishToExploreController=async(req,res)=>{
             message:"unauthorized"
         })
     }
-    console.log("image id:",image_id,",image_path:",image_path,",catption:",caption,",token:",token,"user_id:",id)
+    console.log("image id:",image_id,",image_path:",image_path,",catption:",caption?caption:"",",token:",token,"user_id:",id)
     const response=await publishToExploreService(image_id, image_path,caption,token,id)
 
     console.log(response.status)
