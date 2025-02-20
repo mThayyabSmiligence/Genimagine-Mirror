@@ -2,9 +2,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService } = require("../service/ExploreService");
-
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,image_path,caption}= req.body;
@@ -36,10 +34,19 @@ exports.publishToExploreController=async(req,res)=>{
 }
 
 exports.getAllExploreImagesController=async(req,res)=>{
-    
-    const exploreImages= await getAllExploreImagesService();
-    
-    return res.status(exploreImages.status).json(exploreImages);
+    try {
+        const { sort, time, page } = req.query;
+
+        const response = await getExploreImagesService({ sort, time, page });
+
+        res.status(response.status).json(response);
+    } catch (err) {
+        console.error("Error in explore API:", err);
+        res.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
+    }
 }
 exports.getExploreImageByIdController=async (req,res)=>{
     const {published_id}=req.params;
@@ -71,7 +78,7 @@ exports.LikeExploreImageController = async(req, res) => {
     const {published_id}=req.params;
     const {id}=req.user;
     
-    const result = await LikeExploreImageService(published_id);
+    const result = await LikeExploreImageService(published_id,id);
     
     return res.status(result.status).json(result);
 }
