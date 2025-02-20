@@ -19,6 +19,7 @@ import CreditPurchasePage from './Pages/Purchase/CreditPurchasePage';
 import ProfilePage from './Pages/User/ProfilePage';
 import LibraryPage from './Pages/User/LibraryPage';
 import PublishImagePage from './Pages/User/PublishImagePage';
+import ExplorePage from './Pages/Explore/ExplorePage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -52,7 +53,7 @@ function App() {
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
-                <Route path="explore"></Route>
+                <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
                 <Route path='credit-shop'></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
