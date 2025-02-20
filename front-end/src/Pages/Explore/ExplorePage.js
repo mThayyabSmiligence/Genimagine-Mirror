@@ -44,15 +44,15 @@ function ExplorePage() {
         }
     };
 
-    // 🔹 Load first page when sort or top changes
+    // Load first page when sort or top changes
     useEffect(() => {
-        setImages([]); // ✅ Clear images
-        setCurrentPage(1); // ✅ Reset pagination
-        setHasMoreImages(true); // ✅ Enable loading new data
-        getImages(1, true); // ✅ Fetch fresh images
+        setImages([]); 
+        setCurrentPage(1); 
+        setHasMoreImages(true); 
+        getImages(1, true); 
     }, [sort, top]);
 
-    // 🔹 Load next page when user reaches bottom
+    // Load next page when user reaches bottom
     useEffect(() => {
         if (inView && hasMoreImages && !loading) {
             getImages(currentPage);
@@ -92,15 +92,8 @@ function ExplorePage() {
             {/* Invisible div for detecting scroll */}
             <div ref={ref} style={{ height: "10px", background: "transparent" }}></div>
         </div>
-<<<<<<< HEAD
-        <Pagination>
-            
-        </Pagination>
-    </div>
-  )
-=======
+
     );
->>>>>>> ceb688a1d37cbf05ac7962fe14c852657aa6ebdb
 }
 
 export default ExplorePage;
