@@ -25,5 +25,9 @@ const axiosPrivate=axios.create({
     baseURL:`${BASE_URL}/user/`,
     withCredentials:true
 })
+const axiosNoAUth=axios.create({
+    baseURL:`${BASE_URL}/no-auth/`,
+    withCredentials:false
+})
 
-export { axiosInstance, useAxiosGenerateImage,axiosPrivate };
+export { axiosInstance, useAxiosGenerateImage,axiosPrivate,axiosNoAUth };
