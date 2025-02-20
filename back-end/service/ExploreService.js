@@ -121,6 +121,32 @@ exports.getExploreImageByIdService=async(explore_id)=>{
         }
     }
 }
+exports.getExploreImageByUserIdService=async(user_id)=>{
+    try{
+        const query ="SELECT * FROM Explore WHERE user_id =?"
+        const [rows] = await db.execute(query,[user_id])
+        if (rows.length == 0) {
+             return {
+                status:404,
+                message:"No images found by given user",
+                success:false
+            }
+        }
+        return {
+            status:200,
+            message:"images found successfully",
+            success:true,
+            images:rows
+        }
+    }catch( err){
+        console.error("error fetching images",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}
 
 exports.ViewExploreImageService=async(published_id)=>{
     try{
@@ -144,6 +170,25 @@ exports.ViewExploreImageService=async(published_id)=>{
 exports.LikeExploreImageService=async(published_id)=>{
     try{
         const query ="UPDATE ExploreMetrics SET likes_count = likes_count + 1 WHERE published_id =?"
+        const [rows] = await db.execute(query,[published_id])
+        console.log("Like count for image is updated")
+        return{
+            status:200,
+            message:"like count updated successfully",
+            success:true
+        }
+    }catch(err){
+        console.error("error updating like count",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}
+exports.UnlikeExploreImageService=async(published_id)=>{
+    try{
+        const query ="UPDATE ExploreMetrics SET likes_count = likes_count - 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
         console.log("Like count for image is updated")
         return{

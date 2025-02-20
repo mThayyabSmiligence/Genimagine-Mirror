@@ -2,7 +2,9 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, publishToExploreService } = require("../service/ExploreService");
+
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService } = require("../service/ExploreService");
+
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,image_path,caption}= req.body;
@@ -48,6 +50,14 @@ exports.getExploreImageByIdController=async (req,res)=>{
 
 }
 
+exports.getExploreImageByUserIdController=async(req,res)=>{
+
+    const exploreImages= await getExploreImageByUserIdService(req.user.id);
+    
+    return res.status(exploreImages.status).json(exploreImages);
+ 
+}
+
 exports.ViewExploreImageController=async(req,res)=>{
     //logic to view explore image
     const {published_id}=req.params;
@@ -64,4 +74,13 @@ exports.LikeExploreImageController = async(req, res) => {
     const result = await LikeExploreImageService(published_id);
     
     return res.status(result.status).json(result);
+}
+
+exports.UnlikeExploreImageController=async(req,res)=>{
+    const {published_id}=req.params;
+    const {id}=req.user;
+    
+    const result = await UnlikeExploreImageService(published_id);
+    
+    return res.status(result.status).json(result);  
 }
