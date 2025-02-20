@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import {useInView} from 'react-intersection-observer'
 
 
 const sortOptions = [
@@ -18,12 +19,15 @@ const sortOptions = [
         { value: 'year', label: 'Year' },
         { value: 'all', label: 'All'}
     ]
-function SortSection() {
-    const [sortSelectedIndex,setSortSelectedIndex]=useState(0)
-    const [topSelectedIndex,setTopSelectedIndex]=useState(0)
-    const [sort, setSort] = useState(sortOptions[0].value);
-    const [top, setTop] = useState(TopOptions[0].value);
+function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelectedIndex}) {
+    
 
+    
+
+    useEffect(()=>{
+        setSort(sortOptions[0].value);
+        setTop(TopOptions[0].value);
+    },[])
     
 
     const handleSortChange = (event) => {
@@ -61,7 +65,7 @@ function SortSection() {
         <div className='mx-2'>
         <Box sx={{ minWidth: 120, width:"150px"}} >
             <FormControl fullWidth size='small'>
-                <InputLabel id="demo-simple-select-label">Sort</InputLabel>
+                <InputLabel id="demo-simple-select-label">Top</InputLabel>
                 <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
