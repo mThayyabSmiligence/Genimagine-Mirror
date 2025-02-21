@@ -69,11 +69,22 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
 }
 
 
-exports.getExploreImagesService = async ({ sort, time, page }) => {
+exports.getExploreImagesService = async ({ sort, time, page ,user_id}) => {
     try {
-        let query = `SELECT e.*, em.likes_count, em.views_count, em.ranking_score 
-                     FROM Explore e 
-                     JOIN ExploreMetrics em ON e.published_id = em.published_id`;
+        let query = `
+        SELECT 
+            e.*, 
+            em.likes_count, 
+            em.views_count, 
+            em.ranking_score,
+            CASE 
+                WHEN el.user_id IS NOT NULL THEN TRUE 
+                ELSE FALSE 
+            END AS isUserLiked
+        FROM Explore e
+        JOIN ExploreMetrics em ON e.published_id = em.published_id
+        LEFT JOIN ExploreLikes el ON e.published_id = el.published_id AND el.user_id = ?
+    `;
         let conditions = [];
         let params = [];
 
@@ -115,7 +126,7 @@ exports.getExploreImagesService = async ({ sort, time, page }) => {
         // 🟢 4️⃣ Execute Query
 
         
-        const [rows] = await db.execute(query);
+        const [rows] = await db.execute(query,[user_id||0]);
 
         if (rows.length === 0) {
             return {
