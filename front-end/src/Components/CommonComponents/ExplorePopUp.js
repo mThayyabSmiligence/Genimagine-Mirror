@@ -1,5 +1,8 @@
 import React from 'react';
 import '../../Css/ExplorePopUp.css'
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function ExplorePopUp({ image, onClose }) {
   return (
@@ -17,12 +20,23 @@ function ExplorePopUp({ image, onClose }) {
               </div>
             </div>
           </div>
+
           <div className='image-caption'>
             <h5 className='caption-header'>Caption :</h5>
             <div className='caption-text-container p-2'>
               <div className='caption-text-innner-container'>
                 <p className='m-0'>{image.caption}</p>
               </div>
+            </div>
+
+          </div>
+
+          <div className='explore-metrics d-flex  justify-content-end'>
+            <div className='user-like-container'>
+              <button className=' button light-button user-like-button d-flex align-items-center'><FavoriteBorderIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+            </div>
+            <div className='user-view-container mx-2'>
+              <button className='button light-button user-view-button d-flex align-items-center'><VisibilityIcon/><p className="ms-2 m-0 ">{image.views_count}</p></button>
             </div>
           </div>
         </div>

@@ -92,8 +92,20 @@
 
 .image-caption{
     border-radius: 10px;
+
     height: 45%;
 }
+
+
+.user-like-button,.user-view-button{
+    height: 30px;
+    border-radius: 100px;
+
+}
+.user-like-button p,.user-view-buttons p{
+    margin-left: 10px;
+}
+
 .caption-inner-text-container p {
   text-align: start;
 }
