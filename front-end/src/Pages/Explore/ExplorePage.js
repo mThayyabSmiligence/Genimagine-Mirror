@@ -3,6 +3,7 @@ import SortSection from "../../Components/Explore/SortSection";
 import { axiosNoAUth } from "../../API's/axios";
 import "../../Css/ExplorePage.css";
 import { useInView } from "react-intersection-observer";
+import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
 
 function ExplorePage() {
     const [images, setImages] = useState([]);
@@ -14,6 +15,7 @@ function ExplorePage() {
     const [topSelectedIndex, setTopSelectedIndex] = useState(0);
     const [sort, setSort] = useState(""); // Sorting method (recent/top)
     const [top, setTop] = useState(""); // Time filter (day/week/month)
+    const [selectedImage, setSelectedImage] = useState(false);
 
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
@@ -59,6 +61,14 @@ function ExplorePage() {
         }
     }, [inView]);
 
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+    };
+
+    const handleClosePopup = () => {
+        setSelectedImage(false);
+    };
+
     return (
         <div className="mt-5 explore-page-container">
             <div className="explore-heading text-start ms-3 mb-3">
@@ -79,7 +89,9 @@ function ExplorePage() {
             <div className="explore-body">
                 <div className="explore-image-container  my-4">
                     {images.map((image, index) => (
-                        <div key={index} className="explore-image  d-flex justify-content-center align-items-center my-2">
+                        <div key={index} className="explore-image blur-background d-flex justify-content-center align-items-center my-2"
+                        onClick={() => handleImageClick(image)}
+                        >
                             <img src={image.image_url} alt={image.caption} className="br-10" />
                         </div>
                     ))}
@@ -91,6 +103,8 @@ function ExplorePage() {
 
             {/* Invisible div for detecting scroll */}
             <div ref={ref} style={{ height: "10px", background: "transparent" }}></div>
+
+            <ExplorePopUp image={selectedImage} onClose={handleClosePopup} />
         </div>
 
     );

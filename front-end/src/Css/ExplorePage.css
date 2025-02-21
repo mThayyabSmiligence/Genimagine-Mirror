@@ -20,6 +20,7 @@
     overflow: hidden;
     height: fit-content;
     width: fit-content;
+    cursor: pointer;
 }
 
 .explore-image img{
