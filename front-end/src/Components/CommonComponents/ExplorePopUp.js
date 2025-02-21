@@ -36,6 +36,7 @@ function ExplorePopUp({ image, onClose }) {
       console.log(response)
       if(response.data.success){
         image.likes_count++
+        image.isUserLiked=1;
         console.log("Like count updated successfully")
         console.log(response.data)
       }
@@ -50,6 +51,7 @@ function ExplorePopUp({ image, onClose }) {
       console.log(response)
       if(response.data.success){
         image.likes_count--
+        image.isUserLiked=0
         console.log("Like count updated successfully")
         console.log(response.data)
       }
@@ -87,7 +89,12 @@ function ExplorePopUp({ image, onClose }) {
 
           <div className='explore-metrics d-flex justify-content-end'>
             <div className='user-like-container'>
-              <button onClick={() => addLikes()} className=' button light-button user-like-button d-flex align-items-center'><FavoriteBorderIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+              {
+                image.isUserLiked?
+                <button onClick={() => removeLike()} className='button light-button user-like-button d-flex align-items-center'><FavoriteIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+                :
+                <button onClick={() => addLikes()} className='button light-button user-like-button d-flex align-items-center'><FavoriteBorderIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+              }
             </div>
             <div className='user-view-container mx-2'>
               <button className='button light-button user-view-button d-flex align-items-center'><VisibilityIcon/><p className="ms-2 m-0 ">{image.views_count}</p></button>
