@@ -35,12 +35,12 @@ exports.publishToExploreController=async(req,res)=>{
 
 exports.getAllExploreImagesController=async(req,res)=>{
     try {
-        const { sort, time, page } = req.query;
+        const { sort, time, page ,user_id} = req.query;
 
-        const response = await getExploreImagesService({ sort, time, page });
+        const response = await getExploreImagesService({ sort, time, page,user_id});
 
         res.status(response.status).json(response);
-    } catch (err) {
+    }catch (err) {
         console.error("Error in explore API:", err);
         res.status(500).json({
             message: "Internal server error",
