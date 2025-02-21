@@ -37,7 +37,22 @@ exports.getAllExploreImagesController=async(req,res)=>{
     try {
         const { sort, time, page ,user_id} = req.query;
 
-        const response = await getExploreImagesService({ sort, time, page,user_id});
+    let cookies =null
+    let token =null 
+    let decodeToken=null
+    let userId=0;
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+        userId=decodeToken.id
+    }catch(err){
+        
+    }
+        const response = await getExploreImagesService( sort, time, page,userId);
 
         res.status(response.status).json(response);
     }catch (err) {
