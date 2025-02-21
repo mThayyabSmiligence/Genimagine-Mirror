@@ -52,7 +52,8 @@ const onTokenRefreshed = () => {
   refreshSubscribers = [];
 };
 
-// // Response interceptor for axiosInstance
+// Response interceptor for axiosInstance
+
 // axiosInstance.interceptors.response.use(
 //   (response) => response, // If response is OK, return it
 //   async (error) => {
@@ -124,7 +125,8 @@ const onTokenRefreshed = () => {
 //       });
 //     }
 
-//     return Promise.reject(error);  
+//     return Promise.reject(error);
+
 //   }
 // );
 
