@@ -69,7 +69,7 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
 }
 
 
-exports.getExploreImagesService = async ({ sort, time, page ,user_id}) => {
+exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
     try {
         let query = `
         SELECT 
