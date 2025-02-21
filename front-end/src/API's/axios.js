@@ -53,79 +53,79 @@ const onTokenRefreshed = () => {
 };
 
 // Response interceptor for axiosInstance
-axiosInstance.interceptors.response.use(
-  (response) => response, // If response is OK, return it
-  async (error) => {
-    const originalRequest = error.config;
+// axiosInstance.interceptors.response.use(
+//   (response) => response, // If response is OK, return it
+//   async (error) => {
+//     const originalRequest = error.config;
 
-    // If the error is 401 Unauthorized
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+//     // If the error is 401 Unauthorized
+//     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
 
-      if (!isRefreshing) {
-        isRefreshing = true;
-        try {
-          await refreshAccessToken();
-          isRefreshing = false;
+//       if (!isRefreshing) {
+//         isRefreshing = true;
+//         try {
+//           await refreshAccessToken();
+//           isRefreshing = false;
 
-          console.log("Got new token with refresh token");
+//           console.log("Got new token with refresh token");
 
-          // Notify all waiting requests that refresh is complete
-          onTokenRefreshed();
+//           // Notify all waiting requests that refresh is complete
+//           onTokenRefreshed();
 
-          // Retry the original request (cookies are automatically sent)
-          return axiosInstance(originalRequest);
-        } catch (refreshError) {
-          isRefreshing = false;
-          return Promise.reject(refreshError);
-        }
-      }
+//           // Retry the original request (cookies are automatically sent)
+//           return axiosInstance(originalRequest);
+//         } catch (refreshError) {
+//           isRefreshing = false;
+//           return Promise.reject(refreshError);
+//         }
+//       }
 
-      // If another request is already refreshing the token, queue this request
-      return new Promise((resolve) => {
-        refreshSubscribers.push(() => {
-          resolve(axiosInstance(originalRequest));
-        });
-      });
-    }
+//       // If another request is already refreshing the token, queue this request
+//       return new Promise((resolve) => {
+//         refreshSubscribers.push(() => {
+//           resolve(axiosInstance(originalRequest));
+//         });
+//       });
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
-// Response interceptor for axiosPrivate
-axiosPrivate.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+// // Response interceptor for axiosPrivate
+// axiosPrivate.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+//     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
 
-      if (!isRefreshing) {
-        isRefreshing = true;
-        try {
-          await refreshAccessToken();
-          isRefreshing = false;
+//       if (!isRefreshing) {
+//         isRefreshing = true;
+//         try {
+//           await refreshAccessToken();
+//           isRefreshing = false;
 
-          onTokenRefreshed();
+//           onTokenRefreshed();
 
-          return axiosPrivate(originalRequest);
-        } catch (refreshError) {
-          isRefreshing = false;
-          return Promise.reject(refreshError);
-        }
-      }
+//           return axiosPrivate(originalRequest);
+//         } catch (refreshError) {
+//           isRefreshing = false;
+//           return Promise.reject(refreshError);
+//         }
+//       }
 
-      return new Promise((resolve) => {
-        refreshSubscribers.push(() => {
-          resolve(axiosPrivate(originalRequest));
-        });
-      });
-    }
+//       return new Promise((resolve) => {
+//         refreshSubscribers.push(() => {
+//           resolve(axiosPrivate(originalRequest));
+//         });
+//       });
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
 export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth };
