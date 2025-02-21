@@ -106,8 +106,32 @@ console.log("faInfoCircle:", faInfoCircle);
         setUsernameValidity(USER_REGEX.test(username));
     },[username])
 
+    useEffect(() => {
+        if (next) {
+            const timer = setTimeout(() => {
+                setNext(false);
+            }, 3000); // 10 seconds
+    
+            return () => clearTimeout(timer);
+        }
+    }, [next]);
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!USER_REGEX.test(username)) {
+            if (username.length < 4) {
+                setError("Username must be at least 4 characters long.");
+            } else if (username.length > 24) {
+                setError("Username must not exceed 24 characters.");
+            } else if (!/^[A-Za-z]/.test(username)) {
+                setError("Username must start with a letter.");
+            } else {
+                setError("Username can only contain letters, numbers, hyphens, and underscores.");
+            }
+            return;
+        }
 
         if (!isCaptchaVerified) {
             alert("Please solve the CAPTCHA correctly.");
@@ -125,7 +149,8 @@ console.log("faInfoCircle:", faInfoCircle);
                 });
             console.log(response);
             setNext(true);
-            setError(null)
+            setError(null)      
+            resetForm();
         } catch (error) {
             setError(error.message);
             console.log(error)
@@ -133,6 +158,17 @@ console.log("faInfoCircle:", faInfoCircle);
             setErrorCode(error?.response?.status)
         }
     };
+
+    const resetForm = () => {
+        setUserName('');
+        setEmail('');
+        setDob('');
+        setPassword('');
+        setConfirmPassword('');
+        setIsCaptchaVerified(false);
+        setPasswordVisibility(false);
+        setConfirmPasswordVisibility(false);
+      };
   return (
     <>
             <div className='login d-flex flex-column justify-content-center align-items-center'>
