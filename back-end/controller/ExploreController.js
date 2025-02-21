@@ -102,7 +102,7 @@ exports.UnlikeExploreImageController=async(req,res)=>{
     const {published_id}=req.params;
     const {id}=req.user;
     
-    const result = await UnlikeExploreImageService(published_id);
+    const result = await UnlikeExploreImageService(published_id,id);
     
     return res.status(result.status).json(result);  
 }

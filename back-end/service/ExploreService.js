@@ -296,7 +296,27 @@ exports.LikeExploreImageService=async(published_id,user_id)=>{
     }
    
 }
-exports.UnlikeExploreImageService=async(published_id)=>{
+exports.UnlikeExploreImageService=async(published_id,user)=>{
+    try{
+        const query="DELETE FROM explorelikes WHERE user_id =? AND published_id =?"
+        const [rows] = await db.execute(query,[user,published_id])
+        if(rows.affectedRows===0){
+            console.log("user didn't ullike the image")
+            return {
+                status:404,
+                message:"user didn't ullike the image",
+                success:false
+            }
+        }
+    }
+    catch(err){
+        console.error("error deleting user like",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
     try{
         const query ="UPDATE ExploreMetrics SET likes_count = likes_count - 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
