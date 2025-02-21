@@ -3,6 +3,7 @@ import SortSection from "../../Components/Explore/SortSection";
 import { axiosNoAUth } from "../../API's/axios";
 import "../../Css/ExplorePage.css";
 import { useInView } from "react-intersection-observer";
+import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
 
 function ExplorePage() {
     const [images, setImages] = useState([]);
@@ -14,6 +15,7 @@ function ExplorePage() {
     const [topSelectedIndex, setTopSelectedIndex] = useState(0);
     const [sort, setSort] = useState(""); // Sorting method (recent/top)
     const [top, setTop] = useState(""); // Time filter (day/week/month)
+    const [selectedImage, setSelectedImage] = useState(false);
 
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
@@ -44,20 +46,28 @@ function ExplorePage() {
         }
     };
 
-    // 🔹 Load first page when sort or top changes
+    // Load first page when sort or top changes
     useEffect(() => {
-        setImages([]); // ✅ Clear images
-        setCurrentPage(1); // ✅ Reset pagination
-        setHasMoreImages(true); // ✅ Enable loading new data
-        getImages(1, true); // ✅ Fetch fresh images
+        setImages([]); 
+        setCurrentPage(1); 
+        setHasMoreImages(true); 
+        getImages(1, true); 
     }, [sort, top]);
 
-    // 🔹 Load next page when user reaches bottom
+    // Load next page when user reaches bottom
     useEffect(() => {
         if (inView && hasMoreImages && !loading) {
             getImages(currentPage);
         }
     }, [inView]);
+
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+    };
+
+    const handleClosePopup = () => {
+        setSelectedImage(false);
+    };
 
     return (
         <div className="mt-5 explore-page-container">
@@ -79,7 +89,11 @@ function ExplorePage() {
             <div className="explore-body">
                 <div className="explore-image-container  my-4">
                     {images.map((image, index) => (
-                        <div key={index} className="explore-image  d-flex justify-content-center align-items-center my-2  br-10">
+
+                        <div key={index} className="explore-image blur-background d-flex justify-content-center align-items-center my-2 br-10"
+                        onClick={() => handleImageClick(image)}
+                        >
+
                             <img src={image.image_url} alt={image.caption} className="br-10" />
                         </div>
                     ))}
@@ -91,7 +105,10 @@ function ExplorePage() {
 
             {/* Invisible div for detecting scroll */}
             <div ref={ref} style={{ height: "10px", background: "transparent" }}></div>
+
+            <ExplorePopUp image={selectedImage} onClose={handleClosePopup} />
         </div>
+
     );
 }
 
