@@ -4,21 +4,24 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.87);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10;
     height: 100%;
     width: 100%;
+    overflow-y:auto ;
   }
+
+
+
   
   .explore-popup-content {
     padding: 10px;
     border-radius: 10px;
     width: 90%;
     height: 90%;
-    overflow-y: auto;
     position: relative;
     display: flex;
     justify-content: center;
@@ -54,26 +57,92 @@
     margin-top: 20px;
     width: 40%;
   }
-
-  .image-prompt{
-    margin-bottom: 10px;
-    font-size: 18px;
-    background-color: rgb(248, 248, 248);
-    border-radius: 10px;
-    height: 250px;
-    width: 100%;
-    overflow-y : auto;
-    margin-bottom: 50px;
+  .image-details,.popup-image{
+    padding: 10px;
   }
 
-  .prompt-text-container {
-    word-wrap: break-word; /* Ensures long words break */
-    overflow-wrap: break-word; /* Alternative for better support */
-    white-space: normal; /* Allows text wrapping */
+  .image-prompt{
+    font-size: 15px;
+   
+    height: 40%;
+    width: 100%;
+    
+
+    margin-bottom: 5%;
+  }
+
+  .prompt-header,.caption-header{
+    text-align: start;
+    color: rgb(199, 199, 199);
+    font-weight: 400;
+  }
+
+  .prompt-text-container ,.caption-text-container {
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    overflow-y : auto;
+    height: 80%;
+} 
+
+.prompt-text-innner-container,.caption-inner-text-container{
+  word-wrap: break-word; /* Ensures long words break */
+  overflow-wrap: break-word; /* Alternative for better support */
+  white-space: normal; 
 }
 
 .image-caption{
-    background-color: rgb(248, 248, 248);
     border-radius: 10px;
-    height: 300px;
+    height: 45%;
 }
+.caption-inner-text-container p {
+  text-align: start;
+}
+@media (min-width: 1920px) and (max-width: 2560px) {
+  /* Styles for 1080p screens */
+ 
+}
+
+@media (min-width: 1367px) and (max-width: 1919px) {
+  
+}
+
+@media (min-width: 1280px) and (max-width: 1366px) {
+  /* Styles for 720p screens */
+  .explore-popup-overlay{
+    height: 633px;
+  }
+  
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  /* Styles for tablets and small laptops */
+  
+ 
+}
+
+
+
+
+@media (max-width: 767px) {
+
+    .explore-popup-content{
+      flex-direction: column;
+      align-items: center;
+    }
+    .image-details{
+      width: 90%
+    }
+    .popup-image-container{
+      width: 90%;
+    }
+    .image-prompt{
+      height: 200px;
+    }
+    .image-caption{
+      height: 300px;
+    }
+    .popup-image-container{
+      height: 500px;
+    }
+  
+}
+
