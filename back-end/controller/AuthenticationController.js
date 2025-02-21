@@ -4,7 +4,7 @@ const CryptoJS = require('crypto-js')
 const db = require('../config/connectDatabase');
 const bcrypt = require('bcrypt');
 const cookie = require("cookie");
-const { generateToken, generateRefreshToken} = require('../service/JWTtokenGeneration');
+const { generateToken, generateRefreshToken, generateTokenWithRefreshToken} = require('../service/JWTtokenGeneration');
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const { use } = require('../routes/AuthenticationRoute');
@@ -739,3 +739,37 @@ exports.testSendMail=async(req,res)=>{
 
        res.status(200).json({message:emailSent})
 }
+
+
+exports.generateTokenWithRefreshTokenController = async (req, res) => {
+    try {
+        // Get the refresh token from the cookie
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(403).json({ message: "Refresh token is missing." });
+        }
+
+        // Generate new access token using the refresh token
+        const newAccessToken = await generateTokenWithRefreshToken(refreshToken);
+
+        if (!newAccessToken) {
+            return res.status(401).json({ message: "Invalid or expired refresh token." });
+        }
+
+        let options = {
+            maxAge: 1000 * 60 * 60, // expire after 60 minutes
+            httpOnly: true, // Cookie will not be exposed to client side code
+            sameSite: "none", // If client and server origins are different
+            secure: true // use with HTTPS only
+        }
+        // Set the new access token in cookies
+        res.cookie("token", newAccessToken, options);
+
+        return res.json({ message: "Token refreshed successfully" });
+
+    } catch (error) {
+        console.error("Refresh token error:", error.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};

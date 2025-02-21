@@ -89,9 +89,11 @@ function ExplorePage() {
             <div className="explore-body">
                 <div className="explore-image-container  my-4">
                     {images.map((image, index) => (
-                        <div key={index} className="explore-image blur-background d-flex justify-content-center align-items-center my-2"
+
+                        <div key={index} className="explore-image blur-background d-flex justify-content-center align-items-center my-2 br-10"
                         onClick={() => handleImageClick(image)}
                         >
+
                             <img src={image.image_url} alt={image.caption} className="br-10" />
                         </div>
                     ))}

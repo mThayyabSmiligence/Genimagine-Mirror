@@ -26,6 +26,11 @@
 .explore-image img{
     object-fit:cover;
     width: 100%;
+    transition: 200ms;
 }
+.explore-image img:hover{
+    transform: scale(1.05);
+}
+
 
 
