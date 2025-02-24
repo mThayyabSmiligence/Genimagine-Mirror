@@ -110,7 +110,7 @@ console.log("faInfoCircle:", faInfoCircle);
         if (next) {
             const timer = setTimeout(() => {
                 setNext(false);
-            }, 3000); // 10 seconds
+            }, 3000); // 3 seconds
     
             return () => clearTimeout(timer);
         }
@@ -176,14 +176,23 @@ console.log("faInfoCircle:", faInfoCircle);
                     <img className='login-logo' src={logo} alt='genimagin'/>
                 
                 <div className='login-page br-10'>
-                    {
+                    {error ? (
+                        <div className='alert alert-danger'>{errorMessage}</div>
+                    ) : next ? (
+                        <div className='alert alert-success'>Link has been sent to your email to Verify the Email.</div>
+                    ) : null}
+
+
+                    {/* {
                         error &&
                         <div className='alert alert-danger'>{errorMessage}</div>
                     }
                     {
                         next &&
                         <div className='alert alert-success'>Link has been sent to your email to Verify the Email.</div>
-                    }
+                    } */}
+
+                    
                     <div>
                         <h3 className='text-start ms-2'>Create Account</h3>
                     </div>

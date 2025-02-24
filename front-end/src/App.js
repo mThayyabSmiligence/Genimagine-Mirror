@@ -20,7 +20,9 @@ import ProfilePage from './Pages/User/ProfilePage';
 import LibraryPage from './Pages/User/LibraryPage';
 import PublishImagePage from './Pages/User/PublishImagePage';
 import ExplorePage from './Pages/Explore/ExplorePage';
+import LandingPage from './Pages/LandingPage/LandingPage';
 import AuthenticationLayout from './Layouts/AuthenticationLayout';
+
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -43,6 +45,9 @@ function App() {
           
        
           <Routes>
+
+            <Route path='/' element={<LandingPage/>}></Route>\
+
             <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
               <Route path='login' element={<Login></Login>}></Route> 
               <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
@@ -50,6 +55,7 @@ function App() {
               <Route path='forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
               <Route path='reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
             </Route>
+
             
 
 

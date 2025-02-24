@@ -8,7 +8,7 @@ exports.getCreditPackagesController=async(req,res)=>{
         return res.status(400).json({
             success: false,
             message: 'Failed to get credit purchase packages',
-        });
+     });
     }
 
     return res.status(200).json({
