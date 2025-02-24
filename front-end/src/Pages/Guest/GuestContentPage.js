@@ -3,7 +3,7 @@ import PromptInPutContainer from '../../Components/CommonComponents/PromptInputC
 import "../../Css/GuestContentContainer.css"
 import SuggestionPrompts from '../../Components/CommonComponents/SuggestionPrompts'
 import ChatContainer from '../../Components/CommonComponents/ChatContainer'
-import { useAxiosGenerateImage } from '../../API\'s/axios'
+import { axiosPrivate, useAxiosGenerateImage } from '../../API\'s/axios'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../Hooks/useAuth'
 import AuthContext from '../../Context/AuthProvider'
@@ -11,12 +11,12 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function GuestContentPage() {
 
+    const {loggedIn} = useContext(AuthContext)
 
-     const [trackmodel,setTrackModel] = useState(1)
+    const [trackmodel,setTrackModel] = useState(1)
     const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
 
     const navigate =useNavigate()
-    const {loggedIn} = useContext(AuthContext)
     const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
@@ -91,16 +91,37 @@ export default function GuestContentPage() {
 
   
       try {
-        
-        const response = await axiosGenerateImage.post(
-          '/',
+
+          console.log("logged in ?" , loggedIn)
+          let response;     
+
+
+          if(loggedIn){
+            response = await axiosPrivate.post(
+              '/generate-image',
           { 
             prompt: promptText ,
             model:trackmodel,
             aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
           
-          }, // Ensure the response is handled as binary
-        );
+          },
+            )
+          }
+          else{
+            response = await axiosGenerateImage.post(
+              '/',
+              { 
+                prompt: promptText ,
+                model:trackmodel,
+                aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+              
+              }, // Ensure the response is handled as binary
+            );
+
+          }
+        
+           
+          
         console.log(response.data)
         if(response.data.credits){
           

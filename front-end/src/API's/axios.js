@@ -11,12 +11,11 @@ const axiosInstance = axios.create({
 const useAxiosGenerateImage = () => {
   const { auth, loggedIn } = useAuth();
 
+  
   const instance = axios.create({
-    baseURL: loggedIn
-      ? `${BASE_URL}/user/generate-image`
-      : `${BASE_URL}/generate-image`,
+    baseURL: `${BASE_URL}/generate-image`,
     withCredentials: true, // Include cookies
-  });
+  })
 
   return instance;
 };
