@@ -12,7 +12,7 @@ exports.generateToken = (user) => {
     console.log()
     const secretKey = process.env.JWT_SECRET_KEY || '80676218f9466f7e32dd5e6ba01a9bddb29d624d45e67269362a49a66c1b38e7e2387893f17ae2374f4740c490fc0fc6a449510da9ebdc3906f9236192ab2bf4'
     const options = {
-        expiresIn:'1h',
+        expiresIn:'60s',
 
     };
 
@@ -51,7 +51,7 @@ exports.generateTokenWithRefreshToken = async (refreshToken) => {
 
         console.log("regenerating token with refresh token")
         console.log(user)
-        const accessToken = this.generateToken({ id: user.id, username: user.username ,role:user.role});
+        const accessToken = this.generateToken({ user_id: user.id, username: user.username ,role:user.role});
         console.log("checking")
         
         

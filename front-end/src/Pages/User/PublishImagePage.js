@@ -70,7 +70,7 @@ function PublishImagePage() {
               </div>
               <div className='publish-button-container d-flex justify-content-end'>
                 <button className='publish-button button-wh dark-button-wh d-flex px-5'>
-                  <p onClick={handlePublish} className='flex-1'>Publish</p>
+                  <p onClick={()=>handlePublish()} className='flex-1'>Publish</p>
                   <span className="material-symbols-outlined ms-2">send</span>
                 </button>
               </div>

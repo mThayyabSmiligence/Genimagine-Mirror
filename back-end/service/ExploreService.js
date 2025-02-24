@@ -1,12 +1,34 @@
 const db = require('../config/connectDatabase');
 const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
-exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)=>{
+exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
+    let generated_image_data;
     let image_data;
     let published_id;
 
     try{
-        const response = await uploadImageToExplore(user_id,image_path,token)
+        const query = "SELECT * FROM generated_images WHERE image_id=?"
+        const [rows]= await db.execute(query,[image_id])
+        if(rows.length==0   ){
+            return {
+                status:404,
+                message:"image not found",
+                success:false
+            }
+        }
+        generated_image_data=rows[0]
+
+    }catch(e){
+        console.error("error fetching image",e)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+
+    try{
+        const response = await uploadImageToExplore(user_id,generated_image_data.image_path,token)
         if(response.status!= 200){
             return response
         }
@@ -20,8 +42,8 @@ exports.publishToExploreService=async(image_id,image_path,caption,token,user_id)
         }
     }
     try{
-        const query ="INSERT INTO Explore (user_id, caption,image_id, image_url, image_path) VALUES (?, ?, ?, ?,?)"
-        const [rows] = await db.execute(query,[user_id,caption,image_id,image_data.imageUrl,image_data.imagePath])
+        const query ="INSERT INTO Explore (user_id,prompt, caption,image_id, image_url, image_path) VALUES (?, ?,?, ?, ?,?)"
+        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,caption,image_id,image_data.imageUrl,image_data.imagePath])
 
         if (rows.affectedRows == 0) {
              return {
