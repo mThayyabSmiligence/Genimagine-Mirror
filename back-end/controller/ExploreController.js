@@ -2,7 +2,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService } = require("../service/ExploreService");
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,caption}= req.body;
@@ -105,4 +105,28 @@ exports.UnlikeExploreImageController=async(req,res)=>{
     const result = await UnlikeExploreImageService(published_id,id);
     
     return res.status(result.status).json(result);  
+}
+exports.getExploreImagesByUserId=async(req,res)=>{
+    let cookies =null
+    let token =null 
+    let decodeToken=null
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+    }catch(err){
+        console.log(err)    
+        return res.status(401).json({
+            message:"unauthorized"
+        })
+    }
+
+    //logic to get explore images by user id
+    const exploreImages= await getExploreImagesByUserIdService(decodeToken.id);
+    
+    return res.status(exploreImages.status).json(exploreImages);
+ 
 }

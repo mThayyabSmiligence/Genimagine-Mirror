@@ -27,7 +27,7 @@ const axiosPrivate = axios.create({
 
 const axiosNoAUth = axios.create({
   baseURL: `${BASE_URL}/no-auth/`,
-  withCredentials: false,
+  withCredentials: true,
 });
 
 // Variable to track token refreshing process

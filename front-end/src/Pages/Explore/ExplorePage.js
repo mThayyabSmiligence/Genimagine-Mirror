@@ -74,7 +74,7 @@ function ExplorePage() {
             <div className="explore-heading text-start ms-3 mb-3">
                 <h1>Explore</h1>
             </div>
-            <div className="explore-sort-section">
+            <div className="explore-sort-section mb-3">
                 <SortSection
                     sort={sort}
                     setSort={setSort}

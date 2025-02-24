@@ -357,3 +357,29 @@ exports.UnlikeExploreImageService=async(published_id,user)=>{
         }
     }
 }
+exports.getExploreImagesByUserIdService=async(user_id)=>{
+    try{
+        const query ="SELECT * FROM Explore WHERE user_id =?"
+        const [rows] = await db.execute(query,[user_id])
+        if (rows.length == 0) {
+             return {
+                status:404,
+                message:"No images found by given user",
+                success:false
+            }
+        }
+        return {
+            status:200,
+            message:"images found successfully",
+            success:true,
+            images:rows
+        }
+    }catch( err){
+        console.error("error fetching images",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}

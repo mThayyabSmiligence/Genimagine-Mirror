@@ -42,7 +42,7 @@ app.use(cookieParser());
 app.use('/api/v1/user',verifyToken,usersRouter);
 app.use('/api/v1',generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
-app.use('/api/v1/auth',AuthenticationRoutes)
+app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthRouter)
 
 

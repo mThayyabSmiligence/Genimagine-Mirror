@@ -48,8 +48,8 @@ function App() {
 
             <Route path='/' element={<LandingPage/>}></Route>\
 
-            <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
               <Route path='login' element={<Login></Login>}></Route> 
+            <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
               <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
               <Route path='user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
               <Route path='forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>

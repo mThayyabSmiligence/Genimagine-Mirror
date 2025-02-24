@@ -203,3 +203,14 @@ exports.deleteFromLibraryController =async(req,res)=>{
     }) 
 }
 
+exports.editUserController=async(req,res)=>{
+    const {id}=req.user;
+    const {userName}=req.body;
+
+    const result = await editUserService(id,userName);
+    
+    return res.status(result.status).json({
+        message:result.message,
+        success:result.success
+    })
+}
