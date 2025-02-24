@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import '../../Css/ExplorePopUp.css'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -7,6 +7,7 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 
 function ExplorePopUp({ image, onClose }) {
   const hasViewed = useRef(false); // Prevents multiple calls
+  const [isUserLiked,setIsUserLiked]=useState(false)
 
   useEffect(() => {
     if (!hasViewed.current) {
@@ -15,6 +16,14 @@ function ExplorePopUp({ image, onClose }) {
     }
     console.log(image);
   }, []);
+  useEffect(()=>{
+    if(image.isUserLiked===1){
+      setIsUserLiked(true)
+    }else{
+      setIsUserLiked(false)
+    }
+    console.log("User likes state updated")
+  },[])
 
   const showview = async() => {
 
@@ -37,8 +46,8 @@ function ExplorePopUp({ image, onClose }) {
       if(response.data.success){
         image.likes_count++
         image.isUserLiked=1;
+        setIsUserLiked(true)
         console.log("Like count updated successfully")
-        console.log(response.data)
       }
     }catch(error){
       console.log(error)
@@ -52,8 +61,8 @@ function ExplorePopUp({ image, onClose }) {
       if(response.data.success){
         image.likes_count--
         image.isUserLiked=0
-        console.log("Like count updated successfully")
-        console.log(response.data)
+        setIsUserLiked(false)
+        console.log("Like count updated successfully, unlike")
       }
     }catch(error){
       console.log(error)
@@ -90,7 +99,7 @@ function ExplorePopUp({ image, onClose }) {
           <div className='explore-metrics d-flex justify-content-end'>
             <div className='user-like-container'>
               {
-                image.isUserLiked?
+                isUserLiked?
                 <button onClick={() => removeLike()} className='button light-button user-like-button d-flex align-items-center'><FavoriteIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
                 :
                 <button onClick={() => addLikes()} className='button light-button user-like-button d-flex align-items-center'><FavoriteBorderIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>

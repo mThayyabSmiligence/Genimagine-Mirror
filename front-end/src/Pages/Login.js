@@ -154,14 +154,21 @@ export default function Login() {
                 <img className='login-logo' src={logo} alt='genimagin'/>
             
             <div className='login-page br-10'>
-                {
+
+                
+                    {error ? (
+                        <div className='alert alert-danger'>{errorMessage}</div>
+                    ) : succcess ? (
+                        <div className='alert alert-success'>{successMessage}</div>
+                    ) : null}
+                {/* {
                     error&&
                     <div className='alert alert-danger'>{errorMessage}</div>
                 }
                 {
                     succcess&&
                     <div className='alert alert-success'>{successMessage}</div>
-                }
+                } */}
                 <div className='d-flex justify-content-between'>
                     <h3 className='text-start ms-2'>Sign-In</h3>
                     <div className='toggle-auth-method text-end'>

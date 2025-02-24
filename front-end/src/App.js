@@ -20,6 +20,7 @@ import ProfilePage from './Pages/User/ProfilePage';
 import LibraryPage from './Pages/User/LibraryPage';
 import PublishImagePage from './Pages/User/PublishImagePage';
 import ExplorePage from './Pages/Explore/ExplorePage';
+import LandingPage from './Pages/LandingPage/LandingPage';
 
 function App() {
   const[showNavBar,setShowNavBar]=useState(true)
@@ -42,6 +43,7 @@ function App() {
           
        
           <Routes>
+            <Route path='/' element={<LandingPage/>}></Route>
             <Route path='/login' element={<Login></Login>}></Route> 
             <Route path='/register' element={<RegisterUser></RegisterUser>}></Route>
             <Route path='/user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
