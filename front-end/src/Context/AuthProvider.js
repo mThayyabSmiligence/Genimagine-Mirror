@@ -14,7 +14,7 @@ export const AuthProvider = ({children}) => {
     },[])
     const verifyUser = async() =>{
         try{
-            const response = await axiosPrivate("verify-token")
+            const response = await axiosPrivate.get("verify-token")
             console.log(response)
             setLoggedIn(true)
         }catch(err){

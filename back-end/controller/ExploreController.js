@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
-    const {image_id,image_path,caption}= req.body;
+    const {image_id,caption}= req.body;
     const {id}=req.user;
 
     let cookies =null
@@ -24,8 +24,8 @@ exports.publishToExploreController=async(req,res)=>{
             message:"unauthorized"
         })
     }
-    console.log("image id:",image_id,",image_path:",image_path,",catption:",caption?caption:"",",token:",token,"user_id:",id)
-    const response=await publishToExploreService(image_id, image_path,caption,token,id)
+    console.log("image id:",image_id,"catption:",caption?caption:"",",token:",token,"user_id:",id)
+    const response=await publishToExploreService(image_id,caption,token,id)
 
     console.log(response.status)
     return res.status(response.status).json(response)  
@@ -102,7 +102,7 @@ exports.UnlikeExploreImageController=async(req,res)=>{
     const {published_id}=req.params;
     const {id}=req.user;
     
-    const result = await UnlikeExploreImageService(published_id);
+    const result = await UnlikeExploreImageService(published_id,id);
     
     return res.status(result.status).json(result);  
 }

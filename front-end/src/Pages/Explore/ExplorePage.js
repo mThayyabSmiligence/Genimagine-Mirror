@@ -27,7 +27,7 @@ function ExplorePage() {
 
         let query = `?page=${pageNumber}`;
         if (sort) query += `&sort=${sort}`;
-        if (top) query += `&time=${top}`;
+        if (sort =='top'&&top) query += `&time=${top}`;
 
         try {
             console.log("Fetching:", query);

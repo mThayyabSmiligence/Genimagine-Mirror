@@ -744,8 +744,9 @@ exports.testSendMail=async(req,res)=>{
 exports.generateTokenWithRefreshTokenController = async (req, res) => {
     try {
         // Get the refresh token from the cookie
-        const refreshToken = req.cookies?.refreshToken;
-
+        const cookies= cookie.parse(req.headers.cookie)
+        const token = cookies.token
+        const refreshToken= cookies.refresh_token
         if (!refreshToken) {
             return res.status(403).json({ message: "Refresh token is missing." });
         }

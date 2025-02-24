@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
@@ -8,8 +8,11 @@ import useAuth from '../Hooks/useAuth'
 import logo from '../images/genimagin_logo.png'
 import google from '../images/pngwing.com.png'
 import RefreshDataContext from '../Context/RefreshDataProvider'
+import AuthContext from '../Context/AuthProvider'
 
 export default function Login() {
+
+    const {auth}= useContext(AuthContext)
     const {setLoggedIn}= useAuth()
     const navigate=useNavigate()
     const[password,setPassword]= useState("")
@@ -25,6 +28,8 @@ export default function Login() {
     const [error,setError]=useState(false)
     const [errorMessage, setErrorMessage] = useState(null)
     const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
+
+    useEffect(()=>{})
 
     const handleSubmit=async(e)=>{
         if(!isOtpLogin){
