@@ -39,3 +39,40 @@
     padding: 2px 5px;
     width: 140px;
  }
+
+ @media (max-width: 768px) {
+    
+    .credit-balance-container{
+       
+        margin: 0px 10px;
+        padding: 5px 10px;
+
+    }
+    .credit-balance-value{
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .credit-balance-coin{
+        font-size: 13px;
+        color: rgb(255, 255, 255);
+        background-color: rgb(0, 0, 0);
+        border: 2px solid rgb(0, 0, 0);
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        text-align: center;
+        vertical-align: center;
+    }
+    .credit-balance-coin p{
+        margin: 0;
+        width: auto;
+        height: fit-content;
+        font-weight: 500;
+    }
+    .buy-credits-link{
+        padding: 2px 5px;
+        width: 80px;
+        height: fit-content;
+     }
+ }

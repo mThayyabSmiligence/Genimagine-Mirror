@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+  import React, { use, useEffect, useRef, useState } from 'react';
 import '../../Css/ExplorePopUp.css'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -100,9 +100,9 @@ function ExplorePopUp({ image, onClose }) {
                 <span className="material-symbols-outlined setting-icon" title='Image Setting'>
                   settings
                 </span>
-                <div className='setting-tags' title='model'>model :{image.model}</div>
-                <div className='setting-tags' title='aspect ratio'>Aspect Ratio :{image.aspect_ratio}</div>
-                <div className='setting-tags' title='Style'>Style :none</div>
+                <div className='setting-tags p-secondary' title='model'>model :{image.model}</div>
+                <div className='setting-tags p-secondary' title='aspect ratio'>Aspect Ratio :{image.aspect_ratio}</div>
+                <div className='setting-tags p-secondary' title='Style'>Style :none</div>
               </div>
             
             </div>

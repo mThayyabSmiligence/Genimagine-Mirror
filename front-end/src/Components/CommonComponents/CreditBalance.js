@@ -13,7 +13,7 @@ export default function CreditBalance() {
   return (
     <div className='credit-balance-container d-flex align-items-center ' title='credit points' >
         <span className='credit-balance-coin' ><p>C</p></span>
-        <p className='credit-balance-value mx-2'>{creditBalance}</p>
+        <p className='credit-balance-value mx-2'>{creditBalance||1000}</p>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import '../../Css/ProfilePage.css'
 import AuthContext from '../../Context/AuthProvider';
 import profile_avatar from "../../images/profile_avatar.gif"
+import EditIcon from '@mui/icons-material/Edit';
 import { Link } from 'react-router-dom';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 
@@ -54,12 +55,14 @@ function ProfilePage() {
                 <div className='mt-5     cover-pic'>
 
                 </div>
-                <div className='my-profile d-flex align-items-center'>
-                    <div className='profile-data-container d-flex align-items-start justify-content-start ms-4'> 
+                <div className='my-profile d-flex align-items-center '>
+                    <div className='profile-data-container d-flex align-items-start justify-content-start '> 
                         {/* {userData?<div className='profile-pic-big ms-1'><p className='pt-1'>{userData.username[0]}</p></div>:<div></div>} */}
                         <img className='profile-pic-big' src={profile_avatar}></img>
-                        <h1 className='ms-3'>{userData?.username}</h1>
+                        <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
+                    
+                    <Link to="/edit-user-name" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
                 </div>
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>

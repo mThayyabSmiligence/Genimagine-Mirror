@@ -17,17 +17,17 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
   }, [loggedIn])
   
   return (
-    <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between align-items-center`} style={{width:`${showNavBar?width-250:width}px` }} >
+    <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between align-items-center`} style={{width:`${width<766?width:showNavBar?width-250:width}px` }} >
 
         <div className='flex-1 d-flex justify-content-start align-items-center'>
           <button className='button p-0' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<span className="material-symbols-outlined">left_panel_close</span>:<span className="material-symbols-outlined">left_panel_open</span>}</button>
-          
-        </div>
-        <div className='flex-1'>
           {!showNavBar&&<img className='big-logo' src={logo} alt='genimagine logo'></img>}
         </div>
+       
+          
+        
         { loggedIn?
-          <div className='me-2 mt-2 d-flex align-items-center'>
+          <div className='me-2 d-flex align-items-center'>
             <CreditBalance></CreditBalance>
             <Link to={"/credit-purchase"} className='buy-credits-link button-wh h-40p dark-button-wh d-flex align-items-center br-100'>
               <span className="material-symbols-outlined">
@@ -38,7 +38,7 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
               </p>
             </Link>
             <Link to={'/u/profile'}>
-            {userData?<div className='profile-pic-small'><p className='pt-1'>{userData.username[0]}</p></div>:<div></div>}
+            {userData?<div className='profile-pic-small'><p className='pt-1'>{userData.username[0]||"M"}</p></div>:<div></div>}
             </Link>
           </div>   
         :

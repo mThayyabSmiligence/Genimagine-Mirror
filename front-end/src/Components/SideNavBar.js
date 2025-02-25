@@ -7,7 +7,7 @@ import { axiosPrivate } from '../API\'s/axios'
 import AuthContext from '../Context/AuthProvider'
 import RefreshDataContext from '../Context/RefreshDataProvider'
 
-export default function SideNavBar({showNavBar}){
+export default function SideNavBar({showNavBar,setShowNavBar}){
 
     const [showNavBar2,setShowNavBar2]=useState(true)
     const location=useLocation()
@@ -142,6 +142,7 @@ export default function SideNavBar({showNavBar}){
                 </div>
             }
         </div>
+        <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} d-flex justify-content-center align-items-center`} onClick={()=>setShowNavBar(false)}> <span className="material-symbols-outlined">left_panel_close</span></button>
     </nav>
   )
 }

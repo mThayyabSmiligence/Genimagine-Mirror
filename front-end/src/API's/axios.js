@@ -51,37 +51,37 @@ const refreshAccessToken = async () => {
 };
 
 // Response interceptor for axiosPrivate
-axiosPrivate.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+// axiosPrivate.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+//     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
 
-      if (!isRefreshing) {
-        isRefreshing = true;
-        try {
-          await refreshAccessToken();
-          isRefreshing = false;
-          return axiosPrivate(originalRequest); // Retry original request
-        } catch (refreshError) {
-          isRefreshing = false;
-          return Promise.reject(refreshError);
-        }
-      }
+//       if (!isRefreshing) {
+//         isRefreshing = true;
+//         try {
+//           await refreshAccessToken();
+//           isRefreshing = false;
+//           return axiosPrivate(originalRequest); // Retry original request
+//         } catch (refreshError) {
+//           isRefreshing = false;
+//           return Promise.reject(refreshError);
+//         }
+//       }
 
-      // If another request is already refreshing, queue this request
-      return new Promise((resolve) => {
-        refreshSubscribers.push(() => {
-          resolve(axiosPrivate(originalRequest));
-        });
-      });
-    }
+//       // If another request is already refreshing, queue this request
+//       return new Promise((resolve) => {
+//         refreshSubscribers.push(() => {
+//           resolve(axiosPrivate(originalRequest));
+//         });
+//       });
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
 export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth };
 

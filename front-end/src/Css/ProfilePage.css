@@ -4,6 +4,9 @@
     background-color: black ;
     
 }
+.profile-data-container{
+    margin-left: 25px;
+}
 .profile-pic-big{
     position: relative;
     top:-50px;
@@ -12,8 +15,19 @@
 }
 .my-profile{
     border-bottom: solid 2px rgba(72, 72, 72, 0.215);
+    position: relative;
 }
-
+.edit-user-name-button{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    background-color: rgb(238, 238, 238);
+    color: black;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 50px;
+    font-size: 8;
+}
 .library-images{
     width: 250px;
     height: 250px;
@@ -22,3 +36,53 @@
 .profile-library{
     margin-bottom: 20px;
 }
+.profile-data-container .user-name{
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+@media (min-width: 1920px) and (max-width: 2560px) {
+    /* Styles for 1080p screens */
+   
+  }
+  
+  @media (min-width: 1367px) and (max-width: 1919px) {
+    
+  }
+  
+  @media (min-width: 1280px) and (max-width: 1366px) {
+
+  }
+  @media (min-width: 768px) and (max-width: 1279px) {
+    /* Styles for tablets and small laptops */
+    
+   
+  }
+  
+  
+  
+  
+  @media (max-width: 767px) {
+  .profile-pic-big{
+        transform: scale(0.8);
+        position: relative;
+        top:-60px;
+        outline: 5px solid white;
+        
+    }
+    .profile-data-container{
+        margin-left: 0px;
+    }
+    .profile-data-container .user-name{
+        margin-left: 0;
+    }
+    .edit-user-name-button{
+        height: fit-content;
+        padding:5px ;
+        height: 35px;
+        width: 35px;
+    }
+    .edit-user-name-button .edit-icon{
+        font-size: 15px;
+    }
+  }
