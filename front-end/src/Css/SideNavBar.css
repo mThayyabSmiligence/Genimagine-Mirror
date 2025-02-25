@@ -76,7 +76,7 @@
     outline: none;
     box-shadow: none;
 }
-.side-nav-close-button.active,.side-nav-close-button.in-active{
+.side-nav-close-button {
     display: none;
 }
 @media (max-width: 768px) {
