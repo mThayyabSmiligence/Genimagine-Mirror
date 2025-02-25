@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import '../../Css/Navbar.css'
+import '../../Css/LandingPage.css'
 import logo from '../../images/genimagin_logo.png'
+import { Link } from 'react-router-dom';
 
 function Navbar() {
 
@@ -28,10 +29,10 @@ function Navbar() {
                 <div className="navbar-nav w-100 d-flex  justify-content-between">
                     <div className='navbar-list d-flex'>
 
-                    <a className="nav-link" href="#">Home</a>
-                    <a className="nav-link" href="#">About Us</a>
-                    <a className="nav-link" href="#">pricing</a>
-                    <a className="nav-link" href='#'>generation</a>
+                    <Link  className="link nav-link" to={''}>Home</Link>
+                    <Link  className="link nav-link" to={''}>About Us</Link>
+                    <Link  className="link nav-link" to={'/credit-purchase'}>pricing</Link>
+                    <Link  className="link nav-link" to={'/image-generation'}>generation</Link>
                     </div>
                     <div className='sign-in'>
                     {isLoggedIn ? (
