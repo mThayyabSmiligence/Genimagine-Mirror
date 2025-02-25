@@ -92,14 +92,14 @@ function IGSettingPopUp({closePopup,trackmodel,setTrackModel,selectedAspectRatio
         </div>
         <div className="pop-up-body ">
             <div className="pop-up-content d-flex flex-column text-start mt-3"> 
-                <h5 className="pop-up-model">Model</h5>
-                <div className="d-flex justify-content-start flex-wrap mt-2">
+                <h5 className="pop-up-model h-3">Model</h5>
+                <div className="model-list d-flex flex-wrap mt-2">
                 {  
                   modelsList.map((model) => (
 
                       <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3`}>
                         <div>   
-                          <h5>{model.model_name}</h5>
+                          <h5 className="h-4">{model.model_name}</h5>
                           <p className="m-0">{model.model_resolution}</p>
                         </div>
                         <div>

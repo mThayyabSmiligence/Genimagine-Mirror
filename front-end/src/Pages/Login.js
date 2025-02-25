@@ -12,7 +12,6 @@ import AuthContext from '../Context/AuthProvider'
 
 export default function Login() {
 
-    const {auth}= useContext(AuthContext)
     const {setLoggedIn}= useAuth()
     const navigate=useNavigate()
     const[password,setPassword]= useState("")
@@ -148,6 +147,7 @@ export default function Login() {
                     
         }catch(err){
             console.error("Error during sign-in");
+            console.error(err)      
             setError(true)
             setErrorMessage(err?.response?.data?.message)
         } 

@@ -1,12 +1,15 @@
 const express = require('express')
-const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController} = require('../controller/UsersController');
+const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
-const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController } = require('../controller/ExploreController');
+const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId } = require('../controller/ExploreController');
 const router = express.Router();
 
+router.route('/edit-user').post(editUserController)
+
 router.route('/list').get(getUsersList);
+router.route('/user-data').get(getCurrentUserDataController)
 router.route('/id/:id').get(getSingleUser);
 router.route('/verify-token').get(firstTimeVerification);
 router.route('/generate-image').post(userGenerateImageController);
@@ -26,6 +29,8 @@ router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryControlle
 router.route('/publish-to-explore').post(publishToExploreController);
 router.route('/explore/:published_id/like').post(LikeExploreImageController)
 router.route('/explore/:published_id/unlike').post(UnlikeExploreImageController)
+
+router.route("/explore").get(getExploreImagesByUserId)
  
 
 module.exports = router;

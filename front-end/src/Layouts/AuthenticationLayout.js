@@ -6,11 +6,7 @@ export default function AuthenticationLayout() {
     const {auth}=useContext(AuthContext)
     const navigate= useNavigate()
 
-    useEffect(()=>{
-        if(auth){
-            navigate("/image-generation")
-        }
-    },[])
+    
   return (
     <div>
 

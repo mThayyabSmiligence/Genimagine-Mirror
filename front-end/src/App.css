@@ -55,7 +55,12 @@
 
 
 
-
+@media (max-width: 768px){
+  .content-section.short ,.sub-top-bar.short{
+    margin-left: 0px;
+    z-index: 2;
+  }
+}
 
 
 

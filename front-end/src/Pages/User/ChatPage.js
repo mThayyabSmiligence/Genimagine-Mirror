@@ -121,15 +121,16 @@ export default function ChatPage() {
         getAspectRatio(selectedAspectRatio)
         try {
           
-          const response = await axiosGenerateImage.post(
-            '/',
+          const response = await axiosPrivate.post(
+            '/generate-image',
             { 
-              prompt: promptText ,
-              chat_id:chatId,
-              model:trackmodel,
-              aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
-            }, // Ensure the response is handled as binary
-          );
+                  prompt: promptText ,
+                  chat_id:chatId,
+                  model:trackmodel,
+                  aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+            
+            }
+          ) 
           console.log(response.data)
    
           setChat((prevItems)=>[...prevItems,

@@ -8,8 +8,14 @@
     right: 0;
     position: relative;
 }
+.chat-container{
+    width: 75%;
+}
 .chat-prompt-container p{
     margin: 0;
+}
+.chat-prompt{
+    text-align: justify;
 }
 .chat-image-container{
     width: fit-content;
@@ -91,4 +97,13 @@
     height: 1px;
     width: 100%;
     background-color: rgb(3, 3, 3,0.3);
+}
+@media (max-width: 767px) {
+    .chat-prompt-container{
+        max-width: 60%;
+    }
+    .chat-container{
+        width: 100%;
+        margin-bottom: 100px;
+    }
 }

@@ -12,7 +12,8 @@ function PublishImagePage() {
   const [error,setError]=useState(false)
   const [successMessage,setSuccessMessage]=useState("")
 
-  const handlePublish =async () => {
+  const handlePublish =async (e) => {
+    e.preventDefault()
     try{
       const response =await  axiosPrivate.post('/publish-to-explore',{
         image_id: tempImageData.image_id,
@@ -34,17 +35,18 @@ function PublishImagePage() {
 
   return (
     <div className='mt-5 p-3'>
+      <form onSubmit={(e)=>handlePublish(e)}>
       <div className='publish '>
-        <h1 className='text-start ms-3 mb-3'>Publish</h1>
+          <h1 className='text-start ms-3 mb-3'>Publish</h1>
           <div className='publish-whole-container d-flex'>
             <div v className='publish-left-container  ms-2 me-2'>
               <div className='mb-3  w-100'> 
                 <div className='caption-heading d-flex text-start '>
                   <h5>Add Caption</h5>
                 </div>
-                <form >
+                
                   <textarea onChange={(e) => setCaption(e.target.value)} value={caption} placeholder='Share Your Thoughts Here...' className='publish-text-area d-flex flex-column align-items-start w-100'></textarea>
-                </form>
+                
               </div>
               <div className='your-prompt-container d-flex flex-column align-items-start  '>
                 <div className='prompt-heading '>
@@ -69,14 +71,15 @@ function PublishImagePage() {
                 )}
               </div>
               <div className='publish-button-container d-flex justify-content-end'>
-                <button className='publish-button button-wh dark-button-wh d-flex px-5'>
-                  <p onClick={()=>handlePublish()} className='flex-1'>Publish</p>
+                <button type='submit' className='publish-button button-wh dark-button-wh d-flex px-5'>
+                  <p  className='flex-1'>Publish</p>
                   <span className="material-symbols-outlined ms-2">send</span>
                 </button>
               </div>
             </div>
           </div>
       </div>
+      </form>
     </div>
   )
 }

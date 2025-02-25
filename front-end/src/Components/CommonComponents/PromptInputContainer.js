@@ -39,7 +39,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     }, []);
 
   return (
-    <div className='prompt-outer-container w-75 light-grey-bg br-10 d-flex flex-column align-items-end p-2 mb-2'   >
+    <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 mb-2'   >
       {
         showIGSetting&&<IGSettingPopUp trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio} closePopup={() => setShowIGSetting(false)}/>
       }

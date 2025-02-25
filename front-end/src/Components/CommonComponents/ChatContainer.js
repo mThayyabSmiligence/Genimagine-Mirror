@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import "../../Css/ChatContainer.css"
 
@@ -30,27 +30,39 @@ export default function ChatContainer({data}) {
     setShowOptions(!showOptions);
   };
 
- 
+ const [width, setWidth] = useState(window.innerWidth);
+           
+         useEffect(() => {
+           const handleResize = () => {
+             setWidth(window.innerWidth);
+           };
+               
+           window.addEventListener('resize', handleResize);
+               
+           return () => {
+             window.removeEventListener('resize', handleResize);
+           };
+     }, []);
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
-         return 432
+         return width>700?432:300
         }else if(aspect_ratio=="9:16"){
-          return  243;
+          return  width>700?243:160;
          }
          else if(aspect_ratio=="1:1"){
-          return  400;
+          return  width>700?400:280;
          }
 
     }
     const getHeight=(aspect_ratio)=>{
       if(aspect_ratio=="16:9"){
-       return 243
+       return width>700?243:160
       }else if(aspect_ratio=="9:16"){
-        return  432;
+        return  width>700?432:300;
        }
        else if(aspect_ratio=="1:1"){
-        return  400;
+        return  width>700?400:280;
        }
 
   }
@@ -159,7 +171,7 @@ export default function ChatContainer({data}) {
       }
 
   return (
-    <div className='chat-container d-flex flex-column w-75 m-2 my-4 px-4'>
+    <div className='chat-container d-flex flex-column m-2 my-4  mb-5 px-4'>
 
         <div className=' chat-prompt-outer-container d-flex justify-content-end'>
             <div className='chat-prompt-container'>

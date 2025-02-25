@@ -22,10 +22,11 @@ import PublishImagePage from './Pages/User/PublishImagePage';
 import ExplorePage from './Pages/Explore/ExplorePage';
 import LandingPage from './Pages/LandingPage/LandingPage';
 import AuthenticationLayout from './Layouts/AuthenticationLayout';
+import EditUserName from './Components/ProfilePage/EditUserName';
 
 
 function App() {
-  const[showNavBar,setShowNavBar]=useState(true)
+  const[showNavBar,setShowNavBar]=useState(false)
   const [width, setWidth] = useState(window.innerWidth);
           
         useEffect(() => {
@@ -43,18 +44,19 @@ function App() {
     <div className="App">
       <Router>
           
-       
           <Routes>
 
             <Route path='/' element={<LandingPage/>}></Route>
 
-            <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
               <Route path='login' element={<Login></Login>}></Route> 
+            <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
               <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
               <Route path='user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
               <Route path='forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
               <Route path='reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
             </Route>
+            
+            <Route path='edit-user-name' element={<EditUserName></EditUserName>}></Route>
 
             
 
