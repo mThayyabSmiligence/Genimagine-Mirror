@@ -4,13 +4,14 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
-function ExplorePopUp({ image, onClose }) {
+function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage }) {
   const hasViewed = useRef(false); // Prevents multiple calls
   const [isUserLiked,setIsUserLiked]=useState(false)
 
   useEffect(() => {
-    if (!hasViewed.current) {
+    if (!hasViewed.current &&view) {
       showview();
       hasViewed.current = true; // Set flag to true after first call
     }
@@ -96,7 +97,7 @@ function ExplorePopUp({ image, onClose }) {
                 <p className='m-0'>{image.prompt?image.prompt:"the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv vo vewo voj v venvpuebnviuebvi ewvbeiuvbeinvebvjkb pvieqbvpuiqebvibdubvru rrrrrrrrrrrrrrrrr rrrrrrrrrrrrrrrrrrrrrr rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv  the cat smfmpoemfeocmckwkwiemvkv emvkevie vke viemmvieciwckwwnfkwnfnemcejofnvirmvqenvevinvneoveoiv "}</p>
                 </div>
               </div>
-              <div className='image-setting-container d-flex align-items-center px-1'>
+              <div className='image-setting-container d-flex align-items-center px-1 flex-wrap' >
                 <span className="material-symbols-outlined setting-icon" title='Image Setting'>
                   settings
                 </span>
@@ -112,6 +113,8 @@ function ExplorePopUp({ image, onClose }) {
           
 
           <div className='explore-metrics d-flex justify-content-end'>
+
+            
             <div className='user-like-container'>
               {
                 isUserLiked?
@@ -123,6 +126,12 @@ function ExplorePopUp({ image, onClose }) {
             <div className='user-view-container mx-2'>
               <button className='button light-button user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{image.views_count}</p></button>
             </div>
+            {
+              isDelete?
+              <button onClick={() =>handelDeletePublishedImage(image.published_id)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+              :
+              null
+            }
           </div>
         </div>
       </div>

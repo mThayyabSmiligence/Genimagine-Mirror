@@ -12,6 +12,7 @@ const sortOptions = [
         { value: 'top', label: 'Top' },
     ]
 
+
     const TopOptions = [
         { value: 'day', label: 'Day' },
         { value: 'week', label: 'Week' },
@@ -19,16 +20,16 @@ const sortOptions = [
         { value: 'year', label: 'Year' },
         { value: 'all', label: 'All'}
     ]
-function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelectedIndex}) {
-    
-
-    
+function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelectedIndex,oldest}) {
+ 
 
     useEffect(()=>{
         setSort(sortOptions[0].value);
         setTop(TopOptions[0].value);
+        if(sortOptions.length <3){
+        if(oldest)sortOptions.push({value: "oldest",label: "Oldest"});
+        }
     },[])
-    
 
     const handleSortChange = (event) => {
         setSort(event.target.value);

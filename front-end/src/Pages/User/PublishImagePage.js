@@ -4,13 +4,15 @@ import '../../Css/PublishImagePage.css'
 import { axiosPrivate } from '../../API\'s/axios'
 
 function PublishImagePage() {
-  const {tempImageData }= useContext(RefreshDataContext)
+  const tempImageData = JSON.parse(localStorage.getItem('temp_image_data'));
   const [caption,setCaption] = useState("");
 
   const [success,setSuccess]=useState(false)
   const [errorMessage,setErrorMessage]=useState(null)
   const [error,setError]=useState(false)
   const [successMessage,setSuccessMessage]=useState("")
+
+  
 
   const handlePublish =async (e) => {
     e.preventDefault()
