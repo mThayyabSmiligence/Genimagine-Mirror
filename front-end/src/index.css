@@ -18,22 +18,51 @@
   --side-nav-font-size:15px;
   --side-nav-font-color:grey;
 
+    /* Font sizes for 1366px width */
+    --first-heading-font-size-1366: 32px;
+    --second-heading-font-size-1366: 22px;
+    --third-heading-font-size-1366: 20px;
+    --fourth-heading-font-size-1366: 18px;
+    --primary-topic-font-size-1366: 16px;
+    --primary-font-size-1366: 14px;
+    --second-primary-font-size-1366: 12px;
+    --primary-font-color: black;
+  
+    /* Font sizes for 400px width */
+    --first-heading-font-size-400: 22px;
+    --second-heading-font-size-400: 18px;
+    --third-heading-font-size-400: 13px;
+    --fourth-heading-font-size-400: 12px;
+    --primary-topic-font-size-400: 11px;
+    --primary-font-size-400: 12px;
+    --second-primary-font-size-400: 9px;
+  
+    /* Font sizes for 1920x1080 (1080p) */
+    --first-heading-font-size-1920: 46px;
+    --second-heading-font-size-1920: 38px;
+    --third-heading-font-size-1920: 28px;
+    --fourth-heading-font-size-1920: 24px;
+    --primary-topic-font-size-1920: 20px;
+    --primary-font-size-1920: 16px;
+    --second-primary-font-size-1920: 16px;
+  
+
   /* font 1366 */
-  --first-heading-font-size-1366:32px;
-  --second-heading-font-size-1366:22px;
+  /* --first-heading-font-size-1366:32px; */
+  /* --second-heading-font-size-1366:22px;
   --third-heading-font-size-1366:20px;
   --fourth-heading-font-size-1366:18px;
   --primary-topic-font-size-1366:16px;
   --primary-font-size-1366:14px;
   --second-primary-font-size-1366:12px;
-  --primary-font-color:black;
+  --primary-font-color:black; */
 
   /* font 400 */
-  --first-heading-font-size-400:22px;
+  /* --first-heading-font-size-400:22px;
   --second-heading-font-size-400:18px;
   --third-heading-font-size-400:13px;
   --primary-font-size-400:12px;
-  --second-primary-font-size-400:9px;
+  --second-primary-font-size-400:9px; */
 
 
   /* card 1366 */

@@ -7,6 +7,8 @@ import ImageCustomization from '../../Components/LandingPageComponenets/ImageCus
 import LaunchToExplore from '../../Components/LandingPageComponenets/LaunchToExplore';
 import LaunchToLibrary from '../../Components/LandingPageComponenets/LaunchToLibrary';
 import PlatformGallery from '../../Components/LandingPageComponenets/PlatformGallery';
+import FAQ from '../../Components/LandingPageComponenets/FAQ';
+import Footer from '../../Components/LandingPageComponenets/Footer';
 
 function LandingPage() {
   return (
@@ -34,8 +36,14 @@ function LandingPage() {
         <section className='how-to-generate-section d-flex align-items-center justify-content-center'>
           <HowToGenerate/>
         </section>
+        <section className='faq-section'>
+          <FAQ/>
+        </section>
+        <footer className='footer-section'> 
+          <Footer/>
+        </footer>
     </div>
   )
-}
+}   
 
 export default LandingPage;

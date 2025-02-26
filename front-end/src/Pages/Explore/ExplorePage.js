@@ -93,7 +93,7 @@ function ExplorePage() {
                 {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
                 }
-                <div className="explore-image-container ">
+                <div className="explore-image-container">
                     {images.map((image, index) => (
 
                         <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"

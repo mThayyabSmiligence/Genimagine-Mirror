@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import '../../Css/LandingPage.css'
 import logo from '../../images/genimagin_logo.png'
 import { Link } from 'react-router-dom';
+import ProfileDropDown from '../CommonComponents/ProfileDropDown';
+import AuthContext from '../../Context/AuthProvider';
+import { axiosInstance } from '../../API\'s/axios';
 
 function Navbar() {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const checkLoginStatus = () => {
-            const token = localStorage.getItem('userToken');
-            setIsLoggedIn(!token);
-        };
-
-        checkLoginStatus();
-    }, []);
+    const {loggedIn,setLoggedIn} = useContext(AuthContext)
+    const [showDropdown, setShowDropdown] = useState(false);
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -29,21 +24,27 @@ function Navbar() {
                 <div className="navbar-nav w-100 d-flex  justify-content-between">
                     <div className='navbar-list d-flex'>
 
-                    <Link  className="link nav-link" to={''}>Home</Link>
-                    <Link  className="link nav-link" to={''}>About Us</Link>
-                    <Link  className="link nav-link" to={'/credit-purchase'}>pricing</Link>
-                    <Link  className="link nav-link" to={'/image-generation'}>generation</Link>
+                    <Link  className="link nav-link p-primary" to={'/'}>Home</Link>
+                    <Link  className="link nav-link p-primary" to={'/explore'}>Explore</Link>
+                    <Link  className="link nav-link p-primary" to={'/credit-purchase'}>pricing</Link>
+                    <Link  className="link nav-link p-primary" to={'/image-generation'}>generation</Link>
                     </div>
-                    <div className='sign-in'>
-                    {isLoggedIn ? (
-                            <button className='profile-button dark-button me-3'><span className="material-symbols-outlined">person</span></button>
+                    <div className='sign-in d-flex align-items-center'>
+                    {loggedIn ? (
+                            <div className="profile-dropdown">
+                                <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
+                                    <span className="material-symbols-outlined">person</span>
+                                </button>
+                                {showDropdown && 
+                                   <ProfileDropDown/>
+                                }
+                            </div>
                         ) : (
-                            <button className='sign-in-button dark-button br-10 px-3 py-1 me-3'>Sign-in</button>
+                            <Link to={"/login"} className='sign-in-link link br-10 px-3 py-2 me-3 p-primary'>Sign-in</Link>
                         )}
                     </div>
                 </div>
             </div>
-            
         </div>
     </nav>
   )
