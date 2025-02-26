@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom'
 import ModelSelector from './CommonComponents/ModelSelector'
 import AuthContext from '../Context/AuthProvider'
 import CreditBalance from './CommonComponents/CreditBalance'
+import ProfileDropDown from './CommonComponents/ProfileDropDown'
 
 export default function SubTopbar({setShowNavBar,showNavBar,width}) {
 
   const {loggedIn}= useContext(AuthContext);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [userData,setUserData]= useState(null)
 
   useEffect(() => {
@@ -37,9 +39,14 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
               Buy Credits
               </p>
             </Link>
-            <Link to={'/u/profile'}>
-            {userData?<div className='profile-pic-small'><p className='pt-1'>{userData.username[0]||"M"}</p></div>:<div></div>}
-            </Link>
+            <div className="profile-dropdown">
+              <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
+                <span className="material-symbols-outlined">person</span>
+              </button>
+              {showDropdown && 
+                <ProfileDropDown/>
+              }
+            </div>
           </div>   
         :
           <div className='flex-1 d-flex align-items-center justify-content-end'>

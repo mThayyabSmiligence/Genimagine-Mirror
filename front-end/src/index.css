@@ -1,7 +1,7 @@
 :root{
-  /* --primary-theme-color: rgb(49, 76, 144); 
+  /* --primary-theme-color: rgb(49, 76, 144);
   --primary-theme-background-color:rgb(49, 76, 144,0.2); */
-  
+ 
   --primary-theme-color: rgb(133, 79, 255) ;
   --primary-theme-background-color:linear-gradient(199.42deg, rgba(0, 4, 255, 0.1539) 1.38%, rgba(133, 79, 255, 0.27) 98.84%);
   --primary-navbar-background:#EFE8FF;
@@ -9,42 +9,69 @@
  
   /* to use themed font color use this template */
   /* background: var(--primary-themed-font-color);
-  -webkit-background-clip: text; 
+  -webkit-background-clip: text;
   color: transparent; */
-
+ 
   /* navbar */
   --side-nav-bar-width-800:80px;
   --side-nav-bar-width-1366:200px;
   --side-nav-font-size:15px;
   --side-nav-font-color:grey;
-
+ 
+    /* Font sizes for 1366px width */
+    --first-heading-font-size-1366: 32px;
+    --second-heading-font-size-1366: 22px;
+    --third-heading-font-size-1366: 20px;
+    --fourth-heading-font-size-1366: 18px;
+    --primary-topic-font-size-1366: 16px;
+    --primary-font-size-1366: 14px;
+    --second-primary-font-size-1366: 12px;
+    --primary-font-color: black;
+ 
+    /* Font sizes for 400px width */
+    --first-heading-font-size-400: 22px;
+    --second-heading-font-size-400: 18px;
+    --third-heading-font-size-400: 13px;
+    --fourth-heading-font-size-400: 12px;
+    --primary-topic-font-size-400: 11px;
+    --primary-font-size-400: 12px;
+    --second-primary-font-size-400: 9px;
+ 
+    /* Font sizes for 1920x1080 (1080p) */
+    --first-heading-font-size-1920: 46px;
+    --second-heading-font-size-1920: 38px;
+    --third-heading-font-size-1920: 28px;
+    --fourth-heading-font-size-1920: 24px;
+    --primary-topic-font-size-1920: 20px;
+    --primary-font-size-1920: 16px;
+    --second-primary-font-size-1920: 16px;
+ 
+ 
   /* font 1366 */
-  --first-heading-font-size-1366:32px;
-  --second-heading-font-size-1366:22px;
+  /* --first-heading-font-size-1366:32px; */
+  /* --second-heading-font-size-1366:22px;
   --third-heading-font-size-1366:20px;
   --fourth-heading-font-size-1366:18px;
   --primary-topic-font-size-1366:16px;
   --primary-font-size-1366:14px;
   --second-primary-font-size-1366:12px;
-  --primary-font-color:black;
-  --primary-icon-size-1366:22px;
-
+  --primary-font-color:black; */
+ 
   /* font 400 */
-  --first-heading-font-size-400:22px;
+  /* --first-heading-font-size-400:22px;
   --second-heading-font-size-400:18px;
   --third-heading-font-size-400:13px;
   --primary-font-size-400:12px;
-  --second-primary-font-size-400:9px;
-  --primary-icon-size-400:18px;
-
-
+  --second-primary-font-size-400:9px; */
+ 
+ 
   /* card 1366 */
   --card-width-1366:450px;
-  
+ 
   /* card phone 400 */
   --card-width-400:300px;
 }
-
+ 
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -54,8 +81,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
-
+ 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+ 
+ 

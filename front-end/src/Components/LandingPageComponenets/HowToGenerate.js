@@ -24,12 +24,12 @@ function HowToGenerate() {
 
   return (
     <div className='container-fluid row how-to-generate-sec d-flex align-items-center justify-content-center'>
-        <h1 className='mb-5 mt-5'>HOW TO <span className='header-highlight'>GENERATE</span> IMAGE</h1>
+        <h1 className='text-center mb-4 mb-md-5 mt-md-5 h-2'>HOW TO <span className='header-highlight'>GENERATE</span> IMAGE</h1>
         <div className='col-12 col-md-6'>
           {stepsToGenerate.map((steps) => (
             <div key={steps.step} className='steps-to-generate text-start'>
-              <h2>{steps.step}. {steps.title}</h2>
-              <p className='mb-4'>{steps.description}</p>
+              <h3 className='h-4'>{steps.step}. {steps.title}</h3>
+              <p className='mb-4 p-primary'>{steps.description}</p>
             </div>
           ))}
         </div>

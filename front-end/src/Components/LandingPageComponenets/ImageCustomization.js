@@ -27,7 +27,7 @@ function ImageCustomization() {
     ];
   return (
         <div className="container text-center">
-            <h1 className="customization-heading">Customize Your Image Generation</h1>
+            <h1 className="customization-heading h-2">Customize Your Image Generation</h1>
             <div className="row justify-content-center">
                 {customizationOptions.map((option) => (
                     <div key={option.id} className="col-12 col-md-4 mb-4 d-flex justify-content-center">
@@ -35,8 +35,8 @@ function ImageCustomization() {
                             <div className="customization-img-container mb-3">
                                 <img className="customization-img" src={option.img} alt={option.title} />    
                             </div>
-                            <h3 className="customization-title text-start">{option.title}</h3>
-                            <p className="customization-desc ">{option.desc}</p>
+                            <h3 className="customization-title text-start h-4">{option.title}</h3>
+                            <p className="customization-desc p-primary">{option.desc}</p>
                         </div>
                     </div>
                 ))}
