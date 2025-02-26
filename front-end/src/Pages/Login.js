@@ -13,7 +13,9 @@ import AuthContext from '../Context/AuthProvider'
 export default function Login() {
 
     const {setLoggedIn}= useAuth()
+    const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
     const navigate=useNavigate()
+
     const[password,setPassword]= useState("")
     const [email,setEmail]=useState("")
     const [passwordVisibility,setPasswordVisibility]=useState(false)
@@ -26,9 +28,20 @@ export default function Login() {
 
     const [error,setError]=useState(false)
     const [errorMessage, setErrorMessage] = useState(null)
-    const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
+
+    const [loading,setLoading] = useState(false)
+    
 
     useEffect(()=>{})
+
+    const spinnerStyle = {
+        width: '20px',
+        height: '20px',
+        border: '4px solid #ccc',
+        borderTop: '4px solid #3498db',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      };
 
     const handleSubmit=async(e)=>{
         if(!isOtpLogin){
@@ -46,6 +59,7 @@ export default function Login() {
         e.preventDefault()
         setError(false)
         setSucccess(false) //
+        setLoading(true)
         try{
             const response =await axios.post("http://localhost:3001/api/v1/auth/login",
                 {
@@ -67,6 +81,8 @@ export default function Login() {
             console.error(err)
             setError(true)
             setErrorMessage(err?.response?.data?.message)
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -74,6 +90,7 @@ export default function Login() {
         e.preventDefault();
         setError(false)
         setSucccess(false) 
+        setLoading(true)
         try {
             // Send OTP to user's email
             const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-request",
@@ -88,6 +105,8 @@ export default function Login() {
             console.error(err);
             setError(true)
             setErrorMessage(err.response.data.message)
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -95,13 +114,13 @@ export default function Login() {
         e.preventDefault();
         setError(false)
         setSucccess(false) 
+        setLoading(true)
         try{
             const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-verify",
                 { email, otp },
                 { withCredentials: true }
             );
             console.log(response);
-            alert("Logged in successfully");
             setLoggedIn(true);
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
@@ -110,12 +129,15 @@ export default function Login() {
         }catch(err){
             setError(true)
             setErrorMessage(err.response.data.message)
+        }finally{
+            setLoading(false)
         }
     }
 
     const handleGoogleSignIn = async () => {
         setError(false)
         setSucccess(false) 
+        setLoading(true)
         try{
             const result = await signInWithPopup(auth, provider);
             const idToken = await result.user.getIdToken(); // Get Firebase Token
@@ -151,6 +173,9 @@ export default function Login() {
             setError(true)
             setErrorMessage(err?.response?.data?.message)
         } 
+        finally{
+            setLoading(false)
+        }
     }
 
   return <>
@@ -230,7 +255,19 @@ export default function Login() {
                     <div className='forgot-password-container text-end'>
                         <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</Link>
                     </div>
-                    <button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
+                    {
+                    loading?
+                    <button className=" button dark-button w-100 br-100 mb-3 d-flex justify-content-center align-items-center">
+                        <div style={spinnerStyle}></div>
+                        <style>{`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        `}</style>
+                    </button>
+                    :<button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
+                    }
                 </form>
                     <div className='divider d-flex align-items-center  '>
                         <span className='divider-line flex-1'></span>

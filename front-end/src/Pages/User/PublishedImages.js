@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import SortSection from "../../Components/Explore/SortSection";
-import { axiosNoAUth } from "../../API's/axios";
-import "../../Css/ExplorePage.css";
-import { useInView } from "react-intersection-observer";
-import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
+import React, { useEffect, useState } from 'react'
+import { useInView } from 'react-intersection-observer';
+import { axiosPrivate } from '../../API\'s/axios';
+import SortSection from '../../Components/Explore/SortSection';
+import ExplorePopUp from '../../Components/CommonComponents/ExplorePopUp';
+import '../../Css/ExplorePage.css'
+import '../../Css/PublishedImages.css'
 
-function ExplorePage() {
+export default function PublishedImages() {
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
@@ -31,7 +32,7 @@ function ExplorePage() {
 
         try {
             console.log("Fetching:", query);
-            const response = await axiosNoAUth.get(`explore${query}`);
+            const response = await axiosPrivate.get(`explore${query}`);
             console.log("Response:", response.data);
 
             if (response.data.success) {
@@ -68,11 +69,26 @@ function ExplorePage() {
     const handleClosePopup = () => {
         setSelectedImage(false);
     };
+    const handelDeletePublishedImage=async(published_id) => {
+        try{
+            const response = await axiosPrivate.delete(`/explore/${published_id}`)
+            console.log(response)
+            if(response.data.success){
+                const filteredImages = images.filter(i=>i.published_id!==published_id)
+                setImages(filteredImages)
+                setSelectedImage(null)
+                console.log("Image deleted successfully")
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
 
     return (
-        <div className="mt-5 explore-page-container">
+        <div className="mt-5 explore-page-container publish-page-container">
             <div className="explore-heading text-start ms-3 mb-3">
-                <h1>Explore</h1>
+                <h1>Published Images</h1>
             </div>
             <div className="explore-sort-section mb-3">
                 <SortSection
@@ -89,18 +105,19 @@ function ExplorePage() {
             </div>
             <div className="explore-body">
                 {
-                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={true}/>
+                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={false} isDelete={true} handelDeletePublishedImage={handelDeletePublishedImage}/>
                 }
                 {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
                 }
-                <div className="explore-image-container">
+                <div className="explore-image-container ">
                     {images.map((image, index) => (
 
                         <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
                         onClick={() => handleImageClick(image)}
                         >
                             <img src={image.image_url} alt={image.caption} className="br-10" />
+                          
                         </div>
                     ))}
                 </div>
@@ -116,5 +133,3 @@ function ExplorePage() {
 
     );
 }
-
-export default ExplorePage;

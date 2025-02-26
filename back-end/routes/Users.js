@@ -3,7 +3,8 @@ const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChats
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
-const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId } = require('../controller/ExploreController');
+const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController } = require('../controller/ExploreController');
+const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -30,7 +31,8 @@ router.route('/publish-to-explore').post(publishToExploreController);
 router.route('/explore/:published_id/like').post(LikeExploreImageController)
 router.route('/explore/:published_id/unlike').post(UnlikeExploreImageController)
 
-router.route("/explore").get(getExploreImagesByUserId)
+router.route("/explore").get(getExploreImageByUserIdController)
+router.route("/explore/:published_id").delete(deleteExploreImageByPublishedIdController)
  
 
 module.exports = router;

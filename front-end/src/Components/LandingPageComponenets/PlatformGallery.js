@@ -3,11 +3,13 @@ import { axiosNoAUth } from '../../API\'s/axios'
 
 function PlatformGallery() {
 
+
     const [galleryImages, setGalleryImages] = useState([]);
 
     useEffect(() => {
         fetchGalleryImages()
     },[])
+
 
     const fetchGalleryImages = async() => {
         try{

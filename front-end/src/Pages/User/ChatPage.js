@@ -69,6 +69,16 @@ export default function ChatPage() {
       },
     ]
 
+    const spinnerStyle = {
+      width: '20px',
+      height: '20px',
+      border: '4px solid #ccc',
+      borderTop: '4px solid #3498db',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+    };
+
+
     const getAspectRatio=(id)=>{
       const aspectRatioObject = aspectRatioList.find((values)=>values.id=id)
       console.log(aspectRatioObject)
@@ -111,8 +121,10 @@ export default function ChatPage() {
     }
 
     const generateImage = async () => {
+        const prompt =promptText
+        setPromptText(" ")
         setDummyData({
-          prompt:promptText
+          prompt:prompt
         })
         
         setLoading(true);
@@ -124,7 +136,7 @@ export default function ChatPage() {
           const response = await axiosPrivate.post(
             '/generate-image',
             { 
-                  prompt: promptText ,
+                  prompt: prompt ,
                   chat_id:chatId,
                   model:trackmodel,
                   aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
@@ -147,7 +159,6 @@ export default function ChatPage() {
           setErrorMessage(error?.response?.data?.message);
         } finally {
           setLoading(false);
-          setPromptText("")
         }
       };
   return (
@@ -168,7 +179,7 @@ export default function ChatPage() {
             </div>
     
     
-            <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio}></PromptInPutContainer>
+            <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio} loading={loading}></PromptInPutContainer>
             {
               1&&
               <SuggestionPrompts></SuggestionPrompts>

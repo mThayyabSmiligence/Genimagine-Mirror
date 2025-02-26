@@ -81,8 +81,10 @@ export default function GuestContentPage() {
     }
     
     const generateImage = async () => {
+      const prompt = promptText
+      setPromptText("")
       setDummyData({
-        prompt:promptText
+        prompt:prompt
       })
 
       setError(false)
@@ -100,7 +102,7 @@ export default function GuestContentPage() {
             response = await axiosPrivate.post(
               '/generate-image',
           { 
-            prompt: promptText ,
+            prompt: prompt ,
             model:trackmodel,
             aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
           
@@ -111,7 +113,7 @@ export default function GuestContentPage() {
             response = await axiosGenerateImage.post(
               '/',
               { 
-                prompt: promptText ,
+                prompt: prompt ,
                 model:trackmodel,
                 aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
               
@@ -142,12 +144,12 @@ export default function GuestContentPage() {
         
  
         setChat((prevItems)=>[...prevItems,{
-          "prompt":promptText,
+          "prompt":prompt,
           image:response.data.image
         }
         ])
 
-        setPromptText("") 
+         
 
       } catch (error) {
         console.error('Error generating image:', error.response);
@@ -156,7 +158,6 @@ export default function GuestContentPage() {
         setErrorMessage(error?.response?.data?.message);
       } finally {
         setLoading(false);
-        setPromptText("")
       }
     };
 
@@ -179,7 +180,7 @@ export default function GuestContentPage() {
         </div>
         
 
-        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio}></PromptInPutContainer>
+        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio} loading={loading}></PromptInPutContainer>
         {
           1&&
           <SuggestionPrompts></SuggestionPrompts>

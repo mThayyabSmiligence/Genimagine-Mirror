@@ -273,6 +273,10 @@
     font-size: var(--second-primary-font-size-1366);
 }
 
+.icon-primary{
+    font-size: var(--primary-icon-size-1366);
+}
+
 @media (max-width: 768px) {
     .h-1 {
         font-size: var(--first-heading-font-size-400);
@@ -300,6 +304,10 @@
 
     .p-secondary {
         font-size: var(--second-primary-font-size-400);
+    }
+
+    .icon-primary{
+        font-size: var(--primary-icon-size-400);
     }
 
     .big-logo{

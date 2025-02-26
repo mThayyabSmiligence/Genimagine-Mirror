@@ -62,6 +62,18 @@ console.log("faInfoCircle:", faInfoCircle);
     
     const [pwdMatch,setPwdMatch] = useState(false)
 
+    const[loading,setLoading] = useState(false)
+
+    const spinnerStyle = {
+        width: '20px',
+        height: '20px',
+        border: '4px solid #ccc',
+        borderTop: '4px solid #3498db',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      };
+
+
     useEffect(() => {
         setPasswordValidity(PWD_REGEX.test(password));
         setPwdMatch(password === confirmPassword);
@@ -110,7 +122,7 @@ console.log("faInfoCircle:", faInfoCircle);
         if (next) {
             const timer = setTimeout(() => {
                 setNext(false);
-            }, 3000); // 3 seconds
+            }, 5000); // 3 seconds
     
             return () => clearTimeout(timer);
         }
@@ -119,6 +131,8 @@ console.log("faInfoCircle:", faInfoCircle);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setNext(false)
+        setError(false)
 
         if (!USER_REGEX.test(username)) {
             if (username.length < 4) {
@@ -139,6 +153,7 @@ console.log("faInfoCircle:", faInfoCircle);
         }
 
         try {
+            setLoading(true);
             const response = await axios.post('http://localhost:3001/api/v1/auth/register', 
                 {
                     "username": username,
@@ -149,13 +164,16 @@ console.log("faInfoCircle:", faInfoCircle);
                 });
             console.log(response);
             setNext(true);
-            setError(null)      
+            setError(false)      
             resetForm();
         } catch (error) {
             setError(error.message);
             console.log(error)
             setErrorMessage(error?.response?.data?.message)
             setErrorCode(error?.response?.status)
+        }
+        finally{
+            setLoading(false);
         }
     };
 
@@ -399,7 +417,20 @@ console.log("faInfoCircle:", faInfoCircle);
                             <MathCaptcha onVerify={handleCaptchaVerify}/>
                         }
                         </div>
+                        {
+                         loading?
+                         <button className=" button dark-button w-100 br-100 mb-3 d-flex justify-content-center align-items-center">
+                             <div style={spinnerStyle}></div>
+                             <style>{`
+                             @keyframes spin {
+                                 0% { transform: rotate(0deg); }
+                                 100% { transform: rotate(360deg); }
+                             }
+                             `}</style>
+                         </button>
+                         :
                         <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-100 br-100 mb-3">Create</button>
+                        }
                         
                     </form>
                 </div>

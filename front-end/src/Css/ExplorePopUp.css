@@ -20,8 +20,8 @@
   .explore-popup-content {
     padding: 10px;
     border-radius: 10px;
-    width: 90%;
-    height: 90%;
+    width: 95%;
+    height: 95%;
     position: relative;
     display: flex;
     justify-content: center;
@@ -92,16 +92,19 @@
 
  .prompt-text-container {
   overflow-y: auto;
-  height: 75%;
+  max-height: 75%;
+  min-height: auto;
 }
 .image-setting-container{
   bottom: 15px;
   background-color: rgb(255, 255, 255);
   width: 100%;
-  height: 25%;
+  min-height: 25%;
+  max-height: auto;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-top: 1px solid #ccc;
+  padding: 3px;
 }
 .image-setting-container .setting-icon{
   
@@ -132,7 +135,7 @@
 }
 
 
-.user-like-button,.user-view-button{
+.user-like-button,.user-view-button , .delete-button{
     height: 30px;
     border-radius: 100px;
 
@@ -145,6 +148,9 @@
 }
 .caption-inner-text-container p {
   text-align: start;
+}
+.delete-button {
+    color: rgb(255, 0, 0);
 }
 @media (min-width: 1920px) and (max-width: 2560px) {
   /* Styles for 1080p screens */
@@ -178,10 +184,10 @@
       align-items: center;
     }
     .image-details{
-      width: 90%
+      width: 100%
     }
     .popup-image-container{
-      width: 90%;
+      width: 100%;
     }
     .image-prompt{
       height: 150px;

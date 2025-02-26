@@ -229,31 +229,99 @@ exports.getExploreImageByIdService=async(explore_id)=>{
         }
     }
 }
-exports.getExploreImageByUserIdService=async(user_id)=>{
-    try{
-        const query ="SELECT * FROM Explore WHERE user_id =?"
-        const [rows] = await db.execute(query,[user_id])
-        if (rows.length == 0) {
-             return {
-                status:404,
-                message:"No images found by given user",
-                success:false
+exports.getExploreImageByUserIdService=async(sort, time, page ,user_id)=>{
+
+    try {
+        let query = `
+        SELECT 
+            e.*, 
+            em.likes_count, 
+            em.views_count, 
+            em.ranking_score,
+            CASE 
+                WHEN el.user_id IS NOT NULL THEN TRUE 
+                ELSE FALSE 
+            END AS isUserLiked
+        FROM Explore e
+        JOIN ExploreMetrics em ON e.published_id = em.published_id
+        LEFT JOIN ExploreLikes el ON e.published_id = el.published_id AND el.user_id = ? 
+    `;
+        let conditions = [];
+        let params = [];
+
+        // 🟢 1️⃣ Filter by Time (Day, Week, Month, Year, All-Time)
+        if (time) {
+            if (time === "day") {
+                conditions.push(" e.published_date >= NOW() - INTERVAL 1 DAY ");
+            } else if (time === "week") {
+                conditions.push(" e.published_date >= NOW() - INTERVAL 1 WEEK ");
+            } else if (time === "month") {
+                conditions.push(" e.published_date >= NOW() - INTERVAL 1 MONTH ");
+            } else if (time === "year") {
+                conditions.push(" e.published_date >= NOW() - INTERVAL 1 YEAR ");
             }
         }
-        return {
-            status:200,
-            message:"images found successfully",
-            success:true,
-            images:rows
+        query += ` where e.user_id = ${user_id} `
+
+        // 🔹 Apply `WHERE` only if we have conditions
+        if (conditions.length > 0) {
+            query += ' AND '+conditions.join(" AND "); 
         }
-    }catch( err){
-        console.error("error fetching images",err)
-        return {
-            status:500,
-            message:"internal server error",
-            success:false
+
+        // 🟢 2️⃣ Sorting (Recent or Top by Ranking)
+        if (sort === "recent") {
+            query += ` ORDER BY e.published_date DESC`;
+        } 
+        else if(sort ==="oldest"){
+            query += ` ORDER BY e.published_date ASC`;
         }
+        else if (sort === "top") {
+            query += ` ORDER BY em.likes_count  DESC`;
+        } else {
+            query += ` ORDER BY e.published_date DESC`; // Default to recent
+        }
+
+        // 🟢 3️⃣ Pagination (Lazy Loading with Fixed Limit)
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageSize = 10; // 🔹 Fixed page size (e.g., 10 images per page)
+        const offset = (pageNumber - 1) * pageSize;
+
+        query += ` LIMIT ${pageSize} OFFSET ${offset}   `;
+        params.push(Number(pageSize) ,Number(offset) );
+
+        // 🟢 4️⃣ Execute Query
+
+        
+        const [rows] = await db.execute(query,[user_id||0]);
+
+        if (rows.length === 0) {
+            return {
+                status: 404,
+                message: "No images found",
+                success: false,
+            };
+        }
+
+        return {
+            status: 200,
+            message: "Images fetched successfully",
+            success: true,
+            images: rows,
+            pagination: {
+                currentPage: pageNumber,
+                pageSize: pageSize, // 🔹 Always fixed
+                nextPage: rows.length === pageSize ? pageNumber + 1 : null,
+            },
+        };
+    } catch (err) {
+        console.error("Error fetching explore images:", err);
+        return {
+            status: 500,
+            message: "Internal server error",
+            success: false,
+        };
     }
+   
 }
 
 exports.ViewExploreImageService=async(published_id)=>{
@@ -376,6 +444,33 @@ exports.getExploreImagesByUserIdService=async(user_id)=>{
         }
     }catch( err){
         console.error("error fetching images",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}
+exports.deleteExploreImageByPublishedIdService=async(published_id,user_id)=>{
+    try{
+        const query ="DELETE FROM Explore WHERE published_id =? AND user_id =?"
+        const [rows] = await db.execute(query,[published_id,user_id])
+        if(rows.affectedRows===0){
+            console.log("user didn't delete the image")
+            return {
+                status:404,
+                message:"user didn't delete the image",
+                success:false
+            }
+        }
+        console.log("image deleted successfully")
+        return{
+            status:200,
+            message:"image deleted successfully",
+            success:true
+        }
+    }catch(err){
+        console.error("error deleting image",err)
         return {
             status:500,
             message:"internal server error",
