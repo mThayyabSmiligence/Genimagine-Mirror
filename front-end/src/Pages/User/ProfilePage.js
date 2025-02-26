@@ -84,7 +84,7 @@ function ProfilePage() {
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>
                         <h3 className=' text-start mx-2 mt-3'>Published Images</h3>
-                        <Link to={"/explore"} className="link material-symbols-outlined me-3 ">
+                        <Link to={"/u/published-images"} className="link material-symbols-outlined me-3 ">
                             arrow_forward_ios
                         </Link>
                     </div>

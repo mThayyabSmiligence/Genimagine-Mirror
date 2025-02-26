@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 import IGSettingPopUp from './IGSettingPopUp'
 
-export default function PromptInPutContainer({promptText,setPromptText,generateImage,trackmodel,setTrackModel,selectedAspectRatio, setSelectedAspectRatio}) {
+export default function PromptInPutContainer({promptText,setPromptText,generateImage,trackmodel,setTrackModel,selectedAspectRatio, setSelectedAspectRatio,loading}) {
 
 
   const [showIGSetting,setShowIGSetting]=useState(false)
@@ -10,9 +10,26 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   
 
   const pRef= useRef(null)
+
+
+  const spinnerStyle = {
+    width: '20px',
+    height: '20px',
+    border: '4px solid #ccc',
+    borderTop: '4px solid #3498db',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+  };
+
+
   const handelInput=(e)=>{
     setPromptText(e.target.innerText)
   }
+  useEffect(()=>{
+    if(promptText==""){
+      pRef.current.innerText=""
+    }
+  },[promptText])
   const handelClick=()=>{
     if(pRef.current){
       pRef.current.innerText=""
@@ -65,8 +82,21 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
 
           <div>
             <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
-                    onClick={handelClick}
-                    ><span className="material-symbols-outlined">arrow_forward</span></button>
+                    onClick={!loading&&handelClick}
+                    >{ loading?
+                          <>
+                          <div style={spinnerStyle}></div>
+                          <style>{`
+                          @keyframes spin {
+                              0% { transform: rotate(0deg); }
+                              100% { transform: rotate(360deg); }
+                          }
+                          `}</style>
+                          </>
+                      :
+                      <span className="material-symbols-outlined">arrow_forward</span>
+                      }
+              </button>
           </div>
       </div>
     </div>

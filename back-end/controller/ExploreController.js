@@ -2,7 +2,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService } = require("../service/ExploreService");
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService, deleteExploreImageByPublishedIdService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,caption}= req.body;
@@ -73,8 +73,10 @@ exports.getExploreImageByIdController=async (req,res)=>{
 }
 
 exports.getExploreImageByUserIdController=async(req,res)=>{
+    const { sort, time, page } = req.query;
 
-    const exploreImages= await getExploreImageByUserIdService(req.user.id);
+    const exploreImages= await getExploreImageByUserIdService(sort,time,page,req.user.id);
+    console.log("this is get explore images by user id api")
     
     return res.status(exploreImages.status).json(exploreImages);
  
@@ -129,4 +131,13 @@ exports.getExploreImagesByUserId=async(req,res)=>{
     
     return res.status(exploreImages.status).json(exploreImages);
  
+}
+exports.deleteExploreImageByPublishedIdController=async(req,res)=>{
+    //logic to delete explore image by published id
+    const {published_id}=req.params;
+    const {id}=req.user;
+    
+    const result = await deleteExploreImageByPublishedIdService(published_id,id);
+    
+    return res.status(result.status).json(result);  ;
 }

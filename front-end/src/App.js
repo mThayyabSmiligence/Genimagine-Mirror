@@ -23,6 +23,7 @@ import ExplorePage from './Pages/Explore/ExplorePage';
 import LandingPage from './Pages/LandingPage/LandingPage';
 import AuthenticationLayout from './Layouts/AuthenticationLayout';
 import EditUserName from './Components/ProfilePage/EditUserName';
+import PublishedImages from './Pages/User/PublishedImages';
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
                   <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
+                  <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
                 </Route>
 
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
