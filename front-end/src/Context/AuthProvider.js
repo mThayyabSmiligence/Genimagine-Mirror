@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
     const [auth, setAuth] = useState({});
-    const [loggedIn, setLoggedIn] = useState(false)
+    const [loggedIn, setLoggedIn] = useState(true)
 
     useEffect(()=>{
         verifyUser()
@@ -18,6 +18,7 @@ export const AuthProvider = ({children}) => {
             console.log(response)
             setLoggedIn(true)
         }catch(err){
+            setLoggedIn(false)
             console.error("error verifying user", err)
         }
     }
