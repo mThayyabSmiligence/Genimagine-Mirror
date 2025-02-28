@@ -11,6 +11,7 @@ export const RefreshDataProvider =({children})=>{
 
     const [refreshUserData,setRefreshUserData] = useState(true)
 
+    
     const getUserData=async()=>{
         try{
             const response = await axiosPrivate.get('/user-data')
@@ -35,7 +36,9 @@ export const RefreshDataProvider =({children})=>{
             setRefreshCreditBalance,
             tempImageData,
             setTempImageData,
-            getUserData
+            getUserData,
+            refreshUserData,
+            setRefreshUserData
         }}>
             {children}
         </RefreshDataContext.Provider>

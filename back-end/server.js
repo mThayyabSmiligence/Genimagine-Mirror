@@ -80,8 +80,8 @@ app.listen(process.env.PORT,() => {
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
 
 
-// Generate a 32-byte (256-bit) secret key
-const secretKey = crypto.randomBytes(32).toString("hex");
+// // Generate a 32-byte (256-bit) secret key
+// const secretKey = crypto.randomBytes(32).toString("hex");
 
-console.log("Secret Key:", secretKey);
+// console.log("Secret Key:", secretKey);
 });

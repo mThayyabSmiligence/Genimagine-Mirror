@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import CreditPurchaseCard from '../../Components/CreditPurchase/CreditPurchaseCard';
 import '../../Css/CreditPurchasePage.css'
-import { axiosInstance } from "../../API's/axios";
+import { axiosInstance, axiosPrivate } from "../../API's/axios";
 import RefreshDataContext from '../../Context/RefreshDataProvider';
+import logo from '../../images/genimagin_short_logo.png'
 
 
 function CreditPurchasePage() {
 
-    const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
+    const { refreshCreditBalance,setRefreshCreditBalance,refreshUserData,setRefreshUserData} = useContext(RefreshDataContext)
 
     const [credits, setCredits] = useState("") 
     const [Amount, setAmount] = useState("")
@@ -32,6 +33,7 @@ function CreditPurchasePage() {
         },5000)
     },[success,error])
 
+    const user= JSON.parse(localStorage.getItem("user_data"))
 
     useEffect(() => {
         // if(sessionStorage.getItem('creditPurchaseOptions')){
@@ -55,26 +57,99 @@ function CreditPurchasePage() {
             console.error(error);
         }
     }
-    const buyCredits=async(package_id)=>{
-        try {
-            const response = await axiosInstance.put(`/user/buy-credits/${package_id}`, { package_id: Amount });
+    // const buyCredits=async(package_id)=>{
+    //     try {
+    //         const response = await axiosInstance.put(`/user/buy-credits/${package_id}`, { package_id: Amount });
 
-            setCredits(response.data.credits)
-            setErrorMessage("")
-            setError(false)
-            setSuccessMessage(response.data.message)
-            setSuccess(true)
+    //         setCredits(response.data.credits)
+    //         setErrorMessage("")
+    //         setError(false)
+    //         setSuccessMessage(response.data.message)
+    //         setSuccess(true)
 
 
-            const currentCreditsBalance= localStorage.getItem('credit_balance')
+    //         const currentCreditsBalance= localStorage.getItem('credit_balance')
 
-            localStorage.setItem("credit_balance",response.data.credits_purchased+Number(currentCreditsBalance))
+    //         localStorage.setItem("credit_balance",response.data.credits_purchased+Number(currentCreditsBalance))
 
-            setRefreshCreditBalance(!refreshCreditBalance)
-        } catch (error) {
-            console.error(error);
-            setError(true)
-            setErrorMessage(error?.response?.data?.message)
+    //         setRefreshCreditBalance(!refreshCreditBalance)
+    //     } catch (error) {
+    //         console.error(error);
+    //         setError(true)
+    //         setErrorMessage(error?.response?.data?.message)
+    //     }
+    // }
+    const buyCredits=async(package_id,custom_credits,e)=>{
+        try{
+            const response = await axiosPrivate.post('/order',
+                {
+                    package_id: package_id,
+                    custom_credits: custom_credits,
+                    currency:"INR",
+                    amount:100
+                }
+            )
+            console.log(response)
+
+            const order= response.data.data
+            var options = {
+                key: "rzp_test_cqxn2lF5OP2J7z", // Enter the Key ID generated from the Dashboard
+                amount:order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                currency:order.currency, // Currency
+                name: "Genimagin", //your business name
+                description: "Test Transaction",
+                image: logo,
+                order_id: order.id, 
+                handler: async function (response) {
+                    console.log(response)
+                  const body = {
+                    ...response,
+                    receipt_id:order.receipt_id,
+                  };
+                  console.log(body);
+                  try{
+                        const transactionValidity= await axiosPrivate.post('/validate-payment',body)
+                        console.log(transactionValidity)
+                        if(transactionValidity.status==200){
+                            const currentCreditsBalance= localStorage.getItem('credit_balance')
+
+                            localStorage.setItem("credit_balance",Number(transactionValidity.data.credits_received)+Number(currentCreditsBalance))
+                            setRefreshCreditBalance(!refreshCreditBalance)
+                        }
+                    }  
+                    catch(error){
+                        console.error(error)
+                    }
+                },
+                prefill: {
+                  //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+                  name: user.username, //your customer's name
+                  email: user.email,
+                //   contact: "9999999999", //Provide the customer's phone number for better conversion rates
+                },
+                notes: {
+                    messsage:order.message||" "
+                },
+                theme: {
+                  color: "#000000",
+                },
+              };
+
+              var rzp1=new window.Razorpay(options);
+              rzp1.on("payment.failed", function (response) {
+                alert(response.error.code);
+                alert(response.error.description);
+                alert(response.error.source);
+                alert(response.error.step);
+                alert(response.error.reason);
+                alert(response.error.metadata.order_id);
+                alert(response.error.metadata.payment_id);
+              });
+              rzp1.open();
+              e.preventDefault();
+        }
+        catch(err){
+            console.error(err)
         }
     }
 

@@ -2,8 +2,8 @@ import React from 'react';
 
 function CreditPurchaseCard({ data,buyCredits}) {
 
-    const handelBuy=()=>{
-        buyCredits(data.package_id)
+    const handelBuy=(e)=>{
+        buyCredits(data.package_id,null,e)
     }
     return (
         <div className="card text-center shadow-sm">
@@ -12,7 +12,7 @@ function CreditPurchaseCard({ data,buyCredits}) {
                 <p className="card-text"><strong>{data.credits}</strong> Credits</p>
                 <p className="card-text text-success">₹{data.cost}</p>
                 <p className="text-muted">{data.description}</p>
-                <button onClick={()=>handelBuy()} className="button dark-button">Buy Now</button>
+                <button onClick={(e)=>handelBuy(e)} className="button dark-button">Buy Now</button>
             </div>
         </div>
     );
