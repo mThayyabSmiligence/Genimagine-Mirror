@@ -13,22 +13,31 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
     let package_details=null;
     let amount=null;
     let credits=null
+
+    //geting amount and credits from pakage if the package_id exists and if not the custom crdit is taken
     if(package_id){
         package_details= await this.getPackageDetails(package_id)
-        amount=package_details.cost;
+        if (!package_details) {
+            return res.status(400).json({ 
+                message: 'Invalid package ID.',
+                success: false 
+            });
+        }
+        //let non_dec_amount=package_details.cost;
+        // amount = non_dec_amount.toFixed(2);
+        amount= package_details.cost;
         credits=package_details.credits
     }else{
-        amount=custom_credits;
+        amount=Number(custom_credits).toFixed(2);
         credits=custom_credits
     }
-    console.log(1)
 
-    console.log(package_details)
 
-    console.log("user_id: " ,user_id," package_id: " ,package_id," custom_credits: " ,custom_credits," currency: " ,currency," receipt_id : ",receipt_id," amount : ",amount," currency :",currency," credits:",credits)
+    //creating query and inserting data into table
     const query= " insert into credit_purchase_logs (user_id,package_id,custom_credits,amount,currency,credits_received,receipt_id) values(?,?,?,?,?,?,?)"
-    const [rows] = await db.execute(query,[user_id,package_id||0,custom_credits||0,amount,currency,credits,receipt_id ])
-    console.log("purchase log created successfully")
+    const [rows] = await db.execute(query,[user_id,package_id||9,custom_credits||0,amount,currency,credits,receipt_id ])
+
+    //returning successful message and data
     return {
         purchase_id:rows.insertId,
         user_id,
@@ -40,6 +49,8 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
     };
     }catch(err){
         console.log("error creating purchase log :",err)
+
+        //sending false if the error occurs
         return false;
     }   
 }
@@ -91,7 +102,7 @@ exports.addPurchasedCredits=async(receipt_id)=>{
 }
 exports.updatePaymentStatus=async(receipt_id,transaction_id,payment_method)=>{
     try{
-        const query= "update credit_purchase_logs set payment_status='completed' , completed_at= now() , transaction_id=? , payment_method = ? where receipt_id=?"
+        const query= "update credit_purchase_logs set payment_status='captured' , completed_at= now() , transaction_id=? , payment_method = ? where receipt_id=?"
         const [rows] = await db.execute(query,[ transaction_id,payment_method,receipt_id,])
         console.log("payment status updated successfully")
         return {
@@ -109,8 +120,10 @@ exports.updatePaymentStatus=async(receipt_id,transaction_id,payment_method)=>{
     }
 }
 
-
+//function to generate recipt id in REC-'date'-User'user_id'-'random 6 char string
 exports.generateReceiptId = (userId) => {
+
+    
     const now = new Date();
     const date = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`; 
     const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6); // 6-char random string

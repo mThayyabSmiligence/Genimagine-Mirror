@@ -8,7 +8,7 @@ import axios from 'axios';
 import { axiosInstance } from '../../API\'s/axios';
 
 
-export default function ChatContainer({data}) {
+export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
   const Navigate = useNavigate();
   

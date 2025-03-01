@@ -207,7 +207,7 @@ function CreditPurchasePage() {
                     </div>
 
                     <div className='customise-credit-button col-md-4 p-0 d-flex justify-content-center credit-purchase'>
-                        <button className='button dark-button me-2'>Purchase</button>
+                        <button className='button dark-button me-2' onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
                     </div>
                 </div>
             </div>

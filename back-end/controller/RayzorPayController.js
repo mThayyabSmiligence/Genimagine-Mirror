@@ -9,31 +9,55 @@ exports.RayzorPayOrderController=async(req,res)=>{
 
     try{
         const {package_id,custom_credits,currency } = req.body;
-  
         const {id,username}=req.user;
 
-        const receipt_id =generateReceiptId(id)
-
-
+        //generating receipt id
+        const receipt_id =generateReceiptId(id) 
         
+        //checking if the razor pay keys exist and handling if they dont exist
+        if (!process.env.RAZOR_PAY_KEY || !process.env.RAZOR_PAY_SECRET) {
+            return res.status(500).json({ 
+                message: "Razorpay keys are missing." ,
+                success: false,
+            });
+        }
+
+        //creating the puchase log in database
         const receipt =await createPurchaseLog(id,package_id,custom_credits,currency,receipt_id)
         
+        //checking if the recipt is created successfully and handling if doesn't exist
         if(!receipt){
             return res.status(400).json({ message: 'Failed to create purchase log.' });
         }
+
+        //creating instance of razor pay
         var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: process.env.RAZOR_PAY_SECRET })
 
         
+        const amount = Number(receipt.amount);
+
+        //checking if the amount is valid and handling if it's not
+        if (!amount || isNaN(amount) || amount <= 0) {
+            return res.status(400).json({ message: "Invalid order amount." });
+        }
+        
+        //creating order with razor pay instance
         const order = await instance.orders.create({
-            amount: Number(receipt.amount)*100,
+            amount: amount*100,
             currency: "INR",
             receipt: receipt_id||receipt.receipt_id,
         })
 
+
+        //handling if the order is not created successfully
         if(!order){
             return res.status(400).json({ message: 'Failed to create order.' });
         }
+
+        //joing the order and purchase log data.
         const data={...order,...receipt}
+
+        //sending succes response
         return res.status(200).json({
             success: true,
             data: data,
@@ -41,6 +65,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
         });
     }
     catch(error){
+
         console.log(error)
         return res.status(500).json({ 
             message: 'Failed to create order.' ,
@@ -57,10 +82,10 @@ exports.validatePaymentController=async(req,res)=>{
         const {id,username}=req.user;
 
         var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: process.env.RAZOR_PAY_SECRET })
-
         
         const payment = await instance.payments.fetch(razorpay_payment_id)
 
+        const order_detail = await instance.orders.fetchPayments(razorpay_order_id)
         console.log(razorpay_payment_id)
         console.log(razorpay_order_id)
 
@@ -68,8 +93,6 @@ exports.validatePaymentController=async(req,res)=>{
         sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
         const digest = sha.digest("hex");
         
-        console.log(digest)
-        console.log(razorpay_signature)
         if(digest !== razorpay_signature){
             return res.status(400).json({ message: 'transaction is not legit!' });
         }
@@ -82,6 +105,9 @@ exports.validatePaymentController=async(req,res)=>{
             return res.status(400).json({ message: 'credits added but failed to update payment status' })
         }
 
+        console.log(" payment detail :",payment)
+        console.log("order_detail :",order_detail)
+
         return res.status(response.status).json(response)
     }
     catch(error){
@@ -89,4 +115,8 @@ exports.validatePaymentController=async(req,res)=>{
         return res.status(500).json({ message: 'Failed to validate transaction.' })
     }
 
+}
+
+exports.handelFailedPaymentController=async()=>{
+    
 }
