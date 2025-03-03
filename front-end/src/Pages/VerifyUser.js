@@ -24,11 +24,11 @@ export default function VerifyUser() {
 
     useEffect(()=>{
         handelVerification()
-    },[])
+    },)
 
     const handelVerification=async()=>{
         try{
-            const response = await axios.get(`http://localhost:3001/api/v1/auth/verify-user/${verification_token}`,
+            await axios.get(`http://localhost:3001/api/v1/auth/verify-user/${verification_token}`,
                 {
                     withCredentials: true,
                 }

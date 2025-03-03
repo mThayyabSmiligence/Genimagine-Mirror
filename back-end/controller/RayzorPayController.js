@@ -2,8 +2,9 @@ const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const Razorpay = require('razorpay');
-const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits } = require('../service/BuyCreditsService');
+const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits, setOrderId, savePaymentHistory } = require('../service/BuyCreditsService');
 const crypto = require('crypto');
+const { response } = require('express');
 
 exports.RayzorPayOrderController=async(req,res)=>{
 
@@ -47,15 +48,21 @@ exports.RayzorPayOrderController=async(req,res)=>{
             currency: "INR",
             receipt: receipt_id||receipt.receipt_id,
         })
-
+        
+       
 
         //handling if the order is not created successfully
         if(!order){
             return res.status(400).json({ message: 'Failed to create order.' });
         }
 
+        const result=await setOrderId(receipt.purchase_id,order.id)
+        
+
         //joing the order and purchase log data.
         const data={...order,...receipt}
+
+        console.log("order data",order)
 
         //sending succes response
         return res.status(200).json({
@@ -72,8 +79,6 @@ exports.RayzorPayOrderController=async(req,res)=>{
             success: false,
         });
     }
-    
-
 
 }
 exports.validatePaymentController=async(req,res)=>{
@@ -107,6 +112,8 @@ exports.validatePaymentController=async(req,res)=>{
 
         console.log(" payment detail :",payment)
         console.log("order_detail :",order_detail)
+        console.log('upi data',order_detail.items[0].upi )
+        const result = await savePaymentHistory(order_detail.items)
 
         return res.status(response.status).json(response)
     }
@@ -117,6 +124,10 @@ exports.validatePaymentController=async(req,res)=>{
 
 }
 
-exports.handelFailedPaymentController=async()=>{
-    
+exports.handelFailedPaymentController=async(req,res)=>{
+    const {error}= req.body;
+
+    console.log(error)
+
+    res.status(500).json({message: 'Failed to complete transaction'})
 }

@@ -30,7 +30,7 @@ exports.guestGenerateImageController = async(req, res, next) => {
             }else{
                 console.log("daily limit exceeded")
                 res.status(429).json({
-                    message: "You Reached Today's limit, Try Tomorrow"
+                    message: "You Reached Today's limit, login to generate more free images or try tomorrow"
                 })
             }
 }

@@ -55,6 +55,19 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
     }   
 }
 
+exports.setOrderId=async(purchase_id,order_id)=>{
+    try{
+        const query= "update credit_purchase_logs set order_id=? where purchase_id=?"
+        const [rows] = await db.execute(query,[order_id,purchase_id])
+        console.log("order id set successfully")
+        return true;
+
+    }catch(err){
+        console.log("error setting order id :",err)
+        return false;
+    }
+}
+
 exports.addPurchasedCredits=async(receipt_id)=>{
 
     try{
@@ -100,10 +113,10 @@ exports.addPurchasedCredits=async(receipt_id)=>{
 
     }
 }
-exports.updatePaymentStatus=async(receipt_id,transaction_id,payment_method)=>{
+exports.updatePaymentStatus=async(receipt_id,payment_id,payment_method)=>{
     try{
-        const query= "update credit_purchase_logs set payment_status='captured' , completed_at= now() , transaction_id=? , payment_method = ? where receipt_id=?"
-        const [rows] = await db.execute(query,[ transaction_id,payment_method,receipt_id,])
+        const query= "update credit_purchase_logs set payment_status='captured' , completed_at= now() , payment_id=? , payment_method = ? where receipt_id=?"
+        const [rows] = await db.execute(query,[ payment_id,payment_method,receipt_id,])
         console.log("payment status updated successfully")
         return {
             status:200,
@@ -119,6 +132,66 @@ exports.updatePaymentStatus=async(receipt_id,transaction_id,payment_method)=>{
         }
     }
 }
+
+
+// example data:order_detail : {
+//     entity: 'collection',
+//     count: 1,
+//     items: [
+//       {
+//         id: 'pay_Q1UTkKhu5bUa7i',
+//         entity: 'payment',
+//         amount: 5000,
+//         currency: 'INR',
+//         status: 'captured',
+//         order_id: 'order_Q1UTcaqsZtNqeX',
+//         invoice_id: null,
+//         international: false,
+//         method: 'upi',
+//         amount_refunded: 0,
+//         refund_status: null,
+//         captured: true,
+//         description: 'Test Transaction',
+//         card_id: null,
+//         bank: null,
+//         wallet: null,
+//         vpa: 'success@razorpay',
+//         email: 'aaaa@aaaa.com',
+//         contact: '+919999999999',
+//         notes: [Object],
+//         fee: 118,
+//         tax: 18,
+//         error_code: null,
+//         error_description: null,
+//         error_source: null,
+//         error_step: null,
+//         error_reason: null,
+//         acquirer_data: [Object],
+//         created_at: 1740824328,
+//         upi: [Object]
+//       }
+//     ]
+//   }
+exports.savePaymentHistory = async(data)=>{
+    try{
+        const query = `
+    INSERT INTO order_payments (
+        payment_id, entity, amount, currency, status, order_id, invoice_id, international, method,
+        amount_refunded, refund_status, captured, description, card_id, bank, wallet, vpa, email,
+        contact, notes, fee, tax, error_code, error_description, error_source, error_step, error_reason,
+        acquirer_data, upi
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) `;
+
+    data.valu (async (order)=>{
+        await db.execute(query,order)
+    })
+    return true;
+    }catch(err){
+        console.log("error saving payment history :",err)
+        return false;
+    }
+}
+
 
 //function to generate recipt id in REC-'date'-User'user_id'-'random 6 char string
 exports.generateReceiptId = (userId) => {

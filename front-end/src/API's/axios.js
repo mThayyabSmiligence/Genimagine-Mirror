@@ -45,6 +45,10 @@ const refreshAccessToken = async () => {
     refreshSubscribers = []; // Clear the queue
   } catch (error) {
     console.error("Refresh token expired. Redirecting to login.");
+    if (window.location.pathname.startsWith("/u/")) {
+      window.location.href = "/login";
+    }
+         // Redirect user to login page
     refreshSubscribers = []; // Clear queue if refresh fails
     return Promise.reject(error);
   }

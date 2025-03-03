@@ -48,10 +48,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
         
         //exiting if the limit exceeded
-        if(!canUserGenerateForFree){
-            res.status(429).json({
-                message:"free image generation limit exceeded"
-            })
+        if(!canUserGenerateForFree.success){
+            res.status(canUserGenerateForFree.status).json(canUserGenerateForFree)
             return
         }
         const inputs={
