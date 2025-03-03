@@ -43,7 +43,7 @@ function App() {
     }, []);
   return (
     <div className="App">
-      <Router>
+
           
           <Routes>
 
@@ -80,8 +80,7 @@ function App() {
             </Route>
             
           </Routes>
-   
-      </Router>
+
     </div>
   );
 }

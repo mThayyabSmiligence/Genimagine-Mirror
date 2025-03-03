@@ -5,6 +5,7 @@ const { userGenerateImageController } = require('../controller/UserGenerateImage
 const { buyCreditsPackageController } = require('../controller/CreditController');
 const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
+const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -21,6 +22,11 @@ router.route('/delete-image/:image_id').delete(deleteImageController)
 
 
 router.route('/buy-credits/:package_id').put(buyCreditsPackageController)
+
+router.route('/order').post(RayzorPayOrderController)
+router.route('/validate-payment').post(validatePaymentController)
+
+router.route('/falied-payment').post(handelFailedPaymentController)
 
 router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)

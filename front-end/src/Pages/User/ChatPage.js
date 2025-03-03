@@ -16,6 +16,9 @@ export default function ChatPage() {
     const [trackmodel,setTrackModel] = useState(1)
     const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
 
+    const [showOptionsId,setShowOptionsId] =useState(null)
+
+
     const {chatId}= useParams()
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -197,7 +200,7 @@ export default function ChatPage() {
               }
               {
                 loading&&
-                <ChatContainer data={dummyData}></ChatContainer>
+                <ChatContainer data={dummyData} showOptionsId={showOptionsId} setShowOptionsId={setShowOptionsId}></ChatContainer>
               }
               {
             error&&

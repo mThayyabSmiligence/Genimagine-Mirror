@@ -139,5 +139,5 @@ exports.deleteExploreImageByPublishedIdController=async(req,res)=>{
     
     const result = await deleteExploreImageByPublishedIdService(published_id,id);
     
-    return res.status(result.status).json(result);  ;
+    return res.status(result.status).json(result);  
 }

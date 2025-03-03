@@ -81,9 +81,12 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         </button>
 
           <div>
-            <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
-                    onClick={!loading&&handelClick}
-                    >{ loading?
+            {
+              
+              loading? 
+                    <div className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
+                    
+                    >
                           <>
                           <div style={spinnerStyle}></div>
                           <style>{`
@@ -93,10 +96,16 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                           }
                           `}</style>
                           </>
-                      :
-                      <span className="material-symbols-outlined">arrow_forward</span>
-                      }
-              </button>
+                      
+                    </div>
+              : 
+              <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
+                      onClick={!loading&&handelClick}
+                      >
+                        <span className="material-symbols-outlined">arrow_forward</span>
+                        
+                </button>
+            }
           </div>
       </div>
     </div>
