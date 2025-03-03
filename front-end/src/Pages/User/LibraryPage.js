@@ -49,7 +49,7 @@ export default function LibraryPage() {
   
   
   return (
-    <div className='mt-5'>
+    <div className='mt-5 library_body'>
       <div className='d-flex justify-content-between pt-3'>
         <h2 className='ms-3 text-start'>Library</h2>
         <button onClick={()=>GetLibraryImages()} className='button-wh dark-button-wh me-3'>Refresh</button>
@@ -61,7 +61,7 @@ export default function LibraryPage() {
                             <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
                         ))
                         }
-                    </div>
+        </div>
     </div>
   )
 }

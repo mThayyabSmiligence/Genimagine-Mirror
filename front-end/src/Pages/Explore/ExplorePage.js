@@ -41,6 +41,7 @@ function ExplorePage() {
             }
         } catch (error) {
             console.error("Error fetching explore images", error);
+            setHasMoreImages(false)
         } finally {
             setLoading(false);
         }
