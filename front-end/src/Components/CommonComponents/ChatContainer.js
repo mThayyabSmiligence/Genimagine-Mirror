@@ -166,7 +166,6 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
       }
 
       const handlePublish=()=>{
-        setTempImageData(data); 
         localStorage.setItem("temp_image_data",JSON.stringify(data))
         Navigate('/u/publish')
       }

@@ -272,6 +272,19 @@
 .p-secondary {
     font-size: var(--second-primary-font-size-1366);
 }
+.slick-slider {
+    width: 500px;
+    height: 500px; /* Adjust as needed */
+  }
+  
+  .slick-slide img {
+    width: 500px;
+    height: 500px;
+    object-fit: cover; /* Ensures the image fits well */
+  }
+  .slick-dots li button:before{
+    color: white;
+}
 
 .icon-primary{
     font-size: var(--primary-icon-size-1366);

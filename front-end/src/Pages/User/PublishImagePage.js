@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import '../../Css/PublishImagePage.css'
 import { axiosPrivate } from '../../API\'s/axios'
+import { useNavigate } from 'react-router-dom';
 
 function PublishImagePage() {
   const tempImageData = JSON.parse(localStorage.getItem('temp_image_data'));
@@ -11,6 +12,7 @@ function PublishImagePage() {
   const [errorMessage,setErrorMessage]=useState(null)
   const [error,setError]=useState(false)
   const [successMessage,setSuccessMessage]=useState("")
+  const navigate = useNavigate();
 
   
 
@@ -27,6 +29,7 @@ function PublishImagePage() {
         setSuccess(true)
         setSuccessMessage(response.data.message)
         setErrorMessage(null)
+        navigate('/explore')
       }
     }catch(error){
       console.error("error in publishing image", error)
@@ -86,4 +89,4 @@ function PublishImagePage() {
   )
 }
 
-export default PublishImagePage
+export default PublishImagePage;

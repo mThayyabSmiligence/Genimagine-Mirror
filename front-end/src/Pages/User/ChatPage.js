@@ -8,6 +8,7 @@ import axios from 'axios'
 import PromptInPutContainer from '../../Components/CommonComponents/PromptInputContainer'
 import SuggestionPrompts from '../../Components/CommonComponents/SuggestionPrompts'
 import ChatContainer from '../../Components/CommonComponents/ChatContainer'
+import { useInView } from 'react-intersection-observer'
 
 
 export default function ChatPage() {
@@ -19,6 +20,10 @@ export default function ChatPage() {
 
 
     const {chatId}= useParams()
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMoreChats, setHasMoreChats] = useState(true);
+    const { ref, inView } = useInView();
     
     
 
@@ -86,7 +91,10 @@ export default function ChatPage() {
       const aspectRatioObject = aspectRatioList.find((values)=>values.id=id)
       console.log(aspectRatioObject)
     }
+
     
+
+
     useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
         window.scrollTo(0, document.body.scrollHeight);
@@ -99,8 +107,14 @@ export default function ChatPage() {
     }, [chatId]);
 
     useEffect(()=>{
-        getChatData()
+        getChatData(1,true)
     },[chatId])
+
+    useEffect(() => {
+      if (inView && hasMoreChats) {
+        getChatData(currentPage);
+      }
+    }, [inView]);
 
     useEffect(()=>{
       setTimeout(() => {
@@ -109,14 +123,26 @@ export default function ChatPage() {
     },[error])
 
 
-    const getChatData=async()=>{
+    const getChatData=async(pageNumber, reset=false)=>{
+      let query = `?page=${pageNumber}`;
         try {
             console.log("checking chatid inside api ", chatId)
-            const response = await axiosPrivate.get(`get-chat-data/${chatId}`,
+            const response = await axiosPrivate.get(`get-chat-data/${chatId}${query}`,
             {
+
               withCredentials:true,
             });
-            setChat(response.data.message)
+            // setChat(response.data.message)
+            const ChatResponse = response.data;
+            console.log("response",response)
+            console.log("newchats",ChatResponse)
+            if(response.status==200){
+              console.log("retrives images")
+              setChat((prevChats) => reset ? ChatResponse.message : [ ...ChatResponse.message,...prevChats]);
+              setHasMoreChats(!!ChatResponse.pagination.nextPage);
+              setCurrentPage(pageNumber + 1);
+            }
+
         } catch (error) {
             console.error('Error fetching chat data:', error);
             setError('Failed to fetch chat data. Please try again later.');
@@ -167,7 +193,8 @@ export default function ChatPage() {
   return (
      <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
     
-            <div className='chat-list-container d-flex flex-column align-items-center justify-content-end  pb-80px mt-3 w-100'>
+            <div className='chat-list-container d-flex flex-column align-items-center justify-content-end pb-80px mt-3 w-100'>
+            <div ref={ref} style={{ height: "10px", width: "10px", background: "transparent" }}></div>
               {
                 chat.map((item,index)=>(<ChatContainer key={index} data={item}></ChatContainer>))
               }

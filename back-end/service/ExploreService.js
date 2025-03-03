@@ -142,7 +142,7 @@ exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
         const pageSize = 10; // 🔹 Fixed page size (e.g., 10 images per page)
         const offset = (pageNumber - 1) * pageSize;
 
-        query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+        query += ` LIMIT ${pageSize} OFFSET ${offset}`; 
         params.push(Number(pageSize) ,Number(offset) );
 
         // 🟢 4️⃣ Execute Query
