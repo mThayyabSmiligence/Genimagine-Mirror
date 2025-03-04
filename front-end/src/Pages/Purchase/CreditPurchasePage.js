@@ -190,7 +190,7 @@ function CreditPurchasePage() {
             <div className='row'>
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                     <div key={index} className='col-md-4 mb-4'>
-                        <CreditPurchaseCard data={option} buyCredits={buyCredits} />
+                        <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
                     </div>
                 ))}
             </div>

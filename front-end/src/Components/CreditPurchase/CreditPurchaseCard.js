@@ -2,9 +2,8 @@ import React, { useContext } from 'react';
 import AuthContext from '../../Context/AuthProvider';
 import { Link } from 'react-router-dom';
 
-function CreditPurchaseCard({ data,buyCredits}) {
+function CreditPurchaseCard({ data,buyCredits,loggedIn}) {
 
-    const {loggedIn}= useContext(AuthContext)
 
     const handelBuy=(e)=>{
         buyCredits(data.package_id,null,e)
