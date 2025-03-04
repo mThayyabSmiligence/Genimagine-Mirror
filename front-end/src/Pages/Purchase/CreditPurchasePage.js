@@ -4,11 +4,14 @@ import '../../Css/CreditPurchasePage.css'
 import { axiosInstance, axiosPrivate } from "../../API's/axios";
 import RefreshDataContext from '../../Context/RefreshDataProvider';
 import logo from '../../images/genimagin_short_logo.png'
+import AuthContext from '../../Context/AuthProvider';
 
 
 function CreditPurchasePage() {
 
     const { refreshCreditBalance,setRefreshCreditBalance,refreshUserData,setRefreshUserData} = useContext(RefreshDataContext)
+
+    const {loggedIn} = useContext(AuthContext)
 
     const [credits, setCredits] = useState("") 
     const [Amount, setAmount] = useState("")
@@ -187,7 +190,7 @@ function CreditPurchasePage() {
             <div className='row'>
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                     <div key={index} className='col-md-4 mb-4'>
-                        <CreditPurchaseCard data={option} buyCredits={buyCredits}/>
+                        <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
                     </div>
                 ))}
             </div>
