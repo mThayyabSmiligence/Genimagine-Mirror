@@ -25,7 +25,7 @@ dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    next();
+    next(); 
 });
 const corsOptions = {
     origin: "http://localhost:3000",

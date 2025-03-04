@@ -138,8 +138,10 @@ exports.getChatsList=async(req,res,next)=>{
 exports.getChatsData=async(req,res,next)=>{
 
     const {chatId}=req.params;
+    const {page} = req.query;
 
     console.log("chat_id",chatId);
+    console.log("page",page);
 
     let cookies =null
     let token =null 
@@ -159,12 +161,10 @@ exports.getChatsData=async(req,res,next)=>{
     //getting jwt token from cookies
   
 
-    const chatData=await getImagesByChatId(chatId,id)
+    const chatData=await getImagesByChatId(chatId,id,page)
 
 
-    res.status(chatData.status).json({
-        message:chatData.message
-    })
+    res.status(chatData.status).json(chatData)
 
 }
 
