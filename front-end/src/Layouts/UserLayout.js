@@ -14,7 +14,7 @@ export default function UserLayout() {
       navigate('/')
     }
     
-  }, 500)
+  }, 1000)
   },[loggedIn])
     
   return loading?
