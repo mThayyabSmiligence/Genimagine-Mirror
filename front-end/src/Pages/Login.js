@@ -9,6 +9,7 @@ import logo from '../images/genimagin_logo.png'
 import google from '../images/pngwing.com.png'
 import RefreshDataContext from '../Context/RefreshDataProvider'
 import AuthContext from '../Context/AuthProvider'
+import { axiosAuth } from '../API\'s/axios'
 
 export default function Login() {
 
@@ -61,7 +62,7 @@ export default function Login() {
         setSucccess(false) //
         setLoading(true)
         try{
-            const response =await axios.post("http://localhost:3001/api/v1/auth/login",
+            const response =await axiosAuth.post("/login",
                 {
                     password:password,
                     email:email
@@ -93,7 +94,7 @@ export default function Login() {
         setLoading(true)
         try {
             // Send OTP to user's email
-            const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-request",
+            const response = await axiosAuth.post("/email-otp-request",
                 { email },
                 { withCredentials: true }
             );
@@ -116,7 +117,7 @@ export default function Login() {
         setSucccess(false) 
         setLoading(true)
         try{
-            const response = await axios.post("http://localhost:3001/api/v1/auth//email-otp-verify",
+            const response = await axiosAuth.post("/email-otp-verify",
                 { email, otp },
                 { withCredentials: true }
             );
@@ -145,7 +146,7 @@ export default function Login() {
             console.log("User Info:", result.user);
             
             // Send token to backend for verification
-            const response = await axios.post("http://localhost:3001/api/v1/auth/verify-google-token", 
+            const response = await axiosAuth.post("/verify-google-token", 
                 { token: idToken },  
                 {
                     headers: {

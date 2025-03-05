@@ -2,6 +2,7 @@ import React, { use, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../images/genimagin_logo.png'
 import axios from 'axios'
+import { axiosAuth } from '../API\'s/axios'
 
 export default function ForgotPassword() {
 
@@ -20,7 +21,7 @@ export default function ForgotPassword() {
         setSuccess(false)
 
         try{
-            const response = await axios.post('http://localhost:3001/api/v1/auth/forgot-password', {
+            const response = await axiosAuth.post('/forgot-password', {
                 email:email
             });
 

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
 
+const serverStorageBaseUrl= process.env.SERVER_STORAGE_BASE_URL
 exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token,req) => {
     const formData = new FormData();
     console.log(Buffer.isBuffer(image)?"true ":"false")
@@ -19,7 +20,7 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
 
     try {
         const response = await axios.post(
-            "http://localhost:3002/upload",formData,
+            `${serverStorageBaseUrl}/upload`,formData,
            
             {
                 headers: {
@@ -40,7 +41,7 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
 exports.uploadImageToExplore=async (user_id,image_path,token)=>{
     try {
         const response = await axios.post(
-            "http://localhost:3002/publish-to-explore",{
+            `${serverStorageBaseUrl}/publish-to-explore`,{
                 userId:user_id,
                 imagePath:image_path
             },

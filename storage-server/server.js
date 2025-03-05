@@ -5,22 +5,26 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
-const { PORT,NODE_ENV } =  require('./config/config');
+const { PORT,NODE_ENV,ALLOWERD_ORGIN_1,ALLOWERD_ORGIN_2,STORAGE_SERVER_BASE_URL} =  require('./config/config');
 
 const { verifyToken } = require('./middleWare/authMiddleware');
 const verifyTokenWithCookie = require('./middleWare/verifyTokenWithCookie');
+require('dotenv').config();
+
+
 
 
 const app = express();
 app.use(fileupload())
 
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: [ALLOWERD_ORGIN_1, ALLOWERD_ORGIN_2],
   credentials: true, // Allow cookies and authentication headers
 }));
 
 
-require('dotenv').config();
+
 
 app.use(express.json());
 
@@ -62,8 +66,8 @@ app.post('/upload',verifyToken,(req,res)=>{
       
       const imagePath= `uploads/users/${userId}/${chatId}/${imageId}.png`
 
-      const imageUrl=`http://localhost:3002/chat/image/${userId}/${chatId}/${imageId}.png`
-      console.log(4)
+      const imageUrl=`${STORAGE_SERVER_BASE_URL}/chat/image/${userId}/${chatId}/${imageId}.png`
+
 
       res.status(200).json({message:"file is uploaded",imagePath:imagePath,imageUrl:imageUrl})
     
@@ -95,7 +99,7 @@ app.post('/publish-to-explore', verifyToken, async (req, res) => {
 
       console.log(5)
       // Generate public image URL
-      const imageUrl = `http://localhost:3002/explore/image/${userId}/${imageFileName}`;
+      const imageUrl = `${STORAGE_SERVER_BASE_URL}/explore/image/${userId}/${imageFileName}`;
 
      
 

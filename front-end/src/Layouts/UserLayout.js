@@ -27,8 +27,7 @@ export default function UserLayout() {
           )
           :(<div>
           { 
-              <Outlet></Outlet>
-              
+              <Outlet></Outlet>   
           }
           </div>)
   
