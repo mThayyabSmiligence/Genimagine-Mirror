@@ -39,7 +39,7 @@ exports.getSingleUser = async (req, res, next)=> {
 
     try{
         const [rows] = await db.execute(
-            'SELECT * FROM Guest_Image_Limits WHERE id = ?', 
+            'SELECT * FROM guest_image_limits WHERE id = ?', 
             [userId]
         );
         // console.log(rows[0]);
