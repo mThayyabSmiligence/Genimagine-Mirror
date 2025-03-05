@@ -15,6 +15,8 @@ export default function ChatPage() {
 
     const [trackmodel,setTrackModel] = useState(1)
     const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
+    const [initialState, setInitialState] = useState(true)
+
 
     const [showOptionsId,setShowOptionsId] =useState(null)
 
@@ -22,7 +24,7 @@ export default function ChatPage() {
     const {chatId}= useParams()
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [hasMoreChats, setHasMoreChats] = useState(true);
+    const [hasMoreChats, setHasMoreChats] = useState(false);
     const { ref, inView } = useInView();
     
     
@@ -107,11 +109,13 @@ export default function ChatPage() {
     }, [chatId]);
 
     useEffect(()=>{
+      console.log(1)
         getChatData(1,true)
     },[chatId])
 
     useEffect(() => {
       if (inView && hasMoreChats) {
+        console.log(2)
         getChatData(currentPage);
       }
     }, [inView]);
