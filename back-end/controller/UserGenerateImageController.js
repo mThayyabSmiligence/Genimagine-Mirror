@@ -92,7 +92,15 @@ exports.userGenerateImageController=async(req,res,next)=>{
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
-        
+
+        if(!imageUpload){
+            res.status(500).json({
+                message:"somthing went worng with image upload"
+            })
+            return
+        }
+
+        console.log(imageUpload)
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
@@ -160,6 +168,15 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const image_id= insertImage.insertId;
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+
+        if(!imageUpload){
+            res.status(500).json({
+                message:"somthing went worng with image upload"
+            })
+            return
+        }
+
+        console.log(imageUpload)
         
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)

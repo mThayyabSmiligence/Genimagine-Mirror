@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { axiosInstance } from '../../API\'s/axios'
+import { axiosInstance, axiosPrivate } from '../../API\'s/axios'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -36,7 +36,7 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
 
     const deleteFromLibrary= async(image_id)=>{
               try{
-                const response = await axiosInstance.delete(`/user/delete-from-library/${image_id}`);
+                const response = await axiosPrivate.delete(`/delete-from-library/${image_id}`);
                 setSuccess(true);
                 setSuccessMessage("Image deleted from library successfully");
                 console.log(" ",response.data)

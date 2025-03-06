@@ -6,6 +6,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MathCaptcha from "../Components/Captcha/MathCaptcha";
+import { axiosAuth } from '../API\'s/axios';
 
 // Add icons to the library
 library.add(faCheck, faTimes, faInfoCircle);
@@ -154,7 +155,7 @@ console.log("faInfoCircle:", faInfoCircle);
 
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:3001/api/v1/auth/register', 
+            const response = await axiosAuth.post('/register', 
                 {
                     "username": username,
                     "password": password,

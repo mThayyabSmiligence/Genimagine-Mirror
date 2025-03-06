@@ -39,7 +39,7 @@ exports.guestGenerateImageController = async(req, res, next) => {
 const increaseGuestImageCount = async (ipAddress) => {
     try {
         const [rows] = await db.execute(
-            'SELECT id FROM Guest_Image_Limits WHERE ip_address = ?',
+            'SELECT id FROM guest_image_limits WHERE ip_address = ?',
             [ipAddress]
         );
     
@@ -48,7 +48,7 @@ const increaseGuestImageCount = async (ipAddress) => {
         }
         const userId = rows[0].id; 
             const query = `
-            UPDATE Guest_Image_Limits 
+            UPDATE guest_image_limits 
             SET image_count = image_count + 1, updated_at = NOW()
             WHERE id = ?;
         `;

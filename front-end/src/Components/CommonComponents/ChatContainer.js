@@ -5,7 +5,7 @@ import "../../Css/ChatContainer.css"
 import { useNavigate} from 'react-router-dom'
 
 import axios from 'axios';
-import { axiosInstance } from '../../API\'s/axios';
+import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 
  
 export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
@@ -133,7 +133,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
       const handelDeleteImage=async ()=>{
         try{
-            const response =await axios.delete(`http://localhost:3001/api/v1/user/delete-image/${data.image_id}`,
+            const response =await axiosPrivate.delete(`/delete-image/${data.image_id}`,
               {withCredentials:true 
 
               }
@@ -172,7 +172,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
       const deleteFromLibrary= async()=>{
         try{
-          const response = await axiosInstance.delete(`/user/delete-from-library/${data.image_id}`);
+          const response = await axiosPrivate.delete(`/delete-from-library/${data.image_id}`);
           setSuccess(true);
           setSuccessMessage("Image deleted from library successfully");
           console.log(" ",response.data)

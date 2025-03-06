@@ -37,7 +37,7 @@ async function checkDataExists(ipAddress) {
     try {    
         console.log("inside check data exist")
         const [rows] = await db.execute(
-            'SELECT COUNT(*) AS count FROM Guest_Image_Limits WHERE ip_address = ?',
+            'SELECT COUNT(*) AS count FROM guest_image_limits WHERE ip_address = ?',
             [ipAddress]
         );
         console.log(typeof(rows));
@@ -58,7 +58,7 @@ async function createGuestUser(ipAddress) {
     try {
         const currentDate = new Date()
         const [result] = await db.execute(
-            'INSERT INTO Guest_Image_Limits (ip_address, image_count) VALUES (?,?)',
+            'INSERT INTO guest_image_limits (ip_address, image_count) VALUES (?,?)',
             [ipAddress, 0]
         );
         return result; 
@@ -71,7 +71,7 @@ async function createGuestUser(ipAddress) {
 async function GetGuestUser(ipAddress) {  
     try {
         const [rows] = await db.execute(
-            'SELECT * FROM Guest_Image_Limits WHERE ip_address = ?',
+            'SELECT * FROM guest_image_limits WHERE ip_address = ?',
             [ipAddress]
         );
         return rows[0]; // Returning the first row
@@ -84,7 +84,7 @@ async function GetGuestUser(ipAddress) {
 async function UpdateGuestUser(id){
     try {
         const query = `
-                        UPDATE Guest_Image_Limits 
+                        UPDATE guest_image_limits 
                         SET  image_count = 0   
                         WHERE id = ?;
                     `;

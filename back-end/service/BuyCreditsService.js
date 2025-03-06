@@ -182,7 +182,7 @@ exports.savePaymentHistory = async(data)=>{
         acquirer_data, upi
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) `;
 
-    data.valu (async (order)=>{
+    data.value/(async (order)=>{
         await db.execute(query,order)
     })
     return true;

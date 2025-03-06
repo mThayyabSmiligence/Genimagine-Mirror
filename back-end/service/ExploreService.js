@@ -42,7 +42,7 @@ exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
         }
     }
     try{
-        const query ="INSERT INTO Explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio) VALUES (?, ?,?, ?, ?,?,?,?,?)"
+        const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio) VALUES (?, ?,?, ?, ?,?,?,?,?)"
         const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,image_data.imageUrl,image_data.imagePath,generated_image_data.resolution,generated_image_data.aspect_ratio])
 
         if (rows.affectedRows == 0) {
@@ -63,7 +63,7 @@ exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     }
 
     try{
-        const query ="INSERT INTO ExploreMetrics (published_id, likes_count, views_count, ranking_score) VALUES (?, ?, ?, ?)"
+        const query ="INSERT INTO exploremetrics (published_id, likes_count, views_count, ranking_score) VALUES (?, ?, ?, ?)"
         const [rows] = await db.execute(query,[published_id,0,0,0])
         if (rows.affectedRows == 0) {
              return {
@@ -103,9 +103,9 @@ exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
                 WHEN el.user_id IS NOT NULL THEN TRUE 
                 ELSE FALSE 
             END AS isUserLiked
-        FROM Explore e
-        JOIN ExploreMetrics em ON e.published_id = em.published_id
-        LEFT JOIN ExploreLikes el ON e.published_id = el.published_id AND el.user_id = ?
+        FROM explore e
+        JOIN exploremetrics em ON e.published_id = em.published_id
+        LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ?
     `;
         let conditions = [];
         let params = [];
@@ -205,7 +205,7 @@ exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
 
 exports.getExploreImageByIdService=async(explore_id)=>{
     try{
-        const query ="SELECT * FROM Explore WHERE published_id =?"
+        const query ="SELECT * FROM explore WHERE published_id =?"
         const [rows] = await db.execute(query,[explore_id])
         if (rows.length == 0) {
              return {
@@ -242,9 +242,9 @@ exports.getExploreImageByUserIdService=async(sort, time, page ,user_id)=>{
                 WHEN el.user_id IS NOT NULL THEN TRUE 
                 ELSE FALSE 
             END AS isUserLiked
-        FROM Explore e
-        JOIN ExploreMetrics em ON e.published_id = em.published_id
-        LEFT JOIN ExploreLikes el ON e.published_id = el.published_id AND el.user_id = ? 
+        FROM explore e
+        JOIN exploremetrics em ON e.published_id = em.published_id
+        LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ? 
     `;
         let conditions = [];
         let params = [];
@@ -326,7 +326,7 @@ exports.getExploreImageByUserIdService=async(sort, time, page ,user_id)=>{
 
 exports.ViewExploreImageService=async(published_id)=>{
     try{
-        const query ="UPDATE ExploreMetrics SET views_count = views_count + 1 WHERE published_id =?"
+        const query ="UPDATE exploremetrics SET views_count = views_count + 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
         console.log("View count for image is updated")
         return{
@@ -367,7 +367,7 @@ exports.LikeExploreImageService=async(published_id,user_id)=>{
     }
     
     try{
-        const query ="UPDATE ExploreMetrics SET likes_count = likes_count + 1 WHERE published_id =?"
+        const query ="UPDATE exploremetrics SET likes_count = likes_count + 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
         console.log("Like count for image is updated")
         
@@ -408,7 +408,7 @@ exports.UnlikeExploreImageService=async(published_id,user)=>{
         }
     }
     try{
-        const query ="UPDATE ExploreMetrics SET likes_count = likes_count - 1 WHERE published_id =?"
+        const query ="UPDATE exploremetrics SET likes_count = likes_count - 1 WHERE published_id =?"
         const [rows] = await db.execute(query,[published_id])
         console.log("Like count for image is updated")
         return{
@@ -427,7 +427,7 @@ exports.UnlikeExploreImageService=async(published_id,user)=>{
 }
 exports.getExploreImagesByUserIdService=async(user_id)=>{
     try{
-        const query ="SELECT * FROM Explore WHERE user_id =?"
+        const query ="SELECT * FROM explore WHERE user_id =?"
         const [rows] = await db.execute(query,[user_id])
         if (rows.length == 0) {
              return {
@@ -453,7 +453,7 @@ exports.getExploreImagesByUserIdService=async(user_id)=>{
 }
 exports.deleteExploreImageByPublishedIdService=async(published_id,user_id)=>{
     try{
-        const query ="DELETE FROM Explore WHERE published_id =? AND user_id =?"
+        const query ="DELETE FROM explore WHERE published_id =? AND user_id =?"
         const [rows] = await db.execute(query,[published_id,user_id])
         if(rows.affectedRows===0){
             console.log("user didn't delete the image")

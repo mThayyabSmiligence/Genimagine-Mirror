@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import CryptoJS from "crypto-js";
 import logo from '../images/genimagin_logo.png'
+import { axiosAuth } from '../API\'s/axios';
 
 
 
@@ -56,7 +57,7 @@ export default function ResetPassword() {
         setSuccess(false)
 
         try{
-            const response = await axios.post(`http://localhost:3001/api/v1/auth/reset-password/${reset_token}`, {
+            const response = await axiosAuth.post(`/reset-password/${reset_token}`, {
                 new_password:password
             });
 
