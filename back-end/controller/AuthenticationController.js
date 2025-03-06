@@ -52,7 +52,9 @@ exports.userRegister = async(req, res, next) => {
             });
         }
 
-        const VerificationLink=`http://localhost:3000/user-email-verification/${verification_token}`
+        const frontendBaseUrl= process.env.FRONTEND_BASE_URL;
+
+        const VerificationLink=`${frontendBaseUrl}/user-email-verification/${verification_token}`
 
         const subject = "Verify Your Email – Genimagine"
 

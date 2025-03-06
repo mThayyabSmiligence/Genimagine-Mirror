@@ -34,7 +34,7 @@ app.listen(PORT, () => {
 
 
 
-app.post('/upload',verifyToken,(req,res)=>{
+app.post('/files/storage-server/upload',verifyToken,(req,res)=>{
 
       if (!req.files || !req.files.image) {
         return res.status(400).json({ message: 'No file uploaded' });
@@ -75,7 +75,7 @@ app.post('/upload',verifyToken,(req,res)=>{
 
 
 
-app.post('/publish-to-explore', verifyToken, async (req, res) => {
+app.post('/files/storage-server/publish-to-explore', verifyToken, async (req, res) => {
   try {
       const { userId, imagePath} = req.body;
 
@@ -122,7 +122,7 @@ app.post('/publish-to-explore', verifyToken, async (req, res) => {
 });
 
 // api to retrive images from chats
-app.get(`/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=>{
+app.get(`/files/storage-server/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=>{
     const {userId,chatId,fileName}= req.params
 
 
@@ -148,7 +148,7 @@ app.get(`/chat/image/:userId/:chatId/:fileName`,verifyTokenWithCookie,(req,res)=
 
 
 //api to retrive images from explore
-app.get(`/explore/image/:userId/:fileName`,(req,res)=>{
+app.get(`/files/storage-server/explore/image/:userId/:fileName`,(req,res)=>{
   const {userId,chatId,fileName}= req.params
 
 
@@ -167,7 +167,7 @@ app.get(`/explore/image/:userId/:fileName`,(req,res)=>{
 
 
 //api to get library
-app.get(`/library/image/:userId/:fileName`,verifyTokenWithCookie,(req,res)=>{
+app.get(`/files/storage-server/library/image/:userId/:fileName`,verifyTokenWithCookie,(req,res)=>{
   const {userId,chatId,fileName}= req.params
 
 
@@ -192,13 +192,13 @@ app.get(`/library/image/:userId/:fileName`,verifyTokenWithCookie,(req,res)=>{
 })
 
 
-app.get("/testimage",(req,res)=>{
+app.get("/files/storage-server/testimage",(req,res)=>{
   console.log("testing")
   res.status(300).json({message:"just testing"})
 })
 
 
-app.delete('/image/delete', verifyToken, (req, res) => {
+app.delete('/files/storage-server/image/delete', verifyToken, (req, res) => {
   const { filePath } = req.body; // Expecting filePath like "uploads/users/36/tS7H-L1I8ThB60ZnZOjzu/363"
 
   if (!filePath) {

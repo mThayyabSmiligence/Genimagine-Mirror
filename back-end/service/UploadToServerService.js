@@ -3,6 +3,9 @@ const FormData = require('form-data');
 
 const serverStorageBaseUrl= process.env.SERVER_STORAGE_BASE_URL
 exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token,req) => {
+
+    console.log("server storage base url",serverStorageBaseUrl)
+
     const formData = new FormData();
     console.log(Buffer.isBuffer(image)?"true ":"false")
 
@@ -34,7 +37,9 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
         return response.data;
 
     } catch (err) {
+
         console.error("Error from imageUpload API:", err.response?.data || err.message);
+        return false;
     }
 };
 
