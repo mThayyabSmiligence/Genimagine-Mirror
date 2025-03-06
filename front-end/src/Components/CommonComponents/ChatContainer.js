@@ -131,27 +131,22 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
     };
     
 
-      const handelDeleteImage=async ()=>{
+      const handelDeleteImage=async (e)=>{
+        e.preventDefault();
         try{
             const response =await axiosPrivate.delete(`/delete-image/${data.image_id}`,
               {withCredentials:true 
 
               }
-            ).then((response) => {
-              if(response.data.chat_deleted){
-                navigate("/image-generation")
-              }
-            })
+            )
             
             setSuccess(true)
             setSuccessMessage("Image deleted successfully")
-            window.location.reload(false);
-            
-            console.log("Image deleted successfully",response.data)
+            console.log("Image deleted successfully",response)
         }catch(error){
             setError(true)
-            setErrorMessage("Failed to delete image")
-            console.log("Failed to delete image",error.response)
+            setErrorMessage("Failed to delete image",error)
+            console.log("Failed to delete image",error)
         }
       }
 
@@ -236,7 +231,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
                   <span className='option-divider'></span>
                   <div onClick={handlePublish} className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
-                  <button onClick={()=>handelDeleteImage()} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
+                  <button onClick={(e)=>handelDeleteImage(e)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                 </div>
               )}
             </div>
