@@ -1,7 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
 
-const serverStorageBaseUrl= process.env.SERVER_STORAGE_BASE_URL
+const serverStorageBaseUrl= process.env.STORAGE_SERVER_BASE_URL
 exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token,req) => {
 
     console.log("server storage base url",serverStorageBaseUrl)

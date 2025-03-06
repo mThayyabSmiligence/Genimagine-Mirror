@@ -11,7 +11,6 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
 
   const {loggedIn}= useContext(AuthContext);
   const [userData,setUserData]= useState(null)
-  // const {dropdownRef} = useContext(DropdownContext);
   const { showDropdown, setShowDropdown, dropdownRef } = useContext(DropdownContext);
 
 
@@ -21,24 +20,6 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
       setUserData(JSON.parse(localStorage.getItem('user_data')))
     }
   }, [loggedIn])
-
-  // useEffect(() => {                                                                //////////
-  //   const handleClickOutside = (event) => {
-  //     if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
-  //       setShowDropdown(false);
-  //     }
-  //   };
-
-  //   if (showDropdown) {
-  //     document.addEventListener('mousedown', handleClickOutside);
-  //   } else {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [showDropdown]);
 
   
   return (

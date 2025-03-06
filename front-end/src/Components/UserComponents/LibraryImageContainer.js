@@ -15,7 +15,7 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
     const { setTempImageData } = useContext(RefreshDataContext); 
     const navigate = useNavigate();
 
-      useEffect(() => {                                                        ////////////////
+      useEffect(() => {                                                      
           const handleClickOutside = (e) => {
             if (optionsRef.current && !optionsRef.current.contains(e.target)) {
               setShowOptions(false);

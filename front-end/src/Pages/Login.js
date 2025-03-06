@@ -13,6 +13,8 @@ import { axiosAuth } from '../API\'s/axios'
 
 export default function Login() {
 
+    console.log("base url",process.env.REACT_APP_API_URL)
+
     const {setLoggedIn}= useAuth()
     const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
     const navigate=useNavigate()

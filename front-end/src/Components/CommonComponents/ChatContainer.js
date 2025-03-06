@@ -17,7 +17,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
   const navigate = useNavigate();
 
   const [showOptions, setShowOptions] = useState(false);
-  const optionsRef = useRef(null);                                       /////////////////////////////
+  const optionsRef = useRef(null);                                       
 
   const [success,setSuccess]=useState(false)
   const [errorMessage,setErrorMessage]=useState(null)
@@ -45,7 +45,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
            };
      }, []);
 
-     useEffect(() => {                                                        ////////////////
+     useEffect(() => {                                                      
       const handleClickOutside = (e) => {
         if (optionsRef.current && !optionsRef.current.contains(e.target)) {
           setShowOptions(false);
