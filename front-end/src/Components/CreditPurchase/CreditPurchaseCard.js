@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import AuthContext from '../../Context/AuthProvider';
+import { Link } from 'react-router-dom';
 
-function CreditPurchaseCard({ data,buyCredits}) {
+function CreditPurchaseCard({ data,buyCredits,loggedIn}) {
+
 
     const handelBuy=(e)=>{
         buyCredits(data.package_id,null,e)
@@ -12,7 +15,12 @@ function CreditPurchaseCard({ data,buyCredits}) {
                 <p className="card-text"><strong>{data.credits}</strong> Credits</p>
                 <p className="card-text text-success">₹{data.cost}</p>
                 <p className="text-muted">{data.description}</p>
-                <button onClick={(e)=>handelBuy(e)} className="button dark-button">Buy Now</button>
+                {
+                    loggedIn?
+                    <button onClick={(e)=>handelBuy(e)} className="button dark-button">Buy Now</button>
+                    :
+                    <Link to={"/login"}  className="button dark-button ">Buy Now</Link>
+                }
             </div>
         </div>
     );

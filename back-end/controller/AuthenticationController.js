@@ -171,9 +171,6 @@ exports.userLogin = async (req, res, next) => {
             })
             return
         }
-
-        console.log("test1 "+oldUser)
-
         const token =generateToken(oldUser[0]) ;
         const refreshToken= await generateRefreshToken(oldUser[0])
         
@@ -190,8 +187,6 @@ exports.userLogin = async (req, res, next) => {
             sameSite: "none", // If client and server origins are different
             secure: true // use with HTTPS only
         }
-        console.log("token   :"+token)
-        console.log("refresh token 2  "+refreshToken)
 
         res.cookie( "token", token, options );
         res.cookie("refresh_token",refreshToken,refreshTokenOptions)
@@ -351,14 +346,14 @@ exports.verifyEmailOtp = async(req, res, next) => {
         const [rows] = await db.execute(query, [email])
         
         if (rows.length === 0) {
-            return res.status(400).json({ message: 'No OTP found for this email. Please request a new one.' });
+            return res.status(400).json({ message: 'No OTP found for this email. Please request a new opt.' });
         }
 
         const dbOtp = rows[0].otp;
             const expiresAt = new Date(rows[0].expires_at);
 
             if (expiresAt < new Date()) {
-                return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
+                return res.status(400).json({ message: 'OTP expired. Please request a new opt.' });
             }
 
             if (dbOtp != otp) {
