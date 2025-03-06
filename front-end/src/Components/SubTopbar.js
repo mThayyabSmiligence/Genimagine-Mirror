@@ -1,22 +1,45 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
 import { Link } from 'react-router-dom'
 import ModelSelector from './CommonComponents/ModelSelector'
 import AuthContext from '../Context/AuthProvider'
 import CreditBalance from './CommonComponents/CreditBalance'
 import ProfileDropDown from './CommonComponents/ProfileDropDown'
+import DropdownContext from '../Context/DropdownProvider';
 
 export default function SubTopbar({setShowNavBar,showNavBar,width}) {
 
   const {loggedIn}= useContext(AuthContext);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [userData,setUserData]= useState(null)
+  // const {dropdownRef} = useContext(DropdownContext);
+  const { showDropdown, setShowDropdown, dropdownRef } = useContext(DropdownContext);
+
+
 
   useEffect(() => {
     if(localStorage.getItem('user_data')){
       setUserData(JSON.parse(localStorage.getItem('user_data')))
     }
   }, [loggedIn])
+
+  // useEffect(() => {                                                                //////////
+  //   const handleClickOutside = (event) => {
+  //     if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
+  //       setShowDropdown(false);
+  //     }
+  //   };
+
+  //   if (showDropdown) {
+  //     document.addEventListener('mousedown', handleClickOutside);
+  //   } else {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   }
+
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [showDropdown]);
+
   
   return (
     <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between align-items-center`} style={{width:`${width<766?width:showNavBar?width-250:width}px` }} >
@@ -39,7 +62,7 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
               Buy Credits
               </p>
             </Link>
-            <div className="profile-dropdown">
+            <div className="profile-dropdown" ref={dropdownRef}>
               <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
                 <span className="material-symbols-outlined">person</span>
               </button>

@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import { AuthProvider } from './Context/AuthProvider';
 import { RefreshDataProvider } from './Context/RefreshDataProvider';
+import { DropdownProvider } from './Context/DropdownProvider';
+
 
 import {BrowserRouter as Router } from "react-router-dom" 
 
@@ -19,7 +21,9 @@ root.render(
     <Router>
       <AuthProvider>
         <RefreshDataProvider>
-          <App />
+          <DropdownProvider>
+            <App />
+          </DropdownProvider>
         </RefreshDataProvider>
       </AuthProvider>
     </Router>
