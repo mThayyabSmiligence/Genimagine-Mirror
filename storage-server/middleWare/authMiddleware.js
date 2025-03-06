@@ -7,7 +7,6 @@ const {jwtSecret}=  require('../config/config')
 const verifyToken=(req,res,next)=>{
 
     const bearerToken = req.headers['authorization'];
-    console.log('bearer token',bearerToken);
     const token = bearerToken.split(' ')[1];
   
 

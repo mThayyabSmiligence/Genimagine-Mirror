@@ -1,7 +1,10 @@
 import axios from "axios";
 import useAuth from "../Hooks/useAuth";
+import config from "../Config";
 
-const BASE_URL = "http://localhost:3001/api/v1";
+
+const BASE_URL = config.apiUrl;
+console.log(BASE_URL)
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -25,6 +28,11 @@ const axiosPrivate = axios.create({
   withCredentials: true, // Include cookies
 });
 
+const axiosAuth= axios.create({
+  baseURL: `${BASE_URL}/auth/`,
+  withCredentials: true,
+})
+
 const axiosNoAUth = axios.create({
   baseURL: `${BASE_URL}/no-auth/`,
   withCredentials: true,
@@ -45,6 +53,7 @@ const refreshAccessToken = async () => {
     refreshSubscribers = []; // Clear the queue
   } catch (error) {
     console.error("Refresh token expired. Redirecting to login.");
+    console.lod(BASE_URL);
     if (window.location.pathname.startsWith("/u/")) {
       window.location.href = "/login";
     }
@@ -87,7 +96,7 @@ axiosPrivate.interceptors.response.use(
   }
 );
 
-export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth };
+export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth , axiosAuth};
 
 
 
