@@ -4,6 +4,7 @@ import "../../Css/GuestContentContainer.css"
 import SuggestionPrompts from '../../Components/CommonComponents/SuggestionPrompts'
 import ChatContainer from '../../Components/CommonComponents/ChatContainer'
 import { axiosPrivate, useAxiosGenerateImage } from '../../API\'s/axios'
+import axios from "axios"
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../Hooks/useAuth'
 import AuthContext from '../../Context/AuthProvider'
@@ -80,6 +81,18 @@ export default function GuestContentPage() {
       return aspectRatioObject.aspectRatio;
     }
     
+
+    const fetchClientIp=async()=>{
+      try {
+        const response = await axios.get("https://api64.ipify.org?format=json");
+        return response.data.ip; // Returns the client's real public IP
+      } catch (error) {
+        console.error("Error fetching IP:", error);
+        return null;
+      };
+          
+    }
+
     const generateImage = async () => {
       const prompt = promptText
       setPromptText("")
@@ -91,7 +104,7 @@ export default function GuestContentPage() {
       setLoading(true);
       // Start loading
 
-  
+      const ipAddress= await fetchClientIp()
       try {
 
           console.log("logged in ?" , loggedIn)
@@ -104,7 +117,8 @@ export default function GuestContentPage() {
           { 
             prompt: prompt ,
             model:trackmodel,
-            aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+            aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio,
+            
           
           },
             )
@@ -115,7 +129,8 @@ export default function GuestContentPage() {
               { 
                 prompt: prompt ,
                 model:trackmodel,
-                aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+                aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio,
+                client_ip:ipAddress
               
               }, // Ensure the response is handled as binary
             );

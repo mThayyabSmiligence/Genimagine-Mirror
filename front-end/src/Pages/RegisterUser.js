@@ -90,7 +90,7 @@ console.log("faInfoCircle:", faInfoCircle);
             .toISOString()
             .split("T")[0]; // Setting max date as today - 5 years
 
-        const minDate = new Date(1900, 0, 1).toISOString().split("T")[0]; // Set a reasonable minimum date
+        const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0]; // Set a reasonable minimum date
 
         document.getElementById("dob").setAttribute("max", maxDate);
         document.getElementById("dob").setAttribute("min", minDate);
@@ -104,9 +104,19 @@ console.log("faInfoCircle:", faInfoCircle);
             .toISOString()
             .split("T")[0];
 
+        const minDate = new Date(today.setFullYear(today.getFullYear()-95))
+            .toISOString()
+            .split("T")[0]
+
+        console.log("toady : ",today.toISOString())
+        console.log("mix date : ",maxDate)
+        console.log("min date : ",minDate)
         const dobDate = new Date(dob);
 
         if (dobDate > new Date(maxDate)) {
+            setDobValidity(false)
+        }
+        else if (dobDate < new Date(minDate)) {
             setDobValidity(false)
         }
         else{
@@ -316,7 +326,7 @@ console.log("faInfoCircle:", faInfoCircle);
                         </div>
                         <p id="pwdnote" className={ !dobValidity ? "instructions" : "offscreen"}>
                                     
-                            user must be at least5 years old
+                            user must be at older than 5  years and younger than 100 years
                         </p>
                         {/* password */}
                         <div className='password-container'>

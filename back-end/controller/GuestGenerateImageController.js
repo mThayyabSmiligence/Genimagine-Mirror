@@ -4,19 +4,19 @@ const db = require('../config/connectDatabase');
 const { freeGenerateImage } = require('../service/FreeGenerateImageService');
  
 exports.guestGenerateImageController = async(req, res, next) => {
-    const {prompt}=req.body
+    const {prompt,client_ip}=req.body
     console.log("generate image is running") 
     const input={
          prompt:prompt||"cat",
          width:480,
          height:480
     }
-    const canGenerate=await GuestUserHandler(req.ip);
+    const canGenerate=await GuestUserHandler(client_ip);
             console.log(canGenerate)
             if(canGenerate){
                 const isGenerated=await freeGenerateImage(input)
                 if(isGenerated){
-                    const guestImageCount = increaseGuestImageCount(req.ip); 
+                    const guestImageCount = increaseGuestImageCount(client_ip); 
                     res.status(200).json({
                         image: `data:image/png;base64,${isGenerated.toString('base64')}`,
                         message: 'Image generated successfully',

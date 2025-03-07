@@ -11,6 +11,8 @@ export const RefreshDataProvider =({children})=>{
 
     const [refreshUserData,setRefreshUserData] = useState(true)
 
+    const [refreshLibraryData,setRefreshLibraryData] = useState(true)
+
     
     const getUserData=async()=>{
         try{
@@ -38,7 +40,9 @@ export const RefreshDataProvider =({children})=>{
             setTempImageData,
             getUserData,
             refreshUserData,
-            setRefreshUserData
+            setRefreshUserData,
+            refreshLibraryData,
+            setRefreshLibraryData
         }}>
             {children}
         </RefreshDataContext.Provider>

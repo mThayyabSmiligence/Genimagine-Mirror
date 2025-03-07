@@ -150,6 +150,13 @@ input.password-input:focus,input.email-input:focus{
 .forgot-password-button:hover{
     text-decoration: underline;
 }
+.forgot-password-button:disabled{
+    color: rgba(0, 0, 0, 0.582);
+    text-decoration: none;
+}
+.forgot-password-button:disabled:hover{
+    text-decoration: none;
+}
 
 .google-sign-in-button{
     border: solid 1px  rgb(0,0, 0, 0.3);
