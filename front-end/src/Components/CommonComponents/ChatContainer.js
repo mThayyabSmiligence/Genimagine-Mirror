@@ -12,7 +12,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
   const Navigate = useNavigate();
   
-  const { setTempImageData } = useContext(RefreshDataContext); 
+  const { setTempImageData ,refreshLibraryData,setRefreshLibraryData} = useContext(RefreshDataContext); 
 
   const navigate = useNavigate();
 
@@ -135,8 +135,8 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
         e.preventDefault();
         try{
             const response =await axiosPrivate.delete(`/delete-image/${data.image_id}`,
-              {withCredentials:true 
-
+              {
+                withCredentials:true
               }
             )
             
@@ -158,6 +158,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
         console.log("Image added to library successfully",response.data)
         setIsLibrary(true)
         data.library=1
+        setRefreshLibraryData(true)
         }catch(error){
           setError(true)
           setErrorMessage("Failed to add to library ");
@@ -173,6 +174,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
           console.log(" ",response.data)
           setIsLibrary(false)
           data.library=0
+          setRefreshLibraryData(true)
         }catch(error){
           setError(true)
           setErrorMessage("Failed to delete image")

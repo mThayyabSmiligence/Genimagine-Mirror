@@ -307,6 +307,24 @@ exports.emailOtpRequest = async(req, res, next) => {
     }
 
     try{
+        const query = `SELECT * FROM  otp_verifications
+                        WHERE email = ? 
+                        AND created_at >= NOW() - INTERVAL 2 MINUTE 
+                        ORDER BY created_at DESC 
+                        LIMIT 1;`
+        
+        const [rows] = await db.execute(query, [email]);
+        if(rows.length > 0){
+            return res.status(400).json({
+                message: "to resend the opt you have to 2 mins after last request."
+            });
+        }
+
+    }catch(err){
+        console.error(err)
+    }
+
+    try{
         const query = 'INSERT INTO otp_verifications (email, otp, expires_at) VALUES (?, ?, ?)'
         const rows = await db.execute(query, [email, otp, expiresAt])
 

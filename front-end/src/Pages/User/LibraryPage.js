@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { axiosInstance } from '../../API\'s/axios'
 import '../../Css/LibraryPage.css'
 import LibraryImageContainer from '../../Components/UserComponents/LibraryImageContainer'
+import RefreshDataContext from '../../Context/RefreshDataProvider'
 
 export default function LibraryPage() {
+
+  const {refreshLibraryData,setRefreshLibraryData} = useContext(RefreshDataContext)
 
   const [error,setError]=useState(false)
   const [errorMessage,setErrorMessage]=useState(null)
@@ -16,6 +19,10 @@ export default function LibraryPage() {
   ])
 
   useEffect(()=>{
+    if(refreshLibraryData){
+      GetLibraryImages()
+      return
+    }
     if( sessionStorage.getItem('libraryImages')){
       console.log("Library Images retrived from local storage")
       setLibraryImages(JSON.parse(sessionStorage.getItem('libraryImages')))
@@ -41,6 +48,7 @@ export default function LibraryPage() {
       sessionStorage.setItem('libraryImages', JSON.stringify(response.data.data))
       console.log(response.data)
       console.log("Library Images retrived succesfully")
+      setRefreshLibraryData(false)
     }catch(err){
       console.error(err)
     }

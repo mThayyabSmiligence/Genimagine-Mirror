@@ -225,14 +225,14 @@ export default function Login() {
                         <div className="d-flex flex-column justify-content-start email-container">
                             <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
                             <div className='email-input-container'>
-                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} required/>
+                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} required />
                             </div>
                         </div> 
                     :
                     <div className='password-container'>
                         <label htmlFor="exampleInputPassword1" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
-                            <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} requierd/>
+                            <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             <div    type='none' 
                                     onClick={(e) =>{ 
                                         
@@ -256,7 +256,14 @@ export default function Login() {
 
 
                     <div className='forgot-password-container text-end'>
-                        <Link to={"/forgot-password"} className='link forgot-password-button mb-4'>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</Link>
+
+                        {
+                            isOtpLogin?
+                            <div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
+                            :
+                            <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{"Forgot Password?" }</Link>
+                        }
+
                     </div>
                     {
                     loading?
