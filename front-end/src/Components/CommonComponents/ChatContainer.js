@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef} from 'react'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import "../../Css/ChatContainer.css"
 
@@ -7,7 +7,7 @@ import { useNavigate} from 'react-router-dom'
 import axios from 'axios';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 
-
+ 
 export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
   const Navigate = useNavigate();
@@ -17,6 +17,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
   const navigate = useNavigate();
 
   const [showOptions, setShowOptions] = useState(false);
+  const optionsRef = useRef(null);                                       
 
   const [success,setSuccess]=useState(false)
   const [errorMessage,setErrorMessage]=useState(null)
@@ -27,7 +28,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
 
 
   const handleToggleOptions = () => {
-    setShowOptions(!showOptions);
+    setShowOptions((prev) => !prev);
   };
 
  const [width, setWidth] = useState(window.innerWidth);
@@ -43,6 +44,25 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
              window.removeEventListener('resize', handleResize);
            };
      }, []);
+
+     useEffect(() => {                                                      
+      const handleClickOutside = (e) => {
+        if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+          setShowOptions(false);
+        }
+      };
+  
+      if (showOptions) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+  
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showOptions]);
+
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
@@ -111,27 +131,22 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
     };
     
 
-      const handelDeleteImage=async ()=>{
+      const handelDeleteImage=async (e)=>{
+        e.preventDefault();
         try{
             const response =await axiosPrivate.delete(`/delete-image/${data.image_id}`,
               {
                 withCredentials:true
               }
-            ).then((response) => {
-              if(response.data.chat_deleted){
-                navigate("/image-generation")
-              }
-            })
+            )
             
             setSuccess(true)
             setSuccessMessage("Image deleted successfully")
-            window.location.reload(false);
-            
-            console.log("Image deleted successfully",response.data)
+            console.log("Image deleted successfully",response)
         }catch(error){
             setError(true)
-            setErrorMessage("Failed to delete image")
-            console.log("Failed to delete image",error.response)
+            setErrorMessage("Failed to delete image",error)
+            console.log("Failed to delete image",error)
         }
       }
 
@@ -203,7 +218,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
             }
             {
               (data.image_url||data.image)&&
-              <div className='image-options'>
+              <div className='image-options' ref={optionsRef}>                                    
               <span onClick={handleToggleOptions} className="material-symbols-outlined image-dot-options">more_vert</span>
               {showOptions && (
                 <div className="options-dropdown">
@@ -218,7 +233,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
                   <span className='option-divider'></span>
                   <div onClick={handlePublish} className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
-                  <button onClick={()=>handelDeleteImage()} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
+                  <button onClick={(e)=>handelDeleteImage(e)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                 </div>
               )}
             </div>

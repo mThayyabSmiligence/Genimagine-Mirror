@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import { useNavigate } from 'react-router-dom'
@@ -6,6 +6,7 @@ import axios from 'axios'
 
 export default function LibraryImageContainer({library,index,removeImageFromLibraryArray}) {
     const [showOptions, setShowOptions] =useState(false)
+    const optionsRef = useRef(null);  
     const [success,setSuccess]=useState(false)
     const [errorMessage,setErrorMessage]=useState(null)
     const [error,setError]=useState(false)
@@ -14,7 +15,23 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
     const { setTempImageData } = useContext(RefreshDataContext); 
     const navigate = useNavigate();
 
-
+      useEffect(() => {                                                      
+          const handleClickOutside = (e) => {
+            if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+              setShowOptions(false);
+            }
+          };
+      
+          if (showOptions) {
+            document.addEventListener("mousedown", handleClickOutside);
+          } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+          }
+      
+          return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+          };
+        }, [showOptions]);
 
 
     const deleteFromLibrary= async(image_id)=>{
@@ -69,7 +86,7 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
                                     <div className='image-options'>
                                     <span onClick={()=>setShowOptions(!showOptions)}  className="material-symbols-outlined image-dot-options">more_vert</span>
                                     {showOptions && (
-                                      <div className="options-dropdown">
+                                      <div className="options-dropdown" ref={optionsRef}>
                                         <button className='option-item' onClick={()=>window.open(library.image_url  ,"_blank")}><span className="material-symbols-outlined">fullscreen</span>Full Screen</button>
                                         <span className='option-divider'></span>
                                         <a  onClick={(e)=>download(e)} download="download" href={library.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
