@@ -103,7 +103,8 @@ console.log("faInfoCircle:", faInfoCircle);
         const maxDate = new Date(today.setFullYear(today.getFullYear() - 5)) // 5 years ago
             .toISOString()
             .split("T")[0];
-
+        
+        
         const dobDate = new Date(dob);
 
         if (dobDate > new Date(maxDate)) {

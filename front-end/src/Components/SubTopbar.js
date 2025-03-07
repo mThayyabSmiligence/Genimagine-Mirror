@@ -27,7 +27,11 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
 
         <div className='flex-1 d-flex justify-content-start align-items-center'>
           <button className='button p-0' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<span className="material-symbols-outlined">left_panel_close</span>:<span className="material-symbols-outlined">left_panel_open</span>}</button>
-          {!showNavBar&&<img className='big-logo' src={logo} alt='genimagine logo'></img>}
+          {!showNavBar&&  
+            <Link to={'/'}> 
+              <img className='big-logo' src={logo} alt='genimagine logo'></img>
+            </Link>
+          }
         </div>
        
           

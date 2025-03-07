@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useState } from 'react'
+import React, {  useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
 import { Link, useLocation } from 'react-router-dom'
 import "../Css/SideNavBar.css"
@@ -6,6 +6,8 @@ import useAuth from '../Hooks/useAuth'
 import { axiosPrivate } from '../API\'s/axios'
 import AuthContext from '../Context/AuthProvider'
 import RefreshDataContext from '../Context/RefreshDataProvider'
+import DropdownContext from '../Context/DropdownProvider'
+import ChatOptionDropDown from './CommonComponents/ChatOptionDropDown'
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
@@ -15,7 +17,10 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
     const path = location.pathname;
     const currentChatId= path.split('/')[3]
 
+    const [showOptions, setShowOptions] =useState(false)
+    const optionsRef = useRef(null);  
 
+    const [chatButtonTracking, setChatButtonTracking] = useState(null);
 
     const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext)
     const {loggedIn} =useContext(AuthContext)
@@ -35,14 +40,27 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         }
     },[loggedIn,refreshChatList])
 
+    useEffect(() => {                                                      
+        const handleClickOutside = (e) => {
+          if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+            setShowOptions(false);
+            console.log(1)
+          }
+        };
+    
+        if (showOptions) {
+          document.addEventListener("mousedown", handleClickOutside);
+        } else {
+          document.removeEventListener("mousedown", handleClickOutside);
+        }
+    
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [showOptions]);
 
 
-
-    const [chatList,setChatList]=useState([
-        
-       
-        
-    ])
+    const [chatList,setChatList]=useState([]);
     
    
 
@@ -69,13 +87,19 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
             window.removeEventListener('resize', handleResize);
           };
     }, []);
+
+    useEffect(()=>{
+        console.log(showOptions)
+    },[showOptions])
   return (
     <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
     
 
         <div className='nav-logo-section'>
        
-                <img src={logo} className="big-logo" alt='Genimagine logo'/>
+                <Link to={'/'}>
+                 <img src={logo} className="big-logo" alt='Genimagine logo'/>
+                </Link>
         
         </div>
         <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
@@ -109,8 +133,23 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                 <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                                     <div className="accordion-collapse d-flex flex-column align-items-center">
                                         {
-                                            Object.entries(chatList).map(([key,value],index)=>(
-                                                <Link to={`/u/c/${value.chat_id}`} className={`link nav-list-item ${value.chat_id==currentChatId&&"active"}`} key={index}>{value.chat_id}</Link>
+                                            Object.entries(chatList).map(([key,value],index)=>(                         
+                                                <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
+                                                    <Link to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{value.chat_id}</Link>
+                                    
+                                                        <button ref={optionsRef} onClick={() => {
+                                                            setShowOptions(!showOptions)
+                                                            setChatButtonTracking(index);
+                                                            console.log(2)
+
+                                                        }} className='button p-0 more-options d-flex justify-content-center align-items-center'><span class="material-symbols-outlined">more_vert</span></button>
+                                                        { showOptions && (index==chatButtonTracking) &&  
+                                                        <div  className='nav-list-item-dropdown' >
+                                                            <ChatOptionDropDown/>
+                                                        </div>
+                                                        }
+                                                </div>
+                                                                                 
                                             ))
                                         }
                                     </div>

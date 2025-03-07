@@ -256,7 +256,7 @@ export default function Login() {
 
 
                     <div className='forgot-password-container text-end'>
-                        <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</Link>
+                        <Link to={"/forgot-password"} className='link forgot-password-button mb-4'>{isOtpLogin? <span>Re-send otp</span>: "Forgot Password?" }</Link>
                     </div>
                     {
                     loading?

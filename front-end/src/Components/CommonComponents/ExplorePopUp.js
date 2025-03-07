@@ -1,14 +1,18 @@
-  import React, { use, useEffect, useRef, useState } from 'react';
+  import React, { use, useContext, useEffect, useRef, useState } from 'react';
 import '../../Css/ExplorePopUp.css'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import AuthContext from '../../Context/AuthProvider';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage }) {
   const hasViewed = useRef(false); // Prevents multiple calls
   const [isUserLiked,setIsUserLiked]=useState(false)
+  const {loggedIn}= useContext(AuthContext);
+  const Navigate = useNavigate();
 
   useEffect(() => {
     if (!hasViewed.current &&view) {
@@ -40,7 +44,13 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
       console.log(error)
   }
   }
+
+  
   const addLikes = async() => {
+    if (!loggedIn) {
+      Navigate('/login');
+      return;
+    }
     try{
       const response = await axiosPrivate.post(`/explore/${image.published_id}/like`)
       console.log(response)
@@ -70,6 +80,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
     }
   } 
     
+  
 
   return (
     <div className="explore-popup-overlay">
@@ -120,7 +131,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 isUserLiked?
                 <button onClick={() => removeLike()} className='button light-button user-like-button d-flex align-items-center px-3'><FavoriteIcon className='liked-button'/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
                 :
-                <button onClick={() => addLikes()} className='button light-button  user-like-button d-flex align-items-center px-3'><FavoriteBorderIcon/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+                <button onClick={() => addLikes()} className='button light-button  user-like-button d-flex align-items-center px-3'><FavoriteBorderIcon/><p className="ms-2 m-0">{image.likes_count}</p></button>
               }
             </div>
             <div className='user-view-container mx-2'>
