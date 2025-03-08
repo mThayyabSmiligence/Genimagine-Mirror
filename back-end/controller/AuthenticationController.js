@@ -211,7 +211,7 @@ exports.userLogin = async (req, res, next) => {
         });
     } catch(error){
         console.log(error)
-    }
+    }9
 }
 
 exports.userLogout= async (req,res,next)=>{

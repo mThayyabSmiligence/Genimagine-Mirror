@@ -48,6 +48,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
   
   const addLikes = async() => {
     if (!loggedIn) {
+      localStorage.setItem('lastVisitedPage', `/explore?likedPost=${image.image_id}`);
       Navigate('/login');
       return;
     }
@@ -115,17 +116,14 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 <div className='setting-tags p-secondary' title='model'>model :{image.model}</div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>Aspect Ratio :{image.aspect_ratio}</div>
                 <div className='setting-tags p-secondary' title='Style'>Style :none</div>
-              </div>
-            
-            </div>
-            
+              </div>  
+            </div>  
           </div>
 
           
 
           <div className='explore-metrics d-flex justify-content-end'>
 
-            
             <div className='user-like-container'>
               {
                 isUserLiked?

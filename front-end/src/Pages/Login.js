@@ -15,6 +15,7 @@ export default function Login() {
 
     console.log("base url",process.env.REACT_APP_API_URL)
 
+    const {loggedIn}= useContext(AuthContext);
     const {setLoggedIn}= useAuth()
     const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
     const navigate=useNavigate()
@@ -35,6 +36,18 @@ export default function Login() {
     const [loading,setLoading] = useState(false)
     
 
+    useEffect(() => {
+        if (loggedIn) { 
+          const lastVisitedPage = localStorage.getItem("lastVisitedPage");
+          if (lastVisitedPage) {
+            localStorage.removeItem("lastVisitedPage"); // Clear stored page after redirection
+            navigate(lastVisitedPage);
+          } else {
+            navigate("/image-generation"); // Default page after login
+          }
+        }
+      }, [loggedIn, navigate]);
+    
     useEffect(()=>{})
 
     const spinnerStyle = {
