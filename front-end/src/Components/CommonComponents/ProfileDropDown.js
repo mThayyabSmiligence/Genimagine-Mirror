@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import '../../Css/ProfileDropDown.css'
 import { Link, useNavigate } from 'react-router-dom';
-import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../../Context/AuthProvider';
 import { axiosInstance } from '../../API\'s/axios';
 import DropdownContext from '../../Context/DropdownProvider';
