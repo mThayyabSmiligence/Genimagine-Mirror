@@ -42,29 +42,48 @@
 .side-nav .side-nav-options-container{
      height: 100%;
 }
+.nav-list-item-dropdown{
+    position: absolute;
+    right: -60px;
+    top: 30px;
+}
 
+
+.nav-list-item{
+    position: relative;
+   
+}
+.nav-list-item.selected{
+    z-index: 5;
+}
+.more-options span{
+    color: transparent;
+  }
+  
+  .nav-list-item:hover .more-options span {
+    color: rgb(78, 78, 78);
+  }
 
 .nav-list-item,.side-nav .side-nav-bottom-items .side-nav-bottom-item{
     display: flex;
     width: 200px;
     text-align: start;
-    padding: 8px 10px;
+
     margin: 2px 0px;
     border-radius: 5px;
-    
+    height: 30px; 
 }
 .nav-list-item.active{
     background-color: rgb(238, 238, 238);
     border: solid 1px rgb(204, 204, 204);
-
-    padding: 7px  9px;
+    height: 33px;
+    width: 205px;
 }
 .nav-list-item:hover,.side-nav .side-nav-bottom-items .side-nav-bottom-item:hover{
     background-color: rgb(238, 238, 238);
     border: solid 1px hwb(0 29% 0%);
     border: solid 1px rgb(204, 204, 204);
 
-    padding: 7px  9px;
 }
 .accordion,.accordion-button,.accordion-header,.accordion-item.accordion-collapse,.accordion-header{
     outline: none;

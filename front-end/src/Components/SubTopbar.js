@@ -1,29 +1,37 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
 import { Link } from 'react-router-dom'
 import ModelSelector from './CommonComponents/ModelSelector'
 import AuthContext from '../Context/AuthProvider'
 import CreditBalance from './CommonComponents/CreditBalance'
 import ProfileDropDown from './CommonComponents/ProfileDropDown'
+import DropdownContext from '../Context/DropdownProvider';
 
 export default function SubTopbar({setShowNavBar,showNavBar,width}) {
 
   const {loggedIn}= useContext(AuthContext);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [userData,setUserData]= useState(null)
+  const { showDropdown, setShowDropdown, dropdownRef } = useContext(DropdownContext);
+
+
 
   useEffect(() => {
     if(localStorage.getItem('user_data')){
       setUserData(JSON.parse(localStorage.getItem('user_data')))
     }
   }, [loggedIn])
+
   
   return (
     <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between align-items-center`} style={{width:`${width<766?width:showNavBar?width-250:width}px` }} >
 
         <div className='flex-1 d-flex justify-content-start align-items-center'>
           <button className='button p-0' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<span className="material-symbols-outlined">left_panel_close</span>:<span className="material-symbols-outlined">left_panel_open</span>}</button>
-          {!showNavBar&&<img className='big-logo' src={logo} alt='genimagine logo'></img>}
+          {!showNavBar&&  
+            <Link to={'/'}> 
+              <img className='big-logo' src={logo} alt='genimagine logo'></img>
+            </Link>
+          }
         </div>
        
           
@@ -39,7 +47,7 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
               Buy Credits
               </p>
             </Link>
-            <div className="profile-dropdown">
+            <div className="profile-dropdown" ref={dropdownRef}>
               <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
                 <span className="material-symbols-outlined">person</span>
               </button>

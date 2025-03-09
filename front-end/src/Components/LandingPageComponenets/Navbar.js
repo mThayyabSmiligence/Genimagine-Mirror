@@ -5,11 +5,13 @@ import { Link } from 'react-router-dom';
 import ProfileDropDown from '../CommonComponents/ProfileDropDown';
 import AuthContext from '../../Context/AuthProvider';
 import { axiosInstance } from '../../API\'s/axios';
+import DropdownContext from '../../Context/DropdownProvider';
 
 function Navbar() {
 
     const {loggedIn,setLoggedIn} = useContext(AuthContext)
-    const [showDropdown, setShowDropdown] = useState(false);
+    // const [showDropdown, setShowDropdown] = useState(false);
+    const { showDropdown, setShowDropdown, dropdownRef } = useContext(DropdownContext);
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -31,7 +33,7 @@ function Navbar() {
                     </div>
                     <div className='sign-in d-flex align-items-center'>
                     {loggedIn ? (
-                            <div className="profile-dropdown">
+                            <div className="profile-dropdown" ref={dropdownRef}>
                                 <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
                                     <span className="material-symbols-outlined">person</span>
                                 </button>

@@ -13,6 +13,8 @@ import { axiosAuth } from '../API\'s/axios'
 
 export default function Login() {
 
+    console.log("base url",process.env.REACT_APP_API_URL)
+
     const {setLoggedIn}= useAuth()
     const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
     const navigate=useNavigate()
@@ -254,12 +256,14 @@ export default function Login() {
 
 
                     <div className='forgot-password-container text-end'>
+
                         {
                             isOtpLogin?
                             <div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
                             :
                             <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{"Forgot Password?" }</Link>
                         }
+
                     </div>
                     {
                     loading?

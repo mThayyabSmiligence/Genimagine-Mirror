@@ -104,6 +104,7 @@ console.log("faInfoCircle:", faInfoCircle);
             .toISOString()
             .split("T")[0];
 
+
         const minDate = new Date(today.setFullYear(today.getFullYear()-95))
             .toISOString()
             .split("T")[0]
@@ -111,6 +112,7 @@ console.log("faInfoCircle:", faInfoCircle);
         console.log("toady : ",today.toISOString())
         console.log("mix date : ",maxDate)
         console.log("min date : ",minDate)
+
         const dobDate = new Date(dob);
 
         if (dobDate > new Date(maxDate)) {
