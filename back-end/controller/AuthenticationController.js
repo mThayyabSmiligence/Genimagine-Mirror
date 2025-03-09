@@ -16,6 +16,8 @@ const { deleteUser, getUserById } = require('../service/UserService');
 
 // user register api - api/v1/users/register
 
+const frontendBaseUrl= process.env.FRONTEND_BASE_URL;
+
 exports.userRegister = async(req, res, next) => {
     const {username, password, dob, email, confirmPassword, role='user'} = req.body
 
@@ -52,7 +54,7 @@ exports.userRegister = async(req, res, next) => {
             });
         }
 
-        const frontendBaseUrl= process.env.FRONTEND_BASE_URL;
+        
 
         const VerificationLink=`${frontendBaseUrl}/user-email-verification/${verification_token}`
 
@@ -660,7 +662,7 @@ exports.forgotPassword=async(req,res)=>{
     const encryptedEmail= encodeURIComponent(encrypted); 
 
 
-    const resetLink=`http://localhost:3000/reset-password/${encryptedEmail}/${resetToken}`
+    const resetLink=`${frontendBaseUrl}/reset-password/${encryptedEmail}/${resetToken}`
 
     const subject = "rest password link for your account on Genimagine"
 
