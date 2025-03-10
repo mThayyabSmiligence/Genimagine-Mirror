@@ -29,7 +29,7 @@ function PublishImagePage() {
         setSuccess(true)
         setSuccessMessage(response.data.message)
         setErrorMessage(null)
-        navigate('/explore')
+        navigate('/explore', { replace: true });
       }
     }catch(error){
       console.error("error in publishing image", error)
