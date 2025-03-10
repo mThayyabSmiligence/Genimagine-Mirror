@@ -37,18 +37,22 @@ export default function Login() {
     
 
     useEffect(() => {
-        if (loggedIn) { 
-          const lastVisitedPage = localStorage.getItem("lastVisitedPage");
-          if (lastVisitedPage) {
-            localStorage.removeItem("lastVisitedPage"); // Clear stored page after redirection
-            navigate(lastVisitedPage);
-          } else {
-            navigate("/image-generation"); // Default page after login
-          }
-        }
+        navigateGuest()
       }, [loggedIn, navigate]);
     
     useEffect(()=>{})
+
+    const navigateGuest = () => {
+        if (loggedIn) { 
+            const lastVisitedPage = localStorage.getItem("lastVisitedPage");
+            if (lastVisitedPage) {
+              localStorage.removeItem("lastVisitedPage"); // Clear stored page after redirection
+              navigate(lastVisitedPage);
+            } else {
+              navigate("/image-generation"); // Default page after login
+            }
+          }
+    }
 
     const spinnerStyle = {
         width: '20px',
