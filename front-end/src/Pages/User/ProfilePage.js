@@ -62,7 +62,8 @@ function ProfilePage() {
                         <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
                     
-                    <Link to="/edit-user-name" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
+                    {/* <Link to="/edit-user-name" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link> */}
+                    <Link to="/u/change-password" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
                 </div>
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>
