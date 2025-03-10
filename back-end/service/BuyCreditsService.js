@@ -32,7 +32,7 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
         credits=custom_credits
     }
 
-
+  
     //creating query and inserting data into table
     const query= " insert into credit_purchase_logs (user_id,package_id,custom_credits,amount,currency,credits_received,receipt_id) values(?,?,?,?,?,?,?)"
     const [rows] = await db.execute(query,[user_id,package_id||0,custom_credits||0,amount,currency,credits,receipt_id ])

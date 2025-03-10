@@ -8,7 +8,7 @@ import axios from 'axios';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 
  
-export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
+export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId}) {
 
   const Navigate = useNavigate();
   
@@ -142,7 +142,9 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
             
             setSuccess(true)
             setSuccessMessage("Image deleted successfully")
+
             console.log("Image deleted successfully",response)
+            handelDeleteFromState(data.image_id)
         }catch(error){
             setError(true)
             setErrorMessage("Failed to delete image",error)
@@ -231,7 +233,7 @@ export default function ChatContainer({data,showOptionsId,setShowOptionsId}) {
                   }
                   
                   <span className='option-divider'></span>
-                  <div onClick={handlePublish} className="option-item"><span class="material-symbols-outlined">publish</span>Publish</div>
+                  <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
                   <button onClick={(e)=>handelDeleteImage(e)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                 </div>

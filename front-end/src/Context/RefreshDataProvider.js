@@ -13,6 +13,8 @@ export const RefreshDataProvider =({children})=>{
 
     const [refreshLibraryData,setRefreshLibraryData] = useState(true)
 
+    const [resortChatList,setResortChatList] = useState(0)
+
     
     const getUserData=async()=>{
         try{
@@ -42,7 +44,9 @@ export const RefreshDataProvider =({children})=>{
             refreshUserData,
             setRefreshUserData,
             refreshLibraryData,
-            setRefreshLibraryData
+            setRefreshLibraryData,
+            resortChatList,
+            setResortChatList
         }}>
             {children}
         </RefreshDataContext.Provider>

@@ -12,6 +12,7 @@ import ChatOptionDropDown from './CommonComponents/ChatOptionDropDown'
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
     const [showNavBar2,setShowNavBar2]=useState(true)
+    const [chatList,setChatList]=useState([]);
     const location=useLocation()
 
     const path = location.pathname;
@@ -22,8 +23,13 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
     const [chatButtonTracking, setChatButtonTracking] = useState(null);
 
-    const { refreshChatList,setRefreshChatList} = useContext(RefreshDataContext)
+    const { refreshChatList,setRefreshChatList,resortChatList,setResortChatList} = useContext(RefreshDataContext)
     const {loggedIn} =useContext(AuthContext)
+
+
+    const truncateString=(str)=> {
+        return str.length > 20 ? str.substring(0, 17) + "..." : str;
+    }
 
     useEffect(()=>{
         if(showNavBar){
@@ -60,8 +66,23 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
       }, [showOptions]);
 
 
-    const [chatList,setChatList]=useState([]);
+      useEffect(()=>{
+        moveToFirst(resortChatList)
+      },[resortChatList])
     
+      const moveToFirst = (chat_id) => {
+        setChatList((prevItems) => {
+          if (prevItems.length==0) return prevItems; // No change if invalid index
+
+          const index = prevItems.findIndex(item => item.chat_id==chat_id);
+    
+          const updatedItems = [...prevItems]; // Create a copy of the array
+          const [movedItem] = updatedItems.splice(index, 1); // Remove item at index
+          updatedItems.unshift(movedItem); // Add item to the first index
+    
+          return updatedItems;
+        });
+      };
    
 
     const getChatList = async ()=>{
@@ -135,7 +156,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                         {
                                             Object.entries(chatList).map(([key,value],index)=>(                         
                                                 <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
-                                                    <Link to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{value.chat_id}</Link>
+                                                    <Link to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
                                     
                                                         <button ref={optionsRef} onClick={() => {
                                                             setShowOptions(!showOptions)

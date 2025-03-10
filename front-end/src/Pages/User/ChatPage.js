@@ -31,7 +31,7 @@
       
 
       const {loggedIn} = useContext(AuthContext)
-      const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
+      const { refreshCreditBalance,setRefreshCreditBalance,setResortChatList} = useContext(RefreshDataContext)
     
 
       const axiosGenerateImage=useAxiosGenerateImage()
@@ -186,6 +186,7 @@
             localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
             setRefreshCreditBalance(!refreshCreditBalance)
             }
+            setResortChatList(response.data.chat_id)
     
           } catch (error) { 
             console.error('Error generating image:', error);
@@ -195,17 +196,20 @@
             setLoading(false);
           }
         };
+        const handelDeleteFromState =  (id)=>{
+          setChat(prevItems => prevItems.filter((item) => item.image_id!== id));
+        }
     return (
       <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
       
               <div className='chat-list-container d-flex flex-column align-items-center justify-content-end pb-80px mt-3 w-100'>
               <div ref={ref} style={{ height: "10px", width: "10px", background: "transparent" }}></div>
                 {
-                  chat.map((item,index)=>(<ChatContainer key={index} data={item}></ChatContainer>))
+                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState}></ChatContainer>))
                 }
                 {
                   loading&&
-                  <ChatContainer data={dummyData} showOptionsId={showOptionsId} setShowOptionsId={setShowOptionsId}></ChatContainer>
+                  <ChatContainer data={dummyData} showOptionsId={showOptionsId} setShowOptionsId={setShowOptionsId} ></ChatContainer>
                 }
                 {
               error&&
