@@ -71,7 +71,7 @@ export default function Login() {
         if(!otpSent){
             await handleOtpLogin(e)
             return
-        }
+        }   
         await handleVerifyOtp(e);
     }
 

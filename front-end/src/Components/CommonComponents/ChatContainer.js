@@ -6,13 +6,15 @@ import { useNavigate} from 'react-router-dom'
 
 import axios from 'axios';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
+import AuthContext from '../../Context/AuthProvider';
 
  
-export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId}) {
+export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index  }) {
 
   const Navigate = useNavigate();
   
   const { setTempImageData ,refreshLibraryData,setRefreshLibraryData} = useContext(RefreshDataContext); 
+  const {loggedIn} = useContext(AuthContext)
 
   const navigate = useNavigate();
 
@@ -25,7 +27,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
   const [successMessage,setSuccessMessage]=useState("")
 
   const [isLibrary,setIsLibrary]= useState(false)
-
+  
 
   const handleToggleOptions = () => {
     setShowOptions((prev) => !prev);
@@ -109,6 +111,15 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
       };
 
       const download = (e) => {
+        if(!loggedIn){
+          const link = document.createElement("a");
+          link.href = data.image;
+          link.download = `${data.prompt}.jpg`; // Change the filename if needed
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          return
+        }
         e.preventDefault(); // Prevent default behavior
     
         axios.get(data.image_url, {
@@ -132,6 +143,10 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
     
 
       const handelDeleteImage=async (e)=>{
+        if(!loggedIn){    
+          handleGuestImageDelete(index); 
+          return;
+        }
         e.preventDefault();
         try{
             const response =await axiosPrivate.delete(`/delete-image/${data.image_id}`,
@@ -189,6 +204,13 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         Navigate('/u/publish')
       }
 
+      const handleFullScreen = () => {
+        if(!loggedIn){
+          const newTab = window.open();
+          newTab.document.write(`<div style="height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;"><img src="${data.image}" alt="Centered Image" style="max-width: 100%; height: auto;"></div>`);
+        }
+        window.open(data.image_url,'_blank')
+      };
   return (
     <div className='chat-container d-flex flex-column m-2 my-4  mb-5 px-4'>
 
@@ -215,7 +237,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
             }{
               (data.image_url||data.image)&&
               !showOptions&&
-              <button className='full-screen-button' onClick={()=>window.open(data.image?data.image:data.image_url  ,"_blank")}><span className="material-symbols-outlined">fullscreen</span></button>
+              <button className='full-screen-button' onClick={()=>handleFullScreen()}><span className="material-symbols-outlined">fullscreen</span></button>
               
             }
             {

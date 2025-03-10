@@ -21,9 +21,8 @@ export default function GuestContentPage() {
     const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
-    const [chat,setChat]= useState([
-      
-    ])
+    const [chat,setChat]= useState([])
+
     const [image, setImage] = useState(null);
     
     const [loading, setLoading] = useState(false);
@@ -176,12 +175,18 @@ export default function GuestContentPage() {
       }
     };
 
+    const handleGuestImageDelete = async(index) => {
+      setChat((prevChat)=>prevChat.filter((_, i) => i !== index));
+    }
+
+    
+
   return (
     <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
 
         <div className=' d-flex flex-column align-items-center justify-content-end mb-5 pb-5 mt-3 w-100'>
           {
-            chat.map((item,index)=>(<ChatContainer data={item}></ChatContainer>))
+            chat.map((item,index)=>(<ChatContainer data={item} index={index} handleGuestImageDelete = {handleGuestImageDelete}></ChatContainer>))
           }
           {
             loading&&
