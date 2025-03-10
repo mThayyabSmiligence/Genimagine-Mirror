@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
 
-router.route('/password-change').post(passwordChangeController)
+router.route('/change-password').post(passwordChangeController)
 
 router.route('/list').get(getUsersList);
 router.route('/user-data').get(getCurrentUserDataController)

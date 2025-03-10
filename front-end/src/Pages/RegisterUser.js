@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../images/genimagin_logo.png'
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -203,8 +203,12 @@ console.log("faInfoCircle:", faInfoCircle);
   return (
     <>
             <div className='login d-flex flex-column justify-content-center align-items-center'>
-    
+
+                    <Link to="/" >
                     <img className='login-logo' src={logo} alt='genimagin'/>
+                    
+                    </Link>
+    
                 
                 <div className='login-page br-10'>
                     {error ? (

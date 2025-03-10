@@ -18,6 +18,11 @@ export default function EditUserName() {
     const[errorMessage,setErrorMessage] = useState("")
 
     useEffect(()=>{
+        const user_data=JSON.parse(localStorage.getItem('user_data'))
+        setUserName(user_data.username)
+    },[])
+
+    useEffect(()=>{
             setUsernameValidity(USER_REGEX.test(username));
     },[username])
 

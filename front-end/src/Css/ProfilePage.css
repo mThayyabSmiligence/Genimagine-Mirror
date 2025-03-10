@@ -17,7 +17,7 @@
     border-bottom: solid 2px rgba(72, 72, 72, 0.215);
     position: relative;
 }
-.edit-user-name-button{
+.edit-user-name-button, .edit-password-button{
     position: absolute;
     right: 20px;
     top: 10px;
@@ -27,6 +27,9 @@
     padding: 10px 10px;
     border-radius: 50px;
     font-size: 8;
+}
+.edit-password-button{
+    top: 60px;
 }
 .library-images{
     width: 250px;

@@ -49,8 +49,9 @@ function ChangePassword() {
         setSuccess(false)
 
         try{
-            const response = await axiosPrivate.post(`/change-password}`, {
-                new_password:password
+            const response = await axiosPrivate.post(`/change-password`, {
+                currentPassword:currentPassword,
+                newPassword:password
             });
 
             setSuccess(true)
