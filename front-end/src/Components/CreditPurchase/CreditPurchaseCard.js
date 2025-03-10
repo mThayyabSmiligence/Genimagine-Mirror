@@ -19,7 +19,7 @@ function CreditPurchaseCard({ data,buyCredits,loggedIn}) {
                     loggedIn?
                     <button onClick={(e)=>handelBuy(e)} className="button dark-button">Buy Now</button>
                     :
-                    <Link to={"/login"}  className="button dark-button ">Buy Now</Link>
+                    <Link to={"/login"}  onClick={() => localStorage.setItem('lastVisitedPage', "/credit-purchase")} className="button dark-button ">Buy Now</Link>
                 }
             </div>
         </div>
