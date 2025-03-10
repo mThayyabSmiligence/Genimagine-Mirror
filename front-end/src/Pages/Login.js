@@ -247,7 +247,7 @@ export default function Login() {
                         </div> 
                     :
                     <div className='password-container'>
-                        <label htmlFor="exampleInputPassword1" className="form-label ">Password</label>
+                        <label htmlFor="password-input" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
                             <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             <div    type='none' 
