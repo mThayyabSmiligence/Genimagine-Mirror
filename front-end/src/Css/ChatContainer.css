@@ -77,7 +77,7 @@
     width: 160px ;
     border: solid 1px rgb(3, 3, 3,0.3);
 }
-.option-item{
+.options-dropdown .option-item{
     text-align: start;
     width: 100%;
     padding: 5PX;
@@ -87,16 +87,21 @@
     color: black;
     border: none;
 }
-.option-item span{
+.options-dropdown .option-item span{
     color: grey;
 }
-.option-item:hover{
+.options-dropdown .option-item:hover{
     background: rgb(3, 3, 3,0.1);
 }
 .option-divider{
     height: 1px;
     width: 100%;
     background-color: rgb(3, 3, 3,0.3);
+}
+.options-dropdown .option-item.disable{
+    color: grey;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 @media (max-width: 767px) {
     .chat-prompt-container{
