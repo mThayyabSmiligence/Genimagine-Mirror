@@ -156,7 +156,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                         {
                                             Object.entries(chatList).map(([key,value],index)=>(                         
                                                 <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
-                                                    <Link to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
+                                                    <Link title={value.chat_name} to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
                                     
                                                         <button ref={optionsRef} onClick={() => {
                                                             setShowOptions(!showOptions)
