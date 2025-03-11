@@ -15,6 +15,8 @@ export const RefreshDataProvider =({children})=>{
 
     const [resortChatList,setResortChatList] = useState(0)
 
+    const [refreshImageSettings,setRefreshImageSettings] = useState(true)
+
     
     const getUserData=async()=>{
         try{
@@ -46,7 +48,9 @@ export const RefreshDataProvider =({children})=>{
             refreshLibraryData,
             setRefreshLibraryData,
             resortChatList,
-            setResortChatList
+            setResortChatList,
+            refreshImageSettings,
+            setRefreshImageSettings
         }}>
             {children}
         </RefreshDataContext.Provider>

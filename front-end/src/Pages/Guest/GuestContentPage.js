@@ -13,9 +13,10 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 export default function GuestContentPage() {
 
     const {loggedIn} = useContext(AuthContext)
+    const {refreshImageSettings} = useContext(RefreshDataContext)
 
-    const [trackmodel,setTrackModel] = useState(1)
-    const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
+    const [model,setModel]= useState(null)
+    const [aspectRatio,setAspectRatio]= useState(null)
 
     const navigate =useNavigate()
     const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
@@ -40,34 +41,15 @@ export default function GuestContentPage() {
 
     const axiosGenerateImage=useAxiosGenerateImage()
 
-    const aspectRatioList = [
-      {
-        id: 1,
-        aspectRatio: "16:9",
-        width: 80, 
-        height: 45
-      },
-      // {
-      //   id: 2,
-      //   aspectRatio: "3:2"
-      // },
-      {
-        id: 2,
-        aspectRatio: "1:1",
-        width: 50,
-        height: 50
-      },
-      // {
-      //   id: 4,
-      //   aspectRatio: "4:5"
-      // },
-      {
-        id: 3,
-        aspectRatio: "9:16",
-        width: 45,
-        height: 80 
-      },
-    ]
+
+    useEffect(()=>{
+      if(localStorage.getItem("image_settings")){
+        const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
+        setModel(imageSettings.model)
+        setAspectRatio(imageSettings.aspectRatio)
+      }
+    },[refreshImageSettings])
+   
 // Track loading state
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
@@ -75,11 +57,7 @@ export default function GuestContentPage() {
       }, [loading]); 
 
 
-    const getAspectRatio=(id)=>{
-      const aspectRatioObject = Object.values(aspectRatioList).find((values)=>values.id=id)
-      return aspectRatioObject.aspectRatio;
-    }
-    
+
 
     const fetchClientIp=async()=>{
       try {
@@ -92,6 +70,12 @@ export default function GuestContentPage() {
           
     }
 
+    useEffect(()=>{
+      setTimeout(()=>{
+        setError(false)
+        setErrorMessage(null)
+      },[5000])
+    },[error])
     const generateImage = async () => {
       const prompt = promptText
       setPromptText("")
@@ -101,6 +85,8 @@ export default function GuestContentPage() {
 
       setError(false)
       setLoading(true);
+
+
       // Start loading
 
       const ipAddress= await fetchClientIp()
@@ -115,8 +101,8 @@ export default function GuestContentPage() {
               '/generate-image',
           { 
             prompt: prompt ,
-            model:trackmodel,
-            aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio,
+            model:model,
+            aspect_ratio:aspectRatio.aspectRatio,
             
           
           },
@@ -127,8 +113,8 @@ export default function GuestContentPage() {
               '/',
               { 
                 prompt: prompt ,
-                model:trackmodel,
-                aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio,
+                model:model,
+                aspect_ratio:aspectRatio.aspectRatio,
                 client_ip:ipAddress
               
               }, // Ensure the response is handled as binary
@@ -166,7 +152,7 @@ export default function GuestContentPage() {
          
 
       } catch (error) {
-        console.error('Error generating image:', error.response);
+        console.error('Error generating image:', error);
        
         setError(true);
         setErrorMessage(error?.response?.data?.message);
@@ -201,7 +187,7 @@ export default function GuestContentPage() {
         </div>
         
 
-        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio} loading={loading}></PromptInPutContainer>
+        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}  loading={loading}></PromptInPutContainer>
         {
           1&&
           <SuggestionPrompts></SuggestionPrompts>
