@@ -21,6 +21,8 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     animation: 'spin 1s linear infinite',
   };
 
+ 
+
 
   const handelInput=(e)=>{
     setPromptText(e.target.innerText)

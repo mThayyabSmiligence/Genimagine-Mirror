@@ -17,6 +17,7 @@ export default function PublishedImages() {
     const [sort, setSort] = useState(""); // Sorting method (recent/top)
     const [top, setTop] = useState(""); // Time filter (day/week/month)
     const [selectedImage, setSelectedImage] = useState(false);
+    const [showDeletePopUp, setShowDeletePopUp] = useState(false);
 
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
@@ -78,6 +79,7 @@ export default function PublishedImages() {
                 setImages(filteredImages)
                 setSelectedImage(null)
                 console.log("Image deleted successfully")
+                setShowDeletePopUp(false);
             }
         }
         catch(error){
@@ -105,7 +107,7 @@ export default function PublishedImages() {
             </div>
             <div className="explore-body">
                 {
-                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={false} isDelete={true} handelDeletePublishedImage={handelDeletePublishedImage}/>
+                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={false} isDelete={true} handelDeletePublishedImage={handelDeletePublishedImage} showDeletePopUp = {showDeletePopUp} setShowDeletePopUp = {setShowDeletePopUp}/>
                 }
                 {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>

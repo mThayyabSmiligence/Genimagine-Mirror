@@ -7,8 +7,9 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import AuthContext from '../../Context/AuthProvider';
 import { Navigate, useNavigate } from 'react-router-dom';
+import DeletePopUp from '../CommonComponents/DeletePopUp';
 
-function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage }) {
+function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
   const hasViewed = useRef(false); // Prevents multiple calls
   const [isUserLiked,setIsUserLiked]=useState(false)
   const {loggedIn}= useContext(AuthContext);
@@ -81,7 +82,9 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
     }
   } 
     
-  
+  const handleDelete = () => {
+    handelDeletePublishedImage(image.published_id)
+  }
 
   return (
     <div className="explore-popup-overlay">
@@ -137,7 +140,16 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
             </div>
             {
               isDelete?
-              <button onClick={() =>handelDeletePublishedImage(image.published_id)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+              <div>
+              <button onClick={() =>setShowDeletePopUp(true)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+              <DeletePopUp
+                show={showDeletePopUp}
+                onHide={() => setShowDeletePopUp(false)}
+                handelDelete={handleDelete}
+                message="Are you sure you want to delete this item forn your published image page?"
+                showDeletePopUp = {showDeletePopUp}
+              />
+              </div>
               :
               null
             }

@@ -7,6 +7,7 @@ import { useNavigate} from 'react-router-dom'
 import axios from 'axios';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 import AuthContext from '../../Context/AuthProvider';
+import DeletePopUp from './DeletePopUp';
 
  
 export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index  }) {
@@ -27,6 +28,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
   const [successMessage,setSuccessMessage]=useState("")
 
   const [isLibrary,setIsLibrary]= useState(false)
+  const [showDeletePopUp, setShowDeletePopUp] = useState(false);
   
 
   const handleToggleOptions = () => {
@@ -145,6 +147,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
       const handelDeleteImage=async (e)=>{
         if(!loggedIn){    
           handleGuestImageDelete(index); 
+          setShowDeletePopUp(false);
           return;
         }
         e.preventDefault();
@@ -160,6 +163,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
             console.log("Image deleted successfully",response)
             handelDeleteFromState(data.image_id)
+            setShowDeletePopUp(false);
         }catch(error){
             setError(true)
             setErrorMessage("Failed to delete image",error)
@@ -257,7 +261,16 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                   <span className='option-divider'></span>
                   <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
                   <span className='option-divider'></span>
-                  <button onClick={(e)=>handelDeleteImage(e)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
+                  <div>
+                    <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
+                    <DeletePopUp
+                      show={showDeletePopUp}
+                      onHide={() => setShowDeletePopUp(false)}
+                      handelDelete={handelDeleteImage}
+                      message="Are you sure you want to delete this item forn your published image page?"
+                      showDeletePopUp = {showDeletePopUp}
+                    />
+                  </div> 
                 </div>
               )}
             </div>
