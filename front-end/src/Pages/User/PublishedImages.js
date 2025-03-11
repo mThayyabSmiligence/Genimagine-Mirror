@@ -110,8 +110,10 @@ export default function PublishedImages() {
                 {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
                 }
-                <div className="explore-image-container ">
-                    {images.map((image, index) => (
+                <div className="explore-image-container">
+                    {images.length == 0 ? <span className='text-danger fs-4 w-100'>No Results Found!</span> 
+                    :
+                    images.map((image, index) => (
 
                         <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
                         onClick={() => handleImageClick(image)}
