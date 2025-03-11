@@ -13,9 +13,9 @@
 
   export default function ChatPage() {
 
-      const [trackmodel,setTrackModel] = useState(1)
-      const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
-      const [initialState, setInitialState] = useState(true)
+      
+      const [model,setModel]= useState(null)
+      const [aspectRatio,setAspectRatio]= useState(null)
 
 
 
@@ -29,16 +29,13 @@
       const { ref, inView } = useInView();
       
       
-
-      const {loggedIn} = useContext(AuthContext)
-      const { refreshCreditBalance,setRefreshCreditBalance,setResortChatList} = useContext(RefreshDataContext)
+      const { refreshCreditBalance,setRefreshCreditBalance,setResortChatList,refreshImageSettings} = useContext(RefreshDataContext)
     
 
       const axiosGenerateImage=useAxiosGenerateImage()
 
       const [promptText,setPromptText]=useState("")
       const [chat,setChat]= useState([])
-      const [model,setModel]= useState(1)
     
       const [loading, setLoading] = useState(false);
       const [dummyData,setDummyData]=useState(
@@ -51,52 +48,20 @@
       const [error, setError] = useState(false); // Handle errors gracefully
       const [errorMessage, setErrorMessage] = useState(null); // Handle errors
 
-      const aspectRatioList = [
-        {
-          id: 1,
-          aspectRatio: "16:9",
-          width: 80, 
-          height: 45
-        },
-        // {
-        //   id: 2,
-        //   aspectRatio: "3:2"
-        // },
-        {
-          id: 2,
-          aspectRatio: "1:1",
-          width: 50,
-          height: 50
-        },
-        // {
-        //   id: 4,
-        //   aspectRatio: "4:5"
-        // },
-        {
-          id: 3,
-          aspectRatio: "9:16",
-          width: 45,
-          height: 80 
-        },
-      ]
-
-      const spinnerStyle = {
-        width: '20px',
-        height: '20px',
-        border: '4px solid #ccc',
-        borderTop: '4px solid #3498db',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-      };
-
-
-      const getAspectRatio=(id)=>{
-        const aspectRatioObject = aspectRatioList.find((values)=>values.id=id)
-        console.log(aspectRatioObject)
-      }
-
       
 
+
+
+    
+
+      
+      useEffect(()=>{
+        if(localStorage.getItem("image_settings")){
+          const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
+          setModel(imageSettings.model)
+          setAspectRatio(imageSettings.aspectRatio)
+        }
+      },[refreshImageSettings])
 
       useEffect(() => {
           // Scroll to the bottom of the page when the component mounts
@@ -127,6 +92,13 @@
         },5000)
       },[error])
 
+      useEffect(()=>{
+        setTimeout(()=>{
+          setError(false)
+          setErrorMessage(null)
+        },[5000])
+      },[error])
+
 
       const getChatData=async(pageNumber, reset=false)=>{
         let query = `?page=${pageNumber}`;
@@ -153,6 +125,7 @@
               setError('Failed to fetch chat data. Please try again later.');
           }
       }
+      
 
       const generateImage = async () => {
           const prompt =promptText
@@ -164,7 +137,6 @@
           setLoading(true);
           setPromptText("") // Start loading
 
-          getAspectRatio(selectedAspectRatio)
           try {
             
             const response = await axiosPrivate.post(
@@ -172,8 +144,8 @@
               { 
                     prompt: prompt ,
                     chat_id:chatId,
-                    model:trackmodel,
-                    aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+                    model:model,
+                    aspect_ratio:aspectRatio.aspectRatio
               
               }
             ) 
@@ -218,7 +190,7 @@
               </div>
       
       
-              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio} loading={loading}></PromptInPutContainer>
+              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading}></PromptInPutContainer>
               {
                 1&&
                 <SuggestionPrompts></SuggestionPrompts>
