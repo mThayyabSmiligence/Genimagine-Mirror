@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../images/genimagin_logo.png'
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -446,6 +446,13 @@ console.log("faInfoCircle:", faInfoCircle);
                         }
                         
                     </form>
+
+                    <div className='divider d-flex align-items-center  '>
+                        <span className='divider-line flex-1'></span>
+                        <p className='divider-genimagin'>Already has an account ?</p>
+                        <span className='divider-line flex-1'></span>
+                    </div>
+                    <Link to="/login" className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Sign-in</Link>
                 </div>
             </div>
         </>
