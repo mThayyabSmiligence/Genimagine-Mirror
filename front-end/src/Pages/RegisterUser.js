@@ -450,6 +450,13 @@ console.log("faInfoCircle:", faInfoCircle);
                         }
                         
                     </form>
+
+                    <div className='divider d-flex align-items-center  '>
+                        <span className='divider-line flex-1'></span>
+                        <p className='divider-genimagin'>Already has an account ?</p>
+                        <span className='divider-line flex-1'></span>
+                    </div>
+                    <Link to="/login" className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Sign-in</Link>
                 </div>
             </div>
         </>

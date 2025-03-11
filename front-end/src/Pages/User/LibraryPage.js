@@ -65,7 +65,9 @@ export default function LibraryPage() {
 
         <div className='my-library-sample d-flex mt-2 flex-wrap'>
 
-                        {libraryImages.map((library,index) => (
+                        {libraryImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                        :
+                        libraryImages.map((library,index) => (
                             <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
                         ))
                         }

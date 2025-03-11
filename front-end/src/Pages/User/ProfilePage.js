@@ -38,6 +38,7 @@ function ProfilePage() {
 
     const getfirstLibraryData=async()=>{
         try{
+
             const response = await axiosPrivate.get('/get-library-images')
       
             setLibraryImages(response.data.data)
@@ -73,8 +74,11 @@ function ProfilePage() {
                         </Link>
                     </div>
 
-                    <div className='my-library-sample d-flex mt-2'>
-                        {libraryImages.map((library) => (
+                    <div className='my-library-sample d-flex mt-2'> 
+                
+                        {libraryImages.length == 0? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                        : 
+                            libraryImages.map((library) => (
                             <div key={library.id}>
                                 <img className='library-images mx-2' src={library.image_url} style={{ objectFit:"cover" }}></img>
                             </div>
@@ -91,7 +95,9 @@ function ProfilePage() {
                     </div>
 
                     <div className='my-library-sample d-flex mt-2'>
-                        {exploreImages.map((explore) => (
+
+                        {exploreImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                        : exploreImages.map((explore) => (
                             <div key={explore.id}>
                                 <img className='library-images mx-2' title={explore.prompt} alt={explore.prompt} src={explore.image_url} style={{ objectFit:"cover" }}></img>
                             </div>

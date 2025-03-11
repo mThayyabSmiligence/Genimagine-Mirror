@@ -91,7 +91,7 @@ function ChangePassword() {
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
                                     <input 
                                         type={currentPasswordVisibility? "text" : "password"} 
-                                        placeholder='password' 
+                                        placeholder='current password' 
                                         className="form-control password-input" 
                                         id="current-password" 
                                         value={currentPassword} 
@@ -138,7 +138,7 @@ function ChangePassword() {
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
                                     <input 
                                         type={passwordVisibility ? "text" : "password"} 
-                                        placeholder='password' 
+                                        placeholder='New password' 
                                         className="form-control password-input" 
                                         id="new-password" 
                                         value={password} 
@@ -210,7 +210,7 @@ function ChangePassword() {
                                     </div>
                                 </div>
                             </div>
-                            <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Change Password</button>
+                            <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Change Password</button>
                             
                         </form>
                     </div>

@@ -94,7 +94,7 @@ export default function ResetPassword() {
                            
                             {/* password */}
                             <div className='password-container'>
-                                <label htmlFor="exampleInputPassword1" className="d-flex form-label ">
+                                <label htmlFor="new-password" className="d-flex form-label ">
                                     New Password :
                                     {
                                         passwordValidity?
@@ -113,9 +113,9 @@ export default function ResetPassword() {
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
                                     <input 
                                         type={passwordVisibility ? "text" : "password"} 
-                                        placeholder='password' 
+                                        placeholder='New password' 
                                         className="form-control password-input" 
-                                        id="password-input" 
+                                        id="new-password" 
                                         value={password} 
                                         onChange={(e) => 
                                         setPassword(e.target.value)}  
@@ -148,7 +148,7 @@ export default function ResetPassword() {
                             </p>
                             {/* confirm password */}
                             <div className='password-container mb-3'>
-                                <label htmlFor="exampleInputPassword1" className="form-label d-flex">
+                                <label htmlFor="confirm-password" className="form-label d-flex">
                                     Confirm New Password :
                                     {
                                         pwdMatch?
@@ -166,7 +166,7 @@ export default function ResetPassword() {
                                     }
                                     </label>
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                     <div    type='none' 
                                             onClick={(e) =>{ 
                                                 

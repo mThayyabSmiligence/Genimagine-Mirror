@@ -3,4 +3,8 @@
 
 # dependencies
 /node_modules
+
+
+#env
 /config/config.env
+
