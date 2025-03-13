@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import useAuth from '../../Hooks/useAuth'
 import AuthContext from '../../Context/AuthProvider'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
+import { useSearchParams } from "react-router-dom";
 
 export default function GuestContentPage() {
 
@@ -38,6 +39,14 @@ export default function GuestContentPage() {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null)
 
+    const [searchParams] = useSearchParams();
+    const prompt = searchParams.get("prompt");
+
+    useEffect(()=>{
+      if(prompt){
+        setPromptText(prompt)
+      }
+    },[prompt])
 
     const axiosGenerateImage=useAxiosGenerateImage()
 
@@ -164,6 +173,7 @@ export default function GuestContentPage() {
     const handleGuestImageDelete = async(index) => {
       setChat((prevChat)=>prevChat.filter((_, i) => i !== index));
     }
+
 
     
 

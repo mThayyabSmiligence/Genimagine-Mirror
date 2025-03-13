@@ -13,9 +13,7 @@ function ProfilePage() {
     const [userData,setUserData]= useState(null)
     const[libraryImages,setLibraryImages]= useState([])
     const[exploreImages,setExploreImages]= useState([])
-    const { showEditProfile,setShowEditProfile,dropdownRef } = useContext(DropdownContext);
-    // const [showDropdown, setShowDropdown] = useState(false);
-    // const optionsRef = useRef(null);  
+    const { showEditProfile,setShowEditProfile,dropdownRef } = useContext(DropdownContext); 
   
     useEffect(() => {
       if(localStorage.getItem('user_data')){
@@ -27,24 +25,6 @@ function ProfilePage() {
         getExplore_images()
       
     },[])
-
-    // useEffect(() => {                                                      
-    //           const handleClickOutside = (e) => {
-    //             if (optionsRef.current && !optionsRef.current.contains(e.target)) {
-    //               setShowDropdown(false);
-    //             }
-    //           };
-          
-    //           if (showDropdown) {
-    //             document.addEventListener("mousedown", handleClickOutside);
-    //           } else {
-    //             document.removeEventListener("mousedown", handleClickOutside);
-    //           }
-          
-    //           return () => {
-    //             document.removeEventListener("mousedown", handleClickOutside);
-    //           };
-    //         }, [showDropdown]);
 
 
     const getExplore_images=async()=>{
@@ -85,15 +65,13 @@ function ProfilePage() {
                         <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
                     
-                    {/* <Link to="/edit-user-name" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link> */}
-                    {/* <Link to="/u/change-password" className='link edit-password-button'><EditIcon className='edit-icon'></EditIcon></Link> */}
                     <div className='edit-profile-icon' ref={dropdownRef} onClick={() => setShowEditProfile(!showEditProfile)}>
                         <EditIcon className='edit-icon'  ></EditIcon>
                         {
                             showEditProfile&& (
                                 <div className='dropdown-menu p-0 mt-2'> 
                                     <Link to="/edit-user-name" className="dropdown-item">Edit Username</Link>
-                                    <Link to="/u/change-password" className="dropdown-item">Edit Password</Link>
+                                    <Link to="/u/change-password" className="dropdown-item">Change Password</Link>
                                 </div>
                             )
                         }

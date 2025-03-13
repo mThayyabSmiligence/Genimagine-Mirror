@@ -56,11 +56,39 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const handelInput=(e)=>{
     setPromptText(e.target.innerText)
   }
-  useEffect(()=>{
-    if(promptText==""){
-      pRef.current.innerText=""
+  useEffect(() => {
+    // If there's nothing in promptText, clear the content and exit.
+    if (promptText === "") {
+      pRef.current.innerText = "";
+      return;
     }
-  },[promptText])
+  
+    // Get the current selection and caret offset if the element is focused.
+    let sel = window.getSelection();
+    let caretOffset = null;
+    if (document.activeElement === pRef.current && sel.rangeCount > 0) {
+      caretOffset = sel.getRangeAt(0).startOffset;
+    }
+  
+    // Update the content
+    pRef.current.innerText = promptText;
+  
+    // If we saved a caret position, restore it.
+    if (caretOffset !== null) {
+      const range = document.createRange();
+      // Make sure there is at least one child node (a text node).
+      const textNode = pRef.current.firstChild;
+      if (textNode) {
+        // Adjust caretOffset if it exceeds text length.
+        const offset = Math.min(caretOffset, textNode.textContent.length);
+        range.setStart(textNode, offset);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  }, [promptText]);
+  
   const handelClick=()=>{
     if(pRef.current){
       pRef.current.innerText=""
