@@ -4,6 +4,7 @@ const DropdownContext = createContext();
 
 export const DropdownProvider = ({ children }) => {
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showEditProfile,setShowEditProfile] = useState(false)
     // const [showOptions, setShowOptions] =useState(false)
     // const optionsRef = useRef(null); 
     const dropdownRef = useRef(null);
@@ -12,10 +13,11 @@ export const DropdownProvider = ({ children }) => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
+                setShowEditProfile(false)
             }
         };
 
-        if (showDropdown) {
+        if (showDropdown||showEditProfile) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -24,9 +26,9 @@ export const DropdownProvider = ({ children }) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showDropdown]);
+    }, [showDropdown, showEditProfile ]);
     return (
-        <DropdownContext.Provider value={{ showDropdown, setShowDropdown, dropdownRef }}>
+        <DropdownContext.Provider value={{ showDropdown, setShowDropdown, dropdownRef, showEditProfile,setShowEditProfile}}>
             {children}
         </DropdownContext.Provider>
     );
