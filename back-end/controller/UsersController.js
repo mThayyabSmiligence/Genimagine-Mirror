@@ -148,7 +148,7 @@ exports.getChatsData=async(req,res,next)=>{
     let decodeToken=null
             
     try{
-        const cookies1 = cookie.parse(req.headers.cookie)
+        const cookies1 = cookie.parse(req.headers.cookie) 
         cookies=cookies1    
         const token1 = cookies.token
         token= token1

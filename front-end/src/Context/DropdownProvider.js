@@ -25,7 +25,6 @@ export const DropdownProvider = ({ children }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showDropdown]);
-
     return (
         <DropdownContext.Provider value={{ showDropdown, setShowDropdown, dropdownRef }}>
             {children}

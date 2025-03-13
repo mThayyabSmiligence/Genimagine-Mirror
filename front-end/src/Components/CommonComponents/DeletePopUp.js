@@ -8,7 +8,7 @@ export default function DeletePopUp({ onHide, message, showDeletePopUp, handelDe
       tabIndex="-1"
       role="dialog"
     >
-      <div className="modal-backdrop fade show bgblur-container"></div>
+      <div onClick={onHide} className="modal-backdrop fade show bgblur-container"></div>
       <div className="modal-dialog modal-dialog-centered popup-container" role="document">
         <div className="modal-content">
           <div className="modal-header">

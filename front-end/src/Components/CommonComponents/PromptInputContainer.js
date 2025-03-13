@@ -1,11 +1,42 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 import IGSettingPopUp from './IGSettingPopUp'
+import RefreshDataContext from '../../Context/RefreshDataProvider'
+
+const aspectRatioList = [
+  {
+    id: 1,
+    aspectRatio: "16:9",
+    width: 80, 
+    height: 45
+  },
+  // {
+  //   id: 2,
+  //   aspectRatio: "3:2"
+  // },
+  {
+    id: 2,
+    aspectRatio: "1:1",
+    width: 50,
+    height: 50
+  },
+  // {
+  //   id: 4,
+  //   aspectRatio: "4:5"
+  // },
+  {
+    id: 3,
+    aspectRatio: "9:16",
+    width: 45,
+    height: 80 
+  },
+]
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading}) {
 
 
   const [showIGSetting,setShowIGSetting]=useState(false)
+  const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
 
   
 
@@ -20,8 +51,6 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   };
-
- 
 
 
   const handelInput=(e)=>{
@@ -43,6 +72,21 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     generateImage()
     
   }
+
+   useEffect(()=>{
+      if(!localStorage.getItem("image_settings")){
+        localStorage.setItem("image_settings", JSON.stringify(
+          {
+            model:1,
+            aspectRatio:aspectRatioList[2]
+          }
+        ))
+        setRefreshImageSettings(!refreshImageSettings)    
+        return;
+      }
+      
+    },[])
+
   const [width, setWidth] = useState(window.innerWidth);
           
         useEffect(() => {
