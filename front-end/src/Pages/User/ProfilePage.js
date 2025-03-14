@@ -3,12 +3,13 @@ import '../../Css/ProfilePage.css'
 import AuthContext from '../../Context/AuthProvider';
 import profile_avatar from "../../images/profile_avatar.gif"
 import EditIcon from '@mui/icons-material/Edit';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 import DropdownContext from '../../Context/DropdownProvider';
 
 function ProfilePage() {
 
+   
     const {loggedIn}= useContext(AuthContext);
     const [userData,setUserData]= useState(null)
     const[libraryImages,setLibraryImages]= useState([])
@@ -23,6 +24,7 @@ function ProfilePage() {
     useEffect(()=>{
         getfirstLibraryData()
         getExplore_images()
+        
       
     },[])
 
@@ -65,6 +67,7 @@ function ProfilePage() {
                         <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
                     
+
                     <div className='edit-profile-icon' ref={dropdownRef} onClick={() => setShowEditProfile(!showEditProfile)}>
                         <EditIcon className='edit-icon'  ></EditIcon>
                         {
@@ -76,6 +79,7 @@ function ProfilePage() {
                             )
                         }
                     </div> 
+
 
                 </div>
                 <div className='profile-library'>

@@ -112,37 +112,39 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         animation: 'spin 1s linear infinite',
       };
 
-      const download = (e) => {
+      const download =async (e) => {
         if(!loggedIn){
           const link = document.createElement("a");
           link.href = data.image;
           link.download = `${data.prompt}.jpg`; // Change the filename if needed
-          document.body.appendChild(link);
+          document.body.appendChild(link); 
           link.click();
           document.body.removeChild(link);
           return
         }
         e.preventDefault(); // Prevent default behavior
-    
-        axios.get(data.image_url, {
-            responseType: "blob", // Ensure the response is a binary blob
-            withCredentials: true, // Include credentials if needed
-        })
-        .then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `${data.prompt+data.image_id}.png`); // Set the file name
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link); // Cleanup
-            URL.revokeObjectURL(url); // Free memory
-        })
-        .catch((error) => {
-            console.error("Error downloading the image:", error);
-        });
+
+        try {
+          const response = await fetch(data.image_url);
+          if (!response.ok) {
+              throw new Error("Failed to fetch the image");
+          }
+  
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", `${data.prompt + data.image_id}.png`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url); // Clean up
+      } catch (error) { 
+          console.error("Error downloading the image:", error);
+      }
     };
     
+
 
       const handelDeleteImage=async (e)=>{
         if(!loggedIn){    
