@@ -41,37 +41,10 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
     
         // Return the file URL from S3
         const fileUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_DEFAULT_REGION}.amazonaws.com/${params.Key}`;
-        return {success:true,message:"file is uploaded",imagePath:fileName,imageUrl:fileUrl}
+        return {success:true,message:"file is uploaded",imagePath:filePath,imageUrl:fileUrl}
       } catch (err) {
         console.error('Error uploading file:', err);
         return {success:false,message:"error uploading file",error:err}
       }
 };
 
-exports.uploadImageToExplore=async (user_id,image_path,token)=>{
-    try {
-        const response = await axios.post(
-            `${serverStorageBaseUrl}/publish-to-explore`,{
-                userId:user_id,
-                imagePath:image_path
-            },
-           
-            {
-                headers: {// Include FormData-specific headers
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
- 
-        console.log("Response from imageUpload API:", response.data);
-        return response.data;
-
-    } catch (err) {
-        console.error("Error from imageUpload API:", err.response?.data || err.message);
-        return{
-            status:false,
-            message:"error uploading image to explore deom UploadToServerService",
-            status:500
-        }
-    }
-}

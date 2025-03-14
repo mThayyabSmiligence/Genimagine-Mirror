@@ -6,7 +6,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import AuthContext from '../../Context/AuthProvider';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage }) {
   const hasViewed = useRef(false); // Prevents multiple calls
@@ -81,7 +82,10 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
     }
   } 
     
-  
+  const handelEdit=()=>{
+    localStorage.setItem("temp_image_data",JSON.stringify(image))
+    Navigate('/u/publish?edit=1')
+  }
 
   return (
     <div className="explore-popup-overlay">
@@ -93,7 +97,10 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
 
 
         <div className='image-caption'>
-            <h5 className='caption-header'>Caption :</h5>
+            <div className='d-flex justify-content-between mb-1'>
+              <h5 className='caption-header'>Caption :</h5>
+              <button onClick={handelEdit} className='edit-button edit-caption-button d-flex justify-content-center align-items-center'><EditIcon className='edit-icon'></EditIcon></button>
+            </div>
             <div className='caption-text-container p-2'>
               <div className='caption-text-innner-container text-start'>
                 <p className='m-0 test-start'>{image.caption}</p>

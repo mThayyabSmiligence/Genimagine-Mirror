@@ -465,3 +465,31 @@ exports.deleteExploreImageByPublishedIdService=async(published_id,user_id)=>{
         }
     }
 }
+
+exports.editCaptionService=async(published_id,caption,id)=>{
+    try{
+        const query ="UPDATE explore SET caption =? WHERE published_id =? AND user_id =?"
+        const [rows] = await db.execute(query,[caption, published_id,id])
+        if(rows.affectedRows===0){
+            console.log("user didn't edit the caption")
+            return {
+                status:404,
+                message:"user didn't edit the caption",
+                success:false
+            }
+        }
+        console.log("caption edited successfully")
+        return{
+            status:200,
+            message:"caption edited successfully",
+            success:true
+        }
+    }catch(err){
+        console.error("error editing caption",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}

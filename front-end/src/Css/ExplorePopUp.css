@@ -152,6 +152,20 @@
 .delete-button {
     color: rgb(255, 0, 0);
 }
+
+.edit-caption-button{
+  color: rgb(0, 0, 0);
+  background-color: #ccc;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  border: none;
+  padding: none;
+}
+.edit-caption-button .edit-icon{
+  font-size: 20px;
+}
+
 @media (min-width: 1920px) and (max-width: 2560px) {
   /* Styles for 1080p screens */
  
