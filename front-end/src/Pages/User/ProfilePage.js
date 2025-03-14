@@ -3,11 +3,12 @@ import '../../Css/ProfilePage.css'
 import AuthContext from '../../Context/AuthProvider';
 import profile_avatar from "../../images/profile_avatar.gif"
 import EditIcon from '@mui/icons-material/Edit';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 
 function ProfilePage() {
 
+   
     const {loggedIn}= useContext(AuthContext);
     const [userData,setUserData]= useState(null)
     const[libraryImages,setLibraryImages]= useState([])
@@ -21,8 +22,10 @@ function ProfilePage() {
     useEffect(()=>{
         getfirstLibraryData()
         getExplore_images()
+        
       
     },[])
+
 
     
     const getExplore_images=async()=>{
@@ -63,8 +66,8 @@ function ProfilePage() {
                         <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
                     
-                    <Link to="/edit-user-name" className='link edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
-                    <Link to="/u/change-password" className='link edit-password-button'><EditIcon className='edit-icon'></EditIcon></Link>
+                    <Link to="/edit-user-name" className='link edit-button edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
+                    <Link to="/u/change-password" className='link edit-button edit-password-button'><EditIcon className='edit-icon'></EditIcon></Link>
                 </div>
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>

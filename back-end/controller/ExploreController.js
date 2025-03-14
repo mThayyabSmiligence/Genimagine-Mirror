@@ -2,7 +2,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService, deleteExploreImageByPublishedIdService } = require("../service/ExploreService");
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService, deleteExploreImageByPublishedIdService, editCaptionService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,caption}= req.body;
@@ -140,4 +140,15 @@ exports.deleteExploreImageByPublishedIdController=async(req,res)=>{
     const result = await deleteExploreImageByPublishedIdService(published_id,id);
     
     return res.status(result.status).json(result);  
+}
+
+exports.editCaptionController = async(req, res)=>{
+    //logic to edit caption of explore image
+    const {published_id}=req.params;
+    const {caption}=req.body;
+    const {id}=req.user;
+    
+    const result = await editCaptionService(published_id,caption,id);
+    
+    return res.status(result.status).json(result);
 }

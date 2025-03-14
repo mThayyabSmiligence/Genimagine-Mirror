@@ -27,23 +27,10 @@ exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
         }
     }
 
-    try{
-        const response = await uploadImageToExplore(user_id,generated_image_data.image_path,token)
-        if(response.status!= 200){
-            return response
-        }
-        image_data=response
 
-    }catch( err){
-        return{
-            status:500,
-            message:"internal server error",
-            success:false
-        }
-    }
     try{
         const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio) VALUES (?, ?,?, ?, ?,?,?,?,?)"
-        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,image_data.imageUrl,image_data.imagePath,generated_image_data.resolution,generated_image_data.aspect_ratio])
+        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,generated_image_data.image_url,generated_image_data.image_path,generated_image_data.resolution,generated_image_data.aspect_ratio])
 
         if (rows.affectedRows == 0) {
              return {
@@ -471,6 +458,34 @@ exports.deleteExploreImageByPublishedIdService=async(published_id,user_id)=>{
         }
     }catch(err){
         console.error("error deleting image",err)
+        return {
+            status:500,
+            message:"internal server error",
+            success:false
+        }
+    }
+}
+
+exports.editCaptionService=async(published_id,caption,id)=>{
+    try{
+        const query ="UPDATE explore SET caption =? WHERE published_id =? AND user_id =?"
+        const [rows] = await db.execute(query,[caption, published_id,id])
+        if(rows.affectedRows===0){
+            console.log("user didn't edit the caption")
+            return {
+                status:404,
+                message:"user didn't edit the caption",
+                success:false
+            }
+        }
+        console.log("caption edited successfully")
+        return{
+            status:200,
+            message:"caption edited successfully",
+            success:true
+        }
+    }catch(err){
+        console.error("error editing caption",err)
         return {
             status:500,
             message:"internal server error",
