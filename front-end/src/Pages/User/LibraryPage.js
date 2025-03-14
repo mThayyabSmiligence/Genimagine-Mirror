@@ -3,6 +3,8 @@ import { axiosInstance } from '../../API\'s/axios'
 import '../../Css/LibraryPage.css'
 import LibraryImageContainer from '../../Components/UserComponents/LibraryImageContainer'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
+import Masonry from "react-masonry-css";
+import imagesLoaded from "imagesloaded";
 
 export default function LibraryPage() {
 
@@ -54,7 +56,14 @@ export default function LibraryPage() {
     }
   }
 
-  
+  useEffect(() => {
+    if (libraryImages.length > 0) {
+      const grid = document.querySelector(".library-image-masonry");
+      imagesLoaded(grid, () => {
+        console.log("All images loaded, reflowing Masonry...");
+      });
+    }
+  }, [libraryImages]);  
   
   return (
     <div className='mt-5 library_body'>
@@ -64,13 +73,18 @@ export default function LibraryPage() {
       </div>
 
         <div className='my-library-sample d-flex mt-2 flex-wrap'>
-
-                        {libraryImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
-                        :
-                        libraryImages.map((library,index) => (
-                            <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
-                        ))
-                        }
+                        <Masonry  
+                            breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts
+                            className="library-image-masonry"
+                            columnClassName="library-image-column"
+                        >
+                          {libraryImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                          :
+                          libraryImages.map((library,index) => (
+                              <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
+                          ))
+                          }
+                        </Masonry>
         </div>
     </div>
   )

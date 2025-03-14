@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import '../../Css/ProfilePage.css'
 import AuthContext from '../../Context/AuthProvider';
 import profile_avatar from "../../images/profile_avatar.gif"
 import EditIcon from '@mui/icons-material/Edit';
 import { Link, useLocation } from 'react-router-dom';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
+import DropdownContext from '../../Context/DropdownProvider';
 
 function ProfilePage() {
 
@@ -13,6 +14,7 @@ function ProfilePage() {
     const [userData,setUserData]= useState(null)
     const[libraryImages,setLibraryImages]= useState([])
     const[exploreImages,setExploreImages]= useState([])
+    const { showEditProfile,setShowEditProfile,dropdownRef } = useContext(DropdownContext); 
   
     useEffect(() => {
       if(localStorage.getItem('user_data')){
@@ -27,7 +29,6 @@ function ProfilePage() {
     },[])
 
 
-    
     const getExplore_images=async()=>{
         try{
             const response = await axiosPrivate.get('/explore')
@@ -66,8 +67,20 @@ function ProfilePage() {
                         <h1 className=' user-name h-1  '>{userData?.username||"Thayyab"}</h1>
                     </div>
                     
-                    <Link to="/edit-user-name" className='link edit-button edit-user-name-button'><EditIcon className='edit-icon'></EditIcon></Link>
-                    <Link to="/u/change-password" className='link edit-button edit-password-button'><EditIcon className='edit-icon'></EditIcon></Link>
+
+                    <div className='edit-profile-icon' ref={dropdownRef} onClick={() => setShowEditProfile(!showEditProfile)}>
+                        <EditIcon className='edit-icon'  ></EditIcon>
+                        {
+                            showEditProfile&& (
+                                <div className='dropdown-menu p-0 mt-2'> 
+                                    <Link to="/edit-user-name" className="dropdown-item">Edit Username</Link>
+                                    <Link to="/u/change-password" className="dropdown-item">Change Password</Link>
+                                </div>
+                            )
+                        }
+                    </div> 
+
+
                 </div>
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>

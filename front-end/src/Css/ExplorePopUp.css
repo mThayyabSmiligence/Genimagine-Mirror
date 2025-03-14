@@ -135,7 +135,7 @@
 }
 
 
-.user-like-button,.user-view-button , .delete-button{
+.user-copy-prompt-button, .user-like-button,.user-view-button , .delete-button{
     height: 30px;
     border-radius: 100px;
 

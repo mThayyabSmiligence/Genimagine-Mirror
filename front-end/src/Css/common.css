@@ -37,6 +37,7 @@
 .light-button-wh{
     color: black;
     border: solid 2px black;
+    background-color: white;
 }
 .light-button:hover{
     background: rgb(0, 0, 0);

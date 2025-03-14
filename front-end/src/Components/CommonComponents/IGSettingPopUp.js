@@ -86,7 +86,7 @@ function IGSettingPopUp({closePopup,}) {
     if(localStorage.getItem("image_settings")){
       const settings = JSON.parse(localStorage.getItem("image_settings"));
       setTempTrackModel(settings.model);
-      setTempSelectedAspectRatio(settings.aspectRatio);
+      setTempSelectedAspectRatio(aspectRatioList.find( aspectRatio => aspectRatio.aspectRatio == settings.aspectRatio.aspectRatio));
       return;
     }
 

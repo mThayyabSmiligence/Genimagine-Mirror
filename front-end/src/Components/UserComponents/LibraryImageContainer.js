@@ -78,8 +78,8 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
               });
             }
   return (
-    <div key={library.id} className={`library-image-container ${library.aspect_ratio } d-flex align-items-center justify-content-center  `} >
-                                <img className=' m-3' src={library.image_url }></img>
+    <div key={library.id} className={`library-image-container ${library.aspect_ratio } d-flex align-items-center justify-content-center br-10 `} >
+                                <img src={library.image_url }></img>
                                 
                                   {
                                     (library.image_url||library.image)&&

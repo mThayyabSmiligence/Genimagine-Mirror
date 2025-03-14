@@ -1,11 +1,42 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 import IGSettingPopUp from './IGSettingPopUp'
+import RefreshDataContext from '../../Context/RefreshDataProvider'
+
+const aspectRatioList = [
+  {
+    id: 1,
+    aspectRatio: "16:9",
+    width: 80, 
+    height: 45
+  },
+  // {
+  //   id: 2,
+  //   aspectRatio: "3:2"
+  // },
+  {
+    id: 2,
+    aspectRatio: "1:1",
+    width: 50,
+    height: 50
+  },
+  // {
+  //   id: 4,
+  //   aspectRatio: "4:5"
+  // },
+  {
+    id: 3,
+    aspectRatio: "9:16",
+    width: 45,
+    height: 80 
+  },
+]
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading}) {
 
 
   const [showIGSetting,setShowIGSetting]=useState(false)
+  const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
 
   
 
@@ -25,11 +56,39 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const handelInput=(e)=>{
     setPromptText(e.target.innerText)
   }
-  useEffect(()=>{
-    if(promptText==""){
-      pRef.current.innerText=""
+  useEffect(() => {
+    // If there's nothing in promptText, clear the content and exit.
+    if (promptText === "") {
+      pRef.current.innerText = "";
+      return;
     }
-  },[promptText])
+  
+    // Get the current selection and caret offset if the element is focused.
+    let sel = window.getSelection();
+    let caretOffset = null;
+    if (document.activeElement === pRef.current && sel.rangeCount > 0) {
+      caretOffset = sel.getRangeAt(0).startOffset;
+    }
+  
+    // Update the content
+    pRef.current.innerText = promptText;
+  
+    // If we saved a caret position, restore it.
+    if (caretOffset !== null) {
+      const range = document.createRange();
+      // Make sure there is at least one child node (a text node).
+      const textNode = pRef.current.firstChild;
+      if (textNode) {
+        // Adjust caretOffset if it exceeds text length.
+        const offset = Math.min(caretOffset, textNode.textContent.length);
+        range.setStart(textNode, offset);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  }, [promptText]);
+  
   const handelClick=()=>{
     if(pRef.current){
       pRef.current.innerText=""
@@ -41,6 +100,21 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     generateImage()
     
   }
+
+   useEffect(()=>{
+      if(!localStorage.getItem("image_settings")){
+        localStorage.setItem("image_settings", JSON.stringify(
+          {
+            model:1,
+            aspectRatio:aspectRatioList[2]
+          }
+        ))
+        setRefreshImageSettings(!refreshImageSettings)    
+        return;
+      }
+      
+    },[])
+
   const [width, setWidth] = useState(window.innerWidth);
           
         useEffect(() => {

@@ -6,13 +6,20 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import AuthContext from '../../Context/AuthProvider';
+
+import DeletePopUp from '../CommonComponents/DeletePopUp';
+import RefreshDataContext from '../../Context/RefreshDataProvider';
+
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 
-function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage }) {
+
+
+function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
   const hasViewed = useRef(false); // Prevents multiple calls
   const [isUserLiked,setIsUserLiked]=useState(false)
   const {loggedIn}= useContext(AuthContext);
+  const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
   const Navigate = useNavigate();
 
   useEffect(() => {
@@ -82,9 +89,30 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
     }
   } 
     
+
+  const handleDelete = () => {
+    handelDeletePublishedImage(image.published_id)
+  }
+
+  const handleCopy = (image) => {
+    localStorage.setItem("image_settings", JSON.stringify(
+      {
+        model: image.model,
+        aspectRatio: {
+          aspectRatio: image.aspect_ratio
+        }
+      }
+    ))
+    setRefreshImageSettings(!refreshImageSettings)
+
+    
+    Navigate(`/image-generation?prompt=${image.prompt}`)
+  }
+
   const handelEdit=()=>{
     localStorage.setItem("temp_image_data",JSON.stringify(image))
     Navigate('/u/publish?edit=1')
+
   }
 
   return (
@@ -131,20 +159,35 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
 
           <div className='explore-metrics d-flex justify-content-end'>
 
+            <div className='user-copy-prompt-container'>
+              <button title='copy' onClick={() => handleCopy(image)} className='button-wh light-button-wh user-copy-prompt-button d-flex align-items-center px-3'>
+                <span class="material-symbols-outlined">content_copy</span>
+              </button>
+            </div>
+
             <div className='user-like-container'>
               {
                 isUserLiked?
-                <button onClick={() => removeLike()} className='button light-button user-like-button d-flex align-items-center px-3'><FavoriteIcon className='liked-button'/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
+                <button onClick={() => removeLike()} className='button-wh light-button-wh user-like-button d-flex align-items-center px-3'><FavoriteIcon className='liked-button'/>  <p className="ms-2 m-0">{image.likes_count}</p></button>
                 :
-                <button onClick={() => addLikes()} className='button light-button  user-like-button d-flex align-items-center px-3'><FavoriteBorderIcon/><p className="ms-2 m-0">{image.likes_count}</p></button>
+                <button onClick={() => addLikes()} className='button-wh light-button-wh  user-like-button d-flex align-items-center px-3'><FavoriteBorderIcon/><p className="ms-2 m-0">{image.likes_count}</p></button>
               }
             </div>
             <div className='user-view-container mx-2'>
-              <button className='button light-button user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{image.views_count}</p></button>
+              <button className='button-wh light-button-wh user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{image.views_count}</p></button>
             </div>
             {
               isDelete?
-              <button onClick={() =>handelDeletePublishedImage(image.published_id)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+              <div>
+              <button onClick={() =>setShowDeletePopUp(true)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+              <DeletePopUp
+                show={showDeletePopUp}
+                onHide={() => setShowDeletePopUp(false)}
+                handelDelete={handleDelete}
+                message="Are you sure you want to delete this item forn your published image page?"
+                showDeletePopUp = {showDeletePopUp}
+              />
+              </div>
               :
               null
             }

@@ -4,6 +4,8 @@ import { axiosNoAUth } from "../../API's/axios";
 import "../../Css/ExplorePage.css";
 import { useInView } from "react-intersection-observer";
 import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
+import Masonry from "react-masonry-css";
+import imagesLoaded from "imagesloaded";
 
 function ExplorePage() {
     const [images, setImages] = useState([]);
@@ -70,6 +72,15 @@ function ExplorePage() {
         setSelectedImage(false);
     };
 
+    useEffect(() => {
+        if (images.length > 0) {
+          const grid = document.querySelector(".explore-image-masonry");
+          imagesLoaded(grid, () => {
+            console.log("All images loaded, reflowing Masonry...");
+          });
+        }
+    }, [images]);
+
     return (
         <div className="mt-5 explore-page-container">
             <div className="explore-heading text-start ms-3 mb-3">
@@ -96,16 +107,23 @@ function ExplorePage() {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
                 }
                 <div className="explore-image-container">
-                    {images.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
-                    :
-                    images.map((image, index) => (
+                    <Masonry
+                        breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts
+                        className="explore-image-masonry"
+                        columnClassName="explore-image-column"
+                    >
+                        {
+                        // images.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                        // :
+                        images.map((image, index) => (
 
-                        <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
-                        onClick={() => handleImageClick(image)}
-                        >
-                            <img src={image.image_url} alt={image.caption} className="br-10" />
-                        </div>
-                    ))}
+                            <div key={index} className="explore-image col-6 col-md-4 col-lg-3 br-10"
+                            onClick={() => handleImageClick(image)}
+                            >
+                                <img src={image.image_url} alt={image.caption} className="br-10 img-fluid shadow" />
+                            </div>
+                        ))}
+                    </Masonry>
                 </div>
             </div>
 
