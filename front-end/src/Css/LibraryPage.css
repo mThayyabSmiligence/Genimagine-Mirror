@@ -65,6 +65,10 @@
     background-color: white;
     border-radius: 5px;
 }
+.library-image-container.last-column .image-options .options-dropdown {
+    top: 40px;
+    right: 5px;
+}
 
 .library-image-container .image-options .options-dropdown .option-item{
    background-color: white;

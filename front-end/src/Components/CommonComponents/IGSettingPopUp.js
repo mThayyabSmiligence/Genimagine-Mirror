@@ -151,7 +151,8 @@ function IGSettingPopUp({closePopup,}) {
                 </div>
 
                 <h5 className="h-3">Style</h5>
-                <div className="d-flex">
+                <div className="d-flex justify-content-center">
+                  <h4 className="h-3">Coming Soon...</h4>
                 </div>
 
                 <div className="pop-up-done d-flex justify-content-end me-3">
