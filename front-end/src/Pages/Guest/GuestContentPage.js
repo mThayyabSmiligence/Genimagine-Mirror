@@ -131,14 +131,13 @@ export default function GuestContentPage() {
 
           }
         
-           
-          
         console.log(response.data)
-        if(response.data.credits){
-          
+        if(response.data.credits||response.data.credits==0){
           localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
           setRefreshCreditBalance(!refreshCreditBalance)
         }
+
+        
 
         if(response.data.chat_id){
           setRefreshChatList(!refreshChatList)

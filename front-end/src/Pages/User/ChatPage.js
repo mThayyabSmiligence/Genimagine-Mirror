@@ -154,9 +154,9 @@
             setChat((prevItems)=>[...prevItems,
               response.data
             ])
-            if(response.data.credits){
-            localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
-            setRefreshCreditBalance(!refreshCreditBalance)
+            if(response.data.credits||response.data.credits==0){
+              localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
+              setRefreshCreditBalance(!refreshCreditBalance)
             }
             setResortChatList(response.data.chat_id)
     

@@ -4,7 +4,7 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-export default function LibraryImageContainer({library,index,removeImageFromLibraryArray}) {
+export default function LibraryImageContainer({library,imageColumns,index,removeImageFromLibraryArray}) {
     const [showOptions, setShowOptions] =useState(false)
     const optionsRef = useRef(null);  
     const [success,setSuccess]=useState(false)
@@ -14,6 +14,10 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
     const [isLibrary,setIsLibrary]= useState(false)
     const { setTempImageData } = useContext(RefreshDataContext); 
     const navigate = useNavigate();
+
+      useEffect(()=>{
+        console.log("index: ",index," imageCloumns: ",imageColumns);
+      },[imageColumns])
 
       useEffect(() => {                                                      
           const handleClickOutside = (e) => {
@@ -78,7 +82,7 @@ export default function LibraryImageContainer({library,index,removeImageFromLibr
               });
             }
   return (
-    <div key={library.id} className={`library-image-container ${library.aspect_ratio } d-flex align-items-center justify-content-center br-10 `} >
+    <div key={library.id} className={`library-image-container ${library.aspect_ratio } ${(index+1)%imageColumns==0&&'last-column'} d-flex align-items-center justify-content-center br-10 `} >
                                 <img src={library.image_url }></img>
                                 
                                   {

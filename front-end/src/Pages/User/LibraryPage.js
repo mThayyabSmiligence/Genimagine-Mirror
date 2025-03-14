@@ -15,6 +15,33 @@ export default function LibraryPage() {
   const [success,setSuccess]=useState(false)
   const [successMessage,setSuccessMessage]=useState(null)
 
+  const [width, setWidth] = useState(window.innerWidth);
+  const [imageColumns,setImageColumns]=useState(window.innerWidth<576?1:window.innerWidth<768?2:window.innerWidth<992?3:4)
+          
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      if(window.innerWidth<576){
+        setImageColumns(1)
+      }
+      else if(window.innerWidth<768){
+        setImageColumns(2)
+      }
+      else if(window.innerWidth<992){
+        setImageColumns(3)
+      }
+      else{
+        setImageColumns(4)
+      }
+    };
+        
+    window.addEventListener('resize', handleResize);
+        
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+}, []);
+
   const [libraryImages,setLibraryImages]= useState([{
     id:0,
     image_url:""}
@@ -81,7 +108,7 @@ export default function LibraryPage() {
                           {libraryImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
                           :
                           libraryImages.map((library,index) => (
-                              <LibraryImageContainer key={index} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
+                              <LibraryImageContainer key={index} imageColumns={imageColumns} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
                           ))
                           }
                         </Masonry>
