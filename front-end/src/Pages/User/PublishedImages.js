@@ -5,6 +5,8 @@ import SortSection from '../../Components/Explore/SortSection';
 import ExplorePopUp from '../../Components/CommonComponents/ExplorePopUp';
 import '../../Css/ExplorePage.css'
 import '../../Css/PublishedImages.css'
+import Masonry from "react-masonry-css";
+import imagesLoaded from "imagesloaded";
 
 export default function PublishedImages() {
     const [images, setImages] = useState([]);
@@ -113,17 +115,23 @@ export default function PublishedImages() {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
                 }
                 <div className="explore-image-container">
-                    {images.length == 0 ? <span className='text-danger fs-4 w-100'>No Results Found!</span> 
-                    :
-                    images.map((image, index) => (
+                    <Masonry
+                        breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts
+                        className="explore-image-masonry"
+                        columnClassName="explore-image-column"
+                    >
+                        {images.length == 0 ? <span className='text-danger fs-4 w-100'>No Results Found!</span> 
+                        :
+                        images.map((image, index) => (
 
-                        <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
-                        onClick={() => handleImageClick(image)}
-                        >
-                            <img src={image.image_url} alt={image.caption} className="br-10" />
-                          
-                        </div>
-                    ))}
+                            <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
+                            onClick={() => handleImageClick(image)}
+                            >
+                                <img src={image.image_url} alt={image.caption} className="br-10" />
+                            
+                            </div>
+                        ))}
+                    </Masonry>
                 </div>
             </div>
 
