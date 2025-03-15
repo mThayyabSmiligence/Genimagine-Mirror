@@ -317,6 +317,12 @@
     font-size: var(--primary-icon-size-1366);
 }
 
+.success-icon{
+    color: rgb(21, 158, 21);
+    /* font-size: var(--third-heading-font-size-1366); */
+ 
+}
+
 @media (max-width: 768px) {
     .h-1 {
         font-size: var(--first-heading-font-size-400);
