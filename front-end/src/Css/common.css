@@ -372,6 +372,12 @@
     }
       
 }
+@media (max-width: 480px) {
+    .slick-slide img{
+        width: 350px !important;
+        height: 350px;
+    }
+}
 @media (min-width: 1367px) and (max-width: 1920px) {
     .h-1 {
         font-size: var(--first-heading-font-size-1920);
@@ -411,4 +417,16 @@
  
     color: #212529;
     background-color: #fff;
+}
+
+/* For Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

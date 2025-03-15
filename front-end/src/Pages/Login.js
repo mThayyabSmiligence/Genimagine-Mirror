@@ -10,6 +10,7 @@ import google from '../images/pngwing.com.png'
 import RefreshDataContext from '../Context/RefreshDataProvider'
 import AuthContext from '../Context/AuthProvider'
 import { axiosAuth } from '../API\'s/axios'
+import OtpInput from 'react-otp-input';
 
 export default function Login() {
 
@@ -234,20 +235,32 @@ export default function Login() {
                     </div>
                 </div>
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
+                    {
+                        !otpSent&&
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
                         <label htmlFor="InputEmail1" className="form-label ">Email</label>
                         <div className='email-input-container'>
                             <input type="email" placeholder='email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} required />
                         </div>
                     </div> 
-                    {isOtpLogin?
-                        <div className="d-flex flex-column justify-content-start email-container">
-                            <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
-                            <div className='email-input-container'>
-                                <input type="number" placeholder='enter otp' className="form-control email-input" id="exampleInputEmail1" disabled={!otpSent} value={otp} onChange={(e) => { setOtp(e.target.value) }} required />
-                            </div>
-                        </div> 
-                    :
+                    }
+                    {otpSent&&
+                        <div>
+                        <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
+                        <OtpInput
+                            className="otp-input"
+                            value={otp}
+                            onChange={setOtp}
+                            numInputs={6}
+                            renderSeparator={<span>-</span>}
+                            renderInput={(props) => <input {...props} />}
+                            containerStyle="otp-input-container"
+                            
+                            inputType='number'
+                            />
+                        </div>
+                    }
+                    {!isOtpLogin&&
                     <div className='password-container'>
                         <label htmlFor="password-input" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
@@ -278,7 +291,8 @@ export default function Login() {
 
                         {
                             isOtpLogin?
-                            <div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
+
+                            otpSent&&<div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
                             :
                             <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{"Forgot Password?" }</Link>
                         }
