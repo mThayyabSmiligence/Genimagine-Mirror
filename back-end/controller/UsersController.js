@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService} = require('../service/UserService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -166,6 +166,13 @@ exports.getChatsData=async(req,res,next)=>{
 
     res.status(chatData.status).json(chatData)
 
+}
+
+exports.editChatNameController=async(req, res, ) => {
+    const {chatId, chatName}=req.body;
+    const {id}=req.user;
+    const response = await editChatNameService(id, chatId, chatName)
+    res.status(response.status).json(response)
 }
 
 exports.addToLibraryController=async(req,res)=>{
