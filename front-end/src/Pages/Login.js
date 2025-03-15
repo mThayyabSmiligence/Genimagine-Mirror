@@ -292,7 +292,9 @@ export default function Login() {
                         {
                             isOtpLogin?
 
-                            otpSent&&<div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
+                            otpSent&&<div className='d-flex justify-content-end mt-2'>
+                                <div  className='forgot-password-button mb-4 ' disabled={otpSent?false:true} title={!otpSent&&"first send the otp"} onClick={(e) => handleOtpLogin(e)}>Resend Otp</div>
+                                </div>
                             :
                             <Link to={"/forgot-password"} className='forgot-password-button mb-4 '>{"Forgot Password?" }</Link>
                         }
