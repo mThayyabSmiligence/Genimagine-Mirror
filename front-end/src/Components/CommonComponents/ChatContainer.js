@@ -222,7 +222,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
         <div className=' chat-prompt-outer-container d-flex justify-content-end'>
             <div className='chat-prompt-container'>
-                <p className='chat-prompt'>{data.prompt}</p>
+                <p className='chat-prompt text-break'>{data.prompt}</p>
             </div>
         </div>
 

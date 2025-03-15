@@ -236,7 +236,7 @@ export default function Login() {
                 </div>
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
                     {
-                        !otpSent&&
+                      (!otpSent||!isOtpLogin)&&
                     <div className="mb-3 d-flex flex-column justify-content-start email-container">
                         <label htmlFor="InputEmail1" className="form-label ">Email</label>
                         <div className='email-input-container'>
@@ -244,7 +244,7 @@ export default function Login() {
                         </div>
                     </div> 
                     }
-                    {otpSent&&
+                    {isOtpLogin&&otpSent&&
                         <div>
                         <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
                         <OtpInput

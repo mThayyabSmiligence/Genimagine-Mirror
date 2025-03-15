@@ -143,6 +143,12 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
           className='p-input'
           contentEditable="true" 
           onInput={(e)=>handelInput(e)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault(); // Prevent new line
+              handelClick(); // Call your submit function
+            }
+          }}
         ></p>
       </div>
 
