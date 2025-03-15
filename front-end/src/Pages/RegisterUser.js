@@ -131,16 +131,7 @@ console.log("faInfoCircle:", faInfoCircle);
         setUsernameValidity(USER_REGEX.test(username));
     },[username])
 
-    useEffect(() => {
-        if (next) {
-            const timer = setTimeout(() => {
-                setNext(false);
-            }, 5000); // 3 seconds
-    
-            return () => clearTimeout(timer);
-        }
-    }, [next]);
-    
+   
 
     const handleSubmit = async (e) => {
         e.preventDefault();
