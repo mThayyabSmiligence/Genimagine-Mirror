@@ -7,6 +7,7 @@
     border: solid 1px rgb(0, 0, 0, 0.3);
     box-shadow: 1px 1px 10px rgba(54, 54, 54, 0.3);
     padding: 10px 5px 15px 5px;
+    width: 420px;
 }
 
 .login-page-container{
@@ -50,8 +51,8 @@
 }
 
 
-.login-form{
-
+.login-form {
+    
     width: 400px;
 }
 .login-form-top-text{
