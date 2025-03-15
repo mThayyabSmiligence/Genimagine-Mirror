@@ -266,7 +266,6 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                   <div>
                     <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                     <DeletePopUp
-                      show={showDeletePopUp}
                       onHide={() => setShowDeletePopUp(false)}
                       handelDelete={handelDeleteImage}
                       message="Are you sure you want to delete this item forn your published image page?"
