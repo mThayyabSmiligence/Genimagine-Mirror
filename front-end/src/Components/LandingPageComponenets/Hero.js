@@ -38,7 +38,7 @@ function Hero() {
     var settings = {
         dots: true,
         infinite: true,
-        speed: 500,
+        speed: 800,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
@@ -46,7 +46,6 @@ function Hero() {
       };
   return (
     <div className='container-fluid hero-outer-sec'>
-        <div className='blur-hero-sec'></div>
         <div className='row hero-sec'>
             <div className='hero-left-column col-12 col-md-6  d-flex flex-column justify-content-center align-items-center'>
                 <div className='hero-lft-container d-flex flex-column justify-content-center align-items-center text-start'>

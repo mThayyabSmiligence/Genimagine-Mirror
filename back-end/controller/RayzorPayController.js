@@ -12,6 +12,9 @@ exports.RayzorPayOrderController=async(req,res)=>{
         const {package_id,custom_credits,currency } = req.body;
         const {id,username}=req.user;
 
+        if(!package_id && (custom_credits<10||custom_credits>100000)){
+            return res.status(400).json({ message: 'credits should be between 10 and 100000' });
+        }
         //generating receipt id
         const receipt_id =generateReceiptId(id) 
         
@@ -22,7 +25,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
                 success: false,
             });
         }
-
+        
         //creating the puchase log in database
         const receipt =await createPurchaseLog(id,package_id,custom_credits,currency,receipt_id)
         

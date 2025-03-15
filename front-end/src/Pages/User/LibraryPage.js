@@ -94,9 +94,8 @@ export default function LibraryPage() {
   
   return (
     <div className='mt-5 library_body'>
-      <div className='d-flex justify-content-between pt-3'>
+      <div className=' pt-3'>
         <h2 className='ms-3 text-start'>Library</h2>
-        <button onClick={()=>GetLibraryImages()} className='button-wh dark-button-wh me-3'>Refresh</button>
       </div>
 
         <div className='my-library-sample d-flex mt-2 flex-wrap'>

@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./Css/common.css"
 import './App.css';
-import {BrowserRouter as Router , Routes,Route} from "react-router-dom" 
+import {BrowserRouter as Router , Routes,Route, Navigate} from "react-router-dom" 
 import { useEffect, useState } from 'react';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
@@ -80,7 +80,10 @@ function App() {
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
             </Route>
-            
+            <Route
+              path='*'
+              element={<Navigate to="/"/>}
+            ></Route>
           </Routes>
 
     </div>
