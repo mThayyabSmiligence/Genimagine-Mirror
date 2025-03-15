@@ -31,10 +31,10 @@ function Navbar() {
                     <Link  className="link nav-link p-primary" to={'/credit-purchase'}>pricing</Link>
                     <Link  className="link nav-link p-primary" to={'/image-generation'}>generation</Link>
                     </div>
-                    <div className='sign-in d-flex align-items-center'>
+                    <div className='sign-in d-flex align-items-center justify-content-center'>
                     {loggedIn ? (
                             <div className="profile-dropdown" ref={dropdownRef}>
-                                <button className='profile-button dark-button me-3' onClick={() => setShowDropdown(!showDropdown)}>
+                                <button className='profile-button dark-button ' onClick={() => setShowDropdown(!showDropdown)}>
                                     <span className="material-symbols-outlined">person</span>
                                 </button>
                                 {showDropdown && 

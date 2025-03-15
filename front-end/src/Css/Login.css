@@ -167,6 +167,16 @@ input.password-input:focus,input.email-input:focus{
     width: 20px;
     height: 20px;
 }
+.otp-input-container{
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.otp-input-container input{
+    width: 30px !important;
+}
 
 @media (max-width: 830px) {
     .login-page-container{

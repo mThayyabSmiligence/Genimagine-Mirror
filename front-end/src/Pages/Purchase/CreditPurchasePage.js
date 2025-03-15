@@ -24,6 +24,11 @@ function CreditPurchasePage() {
 
     const [success,setSuccess] = useState(false)
     const [successMessage,setSuccessMessage] = useState("")
+
+    const[customCreditsFocus,setCustomCreditsFocus]=useState(false)
+    const[customCreditsValidation,setCustomCreditsValidation]=useState(true)
+
+
     
     useEffect(() => {
         setAmount(credits)
@@ -37,6 +42,14 @@ function CreditPurchasePage() {
     },[success,error])
 
     const user= JSON.parse(localStorage.getItem("user_data"))
+
+    useEffect(()=>{
+        if(credits<10||credits>100000){
+            setCustomCreditsValidation(false);
+        }else{
+            setCustomCreditsValidation(true);
+        }
+    },[credits])
 
     useEffect(() => {
         // if(sessionStorage.getItem('creditPurchaseOptions')){
@@ -202,25 +215,33 @@ function CreditPurchasePage() {
                 <h3 className='divider-or '>Customise Credit Purchase</h3>
                 <span className='divider-line-2 flex-1'></span>
             </div>
-
-            <div className='customise-credit-purchase card shadow-sm p-2 mt-3'>
+            
+            
+            <div className='customise-credit-purchase card shadow-sm p-2 my-3'>
+            <div className='d-flex , justify-content-center'>
+                <p id="uidnote" className={`${customCreditsFocus&& credits && !customCreditsValidation ? "instructions" : "offscreen"} white-bg text-danger w-ft ` }>                          
+                    credits ahould be between 10 and 100,000 
+                </p>
+            </div>
                 <div className='d-flex flex-wrap my-3 row justify-content-center'>
                     <div className='customise-credit-input col-md-4 d-flex justify-content-end align-items-center p-0 credit-purchase '>
-                        <input type="text" placeholder='enter credits' className="credit-input ms-2 " value={credits} onChange={(e) => { setCredits(e.target.value) }}/>
+                        <input type="number" placeholder='enter credits' className="credit-input ms-2 " value={credits} onChange={(e) => { setCredits(e.target.value) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
                         <p className='ms-3 mb-0'>credits</p>
                     </div>
 
                     <div className='col-md-4 p-0 d-flex align-items-center credit-purchase'>
                        <p className='me-3 mb-0 ms-2'>For</p>
                        <span className='me-1'>₹</span>
-                       <input type='text' placeholder='amount' className='credit-amount-input br-5' value={Amount} disabled/>
+                       <input type='number' placeholder='amount' className='credit-amount-input br-5' value={Amount} disabled/>
                        <p className='ms-3 mb-0'>Rupees</p>
                     </div>
+                   
 
                     <div className='customise-credit-button col-md-4 p-0 d-flex justify-content-center credit-purchase'>
-                        <button className='button dark-button me-2' onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
+                        <button className='button dark-button me-2' disabled={!customCreditsValidation} onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>

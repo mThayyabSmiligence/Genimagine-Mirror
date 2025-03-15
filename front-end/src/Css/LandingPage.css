@@ -34,8 +34,7 @@
 
 
 .profile-button{
-    /* width: 50px;
-    height: 25px; */
+    margin-right: 5px;
     border-radius: 100%;
 }
 
@@ -66,9 +65,45 @@
 
 .hero-section {
     position: relative;
-    min-height: 100vh;/* Ensure it starts from full height but expands if needed */
-    height: auto;
+    min-height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    z-index: 1;
+
+    /* Prevent blur from spilling into other sections */
+    overflow: hidden;
+
+    margin-top: 50px;
 }
+
+/* Blurred background with sharp end at the bottom */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%),
+      url("../images/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: multiply;
+
+    /* Apply blur effect */
+    filter: blur(5px);
+    transform: scale(1.1); /* Fix white edges */
+
+    /* Ensure sharp ending at the bottom */
+    clip-path: inset(0 0 0 0);
+    
+    z-index: -1;
+}
+
 .hero-sec-heading{
  
     font-weight: bold;
@@ -100,14 +135,14 @@
 }
 
 .hero-sec {
-    min-height: 100vh;
+    min-height: calc(100vh - 50px);
     height: auto; /* Remove the restriction of fixed height */
     position: relative;
 }
 .hero-outer-sec{
-    position:absolute;
-    top: 0;
     z-index: 1;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 /* .hero-sec::before {     content: '';     position: absolute;     top: 0;     left: 0;     width: 100%;     height: 100%;     background: inherit;     filter: blur(10px); z-index: -1; } */
 .header-highlight{
@@ -146,6 +181,10 @@
 }
 
 @media (max-width: 992px) {
+    .profile-button{
+        margin-right: 0px;
+    }
+
     .navbar-collapse.collapsing .navbar-list {
         flex-direction: column;
         align-items: center; /* Optional: Center align items */
@@ -188,6 +227,9 @@
 
 /* Styles for small devices (max-width: 480px) */
 @media (max-width: 480px) {
+    .hero-lft-container{
+        height: 300px;
+    }
     .steps-to-generate {
         margin: 0px 10px; /* Further reduce margin for small screens */
         text-align: center; /* Center align if needed */
@@ -196,6 +238,9 @@
     .sample-generate-image img {
         max-height: 300px; /* Adjust image size for small devices */
         max-width: 100%;
+    }
+    .hero-outer-sec{
+        padding: 0px;
     }
 }
 
