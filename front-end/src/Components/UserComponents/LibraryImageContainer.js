@@ -3,6 +3,7 @@ import { axiosInstance, axiosPrivate } from '../../API\'s/axios'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import RemoveFromLibrary from '../CommonComponents/RemoveFromLibrary'
 
 export default function LibraryImageContainer({library,imageColumns,index,removeImageFromLibraryArray}) {
     const [showOptions, setShowOptions] =useState(false)
@@ -13,6 +14,7 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
     const [successMessage,setSuccessMessage]=useState("")
     const [isLibrary,setIsLibrary]= useState(false)
     const { setTempImageData } = useContext(RefreshDataContext); 
+    const [showRemoveLibraryPopUp, setShowRemoveLibraryPopUp] = useState(false);
     const navigate = useNavigate();
 
       useEffect(()=>{
@@ -38,9 +40,9 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
         }, [showOptions]);
 
 
-    const deleteFromLibrary= async(image_id)=>{
+    const deleteFromLibrary= async()=>{
               try{
-                const response = await axiosPrivate.delete(`/delete-from-library/${image_id}`);
+                const response = await axiosPrivate.delete(`/delete-from-library/${library.image_id}`);
                 setSuccess(true);
                 setSuccessMessage("Image deleted from library successfully");
                 console.log(" ",response.data)
@@ -96,11 +98,18 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
                                         <a  onClick={(e)=>download(e)} download="download" href={library.image_url} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
                                         <span className='option-divider'></span>
                                         {(library.library==1)?
-                                            <div className="option-item" onClick={()=>deleteFromLibrary(library.image_id)}><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
+                                            <div className="option-item" onClick={()=>setShowRemoveLibraryPopUp(true)}><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
                                             :
                                             <div  className="option-item"><span class="material-symbols-outlined">bookmark_add</span>Add to Library</div>
                                         }
-                                        
+                                        {showRemoveLibraryPopUp &&
+                                          <RemoveFromLibrary 
+                                              onHide={() => setShowRemoveLibraryPopUp(false)}
+                                              deleteFromLibrary={deleteFromLibrary}
+                                              message="Are you sure you want to delete this item forn your library?"
+                                              showRemoveLibraryPopUp = {showRemoveLibraryPopUp}
+                                          />
+                                        }
                                         <span className='option-divider'></span>
                                         <div onClick={library.is_published ?()=>{}: handlePublish} className={`option-item ${library.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
                                         <span className='option-divider'></span>
