@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../../images/genimagin_logo.png'
 import { axiosPrivate } from '../../API\'s/axios';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -42,12 +43,33 @@ function ChangePassword() {
     const [success,setSuccess]=useState(false)
     const [successMessage,setSuccessMessage]=useState(null)
 
+    const [loading,setLoading] = useState(false)
+
+    const Navigate = useNavigate();
+
+    
+    const spinnerStyle = {
+        width: '20px',
+        height: '20px',
+        border: '4px solid #ccc',
+        borderTop: '4px solid #3498db',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      };
+
+    useEffect(() =>{
+        if(success){
+            setTimeout(()=>{
+                Navigate('/u/profile', {replace: true})
+            },2500)
+        }
+    },[success])
 
     const handelSubmit=async(e)=>{
         e.preventDefault()
         setError(false)
         setSuccess(false)
-
+        setLoading(true)
         try{
             const response = await axiosPrivate.post(`/change-password`, {
                 currentPassword:currentPassword,
@@ -59,8 +81,12 @@ function ChangePassword() {
         }catch(err){
             setError(true)
             setErrorMeaage(err?.response?.data?.message)
+        }finally{
+            setLoading(false)
         }
     }
+
+    
 
   return (
      <>
@@ -210,7 +236,20 @@ function ChangePassword() {
                                     </div>
                                 </div>
                             </div>
-                            <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Change Password</button>
+                            {
+                                loading?
+                                <button className=" button dark-button w-100 br-100 mb-3 d-flex justify-content-center align-items-center">
+                                    <div style={spinnerStyle}></div>
+                                    <style>{`
+                                    @keyframes spin {
+                                        0% { transform: rotate(0deg); }
+                                        100% { transform: rotate(360deg); }
+                                    }
+                                    `}</style>
+                                </button>
+                                :
+                                <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Change Password</button>
+                            }
                             
                         </form>
                     </div>
