@@ -28,8 +28,8 @@ function Navbar() {
 
                     <Link  className="link nav-link p-primary" to={'/'}>Home</Link>
                     <Link  className="link nav-link p-primary" to={'/explore'}>Explore</Link>
-                    <Link  className="link nav-link p-primary" to={'/credit-purchase'}>pricing</Link>
-                    <Link  className="link nav-link p-primary" to={'/image-generation'}>generation</Link>
+                    <Link  className="link nav-link p-primary" to={'/credit-purchase'}>Pricing</Link>
+                    <Link  className="link nav-link p-primary" to={'/image-generation'}>Generation</Link>
                     </div>
                     <div className='sign-in d-flex align-items-center justify-content-center'>
                     {loggedIn ? (

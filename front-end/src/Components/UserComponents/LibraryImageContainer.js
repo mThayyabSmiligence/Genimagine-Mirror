@@ -102,7 +102,7 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
                                         }
                                         
                                         <span className='option-divider'></span>
-                                        <div className="option-item" onClick={handlePublish}><span className="material-symbols-outlined">publish</span>Publish</div>
+                                        <div onClick={library.is_published ?()=>{}: handlePublish} className={`option-item ${library.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
                                         <span className='option-divider'></span>
                                         
                                       </div>

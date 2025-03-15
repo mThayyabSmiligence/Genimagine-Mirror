@@ -237,16 +237,16 @@ export default function Login() {
                 <form className="container login-form" onSubmit={(e) => handleSubmit(e)}>
                     {
                       (!otpSent||!isOtpLogin)&&
-                    <div className="mb-3 d-flex flex-column justify-content-start email-container">
-                        <label htmlFor="InputEmail1" className="form-label ">Email</label>
-                        <div className='email-input-container'>
-                            <input type="email" placeholder='email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} required />
-                        </div>
-                    </div> 
+                        <div className="mb-3 d-flex flex-column justify-content-start email-container">
+                            <label htmlFor="InputEmail1" className="form-label ">Email</label>
+                            <div className='email-input-container'>
+                                <input type="email" placeholder='Email' className="form-control email-input" id="InputEmail1" value={email} onChange={(e) => { setEmail(e.target.value) }} required />
+                            </div>
+                        </div> 
                     }
                     {isOtpLogin&&otpSent&&
                         <div>
-                        <label htmlFor="exampleInputEmail1" className="form-label ">otp</label>
+                        <label htmlFor="exampleInputEmail1" className="form-label ">Otp</label>
                         <OtpInput
                             className="otp-input"
                             value={otp}
@@ -264,7 +264,7 @@ export default function Login() {
                     <div className='password-container'>
                         <label htmlFor="password-input" className="form-label ">Password</label>
                         <div className='password-input-container d-flex align-items-center justify-content-center'>
-                            <input type={passwordVisibility ? "text" : "password"} placeholder='password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            <input type={passwordVisibility ? "text" : "password"} placeholder='Password' className="form-control password-input" id="password-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             <div    type='none' 
                                     onClick={(e) =>{ 
                                         
@@ -311,7 +311,7 @@ export default function Login() {
                         }
                         `}</style>
                     </button>
-                    :<button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"login" :isOtpLogin? "Send otp": "Login"}</button>
+                    :<button type="submit" className=" button dark-button w-100 br-100 mb-3">{otpSent?"Login" :isOtpLogin? "Send otp": "Login"}</button>
                     }
                 </form>
                     <div className='divider d-flex align-items-center  '>
@@ -322,7 +322,7 @@ export default function Login() {
                     <div className='google-sign-in mt-3 d-flex justify-content-between'> 
                         <button className='google-sign-in-button d-flex align-items-center justify-content-center gap-2 pb-1 px-3 br-100 w-100 button button-white mb-4' onClick={handleGoogleSignIn}>
                             <img className='google-sign-in-logo' src={google} alt='google'/>
-                            <p className='m-0 flex-1'>signin with google</p>
+                            <p className='m-0 flex-1'>Sign-in with google</p>
                         </button>
                     </div>
                     <div className='divider d-flex align-items-center  '>

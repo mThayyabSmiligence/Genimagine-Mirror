@@ -117,7 +117,7 @@ function ChangePassword() {
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
                                     <input 
                                         type={currentPasswordVisibility? "text" : "password"} 
-                                        placeholder='current password' 
+                                        placeholder='Current password' 
                                         className="form-control password-input" 
                                         id="current-password" 
                                         value={currentPassword} 
@@ -217,7 +217,7 @@ function ChangePassword() {
                                     }
                                     </label>
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='Confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                     <div    type='none' 
                                             onClick={(e) =>{ 
                                                 

@@ -1,5 +1,6 @@
 .sub-top-bar{
     height: 50px;
+    border-bottom:solid 1px rgb(211, 211, 211);
 }
 .profile-pic-small{
     margin: 0px 10px;

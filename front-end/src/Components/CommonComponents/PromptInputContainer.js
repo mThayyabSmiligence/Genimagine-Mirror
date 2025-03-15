@@ -180,7 +180,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
             {selectSetting && (
               <>
                 <div className='setting-tags p-secondary' title='model'>
-                  model : {selectSetting.model}
+                  Model : {selectSetting.model}
                 </div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>
                   Aspect Ratio : {selectSetting.aspectRatio.aspectRatio}
