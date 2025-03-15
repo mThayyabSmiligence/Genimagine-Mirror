@@ -427,6 +427,8 @@ console.log("faInfoCircle:", faInfoCircle);
                                 </div>
                             </div>
                         </div>
+
+                        {/* Math Captcha */}
                         <div className='d-flex justify-content-center align-items-center'>
 
                         {

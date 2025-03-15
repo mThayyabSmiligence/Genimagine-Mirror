@@ -40,6 +40,12 @@ const MathCaptcha = ({ onVerify }) => {
     
       const handleSubmit = (e) => {
         e.preventDefault(); // Prevent the page from reloading
+
+        
+        if (userAnswer.length == 0) {
+          setError("Please enter a captcha.");
+          return;
+        }
         const correctAnswer = calculateAnswer();
     
         if (parseInt(userAnswer) === correctAnswer) {

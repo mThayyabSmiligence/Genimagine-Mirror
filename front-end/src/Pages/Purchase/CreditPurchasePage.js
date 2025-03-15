@@ -5,6 +5,7 @@ import { axiosInstance, axiosPrivate } from "../../API's/axios";
 import RefreshDataContext from '../../Context/RefreshDataProvider';
 import logo from '../../images/genimagin_short_logo.png'
 import AuthContext from '../../Context/AuthProvider';
+import SuccessMessageContainer from '../../Components/CommonComponents/SuccessMessageContainer';
 
 
 function CreditPurchasePage() {
@@ -24,6 +25,7 @@ function CreditPurchasePage() {
 
     const [success,setSuccess] = useState(false)
     const [successMessage,setSuccessMessage] = useState("")
+    const [purchaseSuccess, setPurchaseSuccess] = useState(false);
     
     useEffect(() => {
         setAmount(credits)
@@ -47,6 +49,14 @@ function CreditPurchasePage() {
         // }
         getCreditPurchaseOptions()
     }, [])
+
+    useEffect(() => {
+        if(purchaseSuccess){
+            setTimeout(() =>{
+               setPurchaseSuccess(false)
+            },2000)
+        }
+    },[purchaseSuccess])
     
     const getCreditPurchaseOptions = async () => {
         setLoading(true)
@@ -118,7 +128,9 @@ function CreditPurchasePage() {
 
                             localStorage.setItem("credit_balance",Number(transactionValidity.data.credits_received)+Number(currentCreditsBalance))
                             setRefreshCreditBalance(!refreshCreditBalance)
+                            setPurchaseSuccess(true);
                         }
+                       
                     }  
                     catch(error){
                         console.error(error)
@@ -186,7 +198,15 @@ function CreditPurchasePage() {
                     {successMessage}
                 </div>
             }
-
+            {
+                purchaseSuccess&&
+                <SuccessMessageContainer
+                    message = "ThankYou, purchase successfully completed!" 
+                    purchaseSuccess={purchaseSuccess}
+                
+                />
+            }
+            
             <div className='row'>
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                     <div key={index} className='col-md-4 mb-4'>
