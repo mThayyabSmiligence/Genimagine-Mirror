@@ -215,8 +215,7 @@ function CreditPurchasePage() {
                 purchaseSuccess&&
                 <SuccessMessageContainer
                     message = "ThankYou, purchase successfully completed!" 
-                    purchaseSuccess={purchaseSuccess}
-                
+                    purchaseSuccess={purchaseSuccess}    
                 />
             }
             

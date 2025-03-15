@@ -8,6 +8,7 @@ import axios from 'axios';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 import AuthContext from '../../Context/AuthProvider';
 import DeletePopUp from './DeletePopUp';
+import RemoveFromLibrary from './RemoveFromLibrary';
 
  
 export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index  }) {
@@ -29,6 +30,8 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
   const [isLibrary,setIsLibrary]= useState(false)
   const [showDeletePopUp, setShowDeletePopUp] = useState(false);
+
+  const [showRemoveLibraryPopUp, setShowRemoveLibraryPopUp] = useState(false);
   
 
   const handleToggleOptions = () => {
@@ -67,6 +70,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
       };
     }, [showOptions]);
 
+    
 
     const getWidth=(aspect_ratio)=>{
         if(aspect_ratio=="16:9"){
@@ -176,12 +180,12 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
       const addToLibrary = async() => {
         try{
           const response = await axiosInstance.put(`/user/add-to-library/${data.image_id}`);
-        setSuccess(true);
-        setSuccessMessage("Image added to library successfully");
-        console.log("Image added to library successfully",response.data)
-        setIsLibrary(true)
-        data.library=1
-        setRefreshLibraryData(true)
+          setSuccess(true);
+          setSuccessMessage("Image added to library successfully");
+          console.log("Image added to library successfully",response.data)
+          setIsLibrary(true)
+          data.library=1
+          setRefreshLibraryData(true)
         }catch(error){
           setError(true)
           setErrorMessage("Failed to add to library ");
@@ -198,6 +202,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
           setIsLibrary(false)
           data.library=0
           setRefreshLibraryData(true)
+          setShowRemoveLibraryPopUp(false)
         }catch(error){
           setError(true)
           setErrorMessage("Failed to delete image")
@@ -254,16 +259,26 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                 <div className="options-dropdown">
                   <a onClick={(e)=>download(e)} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
                   <span className='option-divider'></span>
-                  {(isLibrary||data.library==1)?
-                      <div onClick={deleteFromLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
+                  {loggedIn && <>                                                    
+                    {(isLibrary||data.library==1)?
+                      <div onClick={() => setShowRemoveLibraryPopUp(true)} className="option-item"><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
                       :
                       <div onClick={addToLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_add</span>Add to Library</div>
+                    } 
+                    <span className='option-divider'></span>
+                    <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
+                    <span className='option-divider'></span>
+                  </>
                   }
-                  
-                  <span className='option-divider'></span>
-                  <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
-                  <span className='option-divider'></span>
                   <div>
+                  {showRemoveLibraryPopUp &&
+                    <RemoveFromLibrary 
+                        onHide={() => setShowRemoveLibraryPopUp(false)}
+                        deleteFromLibrary={deleteFromLibrary}
+                        message="Are you sure you want to delete this item forn your library?"
+                        showRemoveLibraryPopUp = {showRemoveLibraryPopUp}
+                    />
+                  }
                     <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
                     <DeletePopUp
                       onHide={() => setShowDeletePopUp(false)}
