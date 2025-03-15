@@ -192,7 +192,7 @@ export default function ResetPassword() {
                                     }
                                     </label>
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='Confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                     <div    type='none' 
                                             onClick={(e) =>{ 
                                                 
@@ -211,7 +211,7 @@ export default function ResetPassword() {
                                     </div>
                                 </div>
                             </div>
-                            <button disabled={ !passwordValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Reset</button>
+                            <button disabled={ !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Reset</button>
                             
                         </form>
                     }

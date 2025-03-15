@@ -1,5 +1,5 @@
 const express = require('express')
-const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController} = require('../controller/UsersController');
+const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
@@ -19,6 +19,7 @@ router.route('/verify-token').get(firstTimeVerification);
 router.route('/generate-image').post(userGenerateImageController);
 router.route('/get-chats-list').get(getChatsList)
 router.route('/get-chat-data/:chatId').get(getChatsData)
+router.route('/edit-chat-name').get(editChatNameController)
 
 router.route('/delete-image/:image_id').delete(deleteImageController)
 

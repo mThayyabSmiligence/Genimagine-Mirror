@@ -75,7 +75,7 @@
     cursor: pointer;
     height: fit-content;
     width: 160px ;
-    border: solid 1px rgb(3, 3, 3,0.3);
+    border: solid 1px rgb(165,165,165);
 }
 .options-dropdown .option-item{
     text-align: start;
@@ -101,7 +101,7 @@
 .options-dropdown .option-item.disable{
     color: grey;
     cursor: not-allowed;
-    opacity: 0.5;
+ 
 }
 @media (max-width: 767px) {
     .chat-prompt-container{

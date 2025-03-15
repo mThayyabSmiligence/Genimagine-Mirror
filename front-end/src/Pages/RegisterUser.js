@@ -281,7 +281,7 @@ console.log("faInfoCircle:", faInfoCircle);
                             <div className='email-input-container'>
                                 <input 
                                     type="email" 
-                                    placeholder='email' 
+                                    placeholder='Email' 
                                     className="form-control 
                                     email-input" 
                                     id="exampleInputEmail1" 
@@ -346,7 +346,7 @@ console.log("faInfoCircle:", faInfoCircle);
                             <div className='password-input-container d-flex align-items-center justify-content-center'>
                                 <input 
                                     type={passwordVisibility ? "text" : "password"} 
-                                    placeholder='password' 
+                                    placeholder='Password' 
                                     className="form-control password-input" 
                                     id="password-input" 
                                     value={password} 
@@ -399,7 +399,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                 }
                                 </label>
                             <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='Confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                 <div    type='none' 
                                         onClick={(e) =>{ 
                                             
