@@ -1,10 +1,8 @@
   import React, { use, useContext, useEffect, useRef, useState } from 'react';
 import '../../Css/ExplorePopUp.css'
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+
 import AuthContext from '../../Context/AuthProvider';
 
 import DeletePopUp from '../CommonComponents/DeletePopUp';
@@ -12,7 +10,13 @@ import RefreshDataContext from '../../Context/RefreshDataProvider';
 
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
-
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
@@ -145,9 +149,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 </div>
               </div>
               <div className='image-setting-container d-flex align-items-center px-1 flex-wrap' >
-                <span className="material-symbols-outlined setting-icon" title='Image Setting'>
-                  settings
-                </span>
+                <SettingsOutlinedIcon/>
                 <div className='setting-tags p-secondary' title='model'>model :{image.model}</div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>Aspect Ratio :{image.aspect_ratio}</div>
                 <div className='setting-tags p-secondary' title='Style'>Style :none</div>
@@ -161,7 +163,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
 
             <div className='user-copy-prompt-container'>
               <button title='copy' onClick={() => handleCopy(image)} className='button-wh light-button-wh user-copy-prompt-button d-flex align-items-center px-3'>
-                <span class="material-symbols-outlined">content_copy</span>
+                <ContentCopyOutlinedIcon/>
               </button>
             </div>
 
@@ -194,7 +196,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
           </div>
         </div>
       </div>
-        <button className='close-button' onClick={onClose}><span class="material-symbols-outlined">close</span></button>
+        <button className='close-button' onClick={onClose}><CloseOutlinedIcon/></button>
     </div>
   )
 }

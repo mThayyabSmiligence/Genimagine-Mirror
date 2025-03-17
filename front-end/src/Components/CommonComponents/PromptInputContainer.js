@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import "../../Css/PromptInputContainer.css"
 import IGSettingPopUp from './IGSettingPopUp'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
-
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 const aspectRatioList = [
   {
     id: 1,
@@ -167,9 +168,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       <div className="chat-bottom-part d-flex align-items-center justify-content-between w-100 mt-2">
         <div className='d-flex'>
           <button className="image-setting-tag d-flex align-items-center br-100 " onClick={()=>setShowIGSetting(true)}>
-            <span class="material-symbols-outlined">
-              settings
-            </span>
+            <SettingsOutlinedIcon></SettingsOutlinedIcon>
             <p className='m-0 flex-1'> Image Setting</p>
           </button>
     
@@ -215,7 +214,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
               <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
                       onClick={!loading&&handelClick}
                       >
-                        <span className="material-symbols-outlined">arrow_forward</span>
+                        <ArrowForwardOutlinedIcon className='icon'/>
                         
                 </button>
             }

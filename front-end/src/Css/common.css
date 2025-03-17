@@ -326,8 +326,16 @@
 .loading-span{
     color: #000;
     font-size: 25px;
+    
 }
 
+/* icons */
+
+.navbar-icons{
+    color: rgb(65, 65, 65);
+    height: var(--second-heading-font-size-1366) !important;
+    width: var(--second-heading-font-size-1366) !important;
+}
 @media (max-width: 768px) {
     .h-1 {
         font-size: var(--first-heading-font-size-400);
@@ -374,6 +382,11 @@
         padding: 2px 10px;
         border-radius: 5px;
         
+    }
+    .navbar-icons{
+        height: var(--second-heading-font-size-1366) !important;
+        width: var(--second-heading-font-size-1366) !important;
+        margin-left: 10px;
     }
       
 }

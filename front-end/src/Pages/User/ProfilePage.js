@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Link, useLocation } from 'react-router-dom';
 import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 import DropdownContext from '../../Context/DropdownProvider';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 
 function ProfilePage() {
 
@@ -86,7 +87,7 @@ function ProfilePage() {
                     <div className='d-flex justify-content-between align-items-center'>
                         <h3 className=' text-start mx-2 mt-3'>MY Library</h3>
                         <Link to={"/u/library"} className="link material-symbols-outlined me-3 ">
-                            arrow_forward_ios
+                            <ArrowForwardIosOutlinedIcon/>
                         </Link>
                     </div>
 
@@ -99,14 +100,14 @@ function ProfilePage() {
                                 <img className='library-images mx-2' src={library.image_url} style={{ objectFit:"cover" }}></img>
                             </div>
                         ))
-                        }
+                        }   
                     </div>
                 </div>
                 <div className='profile-library'>
                     <div className='d-flex justify-content-between align-items-center'>
                         <h3 className=' text-start mx-2 mt-3'>Published Images</h3>
                         <Link to={"/u/published-images"} className="link material-symbols-outlined me-3 ">
-                            arrow_forward_ios
+                            <ArrowForwardIosOutlinedIcon/>
                         </Link>
                     </div>
 

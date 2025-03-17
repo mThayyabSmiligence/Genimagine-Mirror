@@ -1,7 +1,7 @@
 const axios = require('axios');
 const multer = require('multer');
 const path = require('path');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 const serverStorageBaseUrl= process.env.STORAGE_SERVER_BASE_URL
 
@@ -48,3 +48,18 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
       }
 };
 
+exports.deleteFromServer=async(filePath,userId,chatId,imageId)=>{
+  try {
+    // Delete file from S3
+    const params = {
+      Bucket: process.env.AWS_BUCKET, // Your S3 bucket name
+      Key: filePath, // File name
+    };
+    const command = new DeleteObjectCommand(params);
+    await s3.send(command);
+    return {status:200, success:true,message:"file is deleted"}
+  } catch (err) {
+    console.error('Error deleting file:', err);
+    return {status:500,success:false,message:"error deleting file from amazon s3",error:err}
+  }
+}

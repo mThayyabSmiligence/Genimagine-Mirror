@@ -8,6 +8,12 @@ import AuthContext from '../Context/AuthProvider'
 import RefreshDataContext from '../Context/RefreshDataProvider'
 import DropdownContext from '../Context/DropdownProvider'
 import ChatOptionDropDown from './CommonComponents/ChatOptionDropDown'
+import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
@@ -129,13 +135,13 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                 <div className='sub-mid-section '>
                     <Link to={"/explore" } className='link' >
                         <div className=' nav-list-item'>
-                        <span className="material-symbols-outlined">explore</span>
+                            <ExploreOutlinedIcon/>
                             <div to={"/image-generation" } className='link nav-options'>Explore</div>
                         </div>
                     </Link>
                     <Link to={"/image-generation" } className='link' >
                         <div className=' nav-list-item'>
-                        <span className="material-symbols-outlined">add_circle</span>
+                            <AddCircleOutlineOutlinedIcon/>
                             <div to={"/image-generation" } className='link nav-options'>New Chat</div>
                         </div>
                     </Link>
@@ -148,7 +154,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                             <div className='accordion-item'>
                                 <h2 className="accordion-header">
                                     <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    <span className="material-symbols-outlined">chat</span>Chats
+                                    <ChatOutlinedIcon/>Chats
                                     </button>
                                 </h2>
                                 <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
@@ -184,7 +190,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                 <div className='side-nav-bottom-items d-flex flex-column align-items-center ' style={{ height:"85px" }}>
                     <div className='side-nav-bottom-item d-flex justify-content-between align-items-center '>
                         <div className='d-flex '>
-                            <span className="material-symbols-outlined">child_care</span>
+                            <ChildCareOutlinedIcon/>
                             <label htmlFor=' kids-mode-switch'>Kid's Mode</label>
                         </div>
                             <label className='switch kids-mode-switch'>
@@ -195,7 +201,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                     <div className='side-nav-bottom-item d-flex justify-content-start align-items-center ' >
 
                         <button className='d-flex justify-content-center align-items-center border-0 p-0  bg-light'>
-                                <span className="material-symbols-outlined">settings</span>
+                                <SettingsOutlinedIcon/>
                                 <>Settings</>
                         </button>
                     </div>
@@ -204,7 +210,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         </div>
         {
         
-        <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <span className="material-symbols-outlined">left_panel_close</span></button>}
+        <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <ArrowCircleLeftOutlinedIcon/></button>}
     </nav>
   )
 }

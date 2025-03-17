@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import '../../Css/IGSettingPopUp.css'
 import RefreshDataContext from "../../Context/RefreshDataProvider";
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 
 const modelsList = [
@@ -115,7 +116,7 @@ function IGSettingPopUp({closePopup,}) {
     <div className="settings-pop-up pop-up-container white-bg">
         <div className="pop-up-title d-flex justify-content-between align-items-center">
                 <h4 className="h-2">Image Generation Settings</h4>
-                <span className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</span>
+                <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
         </div>
         <div className="pop-up-body ">
             <div className="pop-up-content d-flex flex-column text-start mt-3"> 

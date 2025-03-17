@@ -11,6 +11,7 @@ import RefreshDataContext from '../Context/RefreshDataProvider'
 import AuthContext from '../Context/AuthProvider'
 import { axiosAuth } from '../API\'s/axios'
 import OtpInput from 'react-otp-input';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 export default function Login() {
 
@@ -273,9 +274,8 @@ export default function Login() {
                                     }} 
                                     className='password-visibility-toggle'>
                                 
-                                <span className="visibility-icon material-symbols-outlined">
-                                    visibility
-                                </span>
+                                
+                                <VisibilityOutlinedIcon className='visibility-icon' fontSize='small'/>
                                 {
                                     passwordVisibility && <span className='visibility-icon-cross'></span>
                                 }

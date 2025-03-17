@@ -9,6 +9,13 @@ import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
 import AuthContext from '../../Context/AuthProvider';
 import DeletePopUp from './DeletePopUp';
 import RemoveFromLibrary from './RemoveFromLibrary';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import BookmarkAddOutlinedIcon from '@mui/icons-material/BookmarkAddOutlined';
+import BookmarkAddedOutlinedIcon from '@mui/icons-material/BookmarkAddedOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
 
  
 export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index  }) {
@@ -248,25 +255,25 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
             }{
               (data.image_url||data.image)&&
               !showOptions&&
-              <button className='full-screen-button' onClick={()=>handleFullScreen()}><span className="material-symbols-outlined">fullscreen</span></button>
+              <button className='full-screen-button' onClick={()=>handleFullScreen()}><FullscreenOutlinedIcon className='icon'/></button>
               
             }
             {
               (data.image_url||data.image)&&
               <div className='image-options' ref={optionsRef}>                                    
-              <span onClick={handleToggleOptions} className="material-symbols-outlined image-dot-options">more_vert</span>
+              <MoreVertOutlinedIcon onClick={handleToggleOptions} className="image-dot-options"></MoreVertOutlinedIcon>
               {showOptions && (
                 <div className="options-dropdown">
-                  <a onClick={(e)=>download(e)} className="option-item "><span class="material-symbols-outlined">download</span>Download</a>
+                  <a onClick={(e)=>download(e)} className="option-item "><FileDownloadOutlinedIcon  className='icon'/> Download</a>
                   <span className='option-divider'></span>
                   {loggedIn && <>                                                    
                     {(isLibrary||data.library==1)?
-                      <div onClick={() => setShowRemoveLibraryPopUp(true)} className="option-item"><span class="material-symbols-outlined">bookmark_check</span>Added to Library</div>
+                      <div onClick={() => setShowRemoveLibraryPopUp(true)} className="option-item"><BookmarkAddedOutlinedIcon  className='icon'/>Added to Library</div>
                       :
-                      <div onClick={addToLibrary} className="option-item"><span class="material-symbols-outlined">bookmark_add</span>Add to Library</div>
+                      <div onClick={addToLibrary} className="option-item"><BookmarkAddOutlinedIcon  className='icon'/> Add to Library</div>
                     } 
                     <span className='option-divider'></span>
-                    <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><span class="material-symbols-outlined">publish</span>Publish</div>
+                    <div onClick={data.is_published ?()=>{}: handlePublish} className={`option-item ${data.is_published&&"disable"}`}><FileUploadOutlinedIcon  className='icon'/> Publish</div>
                     <span className='option-divider'></span>
                   </>
                   }
@@ -279,7 +286,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                         showRemoveLibraryPopUp = {showRemoveLibraryPopUp}
                     />
                   }
-                    <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><span class="material-symbols-outlined">delete</span>Delete</button>
+                    <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><DeleteOutlineOutlinedIcon className='icon'/> Delete</button>
                     <DeletePopUp
                       onHide={() => setShowDeletePopUp(false)}
                       handelDelete={handelDeleteImage}
