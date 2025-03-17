@@ -15,7 +15,7 @@ function RemoveFromLibrary({onHide, deleteFromLibrary, message, showRemoveLibrar
             <button type="button" className="btn-close" onClick={onHide}></button>
           </div>
           <div className="modal-body">
-            <p>{message || "Are you sure you want to delete this item forn your library?"}</p>
+            <p>{message || "Are you sure you want to remove this item from your library?"}</p>
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={onHide}>

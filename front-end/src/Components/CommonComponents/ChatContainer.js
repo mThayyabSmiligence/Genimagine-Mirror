@@ -275,7 +275,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                     <RemoveFromLibrary 
                         onHide={() => setShowRemoveLibraryPopUp(false)}
                         deleteFromLibrary={deleteFromLibrary}
-                        message="Are you sure you want to delete this item forn your library?"
+                        message="Are you sure you want to remove this item from your library?"
                         showRemoveLibraryPopUp = {showRemoveLibraryPopUp}
                     />
                   }

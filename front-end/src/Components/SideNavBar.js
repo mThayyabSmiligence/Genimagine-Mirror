@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useRef, useState } from 'react'
+import React, {  use, useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
 import { Link, useLocation } from 'react-router-dom'
 import "../Css/SideNavBar.css"
@@ -26,6 +26,12 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
     const { refreshChatList,setRefreshChatList,resortChatList,setResortChatList} = useContext(RefreshDataContext)
     const {loggedIn} =useContext(AuthContext)
 
+   
+    const [editingChatId, setEditingChatId] = useState(null);
+    const [newChatName, setNewChatName] = useState("");
+    const [currentChatName, setCurrentChatName] = useState("");
+
+    const focusRef = useRef(null);
 
     const truncateString=(str)=> {
         return str.length > 20 ? str.substring(0, 17) + "..." : str;
@@ -40,6 +46,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
             setShowNavBar2(showNavBar)
         }
     },[showNavBar])
+
     useEffect(()=>{
         if(loggedIn){
             getChatList()
@@ -65,16 +72,28 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         };
       }, [showOptions]);
 
-
       useEffect(()=>{
         moveToFirst(resortChatList)
       },[resortChatList])
+
+      useEffect(() => {
+        setTimeout(() => {
+        if (editingChatId) {
+            console.log("focus")
+          focusRef.current.focus();
+        }}, 200);
+      },[editingChatId])
+
+    //   useEffect(() => {
+    //     renameChatList();
+    //   },[])
     
       const moveToFirst = (chat_id) => {
         setChatList((prevItems) => {
           if (prevItems.length==0) return prevItems; // No change if invalid index
 
           const index = prevItems.findIndex(item => item.chat_id==chat_id);
+        //   if (index === -1) return prevItems;   
     
           const updatedItems = [...prevItems]; // Create a copy of the array
           const [movedItem] = updatedItems.splice(index, 1); // Remove item at index
@@ -109,9 +128,48 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
           };
     }, []);
 
-    useEffect(()=>{
-        console.log(showOptions)
-    },[showOptions])
+    const renameChatList = async () => {
+        try {// Prevent empty names
+            console.log(newChatName,currentChatName)
+            console.log(1)
+            if (newChatName.trim()=="") return;
+            console.log(2)
+            if(currentChatName == newChatName) return; 
+            console.log(3)
+            const response = await axiosPrivate.post("/edit-chat-name", {
+                chatId: editingChatId,
+                chatName: newChatName,
+            });
+            console.log(response)
+            if (response.status === 200) {
+                setChatList(prevChats => 
+                    prevChats.map(chat => 
+                        chat.chat_id === editingChatId? { ...chat, chat_name: newChatName } : chat
+                    )
+                );
+            }
+
+            
+        } catch (error) {
+            console.error("Error renaming chat", error);
+        } finally {
+            console.log("Renaming chat");
+            setEditingChatId(null);
+            setCurrentChatName(null);
+            setNewChatName(null);
+
+        }
+    };
+
+    const callRenameChatList = (chat_id,chat_name) => {
+        console.log("called rename list")
+        setEditingChatId(chat_id);
+        setCurrentChatName(chat_name);
+        setNewChatName(chat_name);
+        setShowOptions(false);
+    };
+    
+    
   return (
     <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
     
@@ -142,8 +200,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
                 </div>
                 <div className=' sub-mid-section '>
-                    {   loggedIn&&
-                        
+                    { loggedIn&&                    
                         <div className='accordion w-100'>
                             <div className='accordion-item'>
                                 <h2 className="accordion-header">
@@ -156,19 +213,37 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                         {
                                             Object.entries(chatList).map(([key,value],index)=>(                         
                                                 <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
+                                                    {value.chat_id==editingChatId ?
+                                                    <input  
+                                                        ref={focusRef}  
+                                                        value={newChatName} 
+                                                        onChange={(e) => setNewChatName(e.target.value)} 
+                                                        onBlur={()=>renameChatList()}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                              e.preventDefault(); // Prevent new line
+                                                              renameChatList()  // Call your submit function
+                                                            }
+                                                        }}
+                                                    />
+                                                :
+                                                    <>
                                                     <Link title={value.chat_name} to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
                                     
                                                         <button ref={optionsRef} onClick={() => {
+                                                            
                                                             setShowOptions(!showOptions)
                                                             setChatButtonTracking(index);
                                                             console.log(2)
-
-                                                        }} className='button p-0 more-options d-flex justify-content-center align-items-center'><span class="material-symbols-outlined">more_vert</span></button>
+                                                            
+                                                        }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
                                                         { showOptions && (index==chatButtonTracking) &&  
-                                                        <div  className='nav-list-item-dropdown' >
-                                                            <ChatOptionDropDown/>
+                                                        <div ref={optionsRef}  className='nav-list-item-dropdown' >
+                                                            <ChatOptionDropDown handleRename={() => callRenameChatList(value.chat_id,value.chat_name)}  />
                                                         </div>
                                                         }
+                                                    </>
+                                                    }
                                                 </div>
                                                                                  
                                             ))

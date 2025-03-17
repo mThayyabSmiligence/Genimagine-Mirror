@@ -1,25 +1,25 @@
-.option-menu {
+.list-option-menu {
+    position: absolute;
+    right: -10px;
+    top: 30px;
     background: white;
     border: 1px solid #ddd;
     border-radius: 5px;
-    width: 100px;
-    z-index: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 3;
     display: block;
-    
 }   
 
-.option-menu .option-item {
+.list-option-menu .list-option-item {
     padding: 10px;
     color: black;
     text-decoration: none;
-    background-color: white;
     cursor: pointer;
+    border: none;
     border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: white;
 }
 
-.option-menu .option-item:hover {
+.list-option-menu .list-option-item:hover {
     background-color: #f1f1f1;
 }

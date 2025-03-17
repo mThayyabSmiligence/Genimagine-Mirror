@@ -19,7 +19,7 @@ router.route('/verify-token').get(firstTimeVerification);
 router.route('/generate-image').post(userGenerateImageController);
 router.route('/get-chats-list').get(getChatsList)
 router.route('/get-chat-data/:chatId').get(getChatsData)
-router.route('/edit-chat-name').get(editChatNameController)
+router.route('/edit-chat-name').post(editChatNameController)
 
 router.route('/delete-image/:image_id').delete(deleteImageController)
 

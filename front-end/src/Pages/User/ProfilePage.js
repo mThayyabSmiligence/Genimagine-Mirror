@@ -57,7 +57,7 @@ function ProfilePage() {
 
   return (
     <div className='container mt-5 px-0'>
-                <div className='mt-5     cover-pic'>
+                <div className='mt-5 cover-pic'>
 
                 </div>
                 <div className='my-profile d-flex align-items-center '>
