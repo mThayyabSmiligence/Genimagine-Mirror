@@ -6,6 +6,7 @@ import RefreshDataContext from '../../Context/RefreshDataProvider';
 import logo from '../../images/genimagin_short_logo.png'
 import AuthContext from '../../Context/AuthProvider';
 import SuccessMessageContainer from '../../Components/CommonComponents/SuccessMessageContainer';
+import { Link } from 'react-router-dom';
 
 
 function CreditPurchasePage() {
@@ -236,13 +237,38 @@ function CreditPurchasePage() {
             </div>
             
             
-            <div className='customise-credit-purchase card shadow-sm p-2 my-3'>
-            <div className='d-flex , justify-content-center'>
-                <p id="uidnote" className={`${customCreditsFocus&& credits && !customCreditsValidation ? "instructions" : "offscreen"} white-bg text-danger w-ft ` }>                          
-                    credits ahould be between 10 and 100,000 
-                </p>
-            </div>
-                <div className='d-flex flex-wrap my-3 row justify-content-center'>
+            <div className='container d-flex  justify-content-center'>
+                <div className='d-flex  justify-content-center'>
+                    
+                </div>
+                <div className='col-md-4 mb-4'>
+                    <div className="card text-center shadow-sm">
+                        <div className="card-body">
+                            
+                            <h5 className="card-title"> Custom Credits </h5>
+                            
+                            <p className="card-text m-0"><strong></strong> Credits</p>
+                            <input type="number" placeholder='enter credits' className="credit-input mb-1" value={credits} onChange={(e) => { setCredits(e.target.value) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
+                            <p id="uidnote" className={`${credits && !customCreditsValidation ? "instructions" : "offscreen"} white-bg text-danger w-ft  text-center w-100 p-0 mb-3` }>                          
+                            credits ahould be between 10 and 100,000 
+                            </p>
+
+                            <p className="card-text m-0"><strong></strong> Rupees</p>
+                            <p className="card-text text-success mb-2">₹{credits||0}</p>
+
+                            <p className="text-muted">description</p>
+                            {
+                                loggedIn?
+                                <button className='button dark-button me-2' disabled={!customCreditsValidation} onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
+                                :
+                                <Link to={"/login"}  onClick={() => localStorage.setItem('lastVisitedPage', "/credit-purchase")} className="button dark-button ">Buy Now</Link>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                
+                {/* <div className='d-flex flex-wrap my-3 row justify-content-center'>
                     <div className='customise-credit-input col-md-4 d-flex justify-content-end align-items-center p-0 credit-purchase '>
                         <input type="number" placeholder='enter credits' className="credit-input ms-2 " value={credits} onChange={(e) => { setCredits(e.target.value) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
                         <p className='ms-3 mb-0'>credits</p>
@@ -260,7 +286,7 @@ function CreditPurchasePage() {
                         <button className='button dark-button me-2' disabled={!customCreditsValidation} onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
                     </div>
                 </div>
-                
+                 */}
             </div>
         </div>
     </div>

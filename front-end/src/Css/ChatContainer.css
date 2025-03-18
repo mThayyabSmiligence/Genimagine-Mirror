@@ -38,6 +38,8 @@
     background:rgb(34, 34, 34,0.1);
     border-radius: 10px;
     cursor: pointer;
+    height:30px !important;
+    width: 30px !important;
 }
 
 .image-dot-options{
@@ -52,6 +54,8 @@
     right:-35px;
     background:rgb(34, 34, 34,0.1);
     border-radius: 50%;
+    height: 30px !important;
+    width: 30px !important;
   
     cursor: pointer;
 }
@@ -87,7 +91,7 @@
     color: black;
     border: none;
 }
-.options-dropdown .option-item span{
+.options-dropdown .option-item .icon{
     color: grey;
 }
 .options-dropdown .option-item:hover{

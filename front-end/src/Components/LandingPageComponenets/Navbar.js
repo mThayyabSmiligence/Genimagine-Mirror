@@ -6,6 +6,7 @@ import ProfileDropDown from '../CommonComponents/ProfileDropDown';
 import AuthContext from '../../Context/AuthProvider';
 import { axiosInstance } from '../../API\'s/axios';
 import DropdownContext from '../../Context/DropdownProvider';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 
 function Navbar() {
 
@@ -35,7 +36,7 @@ function Navbar() {
                     {loggedIn ? (
                             <div className="profile-dropdown" ref={dropdownRef}>
                                 <button className='profile-button dark-button ' onClick={() => setShowDropdown(!showDropdown)}>
-                                    <span className="material-symbols-outlined">person</span>
+                                    <PersonOutlineOutlinedIcon/>
                                 </button>
                                 {showDropdown && 
                                    <ProfileDropDown/>

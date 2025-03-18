@@ -7,6 +7,10 @@ import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MathCaptcha from "../Components/Captcha/MathCaptcha";
 import { axiosAuth } from '../API\'s/axios';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 
 // Add icons to the library
 library.add(faCheck, faTimes, faInfoCircle);
@@ -230,14 +234,10 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     usernameValidity?
                                     username&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     username&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 </label>
                             <div className='email-input-container'>
@@ -268,14 +268,10 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     emailValidity?
                                     email&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     email&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 </label>
                             <div className='email-input-container'>
@@ -298,14 +294,10 @@ console.log("faInfoCircle:", faInfoCircle);
                             {
                                     dobValidity?
                                     dob&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     dob&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                             </label>
                             <div className='email-input-container'>
@@ -332,14 +324,10 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     passwordValidity?
                                     password&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     password&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 
                                 </label>
@@ -363,9 +351,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                         }} 
                                         className='password-visibility-toggle'>
                                     
-                                    <span className="visibility-icon material-symbols-outlined">
-                                        visibility
-                                    </span>
+                                    <VisibilityOutlinedIcon className='visibility-icon' fontSize='small'/>
                                     {
                                         passwordVisibility && <span className='visibility-icon-cross'></span>
                                     }
@@ -387,14 +373,10 @@ console.log("faInfoCircle:", faInfoCircle);
                                     pwdMatch?
                                     confirmPassword&&
 
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     confirmPassword&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                    
                                 }
                                 </label>
@@ -408,9 +390,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                         }} 
                                         className='password-visibility-toggle'>
                                     
-                                    <span className="visibility-icon material-symbols-outlined">
-                                        visibility
-                                    </span>
+                                    <VisibilityOutlinedIcon className='visibility-icon' fontSize='small'/>
                                     {
                                         confirmPasswordVisibility && <span className='visibility-icon-cross'></span>
                                     }
@@ -423,7 +403,7 @@ console.log("faInfoCircle:", faInfoCircle);
                         <div className='d-flex justify-content-center align-items-center'>
 
                         {
-                            isCaptchaVerified?<div className='button-wh  success-button-wh   d-flex align-items-center w-ft '><span className="material-symbols-outlined me-2"> task_alt</span>Verification Success</div>:
+                            isCaptchaVerified?<div className='button-wh  success-button-wh   d-flex align-items-center w-ft '><TaskAltOutlinedIcon/> Verification Success</div>:
                             <MathCaptcha onVerify={handleCaptchaVerify}/>
                         }
                         </div>
