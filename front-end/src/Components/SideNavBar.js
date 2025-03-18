@@ -1,6 +1,6 @@
 import React, {  use, useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import "../Css/SideNavBar.css"
 import useAuth from '../Hooks/useAuth'
 import { axiosPrivate } from '../API\'s/axios'
@@ -17,6 +17,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import DeletePopUp from './CommonComponents/DeletePopUp'
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
+
+
+    const navigate = useNavigate()
 
     const [showNavBar2,setShowNavBar2]=useState(true)
     const [chatList,setChatList]=useState([]);
@@ -186,6 +189,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
             if (response.status === 200) {
                 setChatList(prevChats => prevChats.filter(chat => chat.chat_id!== deleteChatId));
                 setShowDeletePopUp(false)
+                navigate('/image-generation',{replace:true})
             }
         }catch(e){
             console.error("Error deleting chat", e);
