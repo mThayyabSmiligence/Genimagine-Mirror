@@ -62,6 +62,9 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
                 setError(true)
                 setErrorMessage("Failed to delete image")
                 console.log("Failed to delete image",error.response)
+              }finally{
+                setShowRemoveLibraryPopUp(false);
+                setShowOptions(false);
               }
             }
 
@@ -80,7 +83,7 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
               .then((response) => {
                   const url = window.URL.createObjectURL(new Blob([response.data]));
                   const link = document.createElement("a");
-                  link.href = url;
+                  link.href = url;  
                   link.setAttribute("download", `${library.prompt+library.image_id}.png`); // Set the file name
                   document.body.appendChild(link);
                   link.click();

@@ -336,6 +336,17 @@
     height: var(--second-heading-font-size-1366) !important;
     width: var(--second-heading-font-size-1366) !important;
 }
+
+@media (max-width: 992px) {
+    .slick-slide img{
+        width: 400px !important;
+        height: 400px;
+    }
+}
+
+
+
+
 @media (max-width: 768px) {
     .h-1 {
         font-size: var(--first-heading-font-size-400);
@@ -396,6 +407,9 @@
         height: 350px;
     }
 }
+
+
+
 @media (min-width: 1367px) and (max-width: 1920px) {
     .h-1 {
         font-size: var(--first-heading-font-size-1920);
