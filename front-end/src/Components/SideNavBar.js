@@ -14,6 +14,7 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import DeletePopUp from './CommonComponents/DeletePopUp'
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
@@ -36,6 +37,9 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
     const [editingChatId, setEditingChatId] = useState(null);
     const [newChatName, setNewChatName] = useState("");
     const [currentChatName, setCurrentChatName] = useState("");
+
+    const [showDeletePopUp, setShowDeletePopUp]=useState(false);
+    const[deleteChatId,setDeleteChatId] = useState(null);
 
     const focusRef = useRef(null);
 
@@ -175,6 +179,18 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         setShowOptions(false);
     };
     
+    const  handelDeleteChat=async()=>{
+        try{
+            const response=await axiosPrivate.delete(`/delete-chat/${deleteChatId}`);
+            console.log(response)
+            if (response.status === 200) {
+                setChatList(prevChats => prevChats.filter(chat => chat.chat_id!== deleteChatId));
+                setShowDeletePopUp(false)
+            }
+        }catch(e){
+            console.error("Error deleting chat", e);
+        }
+    }
     
   return (
     <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
@@ -245,7 +261,16 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                                         }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
                                                         { showOptions && (index==chatButtonTracking) &&  
                                                         <div ref={optionsRef}  className='nav-list-item-dropdown' >
-                                                            <ChatOptionDropDown handleRename={() => callRenameChatList(value.chat_id,value.chat_name)}  />
+                                                            <ChatOptionDropDown 
+                                                                handleRename={
+                                                                    () => callRenameChatList(value.chat_id,value.chat_name)
+                                                                    } 
+                                                                handleDelete={
+                                                                    ()=>{
+                                                                        setDeleteChatId(value.chat_id);
+                                                                        setShowDeletePopUp(true)
+                                                                    }
+                                                                } />
                                                         </div>
                                                         }
                                                     </>
@@ -286,6 +311,11 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         {
         
         <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <ArrowCircleLeftOutlinedIcon/></button>}
+
+        {
+            showDeletePopUp &&
+            <DeletePopUp handelDelete={handelDeleteChat} showDeletePopUp={showDeletePopUp} onHide={()=>setShowDeletePopUp(false)} message={"are you sure you want deleted this chat?"}/>  // This is where you call your delete function and pass the chatId to it.
+        }
     </nav>
   )
 }

@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -241,15 +241,15 @@ exports.passwordChangeController=async(req,res)=>{
 
 exports.deleteChatController=async(req,res)=>{
 
-    const {chatId}=req.params;
+    const {chat_id}=req.params;
     const {id}=req.user;
 
-    if(!chatId){
+    if(!chat_id){
         return res.status(400).json({
             message:"chatId is required"
         })
     }
-    const result = await deleteChatFromServer(id, chatId);
+    const result = await deleteChatService(id,chat_id);
     
     return res.status(result.status).json(result);
 }
