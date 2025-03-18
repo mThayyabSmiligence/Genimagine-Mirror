@@ -1,7 +1,7 @@
 const axios = require('axios');
 const multer = require('multer');
 const path = require('path');
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
 
 const serverStorageBaseUrl= process.env.STORAGE_SERVER_BASE_URL
 
@@ -61,5 +61,47 @@ exports.deleteFromServer=async(filePath,userId,chatId,imageId)=>{
   } catch (err) {
     console.error('Error deleting file:', err);
     return {status:500,success:false,message:"error deleting file from amazon s3",error:err}
+  }
+}
+
+exports.deleteChatFromServer=async(userId,chatId)=>{
+
+  try{
+    const listCommand= new ListObjectsV2Command({
+      Bucket: process.env.AWS_BUCKET,
+      Prefix: `chat/${userId}/${chatId}/`
+    })
+
+    const data = await s3.send(listCommand)
+    if(!data.Contents||data.Contents.length === 0){
+      return {
+        status:404,
+        success:false,
+        message:"chat folder is empty"
+      }
+    }
+
+    const deleteCommand = new DeleteObjectsCommand({
+      Bucket: process.env.AWS_BUCKET,
+      Delete: {
+        Objects: data.Contents.map(obj => ({Key: obj.Key })),
+      },
+    })
+
+    await s3.send(deleteCommand)
+    return {
+      status:200,
+      success:true,
+      message:"chat folder is deleted"
+    }
+
+  }catch(err){
+    console.error('Error deleting chat', err);
+    return {
+      status:500,
+      success:false,
+      message:"error deleting chat from amazon s3",
+      error:err
+    }
   }
 }
