@@ -2,9 +2,12 @@ const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const Razorpay = require('razorpay');
-const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits, setOrderId, savePaymentHistory } = require('../service/BuyCreditsService');
+const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits, setOrderId, savePaymentHistory, savePaymentLog, savePurchaseErrorLogs } = require('../service/BuyCreditsService');
 const crypto = require('crypto');
 const { response } = require('express');
+
+
+var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: process.env.RAZOR_PAY_SECRET })
 
 exports.RayzorPayOrderController=async(req,res)=>{
 
@@ -15,6 +18,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
         if(!package_id && (custom_credits<10||custom_credits>100000)){
             return res.status(400).json({ message: 'credits should be between 10 and 100000' });
         }
+         
         //generating receipt id
         const receipt_id =generateReceiptId(id) 
         
@@ -35,8 +39,6 @@ exports.RayzorPayOrderController=async(req,res)=>{
         }
 
         //creating instance of razor pay
-        var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: process.env.RAZOR_PAY_SECRET })
-
         
         const amount = Number(receipt.amount);
 
@@ -88,35 +90,35 @@ exports.validatePaymentController=async(req,res)=>{
     try{
         const {razorpay_payment_id, razorpay_order_id, razorpay_signature,receipt_id} = req.body;
         const {id,username}=req.user;
-
-        var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: process.env.RAZOR_PAY_SECRET })
         
         const payment = await instance.payments.fetch(razorpay_payment_id)
+        const storePayment= await savePaymentLog(payment)
 
         const order_detail = await instance.orders.fetchPayments(razorpay_order_id)
         console.log(razorpay_payment_id)
         console.log(razorpay_order_id)
 
+        console.log("order_details",order_detail)
+        console.log("payment details",payment)
+        if(payment.status!=='captured'){
+            return res.status(400).json({ message: 'order is not paid!' });
+        }
+
         const sha = crypto.createHmac('sha256',process.env.RAZOR_PAY_SECRET)
         sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
         const digest = sha.digest("hex");
-        
+
         if(digest !== razorpay_signature){
             return res.status(400).json({ message: 'transaction is not legit!' });
         }
 
         const response = await addPurchasedCredits(receipt_id)
 
-        const updateResponse =await updatePaymentStatus(receipt_id,razorpay_payment_id,payment.method)
+        const updateResponse =await updatePaymentStatus(razorpay_payment_id,payment.method,payment.amount,payment.status,razorpay_order_id)
 
         if(updateResponse.success==false){
             return res.status(400).json({ message: 'credits added but failed to update payment status' })
         }
-
-        console.log(" payment detail :",payment)
-        console.log("order_detail :",order_detail)
-        console.log('upi data',order_detail.items[0].upi )
-        const result = await savePaymentHistory(order_detail.items)
 
         return res.status(response.status).json(response)
     }
@@ -127,10 +129,30 @@ exports.validatePaymentController=async(req,res)=>{
 
 }
 
+
+//example error object structure
+//{
+//     code: 'BAD_REQUEST_ERROR',
+//     description: 'Payment was unsuccessful due to a temporary issue. If amount got deducted, it will be refunded within 5-7 working days.',
+//     source: 'gateway',
+//     step: 'payment_response',
+//     reason: 'payment_failed',
+//     metadata: {
+//       payment_id: 'pay_Q8FG6mdNr6FYUL',
+//       order_id: 'order_Q8FFoEsOzOwbOd'
+//     }
+//   }
 exports.handelFailedPaymentController=async(req,res)=>{
     const {error}= req.body;
 
-    console.log(error)
+    console.log("error in payment",error)
+    const payment = await instance.payments.fetch(error.metadata.payment_id)
 
-    res.status(500).json({message: 'Failed to complete transaction'})
+    const updateStatus = await updatePaymentStatus(error.metadata.payment_id,payment.method,payment.status,error.metadata.order_id)
+    const storePayment= await savePaymentLog(payment)
+    const storeError = await savePurchaseErrorLogs(error)
+
+
+
+    res.status(400).json({message: 'Failed to complete transaction'})
 }

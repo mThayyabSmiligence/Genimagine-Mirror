@@ -113,10 +113,10 @@ exports.addPurchasedCredits=async(receipt_id)=>{
 
     }
 }
-exports.updatePaymentStatus=async(receipt_id,payment_id,payment_method)=>{
+exports.updatePaymentStatus=async(payment_id,payment_method,status,order_id)=>{
     try{
-        const query= "update credit_purchase_logs set payment_status='captured' , completed_at= now() , payment_id=? , payment_method = ? where receipt_id=?"
-        const [rows] = await db.execute(query,[ payment_id,payment_method,receipt_id,])
+        const query= "update credit_purchase_logs set payment_status=? , completed_at= now() , payment_id=? , payment_method = ? where order_id=?"
+        const [rows] = await db.execute(query,[status, payment_id,payment_method,order_id])
         console.log("payment status updated successfully")
         return {
             status:200,
@@ -182,9 +182,7 @@ exports.savePaymentHistory = async(data)=>{
         acquirer_data, upi
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) `;
 
-    data.value/(async (order)=>{
-        await db.execute(query,order)
-    })
+    await db.query(query, data)
     return true;
     }catch(err){
         console.log("error saving payment history :",err)
@@ -222,5 +220,146 @@ exports.getPurchaseLogDetails=async(receipt_id)=>{
     }catch(err){
         console.log(err)
         return null
+    }
+}
+
+exports.savePaymentLog=async(orderPaymentData)=>{
+    const query = `
+    INSERT INTO order_payments (
+      payment_id, 
+      entity, 
+      amount, 
+      currency, 
+      status, 
+      order_id, 
+      invoice_id,
+      international, 
+      method, 
+      amount_refunded, 
+      refund_status, 
+      captured, 
+      description,
+      card_id, 
+      bank, 
+      wallet, 
+      vpa, 
+      email, 
+      contact, 
+      notes, 
+      fee, 
+      tax, 
+      error_code,
+      error_description, 
+      error_source, 
+      error_step, 
+      error_reason, 
+      acquirer_data, 
+      upi
+    ) VALUES (
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?, 
+      ?,
+      ?
+    )
+  `;
+
+  try {
+    const [result] = await db.query(query, [
+      orderPaymentData.id,
+      orderPaymentData.entity,
+      orderPaymentData.amount,
+      orderPaymentData.currency,
+      orderPaymentData.status,
+      orderPaymentData.order_id,
+      orderPaymentData.invoice_id || null,
+      orderPaymentData.international || 0,
+      orderPaymentData.method,
+      orderPaymentData.amount_refunded || 0,
+      orderPaymentData.refund_status || null,
+      orderPaymentData.captured || 0,
+      orderPaymentData.description || null,
+      orderPaymentData.card_id || null,
+      orderPaymentData.bank || null,
+      orderPaymentData.wallet || null,
+      orderPaymentData.vpa || null,
+      orderPaymentData.email || null,
+      orderPaymentData.contact || null,
+      JSON.stringify(orderPaymentData.notes || {}),
+      orderPaymentData.fee || 0,
+      orderPaymentData.tax || 0,
+      orderPaymentData.error_code || null,
+      orderPaymentData.error_description || null,
+      orderPaymentData.error_source || null,
+      orderPaymentData.error_step || null,
+      orderPaymentData.error_reason || null,
+      JSON.stringify(orderPaymentData.acquirer_data || {}),
+      JSON.stringify(orderPaymentData.upi || {}),
+    ]);
+
+    console.log('Inserted Order Payment ID:', result.insertId);
+    return result.insertId;
+  } catch (error) {
+    console.error('Error inserting order payment:', error);
+    throw error;
+  }
+}
+
+exports.savePurchaseErrorLogs=async(errorData)=>{
+    try{
+        const insertQuery = `
+        INSERT INTO credit_purchase_error_logs(
+            error_code,
+            error_description,
+            error_source,
+            error_step,
+            error_reason,
+            payment_id,
+            order_id,
+            metadata
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        // Extract data from the error object
+        const values = [
+        errorData.code,
+        errorData.description,
+        errorData.source,
+        errorData.step,
+        errorData.reason,
+        errorData.metadata.payment_id,
+        errorData.metadata.order_id,
+        JSON.stringify(errorData.metadata)
+        ];
+
+        await db.query(insertQuery, values)
+        
+    }
+    catch(err){
+        console.log("error saving purchase error logs :",err)
     }
 }

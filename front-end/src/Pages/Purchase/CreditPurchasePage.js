@@ -171,6 +171,7 @@ function CreditPurchasePage() {
 
               rzp1.on("payment.failed", async function (response) {
                 try{
+                    console.log(1)
                     const result = await axiosPrivate.post('/falied-payment',response)
                 }catch(err){
                     console.error(err)
