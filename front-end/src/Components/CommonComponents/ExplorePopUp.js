@@ -1,4 +1,4 @@
-  import React, { use, useContext, useEffect, useRef, useState } from 'react';
+import React, { use, useContext, useEffect, useRef, useState } from 'react';
 import '../../Css/ExplorePopUp.css'
 
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
@@ -17,6 +17,7 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ShareIcon from '@mui/icons-material/Share';
 
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
@@ -24,6 +25,8 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
   const [isUserLiked,setIsUserLiked]=useState(false)
   const {loggedIn}= useContext(AuthContext);
   const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
+  const [showCopyOption, setShowCopyOption] = useState(false);
+  const [copied, setcopied] = useState(false);
   const Navigate = useNavigate();
 
   useEffect(() => {
@@ -119,6 +122,27 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
 
   }
 
+  useEffect(() => {
+    if(copied){
+      setTimeout(() => {
+        setcopied(false);
+        setShowCopyOption(false);
+      }, 3000);
+    }
+  },[copied])
+
+  const handleShare = (image) => {
+    if (image.image_url) {
+      navigator.clipboard.writeText(image.image_url)
+      .then(() => {
+        setcopied(true);
+      })
+      .catch((error) => {
+        console.error("Failed to copy URL: ", error);
+      });
+    }
+  }
+
   return (
     <div className="explore-popup-overlay">
       <div className="explore-popup-content">
@@ -175,7 +199,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 <button onClick={() => addLikes()} className='button-wh light-button-wh  user-like-button d-flex align-items-center px-3'><FavoriteBorderIcon/><p className="ms-2 m-0">{image.likes_count}</p></button>
               }
             </div>
-            <div className='user-view-container mx-2'>
+            <div className='user-view-container'>
               <button className='button-wh light-button-wh user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{image.views_count}</p></button>
             </div>
             {
@@ -193,6 +217,24 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
               :
               null
             }
+
+            <div className='share-image-container'>
+              <button onClick={() => setShowCopyOption(!showCopyOption)} className='button-wh light-button-wh share-image-button d-flex align-items-center px-3'>
+                <ShareIcon/>
+              </button>
+              {
+                showCopyOption?
+                <div className='copy-link-container'>           
+                  {
+                    copied ?
+                    <button className='copy-link-button'>Copied</button> :
+                    <button onClick={() => handleShare(image)} className='copy-link-button'>Copy link</button>
+                  }   
+                </div>
+                :
+                null
+              }
+            </div>
           </div>
         </div>
       </div>
@@ -201,4 +243,4 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
   )
 }
 
-export default ExplorePopUp
+export default ExplorePopUp;

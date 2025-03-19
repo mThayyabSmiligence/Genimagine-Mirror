@@ -62,3 +62,9 @@
         width: 90%;
     }
 }
+
+@media (max-width: 520px) {
+    .selected-settings{
+        display: none !important    ;
+    }
+}

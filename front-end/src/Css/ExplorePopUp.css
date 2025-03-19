@@ -135,7 +135,7 @@
 }
 
 
-.user-copy-prompt-button, .user-like-button,.user-view-button , .delete-button{
+.user-copy-prompt-button, .user-like-button,.user-view-button , .delete-button, .share-image-button{
     height: 30px;
     border-radius: 100px;
 
@@ -166,6 +166,20 @@
   font-size: 20px;
 }
 
+.share-image-container{
+  position: relative;
+}
+
+.copy-link-button{
+  position: absolute;
+  width: 90px;
+  left: 0px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+  cursor: pointer;
+}
 @media (min-width: 1920px) and (max-width: 2560px) {
   /* Styles for 1080p screens */
  

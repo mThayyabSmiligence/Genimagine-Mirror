@@ -83,7 +83,7 @@ function PublishImagePage() {
       <div className='publish '>
           <h1 className='text-start ms-3 mb-3'>Publish</h1>
           <div className='publish-whole-container d-flex'>
-            <div v className='publish-left-container  ms-2 me-2'>
+            <div className='publish-left-container ms-2 me-2'>
               <div className='mb-3  w-100'> 
                 <div className='caption-heading d-flex text-start '>
                   <h5>Add Caption</h5>
