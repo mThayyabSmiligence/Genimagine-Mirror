@@ -1,6 +1,6 @@
 import React, {  use, useContext, useEffect, useRef, useState } from 'react'
 import logo from "../images/genimagin_logo.png"
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import "../Css/SideNavBar.css"
 import useAuth from '../Hooks/useAuth'
 import { axiosPrivate } from '../API\'s/axios'
@@ -17,6 +17,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import DeletePopUp from './CommonComponents/DeletePopUp'
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
+
+
+    const navigate = useNavigate()
 
     const [showNavBar2,setShowNavBar2]=useState(true)
     const [chatList,setChatList]=useState([]);
@@ -186,6 +189,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
             if (response.status === 200) {
                 setChatList(prevChats => prevChats.filter(chat => chat.chat_id!== deleteChatId));
                 setShowDeletePopUp(false)
+                navigate('/image-generation',{replace:true})
             }
         }catch(e){
             console.error("Error deleting chat", e);
@@ -193,129 +197,133 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
     }
     
   return (
-    <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
-    
-
-        <div className='nav-logo-section'>
-       
-                <Link to={'/'}>
-                 <img src={logo} className="big-logo" alt='Genimagine logo'/>
-                </Link>
+    <>
+        <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
         
-        </div>
-        <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
-            <div className='side-nav-middle-section p-relative h-auto ' style={{ height:`${height-150}px`} }>
 
-                <div className='sub-mid-section '>
-                    <Link to={"/explore" } className='link' >
-                        <div className=' nav-list-item'>
-                            <ExploreOutlinedIcon/>
-                            <div to={"/image-generation" } className='link nav-options'>Explore</div>
-                        </div>
+            <div className='nav-logo-section'>
+        
+                    <Link to={'/'}>
+                    <img src={logo} className="big-logo" alt='Genimagine logo'/>
                     </Link>
-                    <Link to={"/image-generation" } className='link' >
-                        <div className=' nav-list-item'>
-                            <AddCircleOutlineOutlinedIcon/>
-                            <div to={"/image-generation" } className='link nav-options'>New Chat</div>
-                        </div>
-                    </Link>
+            
+            </div>
+            <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
+                <div className='side-nav-middle-section p-relative h-auto ' style={{ height:`${height-150}px`} }>
 
-                </div>
-                <div className=' sub-mid-section '>
-                    { loggedIn&&                    
-                        <div className='accordion w-100'>
-                            <div className='accordion-item'>
-                                <h2 className="accordion-header">
-                                    <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    <ChatOutlinedIcon/>Chats
-                                    </button>
-                                </h2>
-                                <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                                    <div className="accordion-collapse d-flex flex-column align-items-center">
-                                        {
-                                            Object.entries(chatList).map(([key,value],index)=>(                         
-                                                <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
-                                                    {value.chat_id==editingChatId ?
-                                                    <input  
-                                                        ref={focusRef}  
-                                                        value={newChatName} 
-                                                        onChange={(e) => setNewChatName(e.target.value)} 
-                                                        onBlur={()=>renameChatList()}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") {
-                                                              e.preventDefault(); // Prevent new line
-                                                              renameChatList()  // Call your submit function
+                    <div className='sub-mid-section '>
+                        <Link to={"/explore" } className='link' >
+                            <div className=' nav-list-item'>
+                                <ExploreOutlinedIcon/>
+                                <div to={"/image-generation" } className='link nav-options'>Explore</div>
+                            </div>
+                        </Link>
+                        <Link to={"/image-generation" } className='link' >
+                            <div className=' nav-list-item'>
+                                <AddCircleOutlineOutlinedIcon/>
+                                <div to={"/image-generation" } className='link nav-options'>New Chat</div>
+                            </div>
+                        </Link>
+
+                    </div>
+                    <div className=' sub-mid-section '>
+                        { loggedIn&&                    
+                            <div className='accordion w-100'>
+                                <div className='accordion-item'>
+                                    <h2 className="accordion-header">
+                                        <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        <ChatOutlinedIcon/>Chats
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                                        <div className="accordion-collapse d-flex flex-column align-items-center">
+                                            {
+                                                Object.entries(chatList).map(([key,value],index)=>(                         
+                                                    <div className={`d-flex align-items-center nav-list-item my-1 ${value.chat_id==currentChatId&&"active"} ${index==chatButtonTracking&&"selected"}`}>
+                                                        {value.chat_id==editingChatId ?
+                                                        <input  
+                                                            ref={focusRef}  
+                                                            value={newChatName} 
+                                                            onChange={(e) => setNewChatName(e.target.value)} 
+                                                            onBlur={()=>renameChatList()}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                e.preventDefault(); // Prevent new line
+                                                                renameChatList()  // Call your submit function
+                                                                }
+                                                            }}
+                                                        />
+                                                    :
+                                                        <>
+                                                        <Link title={value.chat_name} to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
+                                        
+                                                            <button ref={optionsRef} onClick={() => {
+                                                                
+                                                                setShowOptions(!showOptions)
+                                                                setChatButtonTracking(index);
+                                                                console.log(2)
+                                                                
+                                                            }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
+                                                            { showOptions && (index==chatButtonTracking) &&  
+                                                            <div ref={optionsRef}  className='nav-list-item-dropdown' >
+                                                                <ChatOptionDropDown 
+                                                                    handleRename={
+                                                                        () => callRenameChatList(value.chat_id,value.chat_name)
+                                                                        } 
+                                                                    handleDelete={
+                                                                        ()=>{
+                                                                            setDeleteChatId(value.chat_id);
+                                                                            setShowDeletePopUp(true)
+                                                                        }
+                                                                    } />
+                                                            </div>
                                                             }
-                                                        }}
-                                                    />
-                                                :
-                                                    <>
-                                                    <Link title={value.chat_name} to={`/u/c/${value.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(value.chat_name?value.chat_name:value.chat_id)}</Link>
-                                    
-                                                        <button ref={optionsRef} onClick={() => {
-                                                            
-                                                            setShowOptions(!showOptions)
-                                                            setChatButtonTracking(index);
-                                                            console.log(2)
-                                                            
-                                                        }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
-                                                        { showOptions && (index==chatButtonTracking) &&  
-                                                        <div ref={optionsRef}  className='nav-list-item-dropdown' >
-                                                            <ChatOptionDropDown 
-                                                                handleRename={
-                                                                    () => callRenameChatList(value.chat_id,value.chat_name)
-                                                                    } 
-                                                                handleDelete={
-                                                                    ()=>{
-                                                                        setDeleteChatId(value.chat_id);
-                                                                        setShowDeletePopUp(true)
-                                                                    }
-                                                                } />
-                                                        </div>
+                                                        </>
                                                         }
-                                                    </>
-                                                    }
-                                                </div>
-                                                                                 
-                                            ))
-                                        }
+                                                    </div>
+                                                                                    
+                                                ))
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
+                {loggedIn&&
+                    <div className='side-nav-bottom-items d-flex flex-column align-items-center ' style={{ height:"85px" }}>
+                        <div className='side-nav-bottom-item d-flex justify-content-between align-items-center '>
+                            <div className='d-flex '>
+                                <ChildCareOutlinedIcon/>
+                                <label htmlFor=' kids-mode-switch'>Kid's Mode</label>
+                            </div>
+                                <label className='switch kids-mode-switch'>
+                                    <input type="checkbox"></input>
+                                    <span className='slider round'></span>
+                                </label>
+                        </div>
+                        <div className='side-nav-bottom-item d-flex justify-content-start align-items-center ' >
+
+                            <button className='d-flex justify-content-center align-items-center border-0 p-0  bg-light'>
+                                    <SettingsOutlinedIcon/>
+                                    <>Settings</>
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
-            {loggedIn&&
-                <div className='side-nav-bottom-items d-flex flex-column align-items-center ' style={{ height:"85px" }}>
-                    <div className='side-nav-bottom-item d-flex justify-content-between align-items-center '>
-                        <div className='d-flex '>
-                            <ChildCareOutlinedIcon/>
-                            <label htmlFor=' kids-mode-switch'>Kid's Mode</label>
-                        </div>
-                            <label className='switch kids-mode-switch'>
-                                <input type="checkbox"></input>
-                                <span className='slider round'></span>
-                            </label>
-                    </div>
-                    <div className='side-nav-bottom-item d-flex justify-content-start align-items-center ' >
+            {
+            
+            <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <ArrowCircleLeftOutlinedIcon/></button>}
 
-                        <button className='d-flex justify-content-center align-items-center border-0 p-0  bg-light'>
-                                <SettingsOutlinedIcon/>
-                                <>Settings</>
-                        </button>
-                    </div>
-                </div>
+            {
+                showDeletePopUp &&
+                <DeletePopUp handelDelete={handelDeleteChat} showDeletePopUp={showDeletePopUp} onHide={()=>setShowDeletePopUp(false)} message={"are you sure you want deleted this chat?"}/>  // This is where you call your delete function and pass the chatId to it.
             }
-        </div>
-        {
-        
-        <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <ArrowCircleLeftOutlinedIcon/></button>}
 
-        {
-            showDeletePopUp &&
-            <DeletePopUp handelDelete={handelDeleteChat} showDeletePopUp={showDeletePopUp} onHide={()=>setShowDeletePopUp(false)} message={"are you sure you want deleted this chat?"}/>  // This is where you call your delete function and pass the chatId to it.
-        }
-    </nav>
+        </nav>
+        <div className={`sidenav-blur-bg ${showNavBar2?'active':'in-active'} ` }  onClick={()=>setShowNavBar(false)}></div>
+    </>
   )
 }

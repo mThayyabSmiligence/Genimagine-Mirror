@@ -19,7 +19,7 @@ export default function EditUserName() {
 
     useEffect(()=>{
         const user_data=JSON.parse(localStorage.getItem('user_data'))
-        setUserName(user_data.username)
+        setUserName(user_data.username||"")
     },[])
 
     useEffect(()=>{

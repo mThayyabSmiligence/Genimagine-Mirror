@@ -105,10 +105,10 @@
           try {
               console.log("checking chatid inside api ", chatId)
               const response = await axiosPrivate.get(`get-chat-data/${chatId}${query}`,
-              {
-
-                withCredentials:true,
-              });
+                {
+                  withCredentials:true,
+                }
+              );
               // setChat(response.data.message)
               const ChatResponse = response.data;
               console.log("response",response)

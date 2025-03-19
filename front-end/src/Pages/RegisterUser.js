@@ -419,7 +419,7 @@ console.log("faInfoCircle:", faInfoCircle);
                              `}</style>
                          </button>
                          :
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-100 br-100 mb-3">Create</button>
+                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-90 br-100 mb-3 mt-3">Create</button>
                         }
                         
                     </form>
@@ -429,7 +429,7 @@ console.log("faInfoCircle:", faInfoCircle);
                         <p className='divider-genimagin'>Already has an account ?</p>
                         <span className='divider-line flex-1'></span>
                     </div>
-                    <Link to="/login" className="link link-button button light-button w-100 br-100 mt-3" style={{"width":"100%"}}>Sign-in</Link>
+                    <Link to="/login" className="link link-button button light-button w-90 br-100 mt-3" >Sign-in</Link>
                 </div>
             </div>
         </>

@@ -74,12 +74,13 @@
     flex-direction: column;
     align-items: start;
     border-radius: 5px;
-    margin-top: 35px;
+  
     margin-left: 5px;
     cursor: pointer;
     height: fit-content;
     width: 160px ;
     border: solid 1px rgb(165,165,165);
+    background: white;
 }
 .options-dropdown .option-item{
     text-align: start;
@@ -114,5 +115,8 @@
     .chat-container{
         width: 100%;
         margin-bottom: 100px;
+    }
+    .options-dropdown.left{
+        right: -35px;
     }
 }

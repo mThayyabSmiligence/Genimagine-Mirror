@@ -76,7 +76,7 @@ const MathCaptcha = ({ onVerify }) => {
                     required
                     placeholder="Enter your answer"
                     />
-                    <div className='button-wh light-button-wh' onClick={(e)=>handleSubmit(e)} type="submit" disabled={!userAnswer.trim()}>Verify</div>
+                    <div className='button-wh light-button-wh br-100' onClick={(e)=>handleSubmit(e)} type="submit" disabled={!userAnswer.trim()}>Verify</div>
 
                 </form>
                 {error && <p style={{ color: "red" }}>{error}</p>}

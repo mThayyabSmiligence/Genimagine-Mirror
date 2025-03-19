@@ -238,5 +238,9 @@
     .popup-image-container{
       height: 40%;
     }
+    .close-button{
+      top: 5px;
+      right: 5px;
+    }
 }
 

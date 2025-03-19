@@ -98,6 +98,9 @@
 .side-nav-close-button {
     display: none;
 }
+.sidenav-blur-bg{
+    display: none;
+}
 @media (max-width: 766px) {
     .side-nav {
         display: flex;
@@ -131,5 +134,14 @@
     }
     .side-nav.in-active{
         z-index: 3;
+    }
+    .sidenav-blur-bg.active{
+        display: block;
+        z-index: 3;
+        position: absolute;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        background: rgba(15, 15, 15, 0.425);
     }
 }

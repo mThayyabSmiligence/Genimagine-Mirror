@@ -225,6 +225,10 @@
     .steps-to-generate {
         margin: 0px 20px; /* Reduce margin for medium screens */
     }
+    .sign-in-link {
+        margin: 0px !important;
+        margin-top: 10px !important;
+    }
 }
 
 /* Styles for small devices (max-width: 480px) */
