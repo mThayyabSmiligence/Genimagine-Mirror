@@ -389,9 +389,8 @@
     .button, .button-wh{
         margin: 5px 5px;
         font-size: var(--primary-font-size-400);
-        height: 20px;
+        height: 25px;
         padding: 2px 10px;
-        border-radius: 5px;
         
     }
     .navbar-icons{

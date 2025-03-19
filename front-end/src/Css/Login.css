@@ -180,6 +180,11 @@ input.password-input:focus,input.email-input:focus{
 .otp-input-container input{
     width: 30px !important;
 }
+@media (max-width: 500px){
+    .login-page{
+        width:360px;
+    }
+}
 
 @media (max-width: 830px) {
     .login-page-container{

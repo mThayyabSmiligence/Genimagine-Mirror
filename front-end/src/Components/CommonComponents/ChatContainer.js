@@ -22,7 +22,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
   const Navigate = useNavigate();
   
-  const { setTempImageData ,refreshLibraryData,setRefreshLibraryData} = useContext(RefreshDataContext); 
+  const { setTempImageData ,refreshLibraryData,setRefreshLibraryData,refreshImageSettings} = useContext(RefreshDataContext); 
   const {loggedIn} = useContext(AuthContext)
 
   const navigate = useNavigate();
@@ -39,11 +39,19 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
   const [showDeletePopUp, setShowDeletePopUp] = useState(false);
 
   const [showRemoveLibraryPopUp, setShowRemoveLibraryPopUp] = useState(false);
-  
+  const [aspectRatio,setAspectRatio] =useState(null);
 
+  useEffect(()=>{
+    if(localStorage.getItem('image_settings')){
+      const imageSettings = JSON.parse(localStorage.getItem('image_settings'));
+      setAspectRatio(imageSettings.aspectRatio.aspectRatio)
+    }
+    
+  },[refreshImageSettings])
   const handleToggleOptions = () => {
     setShowOptions((prev) => !prev);
   };
+
 
  const [width, setWidth] = useState(window.innerWidth);
            
@@ -262,8 +270,8 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
               (data.image_url||data.image)&&
               <div className='image-options' ref={optionsRef}>                                    
               <MoreVertOutlinedIcon onClick={handleToggleOptions} className="image-dot-options"></MoreVertOutlinedIcon>
-              {showOptions && (
-                <div className="options-dropdown">
+              {showOptions&& (
+                <div className={`options-dropdown ${data.aspect_ratio!="9:16"?"left":"right"} `}>
                   <a onClick={(e)=>download(e)} className="option-item "><FileDownloadOutlinedIcon  className='icon'/> Download</a>
                   <span className='option-divider'></span>
                   {loggedIn && <>                                                    

@@ -220,7 +220,7 @@ function CreditPurchasePage() {
                     purchaseSuccess={purchaseSuccess}    
                 />
             }
-            
+
             <div className='row'>
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                     <div key={index} className='col-md-4 mb-4'>
@@ -237,11 +237,7 @@ function CreditPurchasePage() {
                 <span className='divider-line-2 flex-1'></span>
             </div>
             
-            
             <div className='container d-flex  justify-content-center'>
-                <div className='d-flex  justify-content-center'>
-                    
-                </div>
                 <div className='col-md-4 mb-4'>
                     <div className="card text-center shadow-sm">
                         <div className="card-body">
@@ -267,27 +263,6 @@ function CreditPurchasePage() {
                         </div>
                     </div>
                 </div>
-
-                
-                {/* <div className='d-flex flex-wrap my-3 row justify-content-center'>
-                    <div className='customise-credit-input col-md-4 d-flex justify-content-end align-items-center p-0 credit-purchase '>
-                        <input type="number" placeholder='enter credits' className="credit-input ms-2 " value={credits} onChange={(e) => { setCredits(e.target.value) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
-                        <p className='ms-3 mb-0'>credits</p>
-                    </div>
-
-                    <div className='col-md-4 p-0 d-flex align-items-center credit-purchase'>
-                       <p className='me-3 mb-0 ms-2'>For</p>
-                       <span className='me-1'>₹</span>
-                       <input type='number' placeholder='amount' className='credit-amount-input br-5' value={Amount} disabled/>
-                       <p className='ms-3 mb-0'>Rupees</p>
-                    </div>
-                   
-
-                    <div className='customise-credit-button col-md-4 p-0 d-flex justify-content-center credit-purchase'>
-                        <button className='button dark-button me-2' disabled={!customCreditsValidation} onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
-                    </div>
-                </div>
-                 */}
             </div>
         </div>
     </div>

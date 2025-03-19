@@ -193,8 +193,6 @@ exports.savePaymentHistory = async(data)=>{
 
 //function to generate recipt id in REC-'date'-User'user_id'-'random 6 char string
 exports.generateReceiptId = (userId) => {
-
-    
     const now = new Date();
     const date = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}${now.getFullYear()}`; 
     const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6); // 6-char random string
