@@ -1,5 +1,5 @@
     import React from 'react'
-    import exploreImg from '../../images/Hero.jpg'
+    
 
     function LaunchToExplore() {
     return (
@@ -7,7 +7,7 @@
       <div className='row align-items-center'>
     
         <div className='col-12 col-md-6 text-center'>
-          <img src={exploreImg} alt='Showcase of Published Images' className='img-fluid publish-image'/>
+          <img src='/publish_image_gif.gif' alt='Showcase of Published Images' className='img-fluid publish-image'/>
         </div>
 
         <div className='col-12 col-md-6 launch-to-explore-content text-start'>

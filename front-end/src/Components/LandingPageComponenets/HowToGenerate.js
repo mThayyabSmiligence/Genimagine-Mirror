@@ -1,6 +1,5 @@
 import React from 'react'
 import '../../Css/LandingPage.css'
-import heroLogo from '../../images/Hero.jpg'
 
 function HowToGenerate() {
 
@@ -34,7 +33,7 @@ function HowToGenerate() {
           ))}
         </div>
         <div className='col-12 col-md-6 sample-generate-image'>  
-            <img className='sample-image' src={heroLogo} alt=''></img>
+            <img className='sample-image' src='/generate_image_gif.gif' alt=''></img>
         </div>
     </div>
   )

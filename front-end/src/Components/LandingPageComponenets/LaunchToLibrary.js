@@ -1,5 +1,5 @@
 import React from 'react'
-import libraryImg from '../../images/Hero.jpg'
+import libraryImg from '../../images/library.png'
 
 function LaunchToLibrary() {
   return (

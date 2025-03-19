@@ -62,3 +62,30 @@
     object-fit: contain;
     border-radius: 10px;
 }
+
+@media (max-width: 768px) {
+    .publish-whole-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .publish-left-container{
+        width: 90%;
+    }
+    
+    .publish-right-container{
+        width: 90%; 
+    }
+
+    .publish-text-area{
+        height: 100px;
+    }
+
+    .publish-button{
+        height: 25px;
+    }
+
+    .your-content-container{
+        height: 100px;
+    }
+}
