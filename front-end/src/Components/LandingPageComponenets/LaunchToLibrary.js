@@ -3,7 +3,7 @@ import libraryImg from '../../images/library.png'
 
 function LaunchToLibrary() {
   return (
-    <div className="launch-to-library container py-5 mt-5">
+    <div className="launch-to-library container py-md-5 mt-md-5 mt-sm-0 ">
       <div className="row align-items-center">
 
         <div className="col-12 col-md-6 text-center text-md-start">

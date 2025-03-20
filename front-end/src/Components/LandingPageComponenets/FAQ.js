@@ -30,7 +30,7 @@ function FAQ() {
     ]
 
   return (
-    <div className='faq-sec container mt-5'>
+    <div className='faq-sec container mt-md-5 py-md-4 pt-5'>
         <div className='faq-container'>
             <h1 className='faq-heading text-center mb-4 h-2'>Frequently asked questions</h1>
             <div className='accordion mb-4' id='faqAccordion'>  

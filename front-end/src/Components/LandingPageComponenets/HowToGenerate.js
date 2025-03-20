@@ -22,7 +22,7 @@ function HowToGenerate() {
   ]
 
   return (
-    <div className='container-fluid row how-to-generate-sec d-flex align-items-center justify-content-center'>
+    <div className='container-fluid row how-to-generate-sec d-flex align-items-center justify-content-center '>
         <h1 className='text-center mb-4 mb-md-5 mt-md-5 h-2'>HOW TO <span className='header-highlight'>GENERATE</span> IMAGE</h1>
         <div className='col-12 col-md-6'>
           {stepsToGenerate.map((steps) => (
