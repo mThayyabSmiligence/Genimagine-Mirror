@@ -39,6 +39,7 @@
 
 .p-relative{
   position: relative;
+  ;
 }
 
 .y-scrollable-container{
@@ -55,7 +56,12 @@
 
 
 
-
+@media (max-width: 766px){
+  .content-section.short ,.sub-top-bar.short{
+    margin-left: 0px;
+    z-index: 2;
+  }
+}
 
 
 

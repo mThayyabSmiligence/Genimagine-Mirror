@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../images/genimagin_logo.png'
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MathCaptcha from "../Components/Captcha/MathCaptcha";
+import { axiosAuth } from '../API\'s/axios';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 
 // Add icons to the library
 library.add(faCheck, faTimes, faInfoCircle);
@@ -15,6 +21,21 @@ const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export default function RegisterUser() {
+
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+
+    const handleCaptchaVerify = (status) => {
+      setIsCaptchaVerified(status);
+    };
+  
+    // const handleCaptcha = (e) => {
+    //   e.preventDefault();
+    //   if (!isCaptchaVerified) {
+    //     alert("Please solve the CAPTCHA correctly.");
+    //     return;
+    //   }
+    //   alert("Registration successful!");
+    // };
 
 console.log("faInfoCircle:", faInfoCircle);
     const [username, setUserName] = useState('');
@@ -46,6 +67,18 @@ console.log("faInfoCircle:", faInfoCircle);
     
     const [pwdMatch,setPwdMatch] = useState(false)
 
+    const[loading,setLoading] = useState(false)
+
+    const spinnerStyle = {
+        width: '20px',
+        height: '20px',
+        border: '4px solid #ccc',
+        borderTop: '4px solid #3498db',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      };
+
+
     useEffect(() => {
         setPasswordValidity(PWD_REGEX.test(password));
         setPwdMatch(password === confirmPassword);
@@ -61,7 +94,7 @@ console.log("faInfoCircle:", faInfoCircle);
             .toISOString()
             .split("T")[0]; // Setting max date as today - 5 years
 
-        const minDate = new Date(1900, 0, 1).toISOString().split("T")[0]; // Set a reasonable minimum date
+        const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0]; // Set a reasonable minimum date
 
         document.getElementById("dob").setAttribute("max", maxDate);
         document.getElementById("dob").setAttribute("min", minDate);
@@ -75,9 +108,21 @@ console.log("faInfoCircle:", faInfoCircle);
             .toISOString()
             .split("T")[0];
 
+
+        const minDate = new Date(today.setFullYear(today.getFullYear()-95))
+            .toISOString()
+            .split("T")[0]
+
+        console.log("toady : ",today.toISOString())
+        console.log("mix date : ",maxDate)
+        console.log("min date : ",minDate)
+
         const dobDate = new Date(dob);
 
         if (dobDate > new Date(maxDate)) {
+            setDobValidity(false)
+        }
+        else if (dobDate < new Date(minDate)) {
             setDobValidity(false)
         }
         else{
@@ -89,10 +134,35 @@ console.log("faInfoCircle:", faInfoCircle);
     useEffect(()=>{
         setUsernameValidity(USER_REGEX.test(username));
     },[username])
+
+   
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setNext(false)
+        setError(false)
+
+        if (!USER_REGEX.test(username)) {
+            if (username.length < 4) {
+                setError("Username must be at least 4 characters long.");
+            } else if (username.length > 24) {
+                setError("Username must not exceed 24 characters.");
+            } else if (!/^[A-Za-z]/.test(username)) {
+                setError("Username must start with a letter.");
+            } else {
+                setError("Username can only contain letters, numbers, hyphens, and underscores.");
+            }
+            return;
+        }
+
+        if (!isCaptchaVerified) {
+            alert("Please solve the CAPTCHA correctly.");
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:3001/api/v1/auth/register', 
+            setLoading(true);
+            const response = await axiosAuth.post('/register', 
                 {
                     "username": username,
                     "password": password,
@@ -102,29 +172,57 @@ console.log("faInfoCircle:", faInfoCircle);
                 });
             console.log(response);
             setNext(true);
-            setError(null)
+            setError(false)      
+            resetForm();
         } catch (error) {
             setError(error.message);
             console.log(error)
             setErrorMessage(error?.response?.data?.message)
             setErrorCode(error?.response?.status)
         }
+        finally{
+            setLoading(false);
+        }
     };
+
+    const resetForm = () => {
+        setUserName('');
+        setEmail('');
+        setDob('');
+        setPassword('');
+        setConfirmPassword('');
+        setIsCaptchaVerified(false);
+        setPasswordVisibility(false);
+        setConfirmPasswordVisibility(false);
+      };
   return (
     <>
             <div className='login d-flex flex-column justify-content-center align-items-center'>
-    
+
+                    <Link to="/" >
                     <img className='login-logo' src={logo} alt='genimagin'/>
+                    
+                    </Link>
+    
                 
                 <div className='login-page br-10'>
-                    {
+                    {error ? (
+                        <div className='alert alert-danger'>{errorMessage}</div>
+                    ) : next ? (
+                        <div className='alert alert-success'>Link has been sent to your email to Verify the Email.</div>
+                    ) : null}
+
+
+                    {/* {
                         error &&
                         <div className='alert alert-danger'>{errorMessage}</div>
                     }
                     {
                         next &&
                         <div className='alert alert-success'>Link has been sent to your email to Verify the Email.</div>
-                    }
+                    } */}
+
+                    
                     <div>
                         <h3 className='text-start ms-2'>Create Account</h3>
                     </div>
@@ -136,14 +234,10 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     usernameValidity?
                                     username&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     username&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 </label>
                             <div className='email-input-container'>
@@ -174,20 +268,16 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     emailValidity?
                                     email&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     email&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 </label>
                             <div className='email-input-container'>
                                 <input 
                                     type="email" 
-                                    placeholder='email' 
+                                    placeholder='Email' 
                                     className="form-control 
                                     email-input" 
                                     id="exampleInputEmail1" 
@@ -204,14 +294,10 @@ console.log("faInfoCircle:", faInfoCircle);
                             {
                                     dobValidity?
                                     dob&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     dob&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                             </label>
                             <div className='email-input-container'>
@@ -229,7 +315,7 @@ console.log("faInfoCircle:", faInfoCircle);
                         </div>
                         <p id="pwdnote" className={ !dobValidity ? "instructions" : "offscreen"}>
                                     
-                            user must be at least5 years old
+                            user must be at older than 5  years and younger than 100 years
                         </p>
                         {/* password */}
                         <div className='password-container'>
@@ -238,21 +324,17 @@ console.log("faInfoCircle:", faInfoCircle);
                                 {
                                     passwordValidity?
                                     password&&
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     password&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                 }
                                 
                                 </label>
                             <div className='password-input-container d-flex align-items-center justify-content-center'>
                                 <input 
                                     type={passwordVisibility ? "text" : "password"} 
-                                    placeholder='password' 
+                                    placeholder='Password' 
                                     className="form-control password-input" 
                                     id="password-input" 
                                     value={password} 
@@ -269,9 +351,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                         }} 
                                         className='password-visibility-toggle'>
                                     
-                                    <span className="visibility-icon material-symbols-outlined">
-                                        visibility
-                                    </span>
+                                    <VisibilityOutlinedIcon className='visibility-icon' fontSize='small'/>
                                     {
                                         passwordVisibility && <span className='visibility-icon-cross'></span>
                                     }
@@ -293,19 +373,15 @@ console.log("faInfoCircle:", faInfoCircle);
                                     pwdMatch?
                                     confirmPassword&&
 
-                                    <span class="material-symbols-outlined">
-                                     check
-                                    </span>
+                                    <DoneOutlinedIcon/>
                                     :
                                     confirmPassword&&
-                                    <span class="material-symbols-outlined">
-                                        close
-                                    </span>
+                                    <CloseOutlinedIcon/>
                                    
                                 }
                                 </label>
                             <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='Confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                 <div    type='none' 
                                         onClick={(e) =>{ 
                                             
@@ -314,9 +390,7 @@ console.log("faInfoCircle:", faInfoCircle);
                                         }} 
                                         className='password-visibility-toggle'>
                                     
-                                    <span className="visibility-icon material-symbols-outlined">
-                                        visibility
-                                    </span>
+                                    <VisibilityOutlinedIcon className='visibility-icon' fontSize='small'/>
                                     {
                                         confirmPasswordVisibility && <span className='visibility-icon-cross'></span>
                                     }
@@ -324,9 +398,38 @@ console.log("faInfoCircle:", faInfoCircle);
                                 </div>
                             </div>
                         </div>
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Create</button>
+
+                        {/* Math Captcha */}
+                        <div className='d-flex justify-content-center align-items-center'>
+
+                        {
+                            isCaptchaVerified?<div className='button-wh  success-button-wh   d-flex align-items-center w-ft '><TaskAltOutlinedIcon/> Verification Success</div>:
+                            <MathCaptcha onVerify={handleCaptchaVerify}/>
+                        }
+                        </div>
+                        {
+                         loading?
+                         <button className=" button dark-button w-100 br-100 mb-3 d-flex justify-content-center align-items-center">
+                             <div style={spinnerStyle}></div>
+                             <style>{`
+                             @keyframes spin {
+                                 0% { transform: rotate(0deg); }
+                                 100% { transform: rotate(360deg); }
+                             }
+                             `}</style>
+                         </button>
+                         :
+                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-90 br-100 mb-3 mt-3">Create</button>
+                        }
                         
                     </form>
+
+                    <div className='divider d-flex align-items-center  '>
+                        <span className='divider-line flex-1'></span>
+                        <p className='divider-genimagin'>Already has an account ?</p>
+                        <span className='divider-line flex-1'></span>
+                    </div>
+                    <Link to="/login" className="link link-button button light-button w-90 br-100 mt-3" >Sign-in</Link>
                 </div>
             </div>
         </>

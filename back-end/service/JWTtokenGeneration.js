@@ -42,16 +42,16 @@ exports.generateTokenWithRefreshToken = async (refreshToken) => {
 
 
     if (!refreshToken) {
-        return res.status(403).json({ message: 'Invalid refresh 422 token.' });
+        return res.status(403).json({ message: 'Invalid refresh token.' });
     }
 
     try {
-        const user = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY);
+        const user = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY);
         
 
         console.log("regenerating token with refresh token")
         console.log(user)
-        const accessToken = this.generateToken({ id: user.id, username: user.username ,role:user.role});
+        const accessToken = this.generateToken({ user_id: user.id, username: user.username ,role:user.role});
         console.log("checking")
         
         

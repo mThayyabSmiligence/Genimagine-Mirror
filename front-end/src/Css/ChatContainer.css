@@ -8,8 +8,14 @@
     right: 0;
     position: relative;
 }
+.chat-container{
+    width: 75%;
+}
 .chat-prompt-container p{
     margin: 0;
+}
+.chat-prompt{
+    text-align: justify;
 }
 .chat-image-container{
     width: fit-content;
@@ -32,6 +38,8 @@
     background:rgb(34, 34, 34,0.1);
     border-radius: 10px;
     cursor: pointer;
+    height:30px !important;
+    width: 30px !important;
 }
 
 .image-dot-options{
@@ -46,6 +54,8 @@
     right:-35px;
     background:rgb(34, 34, 34,0.1);
     border-radius: 50%;
+    height: 30px !important;
+    width: 30px !important;
   
     cursor: pointer;
 }
@@ -64,14 +74,15 @@
     flex-direction: column;
     align-items: start;
     border-radius: 5px;
-    margin-top: 35px;
+  
     margin-left: 5px;
     cursor: pointer;
     height: fit-content;
     width: 160px ;
-    border: solid 1px rgb(3, 3, 3,0.3);
+    border: solid 1px rgb(165,165,165);
+    background: white;
 }
-.option-item{
+.options-dropdown .option-item{
     text-align: start;
     width: 100%;
     padding: 5PX;
@@ -81,14 +92,31 @@
     color: black;
     border: none;
 }
-.option-item span{
+.options-dropdown .option-item .icon{
     color: grey;
 }
-.option-item:hover{
+.options-dropdown .option-item:hover{
     background: rgb(3, 3, 3,0.1);
 }
 .option-divider{
     height: 1px;
     width: 100%;
     background-color: rgb(3, 3, 3,0.3);
+}
+.options-dropdown .option-item.disable{
+    color: grey;
+    cursor: not-allowed;
+ 
+}
+@media (max-width: 767px) {
+    .chat-prompt-container{
+        max-width: 60%;
+    }
+    .chat-container{
+        width: 100%;
+        margin-bottom: 100px;
+    }
+    .options-dropdown.left{
+        right: -35px;
+    }
 }

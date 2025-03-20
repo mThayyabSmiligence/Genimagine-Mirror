@@ -6,7 +6,7 @@
     margin: 0;
     padding: 0;
 }
-.send-button span{
+.send-button .icon{
     color: rgb(238, 238, 238);
 }
 
@@ -26,7 +26,8 @@
 .prompt-outer-container{
     position: fixed;
     bottom: 0;
-    z-index: 2  ;
+    z-index: 1 ;
+    width: 75%;
 }
 .image-setting-tag{
     border: solid 1px rgb(0, 0, 0);
@@ -37,4 +38,33 @@
 .image-setting-tag span{
     color: rgb(58, 58, 58);
 }
+.prompt-input-container{
+    max-height: 150px;
+    overflow-y: auto;
+}
 
+.selected-settings{
+    background: none;
+    border-top: none;
+}
+
+.selected-settings .setting-tags{
+    margin-left: 10px;
+    color: black;
+    background-color: #e9e9e9;
+    padding: 3px;
+    border-radius: 100px;
+    padding: 3px  10px;
+  }
+
+@media (max-width: 768px) {
+    .prompt-outer-container{
+        width: 90%;
+    }
+}
+
+@media (max-width: 520px) {
+    .selected-settings{
+        display: none !important    ;
+    }
+}

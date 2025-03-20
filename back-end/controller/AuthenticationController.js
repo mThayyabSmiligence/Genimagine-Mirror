@@ -4,7 +4,7 @@ const CryptoJS = require('crypto-js')
 const db = require('../config/connectDatabase');
 const bcrypt = require('bcrypt');
 const cookie = require("cookie");
-const { generateToken, generateRefreshToken} = require('../service/JWTtokenGeneration');
+const { generateToken, generateRefreshToken, generateTokenWithRefreshToken} = require('../service/JWTtokenGeneration');
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const { use } = require('../routes/AuthenticationRoute');
@@ -15,6 +15,8 @@ const { generateUserVerificationToken, verifyUserWithVerificationToken } = requi
 const { deleteUser, getUserById } = require('../service/UserService');
 
 // user register api - api/v1/users/register
+
+const frontendBaseUrl= process.env.FRONTEND_BASE_URL;
 
 exports.userRegister = async(req, res, next) => {
     const {username, password, dob, email, confirmPassword, role='user'} = req.body
@@ -52,7 +54,9 @@ exports.userRegister = async(req, res, next) => {
             });
         }
 
-        const VerificationLink=`http://localhost:3000/user-email-verification/${verification_token}`
+        
+
+        const VerificationLink=`${frontendBaseUrl}/user-email-verification/${verification_token}`
 
         const subject = "Verify Your Email – Genimagine"
 
@@ -171,9 +175,6 @@ exports.userLogin = async (req, res, next) => {
             })
             return
         }
-
-        console.log("test1 "+oldUser)
-
         const token =generateToken(oldUser[0]) ;
         const refreshToken= await generateRefreshToken(oldUser[0])
         
@@ -190,8 +191,6 @@ exports.userLogin = async (req, res, next) => {
             sameSite: "none", // If client and server origins are different
             secure: true // use with HTTPS only
         }
-        console.log("token   :"+token)
-        console.log("refresh token 2  "+refreshToken)
 
         res.cookie( "token", token, options );
         res.cookie("refresh_token",refreshToken,refreshTokenOptions)
@@ -214,7 +213,7 @@ exports.userLogin = async (req, res, next) => {
         });
     } catch(error){
         console.log(error)
-    }
+    }9
 }
 
 exports.userLogout= async (req,res,next)=>{
@@ -310,6 +309,24 @@ exports.emailOtpRequest = async(req, res, next) => {
     }
 
     try{
+        const query = `SELECT * FROM  otp_verifications
+                        WHERE email = ? 
+                        AND created_at >= NOW() - INTERVAL 2 MINUTE 
+                        ORDER BY created_at DESC 
+                        LIMIT 1;`
+        
+        const [rows] = await db.execute(query, [email]);
+        if(rows.length > 0){
+            return res.status(400).json({
+                message: "to resend the opt you have to 2 mins after last request."
+            });
+        }
+
+    }catch(err){
+        console.error(err)
+    }
+
+    try{
         const query = 'INSERT INTO otp_verifications (email, otp, expires_at) VALUES (?, ?, ?)'
         const rows = await db.execute(query, [email, otp, expiresAt])
 
@@ -351,14 +368,14 @@ exports.verifyEmailOtp = async(req, res, next) => {
         const [rows] = await db.execute(query, [email])
         
         if (rows.length === 0) {
-            return res.status(400).json({ message: 'No OTP found for this email. Please request a new one.' });
+            return res.status(400).json({ message: 'No OTP found for this email. Please request a new opt.' });
         }
 
         const dbOtp = rows[0].otp;
             const expiresAt = new Date(rows[0].expires_at);
 
             if (expiresAt < new Date()) {
-                return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
+                return res.status(400).json({ message: 'OTP expired. Please request a new opt.' });
             }
 
             if (dbOtp != otp) {
@@ -645,7 +662,7 @@ exports.forgotPassword=async(req,res)=>{
     const encryptedEmail= encodeURIComponent(encrypted); 
 
 
-    const resetLink=`http://localhost:3000/reset-password/${encryptedEmail}/${resetToken}`
+    const resetLink=`${frontendBaseUrl}/reset-password/${encryptedEmail}/${resetToken}`
 
     const subject = "rest password link for your account on Genimagine"
 
@@ -739,3 +756,38 @@ exports.testSendMail=async(req,res)=>{
 
        res.status(200).json({message:emailSent})
 }
+
+
+exports.generateTokenWithRefreshTokenController = async (req, res) => {
+    try {
+        // Get the refresh token from the cookie
+        const cookies= cookie.parse(req.headers.cookie)
+        const token = cookies.token
+        const refreshToken= cookies.refresh_token
+        if (!refreshToken) {
+            return res.status(403).json({ message: "Refresh token is missing." });
+        }
+
+        // Generate new access token using the refresh token
+        const newAccessToken = await generateTokenWithRefreshToken(refreshToken);
+
+        if (!newAccessToken) {
+            return res.status(401).json({ message: "Invalid or expired refresh token." });
+        }
+
+        let options = {
+            maxAge: 1000 * 60 * 60, // expire after 60 minutes
+            httpOnly: true, // Cookie will not be exposed to client side code
+            sameSite: "none", // If client and server origins are different
+            secure: true // use with HTTPS only
+        }
+        // Set the new access token in cookies
+        res.cookie("token", newAccessToken, options);
+
+        return res.json({ message: "Token refreshed successfully" });
+
+    } catch (error) {
+        console.error("Refresh token error:", error.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};

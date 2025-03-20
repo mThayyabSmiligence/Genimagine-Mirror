@@ -17,6 +17,9 @@
 .pop-up-headings{
   /* cursor: pointer; */
 }
+.pop-up-content .model-list{
+  justify-content: start;
+}
 
 .pop-up-model-content{
   width: 190px;
@@ -53,3 +56,17 @@
   border: none;
   padding: 5px 10px;
 } */
+
+@media (max-width: 768px){
+  .settings-pop-up {
+    width: 90%;
+  }
+  .pop-up-content .model-list{
+    align-items: center;
+    justify-content: center;
+  }
+  .pop-up-model-content{
+    width: fit-content;
+    
+  }
+}

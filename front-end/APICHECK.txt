@@ -1,0 +1,70 @@
+pages
+|->login
+|->ForgotPassword
+|->RegisterUser
+|->ResetPassword
+|->VerifyUser
+|->Explore
+|   |->ExplorePage
+|
+|->Guest
+|   |->GuestContentPage
+|
+|->LandingPage
+|   |->LandingPage
+|
+|->Purchase
+|   |->CreditPurchasePage
+|
+|->User
+|   |->Chatpage
+|   |->Librarypage
+|   |->Profilepage
+|   |->PublishedImages
+|   |->PublishedImagesPage
+|   |->PublishedImagesPage
+|
+
+API's
+|->axios
+
+Components
+|->SideNavBar
+|->SubTopBar
+|->Captcha
+|   |->MatchCaptcha
+|
+|->CommonComponents
+|   |->ChatContainer
+|   |->CreditBalance
+|   |->ExplorePopU
+|   |->IgSettingPopUp
+|   |->ImageSlider
+|   |->ProfileDropdown
+|   |->PromptInputContainer
+|
+|->CreditPurchase
+|   |->CreditPurchaseCard
+|
+|->Explore
+|   |->SortSection
+|
+|->LandingPage -> does nor contain any api
+|  
+|
+|->Profilepage
+|   |->EditUserName
+|
+|->UserComponenet
+|   |->LibraryImageContainer
+|
+
+Context
+|->AuthProvider
+|->RefreshDataProvider
+
+Hooks-> does nor contain any  api's 
+
+images-> does nor contain any api's
+
+Layouts-> does nor contain any api's

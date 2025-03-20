@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -48,10 +48,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
         
         //exiting if the limit exceeded
-        if(!canUserGenerateForFree){
-            res.status(429).json({
-                message:"free image generation limit exceeded"
-            })
+        if(!canUserGenerateForFree.success){
+            res.status(canUserGenerateForFree.status).json(canUserGenerateForFree)
             return
         }
         const inputs={
@@ -72,11 +70,12 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         let chatId= null
         if(chat_id==null){
-            const newChatId= await createChat(id);
+            const newChatId= await createChat(id,prompt);
             const insertedImage = 0;
             chatId=newChatId
         }else{
             chatId=chat_id
+            const result = await updateChatUpdatedAt(chatId)
         }
         const generated_image_data={
             user_id:id,
@@ -94,7 +93,13 @@ exports.userGenerateImageController=async(req,res,next)=>{
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
-        
+
+        if(!imageUpload.success){
+            res.status(500).json(imageUpload)
+            return
+        }
+
+        console.log(imageUpload);
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
@@ -118,7 +123,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             height:w_h.height,
         }
         const model_data=handelModel(model)
-        console.log(model_data)
+
 
         const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
 
@@ -142,12 +147,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
         await deductCredit(id,model_data.cp_required) ;
         let chatId= null
         if(chat_id==null){
-            const newChatId= await createChat(id);
+            const newChatId= await createChat(id,prompt);
             const insertedImage = 0;
             chatId=newChatId
         }else{
             chatId=chat_id
+            const result = await updateChatUpdatedAt(chatId)
         }
+        
         const generated_image_data={
             user_id:id,
             prompt:prompt,
@@ -162,6 +169,13 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const image_id= insertImage.insertId;
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+
+        if(!imageUpload.success){
+            res.status(500).json(imageUpload)
+            return
+        }
+
+        console.log(imageUpload)
         
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)

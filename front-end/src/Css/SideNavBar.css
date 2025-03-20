@@ -10,6 +10,8 @@
     height: 100vh;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1); /* Right shadow */
     width: 250px;
+    background: white;
+    
 
 }
 
@@ -24,7 +26,7 @@
 }
 .side-nav.active{
     display: flex;
-    z-index: 1  ;
+    z-index: 4 ;
 }
 .side-nav.in-active{
     z-index: -1;
@@ -42,27 +44,46 @@
 }
 
 
+.nav-list-item{
+    position: relative;
+   
+}
+/* .nav-list-item.selected{
+    z-index: 5;
+} */
+.more-options span{
+    color: transparent;
+  }
+  
+  .nav-list-item:hover .more-options span {
+    color: rgb(78, 78, 78);
+  }
+
 .nav-list-item,.side-nav .side-nav-bottom-items .side-nav-bottom-item{
     display: flex;
     width: 200px;
     text-align: start;
-    padding: 8px 10px;
+
     margin: 2px 0px;
     border-radius: 5px;
-    
+    height: 30px; 
 }
 .nav-list-item.active{
     background-color: rgb(238, 238, 238);
     border: solid 1px rgb(204, 204, 204);
-
-    padding: 7px  9px;
+    height: 30px;
+    width: 205px;
 }
+
+.nav-list-item:hover{
+    height: 30px;  
+}
+
 .nav-list-item:hover,.side-nav .side-nav-bottom-items .side-nav-bottom-item:hover{
     background-color: rgb(238, 238, 238);
     border: solid 1px hwb(0 29% 0%);
     border: solid 1px rgb(204, 204, 204);
 
-    padding: 7px  9px;
 }
 .accordion,.accordion-button,.accordion-header,.accordion-item.accordion-collapse,.accordion-header{
     outline: none;
@@ -73,4 +94,57 @@
     border: none;
     outline: none;
     box-shadow: none;
+}
+.side-nav-close-button {
+    display: none;
+}
+.sidenav-blur-bg{
+    display: none;
+}
+@media (max-width: 766px) {
+    .side-nav {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: -250px; /* Start off-screen */
+        height: 100vh;
+        width: 250px;
+        background: white;
+        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease-in-out; /* Smooth sliding transition */
+        z-index: 4;
+    }
+
+    .side-nav.active {
+        left: 0; /* Slide in */
+    }
+
+     .side-nav-close-button.active{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top:10px;
+        right: -50px;
+        border: none;
+        border-radius: 50%;
+        height: 35px;
+        width: 35px;
+    }
+    .side-nav.in-active{
+        z-index: 3;
+    }
+    .sidenav-blur-bg.active{
+        display: block;
+        z-index: 3;
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        background: rgba(15, 15, 15, 0.425);
+    }
+    .more-options span{
+        color: rgb(78, 78, 78);
+    }
 }

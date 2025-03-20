@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./Css/common.css"
 import './App.css';
-import {BrowserRouter as Router , Routes,Route} from "react-router-dom" 
+import {BrowserRouter as Router , Routes,Route, Navigate} from "react-router-dom" 
 import { useEffect, useState } from 'react';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
@@ -18,9 +18,17 @@ import ResetPassword from './Pages/ResetPassword';
 import CreditPurchasePage from './Pages/Purchase/CreditPurchasePage';
 import ProfilePage from './Pages/User/ProfilePage';
 import LibraryPage from './Pages/User/LibraryPage';
+import PublishImagePage from './Pages/User/PublishImagePage';
+import ExplorePage from './Pages/Explore/ExplorePage';
+import LandingPage from './Pages/LandingPage/LandingPage';
+import AuthenticationLayout from './Layouts/AuthenticationLayout';
+import EditUserName from './Components/ProfilePage/EditUserName';
+import PublishedImages from './Pages/User/PublishedImages';
+import ChangePassword from './Pages/User/ChangePassword';
+
 
 function App() {
-  const[showNavBar,setShowNavBar]=useState(true)
+  const[showNavBar,setShowNavBar]=useState(false)
   const [width, setWidth] = useState(window.innerWidth);
           
         useEffect(() => {
@@ -36,36 +44,48 @@ function App() {
     }, []);
   return (
     <div className="App">
-      <Router>
+
           
-       
           <Routes>
-            <Route path='/login' element={<Login></Login>}></Route> 
-            <Route path='/register' element={<RegisterUser></RegisterUser>}></Route>
-            <Route path='/user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
-            <Route path='/forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
-            <Route path='/reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
+
+            <Route path='/' element={<LandingPage/>}></Route>
+
+              <Route path='login' element={<Login></Login>}></Route> 
+            <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
+              <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
+              <Route path='user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
+              <Route path='forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
+              <Route path='reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>
+            </Route>
+            
+            <Route path='edit-user-name' element={<EditUserName></EditUserName>}></Route>
+
             
 
 
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
-                <Route path="explore"></Route>
+                <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
                 <Route path='credit-shop'></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
+                  <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
+                  <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
+                  <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                 </Route>
 
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
             </Route>
-            
+            <Route
+              path='*'
+              element={<Navigate to="/"/>}
+            ></Route>
           </Routes>
-   
-      </Router>
+
     </div>
   );
 }

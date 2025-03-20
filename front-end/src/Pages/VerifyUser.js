@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
+import { axiosAuth } from '../API\'s/axios';
 
 export default function VerifyUser() {
     const {verification_token}=useParams()
@@ -24,11 +25,11 @@ export default function VerifyUser() {
 
     useEffect(()=>{
         handelVerification()
-    },[])
+    },)
 
     const handelVerification=async()=>{
         try{
-            const response = await axios.get(`http://localhost:3001/api/v1/auth/verify-user/${verification_token}`,
+            await axiosAuth.get(`/verify-user/${verification_token}`,
                 {
                     withCredentials: true,
                 }

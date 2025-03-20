@@ -1,8 +1,9 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { use, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import CryptoJS from "crypto-js";
 import logo from '../images/genimagin_logo.png'
+import { axiosAuth } from '../API\'s/axios';
 
 
 
@@ -33,17 +34,34 @@ export default function ResetPassword() {
         
     const [pwdMatch,setPwdMatch] = useState(false)
     
+    const [error,setError]=useState(false)
+    const [errorMessage,setErrorMeaage]=useState(null)
+    
+    const [success,setSuccess]=useState(false)
+    const [successMessage,setSuccessMessage]=useState(null)
+
+    const Navigate = useNavigate();
+    
     useEffect(() => {
         setPasswordValidity(PWD_REGEX.test(password));
         setPwdMatch(password === confirmPassword);
     }, [password, confirmPassword])
 
+    useEffect(() =>{
+        if(success){
+            setTimeout(()=>{
+                Navigate('/login', {replace: true})
+            },2500)
+        }
+    },[success])
 
-    const [error,setError]=useState(false)
-    const [errorMessage,setErrorMeaage]=useState(null)
-
-    const [success,setSuccess]=useState(false)
-    const [successMessage,setSuccessMessage]=useState(null)
+    useEffect(() =>{
+        if(error){
+            setTimeout(()=>{
+                Navigate('/forgot-password', {replace: true})
+            },2000)
+        }
+    },[error])
 
     function decryptEmail(encryptedEmail) {
         const decryptedBytes = CryptoJS.AES.decrypt(decodeURIComponent(encryptedEmail), secretKey);
@@ -56,7 +74,7 @@ export default function ResetPassword() {
         setSuccess(false)
 
         try{
-            const response = await axios.post(`http://localhost:3001/api/v1/auth/reset-password/${reset_token}`, {
+            const response = await axiosAuth.post(`/reset-password/${reset_token}`, {
                 new_password:password
             });
 
@@ -78,14 +96,23 @@ export default function ResetPassword() {
                         {
                             error &&
                             <div className='alert alert-danger'>{errorMessage}</div>
+
                         }
                         {
-                            success &&
-                            <div className='alert alert-success'>{successMessage}</div>
+                            success && <>
+                                <div className='alert alert-success'>{successMessage}</div>
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden loading-span">Loading...</span>
+                                </div>
+                        </>
                         }
+                        {
+                            !success &&
                         <div>
                             <h3 className='text-start ms-2'>Reset Password</h3>
-                        </div>
+                        </div>}
+                        { 
+                            !success && 
                         <form className="container login-form" onSubmit={(e) => handelSubmit(e)}>
                             
                             
@@ -93,7 +120,7 @@ export default function ResetPassword() {
                            
                             {/* password */}
                             <div className='password-container'>
-                                <label htmlFor="exampleInputPassword1" className="d-flex form-label ">
+                                <label htmlFor="new-password" className="d-flex form-label ">
                                     New Password :
                                     {
                                         passwordValidity?
@@ -112,9 +139,9 @@ export default function ResetPassword() {
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
                                     <input 
                                         type={passwordVisibility ? "text" : "password"} 
-                                        placeholder='password' 
+                                        placeholder='New password' 
                                         className="form-control password-input" 
-                                        id="password-input" 
+                                        id="new-password" 
                                         value={password} 
                                         onChange={(e) => 
                                         setPassword(e.target.value)}  
@@ -147,7 +174,7 @@ export default function ResetPassword() {
                             </p>
                             {/* confirm password */}
                             <div className='password-container mb-3'>
-                                <label htmlFor="exampleInputPassword1" className="form-label d-flex">
+                                <label htmlFor="confirm-password" className="form-label d-flex">
                                     Confirm New Password :
                                     {
                                         pwdMatch?
@@ -165,7 +192,7 @@ export default function ResetPassword() {
                                     }
                                     </label>
                                 <div className='password-input-container d-flex align-items-center justify-content-center'>
-                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='confirm password' className="form-control password-input" id="password-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
+                                    <input type={confirmPasswordVisibility ? "text" : "password"} placeholder='Confirm password' className="form-control password-input" id="confirm-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required/>
                                     <div    type='none' 
                                             onClick={(e) =>{ 
                                                 
@@ -184,9 +211,10 @@ export default function ResetPassword() {
                                     </div>
                                 </div>
                             </div>
-                            <button disabled={ !passwordValidity || !pwdMatch      ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Reset</button>
+                            <button disabled={ !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Reset</button>
                             
                         </form>
+                    }
                     </div>
                 </div>
             </>

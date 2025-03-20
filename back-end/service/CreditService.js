@@ -5,7 +5,7 @@ const crypto = require('crypto')
 exports.getCreditPackagesService=async()=>{
 
     try {
-        const [packages] = await db.execute('SELECT * FROM credit_purchase_packages');
+        const [packages] = await db.execute('SELECT * FROM credit_purchase_packages  WHERE package_id <> 0');
         return packages;
     } catch (error) {
         console.log("eorror retriving packages",error);

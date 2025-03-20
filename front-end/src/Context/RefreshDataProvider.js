@@ -1,4 +1,5 @@
 import { Children, createContext ,useEffect,useState} from "react";
+import { axiosPrivate } from "../API's/axios";
 
 const RefreshDataContext = createContext()
 
@@ -6,6 +7,31 @@ export const RefreshDataProvider =({children})=>{
 
     const [refreshChatList,setRefreshChatList] = useState(true);
     const [refreshCreditBalance,setRefreshCreditBalance] = useState(true)
+    const [tempImageData,setTempImageData] = useState(true)
+
+    const [refreshUserData,setRefreshUserData] = useState(true)
+
+    const [refreshLibraryData,setRefreshLibraryData] = useState(true)
+
+    const [resortChatList,setResortChatList] = useState(0)
+
+    const [refreshImageSettings,setRefreshImageSettings] = useState(true)
+
+    
+    const getUserData=async()=>{
+        try{
+            const response = await axiosPrivate.get('/user-data')
+            console.log(response.data)
+            if(response.data.status==200){
+                localStorage.setItem('user_data', JSON.stringify(response.data.data))
+            }
+        }
+        catch(err){
+
+            console.error(err)
+        }
+    }
+
 
 
     return (
@@ -13,7 +39,18 @@ export const RefreshDataProvider =({children})=>{
             refreshChatList,
             setRefreshChatList,
             refreshCreditBalance,
-            setRefreshCreditBalance
+            setRefreshCreditBalance,
+            tempImageData,
+            setTempImageData,
+            getUserData,
+            refreshUserData,
+            setRefreshUserData,
+            refreshLibraryData,
+            setRefreshLibraryData,
+            resortChatList,
+            setResortChatList,
+            refreshImageSettings,
+            setRefreshImageSettings
         }}>
             {children}
         </RefreshDataContext.Provider>

@@ -1,0 +1,246 @@
+.explore-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    overflow-y:auto ;
+  }
+
+
+
+  
+  .explore-popup-content {
+    padding: 10px;
+    border-radius: 10px;
+    width: 95%;
+    height: 95%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .close-button {
+    position: absolute;
+    color: rgb(189, 187, 187);
+    top: 20px;
+    right: 50px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .close-button span{
+    font-size: 25px;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+  }
+  .popup-image-container{
+    width: 60%;
+    height: 100%;
+  }
+
+  .popup-image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+  
+  .image-details {
+    margin-top: 20px;
+    width: 40%;
+  }
+  .image-details,.popup-image{
+    padding: 10px;
+  }
+
+  .image-prompt{
+    font-size: 15px;
+   
+    height: 40%;
+    width: 100%;
+    
+
+    margin-bottom: 5%;
+    position: relative;
+  }
+
+  .prompt-header,.caption-header{ 
+    text-align: start;
+    color: rgb(199, 199, 199);
+    font-weight: 400;
+  }
+
+ .caption-text-container {
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+    overflow-y : auto;
+    height: 80%;
+} 
+.explore-prompt-setting-container{
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  height: 80%;
+}
+
+ .prompt-text-container {
+  overflow-y: auto;
+  max-height: 75%;
+  min-height: auto;
+}
+.image-setting-container{
+  bottom: 15px;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  min-height: 25%;
+  max-height: auto;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top: 1px solid #ccc;
+  padding: 3px;
+}
+.image-setting-container .setting-icon{
+  
+  background-color: #e9e9e9;
+  padding: 3px;
+  border-radius: 50%;
+  border: 1px solid #000000;
+  color: black;
+}
+.prompt-text-innner-container,.caption-inner-text-container{
+  word-wrap: break-word; /* Ensures long words break */
+  overflow-wrap: break-word; /* Alternative for better support */
+  white-space: normal; 
+}
+.image-setting-container .setting-tags{
+  margin-left: 10px;
+  color: black;
+  background-color: #e9e9e9;
+  padding: 3px;
+  border-radius: 100px;
+  padding: 3px  10px;
+}
+
+.image-caption{
+    border-radius: 10px;
+
+    height: 40%;
+}
+
+
+.user-copy-prompt-button, .user-like-button,.user-view-button , .delete-button, .share-image-button{
+    height: 30px;
+    border-radius: 100px;
+
+}
+.user-like-button p,.user-view-buttons p{
+    margin-left: 10px;
+}
+.user-like-button .liked-button{
+  color: rgb(253, 60, 92);
+}
+.caption-inner-text-container p {
+  text-align: start;
+}
+.delete-button {
+    color: rgb(255, 0, 0);
+}
+
+.edit-caption-button{
+  color: rgb(0, 0, 0);
+  background-color: #ccc;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  border: none;
+  padding: none;
+}
+.edit-caption-button .edit-icon{
+  font-size: 20px;
+}
+
+.share-image-container{
+  position: relative;
+}
+
+.copy-link-button{
+  position: absolute;
+  width: 90px;
+  left: 0px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+  cursor: pointer;
+}
+@media (min-width: 1920px) and (max-width: 2560px) {
+  /* Styles for 1080p screens */
+ 
+}
+
+@media (min-width: 1367px) and (max-width: 1920px) {
+  
+}
+
+@media (min-width: 1280px) and (max-width: 1366px) {
+  /* Styles for 720p screens */
+  .explore-popup-overlay{
+    height: 633px;
+  }
+  
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  /* Styles for tablets and small laptops */
+  
+ 
+}
+
+
+
+
+@media (max-width: 767px) {
+
+    .explore-popup-content{
+      flex-direction: column;
+      align-items: center;
+    }
+    .image-details{
+      width: 100%
+    }
+    .popup-image-container{
+      width: 100%;
+    }
+    .image-prompt{
+      height: 150px;
+    }
+    .image-caption{
+      height: 200px;
+    }
+    .popup-image-container{
+      height: 500px;
+    }
+  
+    .image-setting-container .setting-icon{
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+    }
+    .image-setting-container .setting-tags{
+      padding: 3px 5px;
+    }
+    .popup-image-container{
+      height: 40%;
+    }
+    .close-button{
+      top: 5px;
+      right: 5px;
+    }
+}
+

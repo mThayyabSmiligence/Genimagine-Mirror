@@ -1,7 +1,8 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService } = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService} = require('../service/UserService');
+const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -23,6 +24,13 @@ exports.getUsersList = async (req, res, next) => {
     }
 }
 
+exports.getCurrentUserDataController=async(req,res)=>{
+    const {id} = req.user;
+    
+    const user = await getUserDataService(id);
+    
+    return res.status(user.status).json(user);
+}
 
 // get user by id api - api/v1/user/:id
  
@@ -32,7 +40,7 @@ exports.getSingleUser = async (req, res, next)=> {
 
     try{
         const [rows] = await db.execute(
-            'SELECT * FROM Guest_Image_Limits WHERE id = ?', 
+            'SELECT * FROM guest_image_limits WHERE id = ?', 
             [userId]
         );
         // console.log(rows[0]);
@@ -97,6 +105,8 @@ exports.deleteImageController = async(req,res)=>{
 
 }
 
+
+
 exports.getChatsList=async(req,res,next)=>{
     //getting jwt token from cookies
     let cookies =null
@@ -131,15 +141,17 @@ exports.getChatsList=async(req,res,next)=>{
 exports.getChatsData=async(req,res,next)=>{
 
     const {chatId}=req.params;
+    const {page} = req.query;
 
     console.log("chat_id",chatId);
+    console.log("page",page);
 
     let cookies =null
     let token =null 
     let decodeToken=null
             
     try{
-        const cookies1 = cookie.parse(req.headers.cookie)
+        const cookies1 = cookie.parse(req.headers.cookie) 
         cookies=cookies1    
         const token1 = cookies.token
         token= token1
@@ -152,13 +164,18 @@ exports.getChatsData=async(req,res,next)=>{
     //getting jwt token from cookies
   
 
-    const chatData=await getImagesByChatId(chatId,id)
+    const chatData=await getImagesByChatId(chatId,id,page)
 
 
-    res.status(chatData.status).json({
-        message:chatData.message
-    })
+    res.status(chatData.status).json(chatData)
 
+}
+
+exports.editChatNameController=async(req, res, ) => {
+    const {chatId, chatName}=req.body;
+    const {id}=req.user;
+    const response = await editChatNameService(id, chatId, chatName)
+    res.status(response.status).json(response)
 }
 
 exports.addToLibraryController=async(req,res)=>{
@@ -203,7 +220,36 @@ exports.deleteFromLibraryController =async(req,res)=>{
     }) 
 }
 
-exports.publishToExploreController=async(req,res)=>{
-    const {image_id,image_path,caption}= req.body;
+exports.editUserController=async(req,res)=>{
+    const {id}=req.user;
+    const {userName}=req.body;
+
+    const result = await editUserService(id,userName);
     
+    return res.status(result.status).json({
+        message:result.message,
+        success:result.success
+    })
+}
+exports.passwordChangeController=async(req,res)=>{
+    const {id}=req.user;
+    const {currentPassword, newPassword}=req.body;
+    const result = await passwordChangeService(id,currentPassword, newPassword);
+
+    return res.status(result.status).json(result)
+}
+
+exports.deleteChatController=async(req,res)=>{
+
+    const {chat_id}=req.params;
+    const {id}=req.user;
+
+    if(!chat_id){
+        return res.status(400).json({
+            message:"chatId is required"
+        })
+    }
+    const result = await deleteChatService(id,chat_id);
+    
+    return res.status(result.status).json(result);
 }

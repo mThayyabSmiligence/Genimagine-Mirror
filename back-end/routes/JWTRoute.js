@@ -1,7 +1,8 @@
-const express = require('express')
-// const { refreshToken } = require('../service/JWTtokenGeneration');
+const express = require('express');
+const { generateTokenWithRefreshToken } = require('../service/JWTtokenGeneration');
+const { generateTokenWithRefreshTokenController } = require('../controller/AuthenticationController');
 const router = express.Router();
 
-// router.route('/').post(refreshToken);
+router.route('/').post(generateTokenWithRefreshTokenController);
 
 module.exports = router;

@@ -1,0 +1,419 @@
+.navbar{
+   
+    border-radius: 5px;
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     background-color: white; /* Adjust as needed */
+     z-index: 1000; /* Ensures it stays above other elements */
+     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    text-decoration: none;
+    padding: 10px;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: black;
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+
+.profile-button{
+    margin-right: 5px;
+    border-radius: 100%;
+    height: 40px;
+    width: 40px;
+}
+
+.nav-logo{
+    width: 150px;
+    height: 30px;
+}
+.navbar-collapse.collapse .navbar-list {
+    flex-direction: row;
+    align-items: center; /* Optional: Center align items */
+}
+
+
+.profile-dropdown {
+    position: relative;
+}
+
+.sign-in-link{
+    background-color: black;
+    color: white;
+
+}
+
+
+/* Hero.css */
+
+
+
+.hero-section {
+    position: relative;
+    min-height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    z-index: 1;
+
+    /* Prevent blur from spilling into other sections */
+    overflow: hidden;
+
+    margin-top: 50px;
+}
+
+/* Blurred background with sharp end at the bottom */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%),
+      url("../images/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: multiply;
+
+    /* Apply blur effect */
+    filter: blur(5px);
+    transform: scale(1.1); /* Fix white edges */
+
+    /* Ensure sharp ending at the bottom */
+    clip-path: inset(0 0 0 0);
+    
+    z-index: -1;
+}
+
+.hero-sec-heading{
+ 
+    font-weight: bold;
+}
+
+.hero-sec-heading span{
+    color: rgb(84, 220, 220);
+}
+
+.hero-background {   
+    position: relative;
+    min-height: 100vh;
+    height: fit-content; /* Allow it to expand with content */
+    background-image: url("../images/hero-bg.jpg");
+    background-size: cover;
+    z-index: -1;
+}
+
+.hero-background-blur {
+    min-height: 100vh;
+    position:absolute;
+    height: fit-content !important;
+    top: 0;
+    height: auto; /* Allow it to grow */
+    width: 100%;
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 0;
+}
+
+.hero-sec {
+    min-height: calc(100vh - 50px);
+    height: auto; /* Remove the restriction of fixed height */
+    position: relative;
+}
+.hero-outer-sec{
+    z-index: 1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+/* .hero-sec::before {     content: '';     position: absolute;     top: 0;     left: 0;     width: 100%;     height: 100%;     background: inherit;     filter: blur(10px); z-index: -1; } */
+.header-highlight{
+    color: rgb(87, 224, 224);
+}
+
+
+
+.hero-sec-link{
+    width: 150px;
+    padding: 5px;
+    background-color: white;
+    border: none;
+    /* box-shadow: 2px 2px 3px rgb(200, 199, 199); */
+}
+
+/* .hero-sec-link:hover{
+    background-color: rgb(19, 21, 21);
+    color: white;
+} */
+
+.hero-img{
+    max-height: 500px;
+    max-width: 500px;
+    width: 90%;
+}
+
+
+.hero-lft-container{
+    height: 500px;
+    margin: 0px 0px 0px 100px;
+    color: rgb(255, 255, 255);
+}
+.hero-ryt-container{
+    height: 100%;
+}
+
+@media (max-width: 992px) {
+    .profile-button{
+        margin-right: 0px;
+    }
+
+    .navbar-collapse.collapsing .navbar-list {
+        flex-direction: column;
+        align-items: center; /* Optional: Center align items */
+    }.navbar-collapse.collapse.show .navbar-list {
+        flex-direction: column;
+        align-items: center; /* Optional: Center align items */
+    }    
+    
+    .hero-lft-container{
+        margin: 0;
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+}
+
+
+/* HowToGenerate.css */
+
+.how-to-generate-section{
+    /* min-height: 100vh; */
+    height: fit-content;
+}
+
+.steps-to-generate{
+    margin: 0px 0px 0px 100px;
+}
+
+.sample-generate-image img{
+    max-height: 500px;
+    max-width: 500px;
+    width: 90%;
+}
+
+@media (max-width: 768px) {
+    .steps-to-generate {
+        margin: 0px 20px; /* Reduce margin for medium screens */
+    }
+    .sign-in-link {
+        margin: 0px !important;
+        margin-top: 10px !important;
+    }
+}
+
+/* Styles for small devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .hero-lft-container{
+        height: 300px;
+    }
+    .steps-to-generate {
+        margin: 0px 10px; /* Further reduce margin for small screens */
+        text-align: center; /* Center align if needed */
+    }
+
+    .sample-generate-image img {
+        max-height: 300px; /* Adjust image size for small devices */
+        max-width: 100%;
+    }
+    .hero-outer-sec{
+        padding: 0px;
+    }
+}
+
+
+
+/* ImageCustomization.css */
+
+.image-customization-section{
+    height: fit-content;
+    padding-top: 100px;
+}
+
+.customization-heading{
+    margin-bottom: 50px;
+}
+
+.customization-img{
+    width: 300px;
+    height: 250px;
+    border-radius: 10px;
+}
+.customization-card{
+    width: 300px;
+}
+.customization-card p{
+    text-align: justify;
+}
+
+/* launch-to-explore.css */
+.publish-image{
+    width: 500px;
+}
+
+.launch-to-explore-section {
+    background-color: #f8f9fa; /* Light background */
+  }
+  
+  .publish-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .launch-to-explore-content {
+    padding: 20px;
+  }
+  
+  .launch-to-explore-content ul{
+    padding-left: 20px;
+  }
+  
+  .launch-to-explore-content ul li {
+
+    margin-bottom: 10px;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  @media (max-width: 768px) {
+    .launch-to-explore-content {
+      text-align: center;
+    }
+  
+    .launch-to-explore-content ul{
+      text-align: left;
+    }
+  }
+
+  /* launch-to-library */
+
+  
+  /* .go-to-library{
+    width: 150px;
+    padding: 5px;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+  } */
+
+  .image-library{
+    width: 500px;
+  }
+
+  /* platformgallery */
+
+  .platform-gallery-image{
+    padding: 0 12px;
+  }
+
+  /* Masonry Grid */
+.platform-gallery-masonry {
+    display: flex;
+    margin: auto;
+    width: 100%;
+  }
+  
+  /* Columns inside Masonry */
+  .platform-gallery-column {
+    background-clip: padding-box;
+    padding: 5px;
+  }
+
+
+  .platform-image{
+    overflow: hidden;
+    height: fit-content;
+    width: fit-content;
+    cursor: pointer;
+    margin-bottom:10px;
+    border-radius: 10px;
+  }
+
+  .platform-image img {
+    width: 100%;
+    display: block;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .platform-image img:hover{
+    transform: scale(1.05);
+  }
+
+  @media (min-width: 1600px) and (max-width: 2560px) {
+    /* Styles for 1080p screens */
+    
+.platform-gallery-image{
+    padding: 0 12px;
+}
+   
+  }
+  
+  @media (min-width: 1367px) and (max-width: 1600px) {
+    
+
+  }
+  
+  @media (min-width: 1280px) and (max-width: 1366px) {
+    /* Styles for 720p screens */
+ 
+    
+  }
+  @media (min-width: 768px) and (max-width: 1279px) {
+    /* Styles for tablets and small laptops */
+    
+   
+  }
+  
+  @media (max-width: 767px) {
+  
+      
+    .platform-gallery-image{
+        padding: 0 12px;
+    }
+        
+}
+    
+
+/* faq.css */
+
+.contact-us span{
+    cursor: pointer;
+    color: rgb(30, 196, 196);
+}
+
+/* footer */
+.footer-section{
+    background-color: black;
+    color: #fff;
+}

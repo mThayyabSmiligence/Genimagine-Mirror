@@ -3,26 +3,28 @@ import PromptInPutContainer from '../../Components/CommonComponents/PromptInputC
 import "../../Css/GuestContentContainer.css"
 import SuggestionPrompts from '../../Components/CommonComponents/SuggestionPrompts'
 import ChatContainer from '../../Components/CommonComponents/ChatContainer'
-import { useAxiosGenerateImage } from '../../API\'s/axios'
+import { axiosPrivate, useAxiosGenerateImage } from '../../API\'s/axios'
+import axios from "axios"
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../Hooks/useAuth'
 import AuthContext from '../../Context/AuthProvider'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
+import { useSearchParams } from "react-router-dom";
 
 export default function GuestContentPage() {
 
+    const {loggedIn} = useContext(AuthContext)
+    const {refreshImageSettings} = useContext(RefreshDataContext)
 
-     const [trackmodel,setTrackModel] = useState(1)
-    const [selectedAspectRatio, setSelectedAspectRatio] = useState(2);
+    const [model,setModel]= useState(null)
+    const [aspectRatio,setAspectRatio]= useState(null)
 
     const navigate =useNavigate()
-    const {loggedIn} = useContext(AuthContext)
     const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
     // const [chatList,setChatList]= useState([])
     const [promptText,setPromptText]=useState("")
-    const [chat,setChat]= useState([
-      
-    ])
+    const [chat,setChat]= useState([])
+
     const [image, setImage] = useState(null);
     
     const [loading, setLoading] = useState(false);
@@ -37,37 +39,26 @@ export default function GuestContentPage() {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null)
 
+    const [searchParams] = useSearchParams();
+    const prompt = searchParams.get("prompt");
+
+    useEffect(()=>{
+      if(prompt){
+        setPromptText(prompt)
+      }
+    },[prompt])
 
     const axiosGenerateImage=useAxiosGenerateImage()
 
-    const aspectRatioList = [
-      {
-        id: 1,
-        aspectRatio: "16:9",
-        width: 80, 
-        height: 45
-      },
-      // {
-      //   id: 2,
-      //   aspectRatio: "3:2"
-      // },
-      {
-        id: 2,
-        aspectRatio: "1:1",
-        width: 50,
-        height: 50
-      },
-      // {
-      //   id: 4,
-      //   aspectRatio: "4:5"
-      // },
-      {
-        id: 3,
-        aspectRatio: "9:16",
-        width: 45,
-        height: 80 
-      },
-    ]
+
+    useEffect(()=>{
+      if(localStorage.getItem("image_settings")){
+        const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
+        setModel(imageSettings.model)
+        setAspectRatio(imageSettings.aspectRatio)
+      }
+    },[refreshImageSettings])
+   
 // Track loading state
       useEffect(() => {
         // Scroll to the bottom of the page when the component mounts
@@ -75,38 +66,78 @@ export default function GuestContentPage() {
       }, [loading]); 
 
 
-    const getAspectRatio=(id)=>{
-      const aspectRatioObject = Object.values(aspectRatioList).find((values)=>values.id=id)
-      return aspectRatioObject.aspectRatio;
+
+
+    const fetchClientIp=async()=>{
+      try {
+        const response = await axios.get("https://api64.ipify.org?format=json");
+        return response.data.ip; // Returns the client's real public IP
+      } catch (error) {
+        console.error("Error fetching IP:", error);
+        return null;
+      };
+          
     }
-    
+
+    useEffect(()=>{
+      setTimeout(()=>{
+        setError(false)
+        setErrorMessage(null)
+      },[5000])
+    },[error])
     const generateImage = async () => {
+      const prompt = promptText
+      setPromptText("")
       setDummyData({
-        prompt:promptText
+        prompt:prompt
       })
 
       setError(false)
       setLoading(true);
+
+
       // Start loading
 
-  
+      const ipAddress= await fetchClientIp()
       try {
-        
-        const response = await axiosGenerateImage.post(
-          '/',
+
+          console.log("logged in ?" , loggedIn)
+          let response;     
+
+
+          if(loggedIn){
+            response = await axiosPrivate.post(
+              '/generate-image',
           { 
-            prompt: promptText ,
-            model:trackmodel,
-            aspect_ratio:aspectRatioList[selectedAspectRatio-1].aspectRatio
+            prompt: prompt ,
+            model:model,
+            aspect_ratio:aspectRatio.aspectRatio,
+            
           
-          }, // Ensure the response is handled as binary
-        );
+          },
+            )
+          }
+          else{
+            response = await axiosGenerateImage.post(
+              '/',
+              { 
+                prompt: prompt ,
+                model:model,
+                aspect_ratio:aspectRatio.aspectRatio,
+                client_ip:ipAddress
+              
+              }, // Ensure the response is handled as binary
+            );
+
+          }
+        
         console.log(response.data)
-        if(response.data.credits){
-          
+        if(response.data.credits||response.data.credits==0){
           localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
           setRefreshCreditBalance(!refreshCreditBalance)
         }
+
+        
 
         if(response.data.chat_id){
           setRefreshChatList(!refreshChatList)
@@ -121,30 +152,36 @@ export default function GuestContentPage() {
         
  
         setChat((prevItems)=>[...prevItems,{
-          "prompt":promptText,
+          "prompt":prompt,
           image:response.data.image
         }
         ])
 
-        setPromptText("") 
+         
 
       } catch (error) {
-        console.error('Error generating image:', error.response);
+        console.error('Error generating image:', error);
        
         setError(true);
         setErrorMessage(error?.response?.data?.message);
       } finally {
         setLoading(false);
-        setPromptText("")
       }
     };
+
+    const handleGuestImageDelete = async(index) => {
+      setChat((prevChat)=>prevChat.filter((_, i) => i !== index));
+    }
+
+
+    
 
   return (
     <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
 
-        <div className=' d-flex flex-column align-items-center justify-content-end mb-10 mt-3 w-100'>
+        <div className=' d-flex flex-column align-items-center justify-content-end mb-5 pb-5 mt-3 w-100'>
           {
-            chat.map((item,index)=>(<ChatContainer data={item}></ChatContainer>))
+            chat.map((item,index)=>(<ChatContainer data={item} index={index} handleGuestImageDelete = {handleGuestImageDelete}></ChatContainer>))
           }
           {
             loading&&
@@ -154,11 +191,12 @@ export default function GuestContentPage() {
             error&&
             <div className='alert alert-danger w-100'>{errorMessage}</div>
           }
+         
           
         </div>
         
 
-        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} trackmodel={trackmodel} setTrackModel={setTrackModel} selectedAspectRatio={selectedAspectRatio} setSelectedAspectRatio={setSelectedAspectRatio}></PromptInPutContainer>
+        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}  loading={loading}></PromptInPutContainer>
         {
           1&&
           <SuggestionPrompts></SuggestionPrompts>

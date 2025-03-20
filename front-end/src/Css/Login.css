@@ -7,6 +7,7 @@
     border: solid 1px rgb(0, 0, 0, 0.3);
     box-shadow: 1px 1px 10px rgba(54, 54, 54, 0.3);
     padding: 10px 5px 15px 5px;
+    width: 420px;
 }
 
 .login-page-container{
@@ -50,8 +51,8 @@
 }
 
 
-.login-form{
-
+.login-form {
+    
     width: 400px;
 }
 .login-form-top-text{
@@ -144,11 +145,20 @@ input.password-input:focus,input.email-input:focus{
 .forgot-password-button{
     background-color: white;
     border: none;
-    color: var(--primary-theme-color);
+    width: fit-content;
+    /* color: var(--primary-theme-color); */
+    cursor: pointer;
     
 }
 .forgot-password-button:hover{
     text-decoration: underline;
+}
+.forgot-password-button:disabled{
+    color: rgba(0, 0, 0, 0.582);
+    text-decoration: none;
+}
+.forgot-password-button:disabled:hover{
+    text-decoration: none;
 }
 
 .google-sign-in-button{
@@ -159,6 +169,21 @@ input.password-input:focus,input.email-input:focus{
 .google-sign-in-logo{
     width: 20px;
     height: 20px;
+}
+.otp-input-container{
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.otp-input-container input{
+    width: 30px !important;
+}
+@media (max-width: 500px){
+    .login-page{
+        width:360px;
+    }
 }
 
 @media (max-width: 830px) {
