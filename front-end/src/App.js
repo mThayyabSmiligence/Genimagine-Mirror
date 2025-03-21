@@ -32,8 +32,10 @@ import HomeLayout from './Layouts/HomeLayout';
 
 
 function App() {
+
   const[showNavBar,setShowNavBar]=useState(false)
   const [width, setWidth] = useState(window.innerWidth);
+  const [fresh,setFresh]=useState(true)
           
         useEffect(() => {
           const handleResize = () => {
@@ -46,6 +48,20 @@ function App() {
             window.removeEventListener('resize', handleResize);
           };
     }, []);
+
+
+  useEffect(()=>{
+    if(fresh){
+      if(localStorage.getItem('side-nav-open')){
+        setShowNavBar(localStorage.getItem('side-nav-open')=="true"?true:false);
+        setFresh(false)
+        return
+      }
+    }
+    
+    localStorage.setItem('side-nav-open',showNavBar)
+  },[showNavBar])
+  useEffect(()=>{},[])
   return (
     <div className="App">
 

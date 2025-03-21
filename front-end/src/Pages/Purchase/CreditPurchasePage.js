@@ -145,9 +145,13 @@ function CreditPurchasePage() {
                             setPurchaseSuccess(true);
                         }
                        
+                        
                     }  
                     catch(error){
                         console.error(error)
+                    }
+                    finally{
+                        setCredits(0)
                     }
                 },
                 prefill: {
@@ -175,7 +179,9 @@ function CreditPurchasePage() {
                     const result = await axiosPrivate.post('/falied-payment',response)
                 }catch(err){
                     console.error(err)
-                }   
+                }finally{
+                    setCredits(0)
+                }
 
                 // alert(response.error.code);
                 // alert(response.error.description);
