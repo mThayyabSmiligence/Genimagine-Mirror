@@ -18,6 +18,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ShareIcon from '@mui/icons-material/Share';
+import LinkIcon from '@mui/icons-material/Link';
 
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
@@ -228,7 +229,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                   {
                     copied ?
                     <button className='copy-link-button'>Copied</button> :
-                    <button onClick={() => handleShare(image)} className='copy-link-button'>Copy link</button>
+                    <button onClick={() => handleShare(image)} className='copy-link-button'><LinkIcon fontSize='small'></LinkIcon>Copy link</button>
                   }   
                 </div>
                 :

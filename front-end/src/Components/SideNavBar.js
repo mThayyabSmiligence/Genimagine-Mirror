@@ -269,6 +269,12 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                 <div to={"/image-generation" } className='link nav-options'>Explore</div>
                             </div>
                         </Link>
+                        <Link to={"/credit-purchase" } className='link' >
+                            <div className=' nav-list-item'>
+                                <ExploreOutlinedIcon/>
+                                <div to={"/credit-purchase" } className='link nav-options'>Buy Credits</div>
+                            </div>
+                        </Link>
                         <Link to={"/image-generation" } className='link' >
                             <div className=' nav-list-item'>
                                 <AddCircleOutlineOutlinedIcon/>
