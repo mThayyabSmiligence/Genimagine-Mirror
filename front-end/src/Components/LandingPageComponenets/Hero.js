@@ -47,7 +47,7 @@ function Hero() {
   return (
     <div className='container-fluid hero-outer-sec'>
         <div className='row hero-sec'>
-            <div className='hero-left-column col-12 col-md-6  d-flex flex-column justify-content-center align-items-center'>
+            <div className='hero-left-column col-12 col-md-6 d-flex flex-column justify-content-center align-items-center'>
                 <div className='hero-lft-container d-flex flex-column justify-content-center align-items-center text-start'>
                     <h1 className='hero-sec-heading w-100 h-1'>AI Image <span>Generation</span></h1>
                     <p className='mb-4 p-primary'>we are here to generate a quality images for your desired spells.

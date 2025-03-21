@@ -275,6 +275,12 @@
     text-align: justify;
 }
 
+@media (max-width: 768px) {
+    .image-customization-section {
+        padding-top: 50px; /* Reduce padding for medium screens */
+    }
+}
+
 /* launch-to-explore.css */
 .publish-image{
     width: 500px;
@@ -308,11 +314,24 @@
   
   @media (max-width: 768px) {
     .launch-to-explore-content {
+      
+      margin-top: 20px;
+    }
+
+    .launch-to-explore-content h2{
       text-align: center;
     }
   
     .launch-to-explore-content ul{
       text-align: left;
+    }
+
+    .launch-to-explore-content {
+      padding-bottom: 10px !important;
+    }
+
+    .launch-to-explore-section{
+        padding-bottom: 10px !important;
     }
   }
 
@@ -330,6 +349,13 @@
   .image-library{
     width: 500px;
   }
+
+  @media (max-width: 768px) {
+    .launch-to-library.container{
+        padding-top: 50px !important;
+    }
+  }
+
 
   /* platformgallery */
 
