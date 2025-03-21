@@ -13,9 +13,6 @@ import Footer from '../../Components/LandingPageComponenets/Footer';
 function LandingPage() {
   return (
     <div className=''>
-        <nav className='header'>
-            <Navbar/>
-        </nav>
         <section className='hero-section'>
             <Hero/>
         </section>    

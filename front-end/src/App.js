@@ -25,6 +25,10 @@ import AuthenticationLayout from './Layouts/AuthenticationLayout';
 import EditUserName from './Components/ProfilePage/EditUserName';
 import PublishedImages from './Pages/User/PublishedImages';
 import ChangePassword from './Pages/User/ChangePassword';
+import TermsAndConditions from './Pages/policies/TermsAndConditions';
+import PrivacyPolicy from './Pages/policies/PrivacyPolicy';
+import HomeLayout from './Layouts/HomeLayout';
+
 
 
 function App() {
@@ -47,8 +51,12 @@ function App() {
 
           
           <Routes>
+            <Route element={<HomeLayout></HomeLayout>}>
+                <Route path='' element={<LandingPage/>}></Route>
+                <Route path='terms-and-conditions' element={<TermsAndConditions></TermsAndConditions>}></Route>
+                <Route path='privacy-policy' element={<PrivacyPolicy></PrivacyPolicy>}></Route>
+            </Route>
 
-            <Route path='/' element={<LandingPage/>}></Route>
 
               <Route path='login' element={<Login></Login>}></Route> 
             <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
@@ -61,7 +69,7 @@ function App() {
             <Route path='edit-user-name' element={<EditUserName></EditUserName>}></Route>
 
             
-
+            
 
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
               

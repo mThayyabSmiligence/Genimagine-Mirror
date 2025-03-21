@@ -1,0 +1,18 @@
+.agree-links span{
+    color: grey;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.agree-links .link {
+    color: grey;
+    
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease-in-out;
+}
+
+.agree-links .link:hover {
+    color: #0056b3;
+}
+
