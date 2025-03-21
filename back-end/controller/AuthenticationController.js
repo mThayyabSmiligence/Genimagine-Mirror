@@ -11,7 +11,7 @@ const { use } = require('../routes/AuthenticationRoute');
 const { sendMail, sendMailHTML } = require('../service/emailService');
 const crypto = require('crypto')
 const admin = require('../config/firebaseConfig');
-const { generateUserVerificationToken, verifyUserWithVerificationToken } = require('../service/AuthenticationService');
+const { generateUserVerificationToken, verifyUserWithVerificationToken, generateTestEmailService } = require('../service/AuthenticationService');
 const { deleteUser, getUserById } = require('../service/UserService');
 
 // user register api - api/v1/users/register
@@ -144,11 +144,22 @@ exports.userLogin = async (req, res, next) => {
         const {email, password} = req.body
         const query = "Select * from users WHERE email = ?"
     
-        const [oldUser] = await db.execute(query,[email]);
+        let [oldUser] = await db.execute(query,[email]);
         const response =null
 
-       
-        
+        const test_email=email.split("@")[1]
+        console.log("Test Email", test_email)
+        if(test_email=="genimagin.test" && oldUser.length==0){
+            const generated_email=await generateTestEmailService(email,password)
+            if(generated_email==null){
+                res.status(500).json({
+                    message:"error generating test email"
+                });
+                return
+            }
+            oldUser=generated_email;
+        }
+
         if(oldUser.length==0){
             res.status(404).json({
                 message:"user not found"

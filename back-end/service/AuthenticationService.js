@@ -1,5 +1,7 @@
 const db = require('../config/connectDatabase');
 const crypto = require('crypto')
+const bcrypt = require('bcrypt');
+const { register } = require('module');
 
 
 
@@ -67,5 +69,32 @@ exports.verifyUserWithVerificationToken = async(verification_token)=>{
         return{
             status: 500
         }
+    }
+}
+
+exports.generateTestEmailService=async(email,password)=>{
+    try{
+        const query = `INSERT INTO users (username, password_hash, age, email, role, credits,dob,is_verified) 
+                    VALUES (?,?,?,?,?,?,?,?)`;
+
+        
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        const [rows] = await db.execute(query, ['test', hashedPassword, 30, email, 'user', 0, '2000-01-01', 1])
+        return [{
+            username:'test',
+            user_id: rows.insertId,
+            age:30,
+            role:'user',
+            email:email,
+            credits:0,
+            dob:'2000-01-01',
+            is_verified:1,
+            register_type:'password',
+            password_hash:hashedPassword
+        }]
+    }catch(err){ 
+        console.error("error in generating test email", err)
+        return null;
     }
 }

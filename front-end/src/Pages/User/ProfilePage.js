@@ -95,7 +95,8 @@ function ProfilePage() {
                 
                         {libraryImages.length == 0? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
                         : 
-                            libraryImages.map((library) => (
+                            libraryImages.map((library,index) => (
+                            index<4&&
                             <div key={library.id}>
                                 <img className='library-images mx-2' src={library.image_url} style={{ objectFit:"cover" }}></img>
                             </div>
@@ -114,7 +115,8 @@ function ProfilePage() {
                     <div className='my-library-sample d-flex mt-2'>
 
                         {exploreImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
-                        : exploreImages.map((explore) => (
+                        : exploreImages.map((explore,index) => (
+                            index<4&&
                             <div key={explore.id}>
                                 <img className='library-images mx-2' title={explore.prompt} alt={explore.prompt} src={explore.image_url} style={{ objectFit:"cover" }}></img>
                             </div>

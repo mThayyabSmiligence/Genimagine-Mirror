@@ -101,6 +101,10 @@
 .sidenav-blur-bg{
     display: none;
 }
+.chat-group-heading{
+    color: rgb(161, 161, 161);
+}
+
 @media (max-width: 766px) {
     .side-nav {
         display: flex;
@@ -138,10 +142,13 @@
     .sidenav-blur-bg.active{
         display: block;
         z-index: 3;
-        position: absolute;
+        position: fixed;
         top: 0;
         height: 100vh;
         width: 100%;
         background: rgba(15, 15, 15, 0.425);
+    }
+    .more-options span{
+        color: rgb(78, 78, 78);
     }
 }

@@ -42,12 +42,12 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
         { loggedIn?
           <div className='me-2 d-flex align-items-center'>
             <CreditBalance></CreditBalance>
-            <Link to={"/credit-purchase"} className='buy-credits-link button-wh h-40p dark-button-wh d-flex align-items-center br-100'>
+            {/* <Link to={"/credit-purchase"} className='buy-credits-link button-wh h-40p dark-button-wh d-flex align-items-center br-100'>
               <LocalMallOutlinedIcon/>
               <p className='m-0 flex-1'>
               Buy Credits
               </p>
-            </Link>
+            </Link> */}
             <div className="profile-dropdown" ref={dropdownRef}>
               <button className='profile-button dark-button me-3 ' onClick={() => setShowDropdown(!showDropdown)}>
                 <PersonOutlineOutlinedIcon/>
