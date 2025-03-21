@@ -108,6 +108,14 @@
     cursor: not-allowed;
  
 }
+.option-button{
+    background-color:white;
+    border-radius: 5px;
+
+}
+.option-button:hover{
+    background: rgb(165,165,165);
+}
 @media (max-width: 767px) {
     .chat-prompt-container{
         max-width: 60%;

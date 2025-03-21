@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import '../../Css/IGSettingPopUp.css'
 import RefreshDataContext from "../../Context/RefreshDataProvider";
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import AuthContext from "../../Context/AuthProvider";
 
 
 const modelsList = [
@@ -56,7 +57,7 @@ const aspectRatioList = [
 function IGSettingPopUp({closePopup,}) {
 
   const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
-
+  const {loggedIn}= useContext(AuthContext)
 
   const [tempTrackModel, setTempTrackModel] = useState(1);
   const [tempSelectedAspectRatio, setTempSelectedAspectRatio] = useState(aspectRatioList[0]);
@@ -125,7 +126,7 @@ function IGSettingPopUp({closePopup,}) {
                 {  
                   modelsList.map((model) => (
 
-                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3`}>
+                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${loggedIn?"":"disable"}`}>
                         <div>   
                           <h5 className="h-4">{model.model_name}</h5>
                           <p className="p-primary m-0">{model.model_resolution}</p>

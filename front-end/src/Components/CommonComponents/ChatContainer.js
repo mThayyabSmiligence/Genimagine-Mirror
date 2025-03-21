@@ -285,7 +285,6 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                     <span className='option-divider'></span>
                   </>
                   }
-                  <div>
                   {showRemoveLibraryPopUp &&
                     <RemoveFromLibrary 
                         onHide={() => setShowRemoveLibraryPopUp(false)}
@@ -294,19 +293,19 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
                         showRemoveLibraryPopUp = {showRemoveLibraryPopUp}
                     />
                   }
-                    <button onClick={() =>setShowDeletePopUp(true)} className="option-item"><DeleteOutlineOutlinedIcon className='icon'/> Delete</button>
-                    <DeletePopUp
-                      onHide={() => setShowDeletePopUp(false)}
-                      handelDelete={handelDeleteImage}
-                      message="Are you sure you want to delete this item forn your published image page?"
-                      showDeletePopUp = {showDeletePopUp}
-                    />
-                  </div> 
+                    <button onClick={() =>setShowDeletePopUp(true)} className='option-item option-button'><DeleteOutlineOutlinedIcon className='icon'/> Delete</button>
+
                 </div>
               )}
             </div>
             }
         </div>
+        <DeletePopUp
+                      onHide={() => setShowDeletePopUp(false)}
+                      handelDelete={handelDeleteImage}
+                      message="Are you sure you want to delete this item forn your published image page?"
+                      showDeletePopUp = {showDeletePopUp}
+         />
     </div>
   )
 }

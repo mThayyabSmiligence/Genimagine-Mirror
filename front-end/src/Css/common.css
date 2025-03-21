@@ -337,6 +337,11 @@
     width: var(--second-heading-font-size-1366) !important;
 }
 
+.modal-content{
+    cursor: default;
+}
+
+
 @media (max-width: 992px) {
     .slick-slide img{
         width: 400px !important;
