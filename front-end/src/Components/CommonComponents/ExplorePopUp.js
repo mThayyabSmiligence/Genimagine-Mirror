@@ -8,7 +8,7 @@ import AuthContext from '../../Context/AuthProvider';
 import DeletePopUp from '../CommonComponents/DeletePopUp';
 import RefreshDataContext from '../../Context/RefreshDataProvider';
 
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -30,7 +30,11 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
   const [copied, setcopied] = useState(false);
   const Navigate = useNavigate();
 
+  const location = useLocation();
+  const path= location.pathname
+
   useEffect(() => {
+    console.log('path :',path)
     if (!hasViewed.current &&view) {
       showview();
       hasViewed.current = true; // Set flag to true after first call
@@ -156,7 +160,10 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
         <div className='image-caption'>
             <div className='d-flex justify-content-between mb-1'>
               <h5 className='caption-header'>Caption :</h5>
-              <button onClick={handelEdit} className='edit-button edit-caption-button d-flex justify-content-center align-items-center'><EditIcon className='edit-icon'></EditIcon></button>
+              {
+                path=='/u/published-images'&&
+               <button onClick={handelEdit} className='edit-button edit-caption-button d-flex justify-content-center align-items-center'><EditIcon className='edit-icon'></EditIcon></button>
+              }
             </div>
             <div className='caption-text-container p-2'>
               <div className='caption-text-innner-container text-start'>
