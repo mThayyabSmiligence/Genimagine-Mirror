@@ -17,8 +17,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ShareIcon from '@mui/icons-material/Share';
+import ShareIcon from '../../images/sharelogo.png';
 import LinkIcon from '@mui/icons-material/Link';
+
 
 
 function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedImage, showDeletePopUp, setShowDeletePopUp }) {
@@ -228,7 +229,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
 
             <div className='share-image-container'>
               <button onClick={() => setShowCopyOption(!showCopyOption)} className='button-wh light-button-wh share-image-button d-flex align-items-center px-3'>
-                <ShareIcon/>
+                <img className='share-image-icon' src={ShareIcon} alt='share icon'/>
               </button>
               {
                 showCopyOption?

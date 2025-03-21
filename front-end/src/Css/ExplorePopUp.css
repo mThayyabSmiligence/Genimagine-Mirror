@@ -170,6 +170,13 @@
   position: relative;
 }
 
+.share-image-icon{
+  width: 20px;
+  height: 20px;
+  color: #212121;
+  cursor: pointer;
+}
+
 .copy-link-button{
   position: absolute;
   width: 90px;
