@@ -34,9 +34,7 @@ function LandingPage() {
         <section className='faq-section'>
           <FAQ/>
         </section>
-        <footer className='footer-section'> 
-          <Footer/>
-        </footer>
+        
     </div>
   )
 }   

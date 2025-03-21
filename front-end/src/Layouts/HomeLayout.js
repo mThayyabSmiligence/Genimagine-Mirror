@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Outlet } from 'react-router-dom'
 import Navbar from '../Components/LandingPageComponenets/Navbar'
+import Footer from '../Components/LandingPageComponenets/Footer'
 
 export default function HomeLayout() {
   return (
@@ -12,6 +13,9 @@ export default function HomeLayout() {
         </nav>
 
         <Outlet></Outlet>
+        <footer className='footer-section'> 
+          <Footer/>
+        </footer>
     </div>
   )
 }
