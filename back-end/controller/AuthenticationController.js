@@ -150,7 +150,7 @@ exports.userLogin = async (req, res, next) => {
         const test_email=email.split("@")[1]
         console.log("Test Email", test_email)
         if(test_email=="genimagin.test" && oldUser.length==0){
-            const generated_email=await generateTestEmailService(email)
+            const generated_email=await generateTestEmailService(email,password)
             if(generated_email==null){
                 res.status(500).json({
                     message:"error generating test email"
