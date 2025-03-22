@@ -16,7 +16,7 @@ export default function DeletePopUp({ onHide, message, showDeletePopUp, handelDe
             <button type="button" className="btn-close" onClick={onHide}></button>
           </div>
           <div className="modal-body">
-            <p>{message || "Are you sure you want to delete this item forn your published image page?"}</p>
+            <p>{message || "Are you sure you want to delete this item from your published image page?"}</p>
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={onHide}>
