@@ -434,7 +434,7 @@
 
 /* faq.css */
 
-.contact-us span{
+.contact-us span a{
     cursor: pointer;
     color: rgb(30, 196, 196);
 }

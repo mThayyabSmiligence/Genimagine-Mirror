@@ -305,7 +305,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         <DeletePopUp
                       onHide={() => setShowDeletePopUp(false)}
                       handelDelete={handelDeleteImage}
-                      message="Are you sure you want to delete this item forn your published image page?"
+                      message="Are you sure you want to delete this item from your published image page?"
                       showDeletePopUp = {showDeletePopUp}
          />
     </div>
