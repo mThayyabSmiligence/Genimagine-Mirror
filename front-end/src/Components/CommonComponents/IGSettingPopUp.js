@@ -87,6 +87,12 @@ function IGSettingPopUp({closePopup,}) {
     }
   ]
   useEffect(()=>{
+    console.log("isuserLoggedIn :",loggedIn)
+    if(!loggedIn){
+      setTempTrackModel(1)
+      setTempSelectedAspectRatio(aspectRatioList[1])
+      return
+    }
 
     if(localStorage.getItem("image_settings")){
       const settings = JSON.parse(localStorage.getItem("image_settings"));
@@ -104,6 +110,8 @@ function IGSettingPopUp({closePopup,}) {
     setRefreshImageSettings(!refreshImageSettings)
     
   },[])
+  
+
   
   const handlesubmit = () => {  
     localStorage.setItem("image_settings", JSON.stringify(
@@ -144,7 +152,7 @@ function IGSettingPopUp({closePopup,}) {
                 {  
                   modelsList.map((model) => (
 
-                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${loggedIn?"":"disable"}`}>
+                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${((!loggedIn) &&model.model_id!=1)?"unclickable":"not-disable"}`}>
                         <div>   
                           <h5 className="h-4">{model.model_name}</h5>
                           <p className="p-primary m-0">{model.model_resolution}</p>
@@ -161,7 +169,7 @@ function IGSettingPopUp({closePopup,}) {
                 <div className="d-flex justify-content-start flex-wrap mt-2">
                   {
                     aspectRatioList.map((shape) => (
-                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape)}className={`aspect-ratio-box ${tempSelectedAspectRatio.id === shape.id && "active"} mb-3 `}
+                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape)}className={`aspect-ratio-box ${tempSelectedAspectRatio.id === shape.id && "active"} mb-3 ${!loggedIn&& shape.aspectRatio!="1:1"&&"unclickable"}`}
                       style={{ width: `${shape.width}px`, height: `${shape.height}px` }}
                     >
                       {shape.aspectRatio}

@@ -131,7 +131,8 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         animation: 'spin 1s linear infinite',
       };
 
-      const download =async (e) => {
+      const download =async (e) => { 
+        e.preventDefault(); 
         if(!loggedIn){
           const link = document.createElement("a");
           link.href = data.image;
@@ -141,7 +142,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
           document.body.removeChild(link);
           return
         }
-        e.preventDefault(); // Prevent default behavior
+       // Prevent default behavior
 
         try {
           const response = await fetch(data.image_url);
@@ -234,6 +235,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         if(!loggedIn){
           const newTab = window.open();
           newTab.document.write(`<div style="height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;"><img src="${data.image}" alt="Centered Image" style="max-width: 100%; height: auto;"></div>`);
+          return
         }
         window.open(data.image_url,'_blank')
       };
@@ -269,7 +271,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
             {
               (data.image_url||data.image)&&
               <div className='image-options' ref={optionsRef}>                                    
-              <MoreVertOutlinedIcon onClick={handleToggleOptions} className="image-dot-options"></MoreVertOutlinedIcon>
+              <MoreVertOutlinedIcon onClick={handleToggleOptions} className="image-dot-options" id="image-dot-options"></MoreVertOutlinedIcon>
               {showOptions&& (
                 <div className={`options-dropdown ${data.aspect_ratio!="9:16"?"left":"right"} `}>
                   <a onClick={(e)=>download(e)} className="option-item "><FileDownloadOutlinedIcon  className='icon'/> Download</a>

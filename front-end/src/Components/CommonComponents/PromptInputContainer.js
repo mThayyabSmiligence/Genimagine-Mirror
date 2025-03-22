@@ -4,6 +4,7 @@ import IGSettingPopUp from './IGSettingPopUp'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import AuthContext from '../../Context/AuthProvider';
 const aspectRatioList = [
   {
     id: 1,
@@ -40,6 +41,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
 
   const [selectSetting, setSelectSetting] = useState(null)
+  const {loggedIn}= useContext(AuthContext)
 
 
   
@@ -179,10 +181,10 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
             {selectSetting && (
               <>
                 <div className='setting-tags p-secondary' title='model'>
-                  Model : {selectSetting.model}
+                  Model : {loggedIn?selectSetting.model:"1"}
                 </div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>
-                  Aspect Ratio : {selectSetting.aspectRatio.aspectRatio}
+                  Aspect Ratio : {loggedIn?selectSetting.aspectRatio.aspectRatio:"1:1"}
                 </div>
                 <div className='setting-tags p-secondary' title='Style'>
                   Style : {"none"}
