@@ -72,8 +72,8 @@ const aspectRatioList = [
   {
     id: 1,
     aspectRatio: "16:9",
-    width: 80, 
-    height: 45
+    width: 64, 
+    height: 36
   },
   // {
   //   id: 2,
@@ -82,8 +82,8 @@ const aspectRatioList = [
   {
     id: 2,
     aspectRatio: "1:1",
-    width: 50,
-    height: 50
+    width: 45,
+    height: 45
   },
   // {
   //   id: 4,
@@ -92,56 +92,58 @@ const aspectRatioList = [
   {
     id: 3,
     aspectRatio: "9:16",
-    width: 45,
-    height: 80 
+    width: 36,
+    height: 64 
   },
 ]
 
- const styleList = [
-        { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
-        { id: 2, style_name: "Chalk and Charcoal", style_image: styleImage2 },
-        { id: 3, style_name: "Chinese Ink Painting", style_image: styleImage3 },
-        { id: 4, style_name: "Realism", style_image: styleImage4 },
-        { id: 5, style_name: "3D Render", style_image: styleImage5 },
-        { id: 6, style_name: "Ink & Wash", style_image: styleImage6 },
-        { id: 7, style_name: "Bright and Exaggerated Cartoon World", style_image: styleImage7 },
-        { id: 8, style_name: "Anime", style_image: styleImage8 },
-        { id: 9, style_name: "Black & White", style_image: styleImage9 },
-        { id: 10, style_name: "Bokeh", style_image: styleImage10 },
-        { id: 11, style_name: "Cinematic", style_image: styleImage11 },
-        { id: 12, style_name: "Comic Book", style_image: styleImage12 },
-        { id: 13, style_name: "Film Noir", style_image: styleImage13 },
-        { id: 14, style_name: "Indian Miniature", style_image: styleImage14 },
-        { id: 15, style_name: "Japanese Ukiyo-e", style_image: styleImage15 },
-        { id: 16, style_name: "Neon Glow", style_image: styleImage16 },
-        { id: 17, style_name: "Pixel Art", style_image: styleImage17 },
-        { id: 18, style_name: "Steampunk", style_image: styleImage18 },
-        { id: 19, style_name: "Baroque Portrait", style_image: styleImage19 },
-        { id: 20, style_name: "Cyberpunk Setting", style_image: styleImage20 },
-        { id: 21, style_name: "Delicate Watercolor Painting", style_image: styleImage21 },
-        { id: 22, style_name: "Dreamlike and Abstract Composition", style_image: styleImage22 },
-        { id: 23, style_name: "Dynamic Graffiti Artwork", style_image: styleImage23 },
-        { id: 24, style_name: "Gothic Horror Setting", style_image: styleImage24 },
-        { id: 25, style_name: "High Dynamic Range Photography", style_image: styleImage25 },
-        { id: 26, style_name: "Monochrome Sketch", style_image: styleImage26 },
-        { id: 27, style_name: "Moody Gothic Atmosphere", style_image: styleImage27 },
-        { id: 28, style_name: "Mythical World", style_image: styleImage28 },
-        { id: 29, style_name: "Pencil Sketch Style", style_image: styleImage29 },
-        { id: 30, style_name: "Playful Cartoon Style", style_image: styleImage30 },
-        { id: 31, style_name: "Pop Art Style", style_image: styleImage31 },
-        { id: 32, style_name: "Richly Detailed Baroque Style", style_image: styleImage32 },
-        { id: 33, style_name: "Soft Watercolor Style", style_image: styleImage33 },
-        { id: 34, style_name: "Surreal Landscape", style_image: styleImage34 },
-        { id: 35, style_name: "80s inspired vaporwave style", style_image: styleImage35 },
-        { id: 36, style_name: "Thick Oil Painting Style", style_image: styleImage36 },
-        { id: 37, style_name: "Ultra Realistic HDR Style", style_image: styleImage37 },
-        { id: 38, style_name: "Urban Street Art Style", style_image: styleImage38 },
-        { id: 39, style_name: "Vaporwave Aesthetic", style_image: styleImage39 },
-        { id: 40, style_name: "Vibrant Pop Art Illustration", style_image: styleImage40 }
-    ]
+
 
 
 function IGSettingPopUp({closePopup,}) {
+
+  const [styleList,setStyleList]=useState( [
+    { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
+    { id: 2, style_name: "Chalk and Charcoal", style_image: styleImage2 },
+    { id: 3, style_name: "Chinese Ink Painting", style_image: styleImage3 },
+    { id: 4, style_name: "Realism", style_image: styleImage4 },
+    { id: 5, style_name: "3D Render", style_image: styleImage5 },
+    { id: 6, style_name: "Ink & Wash", style_image: styleImage6 },
+    { id: 7, style_name: "Bright and Exaggerated Cartoon World", style_image: styleImage7 },
+    { id: 8, style_name: "Anime", style_image: styleImage8 },
+    { id: 9, style_name: "Black & White", style_image: styleImage9 },
+    { id: 10, style_name: "Bokeh", style_image: styleImage10 },
+    { id: 11, style_name: "Cinematic", style_image: styleImage11 },
+    { id: 12, style_name: "Comic Book", style_image: styleImage12 },
+    { id: 13, style_name: "Film Noir", style_image: styleImage13 },
+    { id: 14, style_name: "Indian Miniature", style_image: styleImage14 },
+    { id: 15, style_name: "Japanese Ukiyo-e", style_image: styleImage15 },
+    { id: 16, style_name: "Neon Glow", style_image: styleImage16 },
+    { id: 17, style_name: "Pixel Art", style_image: styleImage17 },
+    { id: 18, style_name: "Steampunk", style_image: styleImage18 },
+    { id: 19, style_name: "Baroque Portrait", style_image: styleImage19 },
+    { id: 20, style_name: "Cyberpunk Setting", style_image: styleImage20 },
+    { id: 21, style_name: "Delicate Watercolor Painting", style_image: styleImage21 },
+    { id: 22, style_name: "Dreamlike and Abstract Composition", style_image: styleImage22 },
+    { id: 23, style_name: "Dynamic Graffiti Artwork", style_image: styleImage23 },
+    { id: 24, style_name: "Gothic Horror Setting", style_image: styleImage24 },
+    { id: 25, style_name: "High Dynamic Range Photography", style_image: styleImage25 },
+    { id: 26, style_name: "Monochrome Sketch", style_image: styleImage26 },
+    { id: 27, style_name: "Moody Gothic Atmosphere", style_image: styleImage27 },
+    { id: 28, style_name: "Mythical World", style_image: styleImage28 },
+    { id: 29, style_name: "Pencil Sketch Style", style_image: styleImage29 },
+    { id: 30, style_name: "Playful Cartoon Style", style_image: styleImage30 },
+    { id: 31, style_name: "Pop Art Style", style_image: styleImage31 },
+    { id: 32, style_name: "Richly Detailed Baroque Style", style_image: styleImage32 },
+    { id: 33, style_name: "Soft Watercolor Style", style_image: styleImage33 },
+    { id: 34, style_name: "Surreal Landscape", style_image: styleImage34 },
+    { id: 35, style_name: "80s inspired vaporwave style", style_image: styleImage35 },
+    { id: 36, style_name: "Thick Oil Painting Style", style_image: styleImage36 },
+    { id: 37, style_name: "Ultra Realistic HDR Style", style_image: styleImage37 },
+    { id: 38, style_name: "Urban Street Art Style", style_image: styleImage38 },
+    { id: 39, style_name: "Vaporwave Aesthetic", style_image: styleImage39 },
+    { id: 40, style_name: "Vibrant Pop Art Illustration", style_image: styleImage40 }
+])
 
   const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
   const {loggedIn}= useContext(AuthContext)
@@ -153,7 +155,24 @@ function IGSettingPopUp({closePopup,}) {
   
 
 
- 
+  const moveToFirst = () => {
+    setStyleList((prevItems) => {
+      if (prevItems.length==0) return prevItems; // No change if invalid index
+
+      const index = prevItems.findIndex(item => item.id==tempTrackStyle);
+    //   if (index === -1) return prevItems;   
+
+      const updatedItems = [...prevItems]; // Create a copy of the array
+      const [movedItem] = updatedItems.splice(index, 1); // Remove item at index
+      updatedItems.unshift(movedItem); // Add item to the first index
+
+      return updatedItems;
+    });
+  };
+
+  useEffect(()=>{
+    moveToFirst()
+  },[tempTrackStyle])
 
 
   useEffect(()=>{
@@ -217,9 +236,11 @@ function IGSettingPopUp({closePopup,}) {
                 <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
         </div>
         <div className="pop-up-body ">
+            
             <div className="pop-up-content d-flex flex-column text-start mt-3"> 
+              
                 <h5 className="pop-up-model h-3">Model</h5>
-                <div className="model-list d-flex flex-wrap mt-2">
+                <div className="model-list d-flex flex-wrap ">
                 {  
                   modelsList.map((model) => (
 
@@ -237,7 +258,7 @@ function IGSettingPopUp({closePopup,}) {
                 </div>
 
                 <h5 className="h-3">Aspect Ratio</h5>
-                <div className="d-flex justify-content-start flex-wrap mt-2">
+                <div className="d-flex justify-content-start flex-wrap ">
                   {
                     aspectRatioList.map((shape) => (
                       <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape)}className={`aspect-ratio-box ${tempSelectedAspectRatio.id === shape.id && "active"} mb-3 ${!loggedIn&& shape.aspectRatio!="1:1"&&"unclickable"}`}
@@ -249,11 +270,11 @@ function IGSettingPopUp({closePopup,}) {
                   }
                 </div>
  
-                <div className="d-flex justify-content-between align-items-center mt-3">
+                <div className="d-flex justify-content-between align-items-center ">
                     <h5 className="h-3">Style</h5>
                     <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
                 </div>
-                <div className="d-flex justify-content-center style-popup">
+                <div className="d-flex justify-content-start style-popup">
                   {
                     styleList.map((style, index) => (
                       index < 3 &&
@@ -265,9 +286,9 @@ function IGSettingPopUp({closePopup,}) {
                   }
                 </div>
 
-                <div className="pop-up-done d-flex justify-content-end me-3">
-                  <button onClick={handlesubmit} className="button dark-button br-10 px-3 py-1 d-flex justify-content-between align-items-center">DONE</button>
-                </div>
+                <div className="pop-up-done d-flex justify-content-end align-items-center">
+                <button onClick={handlesubmit} className="button dark-button br-10 px-3 py-1 d-flex justify-content-between align-items-center">DONE</button>
+              </div>
             </div>
         </div>
         </>

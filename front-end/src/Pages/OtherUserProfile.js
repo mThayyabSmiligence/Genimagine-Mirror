@@ -12,14 +12,15 @@ export default function OtherUserProfile() {
 
 
     useEffect(()=>{
-        console.log("user id",userId)
+       
         getImageDetails()
         getUserDetails()
     },[])
 
     const getImageDetails=async()=>{
         try{
-            const response = await axiosPrivate.get('/explore?limit=4',{
+            console.log("user id",userId)
+            const response = await axiosPrivate.get(`/explore?limit=4&userId=${userId}`,{
                 userId: userId,
             })
             setExploreImages(response.data.images)
@@ -43,7 +44,7 @@ export default function OtherUserProfile() {
 
 
   return (
-    <div className='container mt-5 px-0'>
+    <div className='container px-0'>
     <div className='mt-5 cover-pic'>
 
     </div>

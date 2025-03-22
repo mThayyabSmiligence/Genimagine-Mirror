@@ -248,7 +248,7 @@ function ChangePassword() {
                                     `}</style>
                                 </button>
                                 :
-                                <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3">Change Password</button>
+                                <button disabled={ !currentPassword ||  !passwordValidity || !pwdMatch ? true : false} type="submit" className=" button dark-button w-100 br-100 mb-3" id='change-password-submit-button'>Change Password</button>
                             }
                             
                         </form>
