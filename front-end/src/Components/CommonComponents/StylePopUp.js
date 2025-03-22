@@ -42,7 +42,7 @@ import styleImage38 from '../../images/style/urban-street-art-style.png';
 import styleImage39 from '../../images/style/vaporwave-aesthetic.png';
 import styleImage40 from '../../images/style/vibrant-pop-art-illustration.png';
 
-function StylePopUp() {
+function StylePopUp({tempTrackStyle, setTempTrackStyle, setSeeMore}) {
     const styleList = [
         { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
         { id: 2, style_name: "Chalk and Charcoal", style_image: styleImage2 },
@@ -85,6 +85,11 @@ function StylePopUp() {
         { id: 39, style_name: "Vaporwave Aesthetic", style_image: styleImage39 },
         { id: 40, style_name: "Vibrant Pop Art Illustration", style_image: styleImage40 }
     ]
+
+    const handleStyleClick = (style) => {
+        setTempTrackStyle(style)
+        setSeeMore(false)
+    }
   return (
     <div className="style-popup">
         <Masonry
@@ -95,9 +100,9 @@ function StylePopUp() {
             {styleList.length > 0 ? (
                 
                 styleList.map((style, index) =>(
-                    <div className="style-card" key={index}>
-                      <img src={style.style_image} alt="style" />
-                      <h3 className='style-name-heading'>{style.style_name}</h3>
+                    <div className={`style-card ${style.id==tempTrackStyle&&"active"}`} key={index}>
+                      <img  src={style.style_image} onClick={() => handleStyleClick(style.id)} alt="style" />
+                      <h3 onClick={() => handleStyleClick(style.id)} className='style-name-heading'>{style.style_name}</h3>
                     </div>
                   )
                 )
