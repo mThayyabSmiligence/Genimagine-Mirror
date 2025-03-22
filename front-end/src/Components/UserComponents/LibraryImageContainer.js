@@ -101,7 +101,7 @@ export default function LibraryImageContainer({library,imageColumns,index,remove
                                   {
                                     (library.image_url||library.image)&&
                                     <div className='image-options'>
-                                    <MoreVertOutlinedIcon onClick={()=>setShowOptions(!showOptions)}  className="material-symbols-outlined image-dot-options">more_vert</MoreVertOutlinedIcon>
+                                    <MoreVertOutlinedIcon onClick={()=>setShowOptions(!showOptions)}  className="material-symbols-outlined image-dot-options" id="library-dot-options">more_vert</MoreVertOutlinedIcon>
                                     {showOptions && (
                                       <div className="options-dropdown" ref={optionsRef}>
                                         <button className='option-item' onClick={()=>window.open(library.image_url  ,"_blank")}><FullscreenOutlinedIcon className='icon'/> Full Screen</button>

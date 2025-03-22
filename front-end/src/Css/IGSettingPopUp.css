@@ -57,6 +57,48 @@
   padding: 5px 10px;
 } */
 
+.pop-up-model-content.disable , .aspect-ratio-box.disable{
+  
+  pointer-events: none;
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pop-up-model-content,
+.aspect-ratio-box {
+  position: relative; /* Add this */
+}
+.unclickable {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.unclickable::after {
+  content: "Only allowed when logged in as a user";
+  visibility: hidden;
+  opacity: 0;
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 999; /* Make sure it shows on top */
+  pointer-events: none; /* Ensures tooltip doesn't interfere */
+}
+
+/* Show tooltip on hover */
+.unclickable:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
 @media (max-width: 768px){
   .settings-pop-up {
     width: 90%;

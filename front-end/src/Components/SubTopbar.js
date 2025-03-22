@@ -29,7 +29,7 @@ export default function SubTopbar({setShowNavBar,showNavBar,width}) {
     <div className={`sub-top-bar ${showNavBar?"short":"big"} d-flex justify-content-between align-items-center`} style={{width:`${width<766?width:showNavBar?width-250:width}px` }} >
 
         <div className='flex-1 d-flex justify-content-start align-items-center'>
-          <button className='button p-0 d-flex w-ft h-ft' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<ArrowCircleLeftOutlinedIcon className='navbar-icons'/>:<ArrowCircleRightOutlinedIcon className='navbar-icons'/>}</button>
+          <button className='button p-0 d-flex w-ft h-ft' id='side-nav-button' onClick={()=>setShowNavBar(!showNavBar)} >{showNavBar?<ArrowCircleLeftOutlinedIcon className='navbar-icons'/>:<ArrowCircleRightOutlinedIcon className='navbar-icons'/>}</button>
           {!showNavBar&&  
             <Link to={'/'}> 
               <img className='big-logo' src={logo} alt='genimagine logo'></img>
