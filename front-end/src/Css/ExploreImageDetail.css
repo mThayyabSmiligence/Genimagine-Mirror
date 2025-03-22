@@ -1,0 +1,148 @@
+.image-detail-outer-container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-detail-container{
+    padding: 10px;
+    border-radius: 10px;
+    width: 95%;
+    height: 95%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.image-container{
+    width: 60%;
+    height: 100%;
+}
+
+.explore-detail-image {
+    height: 80%;
+    width: 80%;
+    object-fit: contain;
+}
+  
+.image-details {
+    margin-top: 20px;
+    width: 40%;
+}
+
+.image-details,.explore-detail-image{
+    padding: 10px;
+}
+
+.image-prompt{
+    border: 1px solid rgb(207, 207, 207);
+    border-radius: 10px;
+    height: fit-content;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.image-prompt-header{
+    width: 100%;
+    border-bottom: 1px solid rgb(207, 207, 207);
+}
+
+.prompt-copy-button{
+    background-color: #f1f1f1;
+    border: none;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 5px;
+    width: 130px;
+}
+
+.explore-prompt-setting-container{
+    overflow-y: auto;
+    flex: 1;
+
+  }
+  
+.image-caption{
+    border: 1px solid rgb(207, 207, 207);
+    border-radius: 10px;
+    height: fit-content;
+    max-height: 300px; 
+    overflow: hidden; 
+}
+  
+.user-id-tag-outer-container{
+    width: 100%;
+    border-bottom: 1px solid rgb(207, 207, 207);
+}
+
+.user-id-tag{
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: #f1f1f1;
+    border-radius: 100px  ;
+}
+.user-id-tag-image{
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.user-id-tag p{
+}
+.image-settings-tag{
+    background-color: #f1f1f1;
+    border-radius: 100px;
+    padding: 3px 10px;
+    margin-right: 5px;
+
+}
+.image-settings-tag .icon{
+    height: 20px;
+    width: 20px;    
+}
+
+.explore-caption-option{
+    /* border-radius: 100%; */
+    border: none;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+    height: 26px;
+    width: 26px;
+}
+.explore-caption-option .icon{
+    height: 20px;
+    width: 20px;
+}
+
+@media (max-width: 767px) {
+
+    .image-detail-container{
+      flex-direction: column;
+      align-items: center;
+    }
+    .image-details{
+      width: 100%
+    }
+    .image-container{
+      width: 100%;
+    }
+    .image-prompt{
+      height: 150px;
+    }
+    .image-caption{
+      height: 200px;
+    }
+    .image-container{
+      height: 500px;
+    }
+  
+}
+
+

@@ -47,7 +47,7 @@
     height: 100%;
   }
 
-  .popup-image {
+  .explore-detail-image {
     height: 100%;
     width: 100%;
     object-fit: contain;
@@ -61,16 +61,16 @@
     padding: 10px;
   }
 
-  .image-prompt{
-    font-size: 15px;
-   
-    height: 40%;
-    width: 100%;
+    /* .image-prompt{
+      font-size: 15px;
     
+      height: 40%;
+      width: 100%;
+      
 
-    margin-bottom: 5%;
-    position: relative;
-  }
+      margin-bottom: 5%;
+      position: relative;
+    } */
 
   .prompt-header,.caption-header{ 
     text-align: start;
@@ -92,7 +92,7 @@
 
  .prompt-text-container {
   overflow-y: auto;
-  max-height: 75%;
+  /* max-height: 75%; */
   min-height: auto;
 }
 .image-setting-container{

@@ -6,6 +6,7 @@ import { useInView } from "react-intersection-observer";
 import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
 import Masonry from "react-masonry-css";
 import imagesLoaded from "imagesloaded";
+import { useNavigate } from "react-router-dom";
 
 function ExplorePage() {
     const [images, setImages] = useState([]);
@@ -18,6 +19,7 @@ function ExplorePage() {
     const [sort, setSort] = useState(""); // Sorting method (recent/top)
     const [top, setTop] = useState(""); // Time filter (day/week/month)
     const [selectedImage, setSelectedImage] = useState(false);
+    const Navigate = useNavigate();
 
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
@@ -64,13 +66,18 @@ function ExplorePage() {
         }
     }, [inView]);
 
-    const handleImageClick = (image) => {
-        setSelectedImage(image);
-    };
+    // const handleImageClick = (image) => {
+    //     setSelectedImage(image);
+    // };
 
-    const handleClosePopup = () => {
-        setSelectedImage(false);
-    };
+    const handleImageClick = (publish_id) => {
+        // setSelectedImage();
+        Navigate(`/explore/image/${publish_id}`);
+    }
+
+    // const handleClosePopup = () => {
+    //     setSelectedImage(false);
+    // };
 
     useEffect(() => {
         if (images.length > 0) {
@@ -100,12 +107,12 @@ function ExplorePage() {
                 />
             </div>
             <div className="explore-body">
-                {
+                {/* {
                     selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={true}/>
                 }
                 {
                     selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
-                }
+                } */}
                 <div className="explore-image-container">
                     <Masonry
                         breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts
@@ -118,7 +125,7 @@ function ExplorePage() {
                         images.map((image, index) => (
 
                             <div key={index} className="explore-image col-6 col-md-4 col-lg-3 br-10"
-                            onClick={() => handleImageClick(image)}
+                            onClick={() => handleImageClick(image.published_id)}
                             >
                                 <img src={image.image_url} alt={image.caption} className="br-10 img-fluid shadow" />
                             </div>
