@@ -16,6 +16,19 @@
     height: 200px;
 }
 
+.style-card.active img{
+    box-shadow: 3px 3px 4px 4px #dedede;
+}
+.style-card.active .style-name-heading{
+    background-color: #000000;
+    color: white;
+    border-radius: 10px;
+}   
+
+.style-preview-card img{
+    height: 100px;
+}
+
 @media  (max-width: 400px){
     .style-card{
         height: 150px;

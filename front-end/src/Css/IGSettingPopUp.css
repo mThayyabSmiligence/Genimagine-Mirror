@@ -159,9 +159,9 @@
   }
 }
 
-@media (min-width: 1380px){
+@media (min-width: 1381px) and (max-width: 2000px){
   .settings-pop-up{
-    max-height: 600px; 
+    max-height: 640px; 
   }
 }
 
