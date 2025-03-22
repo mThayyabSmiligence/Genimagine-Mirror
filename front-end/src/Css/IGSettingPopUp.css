@@ -1,5 +1,8 @@
 .settings-pop-up {
   width: 700px;
+  min-height: 0px;
+  /* max-height: 600px;  */
+  overflow-y: auto;
 }
 
 .pop-up-close{
@@ -57,7 +60,23 @@
   padding: 5px 10px;
 } */
 
-@media (max-width: 768px){
+.see-more-button{
+  color: white;
+  font-size: 12px;
+  background-color: black;
+  border: none;
+  padding: 5px 10px;
+  height: fit-content;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.pop-up-style-container {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+@media (min-width: 450px) and  (max-width: 768px){
   .settings-pop-up {
     width: 90%;
   }
@@ -69,4 +88,36 @@
     width: fit-content;
     
   }
+  .settings-pop-up{
+    max-height: 520px; 
+  }
+
+  
 }
+
+@media (max-width: 450px){
+  .settings-pop-up{
+    max-height: 600px; 
+    width: 90%;
+
+  }
+  .pop-up-model-content{
+    width: fit-content;
+    
+  }
+  
+}
+
+@media (min-width: 769px) and  (max-width: 1380px){
+  .settings-pop-up{
+    max-height: 520px; 
+  }
+}
+
+@media (min-width: 1380px){
+  .settings-pop-up{
+    max-height: 600px; 
+  }
+}
+
+
