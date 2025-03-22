@@ -216,7 +216,7 @@ exports.getExploreImageByIdService=async(explore_id)=>{
         }
     }
 }
-exports.getExploreImageByUserIdService=async(sort, time, page ,user_id)=>{
+exports.getExploreImageByUserIdService=async(sort, time, page ,user_id,limit)=>{
 
     try {
         let query = `
@@ -270,7 +270,7 @@ exports.getExploreImageByUserIdService=async(sort, time, page ,user_id)=>{
 
         // 🟢 3️⃣ Pagination (Lazy Loading with Fixed Limit)
         const pageNumber = parseInt(page, 10) || 1;
-        const pageSize = 10; // 🔹 Fixed page size (e.g., 10 images per page)
+        const pageSize = limit || 10; // 🔹 Fixed page size (e.g., 10 images per page)
         const offset = (pageNumber - 1) * pageSize;
 
         query += ` LIMIT ${pageSize} OFFSET ${offset}   `;

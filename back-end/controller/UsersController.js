@@ -253,3 +253,9 @@ exports.deleteChatController=async(req,res)=>{
     
     return res.status(result.status).json(result);
 }
+
+exports.getUserDataByIdController=async(req,res)=>{
+    const {user_id}= req.params;
+    const user= await getUserDataService(user_id);
+    return res.status(user.status).json(user)
+}

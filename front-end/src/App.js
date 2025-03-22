@@ -28,6 +28,7 @@ import ChangePassword from './Pages/User/ChangePassword';
 import TermsAndConditions from './Pages/policies/TermsAndConditions';
 import PrivacyPolicy from './Pages/policies/PrivacyPolicy';
 import HomeLayout from './Layouts/HomeLayout';
+import OtherUserProfile from './Pages/OtherUserProfile';
 
 
 
@@ -88,10 +89,12 @@ function App() {
             
 
             <Route element={<NavLayout setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></NavLayout>}>
+
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
                 <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
                 <Route path='credit-shop'></Route>
+                <Route path='user/:userId' element={<OtherUserProfile></OtherUserProfile>}></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
