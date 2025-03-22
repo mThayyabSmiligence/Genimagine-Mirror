@@ -119,6 +119,14 @@
   height: 100%;
   overflow-y: hidden;
 }
+/* .pop-up-done{
+  position: absolute;
+  width: 90%;
+  bottom: 0;
+  background-color: white;
+  border: 1px solid grey;
+  border-radius: 10px;
+} */
 
 @media (min-width: 450px) and  (max-width: 768px){
 

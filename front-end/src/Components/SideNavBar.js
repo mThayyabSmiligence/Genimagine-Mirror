@@ -295,8 +295,8 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                     <h4 className='h-4 w-100 text-start'>Chat History</h4>
 
                                     {  chatList.length>0? 
-                                        Object.entries(groupedChat).map(([group,chats])=>(
-                                            <div key={group} className='d-flex flex-column align-items-center mb-3'>
+                                        Object.entries(groupedChat).map(([group,chats],index)=>(
+                                            <div key={index} className='d-flex flex-column align-items-center mb-3'>
                                                 <h6 className='chat-group-heading p-secondary w-100 text-start'>{group}</h6>
                                                 {
                                                     Array.isArray(chats)?(

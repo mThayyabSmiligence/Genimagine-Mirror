@@ -18,6 +18,7 @@ export default function GuestContentPage() {
 
     const [model,setModel]= useState(null)
     const [aspectRatio,setAspectRatio]= useState(null)
+    const[style,setStyle] = useState(null)
 
     const navigate =useNavigate()
     const { refreshChatList,setRefreshChatList,refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext) 
@@ -56,6 +57,7 @@ export default function GuestContentPage() {
         const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
         setModel(imageSettings.model)
         setAspectRatio(imageSettings.aspectRatio)
+        setStyle(imageSettings.style)
       }
     },[refreshImageSettings])
    
@@ -112,7 +114,7 @@ export default function GuestContentPage() {
             prompt: prompt ,
             model:model,
             aspect_ratio:aspectRatio.aspectRatio,
-            
+            style: style,
           
           },
             )
@@ -124,6 +126,7 @@ export default function GuestContentPage() {
                 prompt: prompt ,
                 model:model,
                 aspect_ratio:aspectRatio.aspectRatio,
+                style: style,
                 client_ip:ipAddress
               
               }, // Ensure the response is handled as binary

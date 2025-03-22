@@ -73,9 +73,12 @@ exports.getExploreImageByIdController=async (req,res)=>{
 }
 
 exports.getExploreImageByUserIdController=async(req,res)=>{
-    const { sort, time, page } = req.query;
+    const { sort, time, page,limit,userId } = req.query;
 
-    const exploreImages= await getExploreImageByUserIdService(sort,time,page,req.user.id);
+    
+
+    const exploreImages= await getExploreImageByUserIdService(sort,time,page,userId || req.user.id,limit);
+    console.log("user id: " + userId);
     console.log("this is get explore images by user id api")
     
     return res.status(exploreImages.status).json(exploreImages);

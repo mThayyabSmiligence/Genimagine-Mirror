@@ -19,10 +19,11 @@
 .style-card.active img{
     box-shadow: 3px 3px 4px 4px #dedede;
 }
-.style-card.active .style-name-heading{
+.style-card.active .style-name-heading , .style-preview-card.active .style-name-heading{
     background-color: #000000;
     color: white;
     border-radius: 10px;
+    padding: 3px;
 }   
 
 .style-preview-card img{
@@ -34,6 +35,14 @@
         height: 150px;
     }
     
+}
+@media (min-width: 769px) and  (max-width: 1380px){
+    .style-preview-card img{
+        height: 90px;
+    }
+    .style-preview-card{
+        width: 90px;
+    }
 }
 
 @media (min-width: 400px) and (max-width: 470px){
