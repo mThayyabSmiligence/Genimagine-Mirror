@@ -158,7 +158,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
         <div className="image-details ">
 
 
-        <div className='image-caption'>
+          <div className='image-caption'>
             <div className='d-flex justify-content-between mb-1'>
               <h5 className='caption-header'>Caption :</h5>
               {
@@ -171,8 +171,8 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 <p className='m-0 test-start'>{image.caption}</p>
               </div>
             </div>
-
           </div>
+          
           <div className='image-prompt text-start p-2 '>
             <h5 className=' prompt-header'>Prompt :</h5>
             <div className='explore-prompt-setting-container'>
