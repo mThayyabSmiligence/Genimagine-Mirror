@@ -16,6 +16,7 @@ import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import DeletePopUp from './CommonComponents/DeletePopUp'
 import ChatList from './CommonComponents/ChatList'
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 const groupChatsByDate=(chats)=> {
     const today = new Date();
@@ -263,16 +264,26 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                 <div className='side-nav-middle-section p-relative h-auto ' style={{ height:`${height-150}px`} }>
 
                     <div className='sub-mid-section '>
-                        <Link to={"/explore" } className='link mb-2' id='explore-link'>
-                            <div className={` nav-list-item ${path=="/explore"&&'active'}`}>
+
+                        <Link to={"/explore" } className='link mb-1'  id='explore-link'>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/explore"&&'active'}`}>
+
                                 <ExploreOutlinedIcon/>
-                                <div to={"/explore" } className='link nav-options'>Explore</div>
+                                <div to={"/explore" } className='link nav-options ms-1'>Explore</div>
                             </div>
                         </Link>
-                        <Link to={"/image-generation" } className='link' id='new-chat-link'>
-                            <div className={` nav-list-item ${path=="/image-generation"&&'active'}`}>
+                        <Link to={"/credit-purchase" } className='link mb-1' >
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/credit-purchase"&&'active'}`}>
+                                <ShoppingCartOutlinedIcon/>
+                                <div to={"/credit-purchase" } className='link nav-options ms-1'>Buy Credits</div>
+                            </div>
+                        </Link>
+
+                        <Link to={"/image-generation" } className='link'  id='new-chat-link'>
+                            <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
+
                                 <AddCircleOutlineOutlinedIcon/>
-                                <div to={"/image-generation" } className='link nav-options'>{loggedIn?'New Chat':'Generate'}</div>
+                                <div to={"/image-generation" } className='link nav-options ms-1'>{loggedIn?'New Chat':'Generate'}</div>
                             </div>
                         </Link>
 

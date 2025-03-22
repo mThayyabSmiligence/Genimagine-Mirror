@@ -51,7 +51,7 @@ function FAQ() {
                     ))
                 }    
             </div>
-            <p className='contact-us'>If you need further information, <span>please contact us</span></p>
+            <p className='contact-us'>If you need further information, <span><a href="mailto:silambarasang318@gmail.com" className="ms-1 text-decoration-none">please contact us</a></span></p>
         </div>
     </div>
   )

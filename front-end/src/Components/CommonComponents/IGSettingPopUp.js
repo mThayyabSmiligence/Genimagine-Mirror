@@ -3,6 +3,7 @@ import '../../Css/IGSettingPopUp.css'
 import RefreshDataContext from "../../Context/RefreshDataProvider";
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import AuthContext from "../../Context/AuthProvider";
+import StylePopUp from "./StylePopUp";
 
 
 const modelsList = [
@@ -61,6 +62,8 @@ function IGSettingPopUp({closePopup,}) {
 
   const [tempTrackModel, setTempTrackModel] = useState(1);
   const [tempSelectedAspectRatio, setTempSelectedAspectRatio] = useState(aspectRatioList[0]);
+  const [tempTrackStyle, setTempTrackStyle] = useState(0);
+  const [seeMore, setSeeMore] = useState(false);
   
 
 
@@ -107,7 +110,6 @@ function IGSettingPopUp({closePopup,}) {
     setRefreshImageSettings(!refreshImageSettings)
     
   },[])
-
   
 
   
@@ -115,14 +117,30 @@ function IGSettingPopUp({closePopup,}) {
     localStorage.setItem("image_settings", JSON.stringify(
       {
         model:tempTrackModel,
-        aspectRatio:tempSelectedAspectRatio
+        aspectRatio:tempSelectedAspectRatio,
+        style:tempTrackStyle
       }))
       setRefreshImageSettings(!refreshImageSettings)
     closePopup();
   }
 
-  return (
-    <div className="settings-pop-up pop-up-container white-bg">
+  return  (
+
+    <div className="settings-pop-up pop-up-container white-bg"> 
+    {
+      seeMore ?(
+      <div className="pop-up-style-container ">
+         <div className="pop-up-title d-flex justify-content-between align-items-center">
+                <h4 className="h-2">Style</h4>
+                <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={() => setSeeMore(false)}>close</CloseOutlinedIcon>
+        </div>
+        
+
+        <StylePopUp/>
+      </div>
+
+      ):(
+        <>
         <div className="pop-up-title d-flex justify-content-between align-items-center">
                 <h4 className="h-2">Image Generation Settings</h4>
                 <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
@@ -159,8 +177,11 @@ function IGSettingPopUp({closePopup,}) {
                     ))
                   }
                 </div>
-
-                <h5 className="h-3">Style</h5>
+ 
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                    <h5 className="h-3">Style</h5>
+                    <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
+                </div>
                 <div className="d-flex justify-content-center">
                   <h4 className="h-3">Coming Soon...</h4>
                 </div>
@@ -170,6 +191,10 @@ function IGSettingPopUp({closePopup,}) {
                 </div>
             </div>
         </div>
+        </>
+      )
+    }
+        
     </div>
   )
 }

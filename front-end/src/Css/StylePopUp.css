@@ -1,0 +1,31 @@
+.style-popup img{
+    width: 100%;
+    /* height: 100px;    */
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.style-name-heading{
+    font-size: 12px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.style-card{
+    height: 200px;
+}
+
+@media  (max-width: 400px){
+    .style-card{
+        height: 150px;
+    }
+    
+}
+
+@media (min-width: 400px) and (max-width: 470px){
+    .style-card{
+        height: 170px;
+    }
+    
+}
