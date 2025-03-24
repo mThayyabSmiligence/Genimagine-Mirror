@@ -108,6 +108,8 @@ function App() {
                   <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
                   <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
                   <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
+                  <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
+
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                 </Route>
 

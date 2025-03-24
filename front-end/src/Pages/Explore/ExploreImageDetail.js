@@ -14,10 +14,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ShareIcon from '../../images/sharelogo.png';
 import LinkIcon from '@mui/icons-material/Link';
 import config from "../../Config";
-// import { useInView } from "react-intersection-observer";
-// import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@mui/icons-material/Edit';
+import DeletePopUp from "../../Components/CommonComponents/DeletePopUp";
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+
 
 function ExploreImageDetail() {
+    const location = useLocation()
     const { published_id } = useParams(); 
     const [imageData, setImageData] = useState({});
     const [loading, setLoading] = useState(false);
@@ -30,10 +33,13 @@ function ExploreImageDetail() {
     const [copied, setcopied] = useState(false);
     const [imageCaptionOption, setImageCaptionOption] = useState(false);
     const [imagePathCopied, setImagePathCopied] = useState(false);
+    const [isUsersImage, setIsUsersImage] = useState(location.pathname.includes("/u/published-images"));
+    const [showDeletePopUp, setShowDeletePopUp] = useState(false);
+    
 
     const Navigate = useNavigate();
 
-    const location = useLocation();
+
 
         useEffect(() => {
             ImageDetail();
@@ -101,11 +107,11 @@ function ExploreImageDetail() {
         }
     }
 
-    // const handelEdit=()=>{
-    //     localStorage.setItem("temp_image_data",JSON.stringify(image))
-    //     Navigate('/u/publish?edit=1')
+    const handelEdit=()=>{
+        localStorage.setItem("temp_image_data",JSON.stringify(imageData))
+        Navigate('/u/publish?edit=1',{state:{from:location}})
     
-    //   }
+      }
 
     const handleCopy = (image) => {
         localStorage.setItem("image_settings", JSON.stringify(
@@ -186,6 +192,22 @@ function ExploreImageDetail() {
             }
         }
 
+        const handelDeletePublishedImage=async(published_id) => {
+                try{
+                    const response = await axiosPrivate.delete(`/explore/${published_id}`)
+                    console.log(response)
+                    if(response.data.success){
+                       Navigate('/u/published-images',{replace: true})
+                    }
+                }
+                catch(error){
+                    console.log(error)
+                }
+            }
+
+        const handleDelete = () => {
+            handelDeletePublishedImage(imageData.published_id)
+        }
     return loading?
     (
         <div className='w-100 h-100 d-flex justify-content-center align-items-center mt-5 pt-5'>
@@ -238,19 +260,27 @@ function ExploreImageDetail() {
                                 <img className="user-id-tag-image" src={anime} alt="anime"/>
                                 <p className="mb-0 me-1">{userData?.username||"user name"}</p>
                             </div>
-                            <button onClick={() => setImageCaptionOption(!imageCaptionOption)} className="explore-caption-option d-flex justify-content-center align-items-center" id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
-                            {
-                                imageCaptionOption?
-                                <div className='caption-option-copy-link-container'>           
+                            <div className="d-flex ">                
                                 {
-                                    imagePathCopied ?
-                                    <button className='option-copy-link-button'>Copied</button> :
-                                    <button onClick={() => handleShare(imageData)} className='option-copy-link-button'><LinkIcon fontSize='small'></LinkIcon>Copy link</button>
-                                }   
-                                </div>
-                                :
-                                null
-                            }
+                                    isUsersImage&&
+                                    <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>
+
+                                }
+                                
+                                <button onClick={() => setImageCaptionOption(!imageCaptionOption)} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
+                                {
+                                    imageCaptionOption?
+                                    <div className={`caption-option-copy-link-container  ${isUsersImage&& "published-image"}`}>           
+                                    {
+                                        imagePathCopied ?
+                                        <button className='option-copy-link-button'>Copied</button> :
+                                        <button onClick={() => handleShare(imageData)} className='option-copy-link-button'><LinkIcon fontSize='small'></LinkIcon>Copy link</button>
+                                    }   
+                                    </div>
+                                    :
+                                    null
+                                }
+                            </div>
                         </div>
                             
                         {/* <div className='d-flex justify-content-between mb-1'>
@@ -295,8 +325,23 @@ function ExploreImageDetail() {
                                 </div>
                                 :
                                 null
-                            }
+                            }                          
                         </div>
+                        {
+                            isUsersImage?
+                            <div>
+                            <button onClick={() =>setShowDeletePopUp(true)} className='button-wh light-button-wh delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
+                            <DeletePopUp
+                                show={showDeletePopUp}
+                                onHide={() => setShowDeletePopUp(false)}
+                                handelDelete={handleDelete}
+                                message="Are you sure you want to delete this item forn your published image page?"
+                                showDeletePopUp = {showDeletePopUp}
+                            />
+                            </div>
+                            :
+                            null
+                        }
                     </div>
                 </div>
             </div>

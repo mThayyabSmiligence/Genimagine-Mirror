@@ -68,7 +68,7 @@ function PublishImagePage() {
         setSuccess(true)
         setSuccessMessage(response.data.message)
         setErrorMessage(null)
-        navigate('/u/published-images', { replace: true });
+        navigate(location.state.from.pathname, { replace: true });
       }
     }catch(error){
       console.error("error in editing caption", error)
