@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-.image-detail-container{
+.explore-image-detail-container .image-detail-container{
     padding: 10px;
     border-radius: 10px;
     width: 95%;
@@ -16,28 +16,28 @@
     justify-content: center;
 }
 
-.image-container{
+.explore-image-detail-container .image-container{
     width: 60%;
     height: 600px;
 }
 
-.explore-detail-image {
+.explore-image-detail-container .explore-detail-image {
     height: 100%;
     width: 95%;
     object-fit: contain;
 
 }
   
-.image-details {
+.explore-image-detail-container .image-details {
     margin-top: 20px;
     width: 40%;
 }
 
-.image-details,.explore-detail-image{
+.explore-image-detail-container .image-details,.explore-detail-image{
     padding: 10px;
 }
 
-.image-prompt{
+.explore-image-detail-container .image-prompt{
     border: 1px solid rgb(207, 207, 207);
     border-radius: 10px;
     height: fit-content;
@@ -45,7 +45,7 @@
     overflow: hidden;
 }
 
-.image-prompt-header{
+.explore-image-detail-container .image-prompt-header{
     width: 100%;
     border-bottom: 1px solid rgb(207, 207, 207);
     text-align: start;
@@ -53,8 +53,8 @@
     font-weight: 400;
 }
 
-.prompt-copy-button{
-    background-color: #f1f1f1;
+.explore-image-detail-container .prompt-copy-button{
+    background-color: #e7e6e6;
     border: none;
     color: black;
     text-align: center;
@@ -66,7 +66,7 @@
     width: 130px;
 }
 
-.explore-prompt-setting-container{
+.explore-image-detail-container .explore-prompt-setting-container{
     background-color: rgb(255, 255, 255);
     height: 80%;
     overflow-y: auto;
@@ -74,7 +74,7 @@
 }
   
 
-.image-caption{
+.explore-image-detail-container .image-caption{
     border: 1px solid rgb(207, 207, 207);
     border-radius: 10px;
     height: fit-content;
@@ -82,59 +82,58 @@
     overflow: hidden; 
 }
   
-.user-id-tag-outer-container{
+.explore-image-detail-container .user-id-tag-outer-container{
     width: 100%;
     border-bottom: 1px solid rgb(207, 207, 207);
 }
 
-.user-id-tag{
+.explore-image-detail-container .user-id-tag{
     display: flex;
     align-items: center;
     padding: 5px;
     background-color: #f1f1f1;
     border-radius: 100px  ;
 }
-.user-id-tag-image{
+.explore-image-detail-container .user-id-tag-image{
     height: 30px;
     width: 30px;
     border-radius: 50%;
     margin-right: 5px;
 }
-.user-id-tag p{
-}
-.image-settings-tag{
+
+.explore-image-detail-container .image-settings-tag{
     background-color: #f1f1f1;
     border-radius: 100px;
     padding: 3px 10px;
     margin-right: 5px;
 
 }
-.image-settings-tag .icon{
+.explore-image-detail-container .image-settings-tag .icon{
     height: 20px;
     width: 20px;    
 }
 
-.explore-caption-option{
+.explore-image-detail-container .explore-caption-option , .explore-image-detail-container .edit-button{
     /* border-radius: 100%; */
     border: none;
     border-radius: 50%;
-    background-color: #f1f1f1;
+    background-color: #e7e6e6;
     height: 26px;
     width: 26px;
 }
 
-.explore-caption-option .icon{
+.explore-image-detail-container .explore-caption-option .icon,.explore-image-detail-container .edit-button .icon{
     height: 20px;
     width: 20px;
 }
 
-.prompt-text-innner-container,.caption-text-inner-container {
+.explore-image-detail-container .prompt-text-innner-container,.caption-text-inner-container {
     word-wrap: break-word; 
     overflow-wrap: break-word; 
     white-space: normal; 
 }
 
-.caption-text-container {
+.explore-image-detail-container .caption-text-container {
     background-color: rgb(255, 255, 255);
     border-radius: 10px;
       overflow-y : auto;
@@ -143,10 +142,10 @@
 
   
 
-  .user-like-button p,.user-view-buttons p{
+.explore-image-detail-container .user-like-button p,.user-view-buttons p{
     margin-left: 10px;
 }
-.user-like-button,.user-view-button,.share-image-button{
+.explore-image-detail-container .user-like-button,.user-view-button,.share-image-button{
     height: 30px;
     border-radius: 100px;
     color: rgb(0, 0, 0);
@@ -154,28 +153,28 @@
 
 }
 
-.user-like-button .liked-button{
+.explore-image-detail-container .user-like-button .liked-button{
   color: rgb(253, 60, 92);
 }
-.caption-inner-text-container p {
+.explore-image-detail-container .caption-inner-text-container p {
   text-align: start;
 }
-.delete-button {
+.explore-image-detail-container .delete-button {
     color: rgb(255, 0, 0);
 }
 
-.share-image-container{
+.explore-image-detail-container .share-image-container{
     position: relative;
   }
   
-  .share-image-icon{
+.explore-image-detail-container .share-image-icon{
     width: 20px;
     height: 20px;
     color: #212121;
     cursor: pointer;
   }
   
-  .copy-link-button{
+  .explore-image-detail-container .copy-link-button{
     position: absolute;
     width: 90px;
     height: fit-content;
@@ -187,13 +186,13 @@
     cursor: pointer;
     font-size: 12px;
   }
-  .caption-option-copy-link-container{
+  .explore-image-detail-container .caption-option-copy-link-container{
     position: absolute;
-    top: 230px;
+    top: 250px;
     right: 20px;
   }
 
-  .option-copy-link-button{
+  .explore-image-detail-container .option-copy-link-button{
     width: 90px;
     height: fit-content;
     right: -10px;
@@ -203,27 +202,37 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
     cursor: pointer;
     font-size: 12px;
+  }
+
+  .explore-image-detail-container .caption-option-copy-link-container.published-image {
+    position: absolute;
+    top: 250px;
+    right: 20px;
+  }
+  
+  .explore-image-detail-container .delete-button{
+    border: 2px solid rgb(207, 207, 207);
   }
 
 @media (max-width: 767px) {
 
-    .image-detail-container{
+    .explore-image-detail-container .image-detail-container{
       flex-direction: column;
       align-items: center;
     }
-    .image-details{
+    .explore-image-detail-container .image-details{
       width: 100%
     }
-    .image-container{
+    .explore-image-detail-container .image-container{
       width: 100%;
     }
-    .image-prompt{
+    .explore-image-detail-container .image-prompt{
       height: 150px;
     }
-    .image-caption{
+    .explore-image-detail-container.image-caption{
       height: 200px;
     }
-    .image-container{
+    .explore-image-detail-container .image-container{
       height: 600px;
       
     }
@@ -231,19 +240,19 @@
 }
 
 @media (max-width:480px) {
-    .image-container{
+    .explore-image-detail-container .image-container{
       height: 400px;
     }
-    .image-caption{
+    .explore-image-detail-container .image-caption{
       height: 150px;
     }
-    .image-prompt{
+    .explore-image-detail-container .image-prompt{
       height: 100px;
     }
-    .image-details{
+    .explore-image-detail-container.image-details{
       width: 100%
     }
-    .image-container{
+    .explore-image-detail-container.image-container{
       width: 100%;
     }
 
@@ -251,42 +260,42 @@
 
 @media (min-width: 480px) and (max-width: 767px) {
 
-    .image-detail-container{
+    .explore-image-detail-container .image-detail-container{
         flex-direction: column;
         align-items: center;
       }
-    .image-container{
+      .explore-image-detail-container .image-container{
       height: 400px;
     }
-    .image-caption{
+    .explore-image-detail-container .image-caption{
       height: 200px;
     }
-    .image-prompt{
+    .explore-image-detail-container .image-prompt{
       height: 150px;
     }
-    .image-details{
+    .explore-image-detail-container .image-details{
       width: 100%
     }
-    .image-container{
+    .explore-image-detail-container .image-container{
       width: 100%;
     }
     
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-    .image-container{
+    .explore-image-detail-container .image-container{
       height: 500px;
     }
-    .image-caption{
+    .explore-image-detail-container .image-caption{
       height: 300px;
     }
-    .image-prompt{
+    .explore-image-detail-container .image-prompt{
       height: 200px;
     }
-    .image-details{
+    .explore-image-detail-container .image-details{
       width: 100%
     }
-    .image-container{
+    .explore-image-detail-container.image-container{
       width: 100%;
     }
     

@@ -7,8 +7,12 @@ import '../../Css/ExplorePage.css'
 import '../../Css/PublishedImages.css'
 import Masonry from "react-masonry-css";
 import imagesLoaded from "imagesloaded";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function PublishedImages() {
+    
+    const Navigate = useNavigate();
+
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
@@ -20,6 +24,7 @@ export default function PublishedImages() {
     const [top, setTop] = useState(""); // Time filter (day/week/month)
     const [selectedImage, setSelectedImage] = useState(false);
     const [showDeletePopUp, setShowDeletePopUp] = useState(false);
+    
 
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
@@ -65,8 +70,8 @@ export default function PublishedImages() {
         }
     }, [inView]);
 
-    const handleImageClick = (image) => {
-        setSelectedImage(image);
+    const handleImageClick = (published_id) => {
+        Navigate(`/u/published-images/${published_id}`)
     };
 
     const handleClosePopup = () => {
@@ -108,12 +113,7 @@ export default function PublishedImages() {
                 />
             </div>
             <div className="explore-body">
-                {
-                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={false} isDelete={true} handelDeletePublishedImage={handelDeletePublishedImage} showDeletePopUp = {showDeletePopUp} setShowDeletePopUp = {setShowDeletePopUp}/>
-                }
-                {
-                    selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
-                }
+               
                 <div className="explore-image-container">
                     <Masonry
                         breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts
@@ -125,7 +125,7 @@ export default function PublishedImages() {
                         images.map((image, index) => (
 
                             <div key={index} className="explore-image d-flex justify-content-center align-items-center br-10"
-                            onClick={() => handleImageClick(image)}
+                            onClick={() => handleImageClick(image.published_id)}
                             >
                                 <img src={image.image_url} alt={image.caption} className="br-10" />
                             
