@@ -78,7 +78,7 @@ function ExploreImageDetail() {
     const ImageDetail = async () => {
         setLoading(true);
         try {
-            const response = await axiosNoAUth.get(`/explore/${published_id}`);
+            const response = await axiosNoAUth.get(`/explore/image/${published_id}`);
             if (response.data.success) {
                 setImageData(response.data.image);
                 getUserDetails(response.data.image.user_id)
