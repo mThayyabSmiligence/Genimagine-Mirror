@@ -20,7 +20,7 @@ export default function OtherUserProfile() {
     const getImageDetails=async()=>{
         try{
             console.log("user id",userId)
-            const response = await axiosPrivate.get(`/explore?limit=4&userId=${userId}`,{
+            const response = await axiosNoAUth.get(`/explore/${userId}?limit=4&userId=${userId}`,{
                 userId: userId,
             })
             setExploreImages(response.data.images)
@@ -59,7 +59,7 @@ export default function OtherUserProfile() {
     <div className='profile-library'>
         <div className='d-flex justify-content-between align-items-center'>
             <h3 className=' text-start mx-2 mt-3'>Published Images</h3>
-            <Link to={"/u/published-images"} className="link material-symbols-outlined me-3 ">
+            <Link to={`/user/${userId}/published-images`} className="link material-symbols-outlined me-3 ">
                 <ArrowForwardIosOutlinedIcon/>
             </Link>
         </div>

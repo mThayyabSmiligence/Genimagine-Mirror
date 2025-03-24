@@ -40,7 +40,7 @@ export default function RegisterUser() {
 console.log("faInfoCircle:", faInfoCircle);
     const [username, setUserName] = useState('');
     const [email, setEmail] = useState('');
-    const [dob, setDob] =useState('');
+    const [dob, setDob] =useState("");
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -419,7 +419,7 @@ console.log("faInfoCircle:", faInfoCircle);
                              `}</style>
                          </button>
                          :
-                        <button disabled={!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified     ? true : false} type="submit" className=" button-wh dark-button-wh w-90 br-100 mb-3 mt-3">Create</button>
+                        <button disabled={dob==""||!usernameValidity || !emailValidity || !passwordValidity || !dobValidity || !pwdMatch || !isCaptchaVerified    ? true : false} type="submit" className=" button-wh dark-button-wh w-90 br-100 mb-3 mt-3">Create</button>
                         }
                         
                     </form>
