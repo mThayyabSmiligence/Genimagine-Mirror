@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import '../../Css/StylePopUp.css'
 import Masonry from "react-masonry-css";
 import styleImage1 from '../../images/style/textured-oil-painting.png'
@@ -41,8 +41,12 @@ import styleImage37 from '../../images/style/ultra-realistic-HDR-style.png';
 import styleImage38 from '../../images/style/urban-street-art-style.png';
 import styleImage39 from '../../images/style/vaporwave-aesthetic.png';
 import styleImage40 from '../../images/style/vibrant-pop-art-illustration.png';
+import AuthContext from '../../Context/AuthProvider';
 
 function StylePopUp({tempTrackStyle, setTempTrackStyle, setSeeMore}) {
+
+  const {loggedIn}= useContext(AuthContext)
+
     const styleList = [
         { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
         { id: 2, style_name: "Chalk and Charcoal", style_image: styleImage2 },
@@ -100,7 +104,7 @@ function StylePopUp({tempTrackStyle, setTempTrackStyle, setSeeMore}) {
             {styleList.length > 0 ? (
                 
                 styleList.map((style, index) =>(
-                    <div className={`style-card ${style.id==tempTrackStyle&&"active"}`} key={index}>
+                    <div className={`style-card ${style.id==tempTrackStyle&&"active"} ${!loggedIn&&"unclickable"}`} key={index}>
                       <img  src={style.style_image} onClick={() => handleStyleClick(style.id)} alt="style" />
                       <h3 onClick={() => handleStyleClick(style.id)} className='style-name-heading'>{style.style_name}</h3>
                     </div>

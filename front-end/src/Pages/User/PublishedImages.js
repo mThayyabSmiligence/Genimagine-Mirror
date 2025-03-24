@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer';
-import { axiosPrivate } from '../../API\'s/axios';
+import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import SortSection from '../../Components/Explore/SortSection';
 import ExplorePopUp from '../../Components/CommonComponents/ExplorePopUp';
 import '../../Css/ExplorePage.css'
 import '../../Css/PublishedImages.css'
 import Masonry from "react-masonry-css";
 import imagesLoaded from "imagesloaded";
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function PublishedImages() {
+
+    const location = useLocation()
+    const {userId}=useParams()
+
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
@@ -20,7 +25,7 @@ export default function PublishedImages() {
     const [top, setTop] = useState(""); // Time filter (day/week/month)
     const [selectedImage, setSelectedImage] = useState(false);
     const [showDeletePopUp, setShowDeletePopUp] = useState(false);
-
+    
     const { ref, inView } = useInView(); // Detects when user reaches bottom
 
     // 🔹 Fetch Explore Images
@@ -35,7 +40,15 @@ export default function PublishedImages() {
 
         try {
             console.log("Fetching:", query);
-            const response = await axiosPrivate.get(`explore${query}`);
+            let response;
+            
+            if(location.pathname=="/u/published-images'")
+            {
+                response = await axiosPrivate.get(`explore${query}`);
+            }
+            else{
+                response = await axiosNoAUth.get(`explore/${userId}`)
+            }
             console.log("Response:", response.data);
 
             if (response.data.success) {

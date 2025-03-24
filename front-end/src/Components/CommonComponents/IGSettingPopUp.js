@@ -236,7 +236,10 @@ function IGSettingPopUp({closePopup,}) {
                 <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
         </div>
         <div className="pop-up-body ">
-            
+            {
+            !loggedIn&&  
+            <p className="text-danger">Login to access image setting</p>
+            }
             <div className="pop-up-content d-flex flex-column text-start mt-3"> 
               
                 <h5 className="pop-up-model h-3">Model</h5>
@@ -278,7 +281,7 @@ function IGSettingPopUp({closePopup,}) {
                   {
                     styleList.map((style, index) => (
                       index < 3 &&
-                      <div key={index} className={`style-preview-card ${style.id == tempTrackStyle && "active"} p-1`} >
+                      <div key={index} className={`style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
                         <img src={style.style_image} onClick={() => setTempTrackStyle(style.id)} alt="style" />
                         <h3 onClick={() => setTempTrackStyle(style.id)} className='style-name-heading'>{style.style_name}</h3>
                       </div>

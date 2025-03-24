@@ -101,6 +101,7 @@ function App() {
                 <Route path="explore/image/:published_id" element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                 <Route path='credit-shop'></Route>
                 <Route path='user/:userId' element={<OtherUserProfile></OtherUserProfile>}></Route>
+                <Route path='user/:userId/published-images' element={<PublishedImages></PublishedImages>}></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
