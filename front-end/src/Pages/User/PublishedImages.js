@@ -10,6 +10,9 @@ import imagesLoaded from "imagesloaded";
 import { useLocation, useParams, useNavigate  } from 'react-router-dom';
 
 export default function PublishedImages() {
+    const location = useLocation()
+    const {userId}=useParams()
+    const Navigate = useNavigate();
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
