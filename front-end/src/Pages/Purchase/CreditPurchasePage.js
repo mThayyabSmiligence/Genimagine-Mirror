@@ -6,7 +6,7 @@ import RefreshDataContext from '../../Context/RefreshDataProvider';
 import logo from '../../images/genimagin_short_logo.png'
 import AuthContext from '../../Context/AuthProvider';
 import SuccessMessageContainer from '../../Components/CommonComponents/SuccessMessageContainer';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 function CreditPurchasePage() {
@@ -14,6 +14,8 @@ function CreditPurchasePage() {
     const { refreshCreditBalance,setRefreshCreditBalance,refreshUserData,setRefreshUserData} = useContext(RefreshDataContext)
 
     const {loggedIn} = useContext(AuthContext)
+    const location = useLocation()
+    const Navigate = useNavigate();
 
     const [credits, setCredits] = useState("") 
     const [Amount, setAmount] = useState("")
@@ -107,6 +109,10 @@ function CreditPurchasePage() {
     //     }
     // }
     const buyCredits=async(package_id,custom_credits,e)=>{
+        if(!loggedIn){
+            Navigate('/login',{state: {from: location}})
+
+        }
         try{
             const response = await axiosPrivate.post('/order',
                 {

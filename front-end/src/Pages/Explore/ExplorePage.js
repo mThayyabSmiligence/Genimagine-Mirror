@@ -70,9 +70,9 @@ function ExplorePage() {
     //     setSelectedImage(image);
     // };
 
-    const handleImageClick = (publish_id) => {
+    const handleImageClick = (published_id) => {
         // setSelectedImage();
-        Navigate(`/explore/image/${publish_id}`);
+        Navigate(`/explore/image/${published_id}`);
     }
 
     // const handleClosePopup = () => {

@@ -1,6 +1,7 @@
 const db = require('../config/connectDatabase');
 const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
+const { use } = require('../routes/Users');
 exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     let generated_image_data;
     let image_data;
@@ -190,10 +191,24 @@ exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
 //     }
 // }
 
-exports.getExploreImageByIdService=async(explore_id)=>{
+exports.getExploreImageByIdService=async(explore_id,user_id)=>{
     try{
-        const query ="SELECT * FROM explore WHERE published_id =?"
-        const [rows] = await db.execute(query,[explore_id])
+        const query = `
+            SELECT 
+                e.*, 
+                em.likes_count, 
+                em.views_count, 
+                em.ranking_score,
+                CASE 
+                    WHEN el.user_id IS NOT NULL THEN TRUE 
+                    ELSE FALSE 
+                END AS isUserLiked
+            FROM explore e
+            JOIN exploremetrics em ON e.published_id = em.published_id
+            LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ?
+            WHERE e.published_id = ?;
+        `;
+        const [rows] = await db.execute(query,[user_id,explore_id])
         if (rows.length == 0) {
              return {
                 status:404,

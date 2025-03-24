@@ -66,7 +66,25 @@ exports.getAllExploreImagesController=async(req,res)=>{
 exports.getExploreImageByIdController=async (req,res)=>{
     const {published_id}=req.params;
     
-    const exploreImage= await getExploreImageByIdService(published_id);
+    let cookies =null
+    let token =null 
+    let decodeToken=null
+    let userId=0;
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+        userId=decodeToken.id
+    }catch(err){
+        
+    }
+       
+    
+    const exploreImage= await getExploreImageByIdService(published_id,userId);
+    console.log("this is get explore image by id api",exploreImage)
     
     return res.status(exploreImage.status).json(exploreImage);
 

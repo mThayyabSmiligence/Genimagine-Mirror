@@ -229,7 +229,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                   Aspect Ratio : {loggedIn?selectSetting.aspectRatio.aspectRatio:"1:1"}
                 </div>
                 <div className='setting-tags p-secondary' title='Style'>
-                  Style : {loggedIn?styleList[selectSetting.style-1].style_name:"none"}
+                  Style : {loggedIn?styleList[selectSetting.style-1]?.style_name||"none":"none"}
                 </div>
               </>
             )}
