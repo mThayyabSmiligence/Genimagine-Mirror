@@ -212,7 +212,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
               <button className='button-wh light-button-wh user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{image.views_count}</p></button>
             </div>
             {
-              isDelete?
+              path=='/u/published-images'&&
               <div>
               <button onClick={() =>setShowDeletePopUp(true)} className='button light-button delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon className='delete-icon'></DeleteOutlineOutlinedIcon></button>
               <DeletePopUp
@@ -223,8 +223,7 @@ function ExplorePopUp({ image, onClose ,view , isDelete,handelDeletePublishedIma
                 showDeletePopUp = {showDeletePopUp}
               />
               </div>
-              :
-              null
+              
             }
 
             <div className='share-image-container'>

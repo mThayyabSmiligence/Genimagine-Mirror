@@ -74,12 +74,43 @@ exports.getExploreImageByIdController=async (req,res)=>{
 
 exports.getExploreImageByUserIdController=async(req,res)=>{
     const { sort, time, page,limit,userId } = req.query;
-
+    const {user_id} = req.params
     
 
-    const exploreImages= await getExploreImageByUserIdService(sort,time,page,userId || req.user.id,limit);
-    console.log("user id: " + userId);
-    console.log("this is get explore images by user id api")
+    let cookies =null
+    let token =null 
+    let decodeToken=null
+    let reqUserId=0;
+            
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+        reqUserId=decodeToken.id
+    }catch(err){
+        
+    }
+    let finalUserId;
+
+    // Ensure user_id and userId are properly parsed and checked
+    if (!isNaN(parseInt(user_id))) {
+        finalUserId = parseInt(user_id);
+        console.log("user_id:", finalUserId);
+    } else if (!isNaN(parseInt(userId))) {
+        finalUserId = parseInt(userId);
+        console.log("userId:", finalUserId);
+    } else if (!isNaN(reqUserId)) {
+        finalUserId = reqUserId;
+        console.log("reqUserId:", finalUserId);
+    } else { 
+        console.log("No valid user ID found");
+        return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const exploreImages= await getExploreImageByUserIdService(sort,time,page,finalUserId,limit);
+    
     
     return res.status(exploreImages.status).json(exploreImages);
  

@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -61,6 +61,12 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log("body",req.body)
     console.log("prompt :"+prompt+"model :"+model)
 
+    const flagged =await promptModerationCheck(prompt)
+    if(flagged){
+        res.status(403).json({message: "This prompt has been flagged for moderation"})
+        return
+    }
+
     const w_h = handelAspectRatio(model,aspect_ratio)
     console.log("w_h",w_h)
 
@@ -86,6 +92,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log(username) 
     console.log(role)
 
+    const updatedPrompt =style==0?prompt:prompt+" in style of "+styleList[style-1].style_name;
+
      
         
     if(model==1 || model==null){
@@ -96,8 +104,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(canUserGenerateForFree.status).json(canUserGenerateForFree)
             return
         }
+
         const inputs={
-            prompt:prompt+"in style of "+styleList[style-1].style_name,
+            prompt:updatedPrompt,
             negative_prompt:"skull",
             width:w_h.width,
             height:w_h.height,
@@ -129,7 +138,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId,
             image_url:"storage is not defined",
             aspect_ratio:aspect_ratio,
-            resolution:`${w_h.width}*${w_h.height}`
+            resolution:`${w_h.width}*${w_h.height}`,
+            style:style==0?"none":styleList[style-1].style_name
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)
@@ -162,7 +172,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         return
     }else{
         const inputs={
-            prompt:prompt+" in style of "+styleList[style-1].style_name,
+            prompt:updatedPrompt,
             negative_prompt:"skull",
             width:w_h.width,
             height:w_h.height,
@@ -208,7 +218,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId,
             image_url:"storage is not defined",
             aspect_ratio:aspect_ratio,
-            resolution:`${w_h.width}*${w_h.height}`
+            resolution:`${w_h.width}*${w_h.height}`,
+            style:style==0?"none":styleList[style-1].style_name
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)

@@ -29,8 +29,8 @@ exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
 
 
     try{
-        const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio) VALUES (?, ?,?, ?, ?,?,?,?,?)"
-        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,generated_image_data.image_url,generated_image_data.image_path,generated_image_data.resolution,generated_image_data.aspect_ratio])
+        const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio,style) VALUES (?, ?,?, ?, ?,?,?,?,?,?)"
+        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,generated_image_data.image_url,generated_image_data.image_path,generated_image_data.resolution,generated_image_data.aspect_ratio,generated_image_data.style])
 
         if (rows.affectedRows == 0) {
              return {

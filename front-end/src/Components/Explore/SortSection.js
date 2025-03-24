@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import {useInView} from 'react-intersection-observer'
+import {  useLocation } from 'react-router-dom';
 
 
 const sortOptions = [
@@ -21,12 +22,16 @@ const sortOptions = [
         { value: 'all', label: 'All'}
     ]
 function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelectedIndex,oldest}) {
+    const location =useLocation()
+
+
  
 
     useEffect(()=>{
+        console.log("path name",location.pathname)
         setSort(sortOptions[0].value);
         setTop(TopOptions[0].value);
-        if(sortOptions.length <3){
+        if(location.pathname !="/explore" && sortOptions.length<3){
         if(oldest)sortOptions.push({value: "oldest",label: "Oldest"});
         }
     },[])

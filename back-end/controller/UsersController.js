@@ -234,6 +234,7 @@ exports.editUserController=async(req,res)=>{
 exports.passwordChangeController=async(req,res)=>{
     const {id}=req.user;
     const {currentPassword, newPassword}=req.body;
+    
     const result = await passwordChangeService(id,currentPassword, newPassword);
 
     return res.status(result.status).json(result)
