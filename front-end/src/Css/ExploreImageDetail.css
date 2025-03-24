@@ -1,4 +1,4 @@
-.image-detail-outer-container{
+.image-detail-outer-container.explore-image-detail-container{
     height: 100%;
     width: 100%;
     display: flex;
@@ -18,13 +18,14 @@
 
 .image-container{
     width: 60%;
-    height: 100%;
+    height: 600px;
 }
 
 .explore-detail-image {
-    height: 80%;
-    width: 80%;
+    height: 100%;
+    width: 95%;
     object-fit: contain;
+
 }
   
 .image-details {
@@ -47,6 +48,9 @@
 .image-prompt-header{
     width: 100%;
     border-bottom: 1px solid rgb(207, 207, 207);
+    text-align: start;
+    color: rgb(199, 199, 199);
+    font-weight: 400;
 }
 
 .prompt-copy-button{
@@ -63,11 +67,13 @@
 }
 
 .explore-prompt-setting-container{
+    background-color: rgb(255, 255, 255);
+    height: 80%;
     overflow-y: auto;
     flex: 1;
-
-  }
+}
   
+
 .image-caption{
     border: 1px solid rgb(207, 207, 207);
     border-radius: 10px;
@@ -116,10 +122,88 @@
     height: 26px;
     width: 26px;
 }
+
 .explore-caption-option .icon{
     height: 20px;
     width: 20px;
 }
+
+.prompt-text-innner-container,.caption-text-inner-container {
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    white-space: normal; 
+}
+
+.caption-text-container {
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+      overflow-y : auto;
+      height: 80%;
+  } 
+
+  
+
+  .user-like-button p,.user-view-buttons p{
+    margin-left: 10px;
+}
+.user-like-button,.user-view-button,.share-image-button{
+    height: 30px;
+    border-radius: 100px;
+    color: rgb(0, 0, 0);
+    border: 2px solid rgb(207, 207, 207);
+
+}
+
+.user-like-button .liked-button{
+  color: rgb(253, 60, 92);
+}
+.caption-inner-text-container p {
+  text-align: start;
+}
+.delete-button {
+    color: rgb(255, 0, 0);
+}
+
+.share-image-container{
+    position: relative;
+  }
+  
+  .share-image-icon{
+    width: 20px;
+    height: 20px;
+    color: #212121;
+    cursor: pointer;
+  }
+  
+  .copy-link-button{
+    position: absolute;
+    width: 90px;
+    height: fit-content;
+    right: -10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .caption-option-copy-link-container{
+    position: absolute;
+    top: 230px;
+    right: 20px;
+  }
+
+  .option-copy-link-button{
+    width: 90px;
+    height: fit-content;
+    right: -10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    cursor: pointer;
+    font-size: 12px;
+  }
 
 @media (max-width: 767px) {
 
@@ -140,9 +224,70 @@
       height: 200px;
     }
     .image-container{
-      height: 500px;
+      height: 600px;
+      
     }
   
 }
 
+@media (max-width:480px) {
+    .image-container{
+      height: 400px;
+    }
+    .image-caption{
+      height: 150px;
+    }
+    .image-prompt{
+      height: 100px;
+    }
+    .image-details{
+      width: 100%
+    }
+    .image-container{
+      width: 100%;
+    }
 
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+
+    .image-detail-container{
+        flex-direction: column;
+        align-items: center;
+      }
+    .image-container{
+      height: 400px;
+    }
+    .image-caption{
+      height: 200px;
+    }
+    .image-prompt{
+      height: 150px;
+    }
+    .image-details{
+      width: 100%
+    }
+    .image-container{
+      width: 100%;
+    }
+    
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .image-container{
+      height: 500px;
+    }
+    .image-caption{
+      height: 300px;
+    }
+    .image-prompt{
+      height: 200px;
+    }
+    .image-details{
+      width: 100%
+    }
+    .image-container{
+      width: 100%;
+    }
+    
+}

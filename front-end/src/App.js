@@ -98,7 +98,7 @@ function App() {
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
                 <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
-                <Route path="explore/image/:publish_id" element={<ExploreImageDetail></ExploreImageDetail>}></Route>
+                <Route path="explore/image/:published_id" element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                 <Route path='credit-shop'></Route>
                 <Route path='user/:userId' element={<OtherUserProfile></OtherUserProfile>}></Route>
                 <Route path='u' element={<UserLayout></UserLayout>}>

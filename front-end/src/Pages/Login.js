@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import "../Css/Login.css"
 import axios from 'axios'
 import { auth, provider } from '../firebase'   //
@@ -21,6 +21,7 @@ export default function Login() {
     const {setLoggedIn}= useAuth()
     const { refreshCreditBalance,setRefreshCreditBalance} = useContext(RefreshDataContext)
     const navigate=useNavigate()
+    const location=useLocation()
 
     const[password,setPassword]= useState("")
     const [email,setEmail]=useState("")
@@ -38,9 +39,7 @@ export default function Login() {
     const [loading,setLoading] = useState(false)
     
 
-    useEffect(() => {
-        navigateGuest()
-      }, [loggedIn, navigate]);
+
     
     useEffect(()=>{})
 
@@ -97,7 +96,9 @@ export default function Login() {
             setLoggedIn(true)
             localStorage.setItem("user_data",JSON.stringify(response.data.user_data))
             localStorage.setItem("credit_balance",JSON.stringify(response.data.user_data.credits))
-            navigate("/image-generation")
+            const redirectTo= location?.state?.from?.pathname || "/image-generation"
+            console.log(redirectTo)
+            navigate(redirectTo,{replace:true})
             
         }catch(err){
             console.error(err)
@@ -147,7 +148,9 @@ export default function Login() {
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
             setRefreshCreditBalance(!refreshCreditBalance)
-            navigate("/image-generation");
+            const redirectTo= location?.state?.from?.pathname || "/image-generation"
+            console.log(redirectTo)
+            navigate(redirectTo,{replace:true})
         }catch(err){
             setError(true)
             setErrorMessage(err.response.data.message)
@@ -186,7 +189,9 @@ export default function Login() {
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
             
-            navigate("/image-generation");
+            const redirectTo= location?.state?.from?.pathname || "/image-generation"
+            console.log(redirectTo)
+            navigate(redirectTo,{replace:true})
             
                     
         }catch(err){
