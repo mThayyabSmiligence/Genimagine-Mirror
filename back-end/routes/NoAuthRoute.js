@@ -8,7 +8,7 @@ router.route('/get-packages').get(getCreditPackagesController);
 
 router.route('/explore').get(getAllExploreImagesController)
 router.route("/explore/:user_id").get(getExploreImageByUserIdController)
-router.route(`/explore/:published_id`).get(getExploreImageByIdController)
+router.route(`/explore/image/:published_id`).get(getExploreImageByIdController)
 
 router.route('/explore/:published_id/view').post(ViewExploreImageController)
 router.route('/user/:user_id').get(getUserDataByIdController)
