@@ -10,7 +10,8 @@ function ProfileDropDown() {
 
     
     const {loggedIn,setLoggedIn} = useContext(AuthContext)
-    const {setShowDropdown} = useContext(DropdownContext)
+    const {setShowDropdown,dropdownRef} = useContext(DropdownContext)
+
 
     const[showSignOutPopUp,setShowSignOutPopUp]=useState(false)
     const navigate = useNavigate()
@@ -32,7 +33,7 @@ function ProfileDropDown() {
     };
 
   return (
-    <div className="dropdown-menu p-0">
+    <div className="dropdown-menu p-0" ref={dropdownRef}>
         <Link to="/u/profile" className="dropdown-item" onClick={handleNavigation}>Profile</Link>
         <Link to="/u/library" className="dropdown-item" onClick={handleNavigation}>Library </Link>
         <Link to="/u/published-images" className="dropdown-item" onClick={handleNavigation}>Published Images</Link>

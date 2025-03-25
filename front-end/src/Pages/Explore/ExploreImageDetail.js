@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { replace, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, replace, useLocation, useNavigate, useParams } from "react-router-dom";
 import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 import "../../Css/ExploreImageDetail.css";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
@@ -256,10 +256,10 @@ function ExploreImageDetail() {
                     {/* caption container */}
                     <div className='image-caption p-2'>
                         <div className="user-id-tag-outer-container d-flex justify-content-between align-items-center pb-1">
-                            <div className="user-id-tag d-flex align-items-center">
+                            <Link to={`/user/${imageData.user_id}`} className="user-id-tag d-flex align-items-center link">
                                 <img className="user-id-tag-image" src={anime} alt="anime"/>
                                 <p className="mb-0 me-1">{userData?.username||"user name"}</p>
-                            </div>
+                            </Link>
                             <div className="d-flex ">                
                                 {
                                     isUsersImage&&
