@@ -13,8 +13,8 @@ export default function PublishedImages() {
 
     const location = useLocation()
     const {userId}=useParams()
-    const Navigate = useNavigate()
-    
+    const Navigate = useNavigate();
+
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
