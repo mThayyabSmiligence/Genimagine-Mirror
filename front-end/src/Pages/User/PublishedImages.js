@@ -10,9 +10,11 @@ import imagesLoaded from "imagesloaded";
 import { useLocation, useParams, useNavigate  } from 'react-router-dom';
 
 export default function PublishedImages() {
+
     const location = useLocation()
     const {userId}=useParams()
     const Navigate = useNavigate();
+
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
@@ -78,7 +80,11 @@ export default function PublishedImages() {
     }, [inView]);
 
     const handleImageClick = (published_id) => {
-        Navigate(`/u/published-images/${published_id}`)
+        if(location.pathname.includes("/u/published-images")){
+            Navigate(`/u/published-images/${published_id}`)
+        }else{
+            Navigate(`/explore/image/${published_id}`)
+        }
     };
 
     const handleClosePopup = () => {
