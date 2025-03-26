@@ -300,7 +300,7 @@ function ExploreImageDetail() {
                                 <img className="user-id-tag-image" src={anime} alt="anime"/>
                                 <p className="mb-0 me-1">{userData?.username||"user name"}</p>
                             </Link>
-                            <div className="d-flex ">                
+                            <div className="d-flex image-detail-options ">                
                                 {
                                     isUsersImage&&
                                     <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>
