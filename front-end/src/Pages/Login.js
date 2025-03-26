@@ -81,6 +81,7 @@ export default function Login() {
         setError(false)
         setSucccess(false) //
         setLoading(true)
+        setErrorMessage("Error Logging in")
         try{
             const response =await axiosAuth.post("/login",
                 {
@@ -103,7 +104,7 @@ export default function Login() {
         }catch(err){
             console.error(err)
             setError(true)
-            setErrorMessage(err?.response?.data?.message)
+            setErrorMessage(err?.response?.data?.message||"Error Logging in")
         }finally{
             setLoading(false)
         }
@@ -114,6 +115,8 @@ export default function Login() {
         setError(false)
         setSucccess(false) 
         setLoading(true)
+        setErrorMessage("Error sending OTP")
+        
         try {
             // Send OTP to user's email
             const response = await axiosAuth.post("/email-otp-request",
@@ -127,7 +130,7 @@ export default function Login() {
         } catch (err) {
             console.error(err);
             setError(true)
-            setErrorMessage(err.response.data.message)
+            setErrorMessage(err.response.data.message||"Error sending OTP")
         }finally{
             setLoading(false)
         }
@@ -138,6 +141,7 @@ export default function Login() {
         setError(false)
         setSucccess(false) 
         setLoading(true)
+        setErrorMessage("Error signing in with OTP")
         try{
             const response = await axiosAuth.post("/email-otp-verify",
                 { email, otp },
@@ -153,7 +157,7 @@ export default function Login() {
             navigate(redirectTo,{replace:true})
         }catch(err){
             setError(true)
-            setErrorMessage(err.response.data.message)
+            setErrorMessage(err.response.data.message||"Error signing in with OTP")
         }finally{
             setLoading(false)
         }
@@ -163,6 +167,7 @@ export default function Login() {
         setError(false)
         setSucccess(false) 
         setLoading(true)
+        setErrorMessage("Error signing in with Google")
         try{
             const result = await signInWithPopup(auth, provider);
             const idToken = await result.user.getIdToken(); // Get Firebase Token
@@ -198,7 +203,7 @@ export default function Login() {
             console.error("Error during sign-in");
             console.error(err)      
             setError(true)
-            setErrorMessage(err?.response?.data?.message)
+            setErrorMessage(err?.response?.data?.message||"Error signing in with Google")
         } 
         finally{
             setLoading(false)

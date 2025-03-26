@@ -42,7 +42,7 @@ export default function PublishedImages() {
             console.log("Fetching:", query);
             let response;
             
-            if(location.pathname=="/u/published-images'")
+            if(location.pathname=="/u/published-images")
             {
                 response = await axiosPrivate.get(`explore${query}`);
             }

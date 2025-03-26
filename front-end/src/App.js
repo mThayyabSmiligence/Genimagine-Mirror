@@ -77,6 +77,7 @@ function App() {
                 <Route path='' element={<LandingPage/>}></Route>
                 <Route path='terms-and-conditions' element={<TermsAndConditions></TermsAndConditions>}></Route>
                 <Route path='privacy-policy' element={<PrivacyPolicy></PrivacyPolicy>}></Route>
+                
             </Route>
 
 

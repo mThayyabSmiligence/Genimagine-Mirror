@@ -145,7 +145,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
        // Prevent default behavior
 
         try {
-          const response = await fetch(data.image_url);
+          const response = await axios(data.image_url);
           if (!response.ok) {
               throw new Error("Failed to fetch the image");
           }
@@ -305,7 +305,7 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         <DeletePopUp
                       onHide={() => setShowDeletePopUp(false)}
                       handelDelete={handelDeleteImage}
-                      message="Are you sure you want to delete this item from your published image page?"
+                      message="Are you sure you want to delete this image?"
                       showDeletePopUp = {showDeletePopUp}
          />
     </div>

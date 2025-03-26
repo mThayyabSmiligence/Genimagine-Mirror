@@ -110,7 +110,7 @@ function CreditPurchasePage() {
     // }
     const buyCredits=async(package_id,custom_credits,e)=>{
         if(!loggedIn){
-            Navigate('/login',{state: {from: location}})
+            Navigate('/login',{state: {from: location},replace:true})
 
         }
         try{

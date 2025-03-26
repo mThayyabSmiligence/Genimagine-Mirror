@@ -214,6 +214,11 @@
     border: 2px solid rgb(207, 207, 207);
   }
 
+  .explore-image-detail-container .image-settings-tag{
+    min-width: 80px;
+
+  }
+
 @media (max-width: 767px) {
 
     .explore-image-detail-container .image-detail-container{
@@ -236,7 +241,12 @@
       height: 600px;
       
     }
-  
+    .image-settings-tag p{
+      font-size: 12px;
+    }
+    .explore-image-detail-container .image-settings-tag{
+      min-width: 70px;
+    }
 }
 
 @media (max-width:480px) {
@@ -299,4 +309,10 @@
       width: 100%;
     }
     
+}
+
+@media(max-width:1390px){
+  .explore-image-detail-container .image-caption{
+    max-height: 200px;
+  }
 }

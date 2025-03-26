@@ -78,10 +78,17 @@ function PublishImagePage() {
   }
 
   return (
-    <div className='mt-5 p-3'>
+    <div className='mt-5 p-3 h-100'>
       <form onSubmit={(e)=>handelSubmit(e)}>
       <div className='publish '>
-          <h1 className='text-start ms-3 mb-3'>Publish</h1>
+          <div className='d-flex justify-content-between align-items-center'>
+
+            <h1 className='text-start ms-3 mb-3'>Publish</h1>
+            <button type='submit' className='publish-button button-wh dark-button-wh d-flex px-5'>
+                  <p  className='flex-1'>{edit?'Edit':'Publish'}</p>
+                  <span className="material-symbols-outlined ms-2">send</span>
+            </button>
+          </div>
           <div className='publish-whole-container d-flex'>
             <div className='publish-left-container ms-2 me-2'>
               <div className='mb-3  w-100'> 
@@ -100,7 +107,7 @@ function PublishImagePage() {
                 </div>
                 <div className='your-content-container'>
                   <div className='prompt-content'>
-                    <p className='prompt-content-text text-start'>{tempImageData.prompt}</p>
+                    <p className='prompt-content-text text-start p-input'>{tempImageData.prompt}</p>
                   </div>
                 </div>
               </div>  
@@ -115,10 +122,10 @@ function PublishImagePage() {
                 )}
               </div>
               <div className='publish-button-container d-flex justify-content-end'>
-                <button type='submit' className='publish-button button-wh dark-button-wh d-flex px-5'>
+                {/* <button type='submit' className='publish-button button-wh dark-button-wh d-flex px-5'>
                   <p  className='flex-1'>{edit?'Edit':'Publish'}</p>
                   <span className="material-symbols-outlined ms-2">send</span>
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

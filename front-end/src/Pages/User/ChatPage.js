@@ -48,6 +48,7 @@
 
       const [error, setError] = useState(false); // Handle errors gracefully
       const [errorMessage, setErrorMessage] = useState(null); // Handle errors
+      const [promptLength,setPromptLength] =useState(0)
 
       
 
@@ -193,7 +194,7 @@
               </div>
       
       
-              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading}></PromptInPutContainer>
+              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading} promptLength={promptLength} setPromptLength={setPromptLength}></PromptInPutContainer>
               {
                 1&&
                 <SuggestionPrompts></SuggestionPrompts>

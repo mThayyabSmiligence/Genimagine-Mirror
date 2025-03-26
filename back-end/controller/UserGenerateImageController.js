@@ -91,6 +91,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log(id)
     console.log(username) 
     console.log(role)
+    console.log("style :",style)
 
     const updatedPrompt =style==0?prompt:prompt+" in style of "+styleList[style-1].style_name;
 

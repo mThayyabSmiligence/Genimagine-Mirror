@@ -22,6 +22,7 @@ function ProfileDropDown() {
             console.log("logged out successfully")
             setLoggedIn(false);
             setShowDropdown(false);
+            localStorage.removeItem('image_settings')
             navigate('/');
         }catch(error){
             console.error("error getting logout",error);
