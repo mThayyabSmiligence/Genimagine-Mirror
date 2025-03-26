@@ -18,7 +18,7 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
 
  
-export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index  }) {
+export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index ,chatId }) {
 
   const Navigate = useNavigate();
   
@@ -40,6 +40,10 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
   const [showRemoveLibraryPopUp, setShowRemoveLibraryPopUp] = useState(false);
   const [aspectRatio,setAspectRatio] =useState(null);
+
+  useEffect(()=>{
+    setIsLibrary(false);
+  },[chatId])
 
   useEffect(()=>{
     if(localStorage.getItem('image_settings')){

@@ -181,7 +181,7 @@
               <div className='chat-list-container d-flex flex-column align-items-center justify-content-end pb-80px mt-3 w-100'>
               <div ref={ref} style={{ height: "10px", width: "10px", background: "transparent" }}></div>
                 {
-                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState}></ChatContainer>))
+                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState} chatId={chatId}></ChatContainer>))
                 }
                 {
                   loading&&
