@@ -2,6 +2,9 @@
     base styling is done based on 720p(1366×768) desktop screen 
 */
 /* overall page */
+.login{
+    margin: 70px 0px 10px 0px;
+}
 
 .login-page{
     border: solid 1px rgb(0, 0, 0, 0.3);

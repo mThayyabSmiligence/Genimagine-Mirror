@@ -197,14 +197,7 @@ console.log("faInfoCircle:", faInfoCircle);
       };
   return (
     <>
-            <div className='login d-flex flex-column justify-content-center align-items-center'>
-
-                    <Link to="/" >
-                    <img className='login-logo' src={logo} alt='genimagin'/>
-                    
-                    </Link>
-    
-                
+            <div className='login d-flex flex-column justify-content-center align-items-center'>    
                 <div className='login-page br-10'>
                     {error ? (
                         <div className='alert alert-danger'>{errorMessage}</div>

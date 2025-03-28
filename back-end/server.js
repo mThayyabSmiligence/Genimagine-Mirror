@@ -84,4 +84,8 @@ app.listen(process.env.PORT,() => {
 // const secretKey = crypto.randomBytes(32).toString("hex");
 
 // console.log("Secret Key:", secretKey);
+
+// const secretKey = crypto.randomBytes(16).toString('hex');
+
+// console.log('Generated Secret Key:', secretKey);
 });

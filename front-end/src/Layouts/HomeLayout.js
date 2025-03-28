@@ -3,10 +3,11 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Navbar from '../Components/LandingPageComponenets/Navbar'
 import Footer from '../Components/LandingPageComponenets/Footer'
+import '../Css/HomeLayout.css'
 
 export default function HomeLayout() {
   return (
-    <div className='home-layout'>
+    <div className='home-layout '>
         
         <nav className='header'>
             <Navbar></Navbar>
