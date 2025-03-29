@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import '../../Css/Policies.css'
 
 function PrivacyPolicy() {
@@ -65,7 +65,10 @@ function PrivacyPolicy() {
       ]
     }]
 };
-
+useEffect(() => {
+    // Scroll to the top of the page when the component mounts or loading changes
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className='container privacy-policy-container '>
         <h1 className='policy-heading h-1 m-0 text-center'>Privacy Policy</h1>

@@ -113,6 +113,10 @@
     width: 20px;    
 }
 
+.explore-image-detail-container .image-detail-options{
+    position: relative;
+}
+
 .explore-image-detail-container .explore-caption-option , .explore-image-detail-container .edit-button{
     /* border-radius: 100%; */
     border: none;
@@ -188,8 +192,8 @@
   }
   .explore-image-detail-container .caption-option-copy-link-container{
     position: absolute;
-    top: 250px;
-    right: 20px;
+    top: 25px;
+    right: 0px;
   }
 
   .explore-image-detail-container .option-copy-link-button{

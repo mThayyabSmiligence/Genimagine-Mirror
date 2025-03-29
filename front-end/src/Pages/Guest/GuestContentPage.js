@@ -167,7 +167,7 @@ export default function GuestContentPage() {
         console.error('Error generating image:', error);
        
         setError(true);
-        setErrorMessage(error?.response?.data?.message);
+        setErrorMessage(error?.response?.data?.message||error.message||"Error generating image");
       } finally {
         setLoading(false);
       }

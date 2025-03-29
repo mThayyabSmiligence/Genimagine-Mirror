@@ -104,7 +104,12 @@ export default function Login() {
         }catch(err){
             console.error(err)
             setError(true)
-            setErrorMessage(err?.response?.data?.message||"Error Logging in")
+            if (!err.response) {
+                setErrorMessage("Error Logging in")
+            } else {
+                setErrorMessage(err?.response?.data?.message||err.message||"Error Logging in")
+            }
+            
         }finally{
             setLoading(false)
         }
@@ -130,7 +135,11 @@ export default function Login() {
         } catch (err) {
             console.error(err);
             setError(true)
-            setErrorMessage(err.response.data.message||"Error sending OTP")
+            if (!err.response) {
+                setErrorMessage("Error sending OTP")
+            } else {
+                setErrorMessage(err.response.data.message||err.message||"Error sending OTP")
+            }
         }finally{
             setLoading(false)
         }
@@ -157,7 +166,11 @@ export default function Login() {
             navigate(redirectTo,{replace:true})
         }catch(err){
             setError(true)
-            setErrorMessage(err.response.data.message||"Error signing in with OTP")
+            if (!err.response) {
+                setErrorMessage("Error signing in with OTP")
+            } else {
+                setErrorMessage(err.response.data.message||err.message||"Error signing in with OTP")
+            }
         }finally{
             setLoading(false)
         }
@@ -203,7 +216,11 @@ export default function Login() {
             console.error("Error during sign-in");
             console.error(err)      
             setError(true)
-            setErrorMessage(err?.response?.data?.message||"Error signing in with Google")
+            if (!err.response) {
+                setErrorMessage("Error signing in with Google")
+            } else {
+                setErrorMessage(err?.response?.data?.message||err.message||"Error signing in with Google")
+            }
         } 
         finally{
             setLoading(false)
@@ -369,3 +386,6 @@ export default function Login() {
                         //             )}
                         //         </div>
                         // </div>
+
+
+            
