@@ -119,7 +119,7 @@
               console.log("newchats",ChatResponse)
               if(response.status==200){
                 console.log("retrives images")
-                setChat((prevChats) => reset ? ChatResponse.message : [ ...ChatResponse.message,...prevChats]);
+                setChat((prevChats) => reset ? ChatResponse.data : [ ...ChatResponse.data,...prevChats]);
                 setHasMoreChats(!!ChatResponse.pagination.nextPage);
                 setCurrentPage(pageNumber + 1);
               }
@@ -167,7 +167,7 @@
           } catch (error) { 
             console.error('Error generating image:', error);
             setError(true);
-            setErrorMessage(error?.response?.data?.message);
+            setErrorMessage(error?.response?.data?.message||error.message||"error generating image");
           } finally {
             setLoading(false);
           }

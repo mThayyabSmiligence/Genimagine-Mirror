@@ -177,8 +177,9 @@ console.log("faInfoCircle:", faInfoCircle);
         } catch (error) {
             setError(error.message);
             console.log(error)
-            setErrorMessage(error?.response?.data?.message)
+            setErrorMessage(error?.response?.data?.message||error.message||"Error Registering")
             setErrorCode(error?.response?.status)
+
         }
         finally{
             setLoading(false);

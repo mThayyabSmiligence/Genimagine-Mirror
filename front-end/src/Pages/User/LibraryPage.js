@@ -80,6 +80,8 @@ export default function LibraryPage() {
       setRefreshLibraryData(false)
     }catch(err){
       console.error(err)
+      setError(true)
+      setErrorMessage(err?.response?.data?.message||err.message||"Error loading library")
     }
   }
 
@@ -104,7 +106,7 @@ export default function LibraryPage() {
                             className="library-image-masonry"
                             columnClassName="library-image-column"
                         >
-                          {libraryImages.length == 0 ? <span className='text-danger text-center fs-4 w-100'>No Results Found!</span> 
+                          {libraryImages.length == 0 ||error ? <span className='text-danger text-center fs-4 w-100'>{error?errorMessage:"No Results Found!"}</span> 
                           :
                           libraryImages.map((library,index) => (
                               <LibraryImageContainer key={index} imageColumns={imageColumns} index={index} removeImageFromLibraryArray={removeImageFromLibraryArray } library={library}> </LibraryImageContainer>
