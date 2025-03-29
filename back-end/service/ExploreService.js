@@ -2,6 +2,8 @@ const db = require('../config/connectDatabase');
 const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
 const { use } = require('../routes/Users');
+const { decrypt } = require('./EncrypDecrypt');
+
 exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     let generated_image_data;
     let image_data;
@@ -208,7 +210,9 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
             LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ?
             WHERE e.published_id = ?;
         `;
-        const [rows] = await db.execute(query,[user_id,explore_id])
+
+
+        let [rows] = await db.execute(query,[user_id,explore_id])
         if (rows.length == 0) {
              return {
                 status:404,
@@ -216,6 +220,11 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
                 success:false
             }
         }
+
+        console.log("rows1",rows)
+        const prompt = decrypt(rows[0].prompt)
+        rows[0].prompt = prompt
+        console.log("rows2",rows)
         return {
             status:200,
             message:"image found successfully",

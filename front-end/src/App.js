@@ -75,15 +75,15 @@ function App() {
           <Routes>
             <Route element={<HomeLayout></HomeLayout>}>
                 <Route path='' element={<LandingPage/>}></Route>
+                <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
+                <Route path='login' element={<Login></Login>}></Route> 
                 <Route path='terms-and-conditions' element={<TermsAndConditions></TermsAndConditions>}></Route>
                 <Route path='privacy-policy' element={<PrivacyPolicy></PrivacyPolicy>}></Route>
                 
             </Route>
 
 
-              <Route path='login' element={<Login></Login>}></Route> 
             <Route  element={<AuthenticationLayout></AuthenticationLayout>}>
-              <Route path='register' element={<RegisterUser></RegisterUser>}></Route>
               <Route path='user-email-verification/:verification_token' element={<VerifyUser></VerifyUser>}></Route>
               <Route path='forgot-password' element={<ForgotPassword></ForgotPassword>}></Route>
               <Route path='reset-password/:encrypted_email/:reset_token' element={<ResetPassword></ResetPassword>}></Route>

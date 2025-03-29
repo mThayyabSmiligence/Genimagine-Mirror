@@ -10,6 +10,9 @@ const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, ch
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
+const { encrypt } = require('../service/EncrypDecrypt');
+const { decrypt } = require('../service/EncrypDecrypt');
+
 
 
 const styleList = [
@@ -95,7 +98,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     const updatedPrompt =style==0?prompt:prompt+" in style of "+styleList[style-1].style_name;
 
-     
+
+// encrypt
+    const encryptedPrompt = encrypt(prompt);
+    console.log("Encrypted Prompt: ", encryptedPrompt)
         
     if(model==1 || model==null){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
@@ -134,7 +140,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }
         const generated_image_data={
             user_id:id,
-            prompt:prompt,
+            prompt:encryptedPrompt,
             model:model!=null?model:1,
             chat_id:chatId,
             image_url:"storage is not defined",
@@ -214,7 +220,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         const generated_image_data={
             user_id:id,
-            prompt:prompt,
+            prompt:encryptedPrompt,
             model:model!=null?model:1,
             chat_id:chatId,
             image_url:"storage is not defined",
