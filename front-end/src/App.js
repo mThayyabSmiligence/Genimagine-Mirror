@@ -32,6 +32,10 @@ import HomeLayout from './Layouts/HomeLayout';
 import OtherUserProfile from './Pages/OtherUserProfile';
 
 import ExploreImageDetail from './Pages/Explore/ExploreImageDetail';
+import AdminLayout from './Layouts/AdminLayout';
+import ModeratorLayout from './Layouts/ModeratorLayout';
+import AdminDashboard from './Pages/Admin/AdminDashboard';
+import ModeratorDashboard from './Pages/Moderator/ModeratorDashboard';
 
 
 
@@ -116,6 +120,20 @@ function App() {
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
             </Route>
+
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
+            </Route>
+
+            {/* Moderator Layout */}
+            <Route path="/moderator" element={<ModeratorLayout />}>  
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<ModeratorDashboard />} />
+                <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
+            </Route>
+
             <Route
               path='*'
               element={<Navigate to="/"/>}

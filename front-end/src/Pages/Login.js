@@ -190,6 +190,7 @@ export default function Login() {
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
             
             const redirectTo= location?.state?.from?.pathname || "/image-generation"
+            
             console.log(redirectTo)
             navigate(redirectTo,{replace:true})
             
