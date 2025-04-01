@@ -1,11 +1,7 @@
 const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
-const { generateTokenWithRefreshToken } = require('../service/JWTtokenGeneration');
 
- 
-// const user = {id}
-const verifyToken =async (req, res, next)=> {
-
+const verifyAdminToken = async(req,res,next) => {
     let jwtToken =null;
     let refreshToken =null
 
@@ -26,11 +22,15 @@ const verifyToken =async (req, res, next)=> {
     try {
         const verified = jwt.verify(jwtToken, secretKey);
         req.user = verified; 
+        if(verified.role != 'admin'){
+            res.status(401).json({ message: 'Access Denied'}); 
+            return
+        }
         next();
     } catch (err) {
         res.status(401).json({ message: 'Invalid token.' });
             return
     }
-}; 
+}
 
-module.exports = verifyToken
+module.exports = verifyAdminToken;
