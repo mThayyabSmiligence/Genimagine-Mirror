@@ -110,7 +110,7 @@ function CreditPurchasePage() {
     // }
     const buyCredits=async(package_id,custom_credits,e)=>{
         if(!loggedIn){
-            Navigate('/login',{state: {from: location}})
+            Navigate('/login',{state: {from: location},replace:true})
 
         }
         try{
@@ -203,6 +203,24 @@ function CreditPurchasePage() {
         }
     }
 
+    const handleEnterCustomCredits = (e) => {
+        const value = e.target.value;
+        const valueString= e.target.value.toString();
+        
+        if(valueString.length>7){
+            return
+        }
+        console.log("hello")
+        // Allow only numbers and prevent negative values
+        if (!/^\d*$/.test(value)) return;
+      
+        // Restrict value to 100000
+        const limitedValue = Math.min(Number(value), 100000);
+      
+        // Update state
+        setCredits(limitedValue);
+      };
+
   return (
     <div className='mt-5'>
         <div className='container'>
@@ -257,7 +275,7 @@ function CreditPurchasePage() {
                             <h5 className="card-title"> Custom Credits </h5>
                             
                             <p className="card-text m-0"><strong></strong> Credits</p>
-                            <input type="number" placeholder='enter credits' className="credit-input mb-1" value={credits} onChange={(e) => { setCredits(e.target.value) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
+                            <input type="number" placeholder='enter credits' max="100000" className="credit-input mb-1" value={credits} onChange={(e) => { handleEnterCustomCredits(e) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
                             <p id="uidnote" className={`${credits && !customCreditsValidation ? "instructions" : "offscreen"} white-bg text-danger w-ft  text-center w-100 p-0 mb-3` }>                          
                             credits ahould be between 10 and 100,000 
                             </p>

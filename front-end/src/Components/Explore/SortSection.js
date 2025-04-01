@@ -8,10 +8,7 @@ import {useInView} from 'react-intersection-observer'
 import {  useLocation } from 'react-router-dom';
 
 
-const sortOptions = [
-        { value: 'recent', label: 'Recent' },
-        { value: 'top', label: 'Top' },
-    ]
+
 
 
     const TopOptions = [
@@ -23,6 +20,13 @@ const sortOptions = [
     ]
 function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelectedIndex,oldest}) {
     const location =useLocation()
+    const [sortOptions,setSortOption]=useState(
+        [
+            { value: 'recent', label: 'Recent' },
+            { value: 'top', label: 'Top' },
+        ]
+    )
+
 
 
  
@@ -31,10 +35,21 @@ function SortSection({setSort,sort,top,setTop,setSortSelectedIndex,setTopSelecte
         console.log("path name",location.pathname)
         setSort(sortOptions[0].value);
         setTop(TopOptions[0].value);
+
+        // to add the oldest when user enter published images page 
         if(location.pathname !="/explore" && sortOptions.length<3){
-        if(oldest)sortOptions.push({value: "oldest",label: "Oldest"});
+        if(oldest)
+            sortOptions.push({value: "oldest",label: "Oldest"});
         }
-    },[])
+
+        // to add the oldest when user enter explore page 
+        if(location.pathname =="/explore"){
+            console.log("removing oldest")
+            setSortOption((prev)=>{
+                return prev.filter((option)=>option.value!=="oldest");
+            })
+        }
+    },[location.pathname])
 
     const handleSortChange = (event) => {
         setSort(event.target.value);

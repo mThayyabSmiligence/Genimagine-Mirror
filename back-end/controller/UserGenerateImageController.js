@@ -64,11 +64,11 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log("body",req.body)
     console.log("prompt :"+prompt+"model :"+model)
 
-    const flagged =await promptModerationCheck(prompt)
-    if(flagged){
-        res.status(403).json({message: "This prompt has been flagged for moderation"})
-        return
-    }
+    // const flagged =await promptModerationCheck(prompt)
+    // if(flagged){
+    //     res.status(403).json({message: "This prompt has been flagged for moderation"})
+    //     return
+    // }
 
     const w_h = handelAspectRatio(model,aspect_ratio)
     console.log("w_h",w_h)
@@ -94,6 +94,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log(id)
     console.log(username) 
     console.log(role)
+    console.log("style :",style)
 
     const updatedPrompt =style==0?prompt:prompt+" in style of "+styleList[style-1].style_name;
 

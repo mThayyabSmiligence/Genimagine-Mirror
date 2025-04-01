@@ -48,6 +48,7 @@ function StylePopUp({tempTrackStyle, setTempTrackStyle, setSeeMore}) {
   const {loggedIn}= useContext(AuthContext)
 
     const styleList = [
+      
         { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
         { id: 2, style_name: "Chalk and Charcoal", style_image: styleImage2 },
         { id: 3, style_name: "Chinese Ink Painting", style_image: styleImage3 },

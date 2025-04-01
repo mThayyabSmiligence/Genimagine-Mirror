@@ -76,7 +76,7 @@ const aspectRatioList = [
         { id: 40, style_name: "Vibrant Pop Art Illustration",  }
     ]
 
-export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading}) {
+export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength}) {
 
 
   const [showIGSetting,setShowIGSetting]=useState(false)
@@ -84,6 +84,8 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
 
   const [selectSetting, setSelectSetting] = useState(null)
   const {loggedIn}= useContext(AuthContext)
+
+
 
 
   
@@ -138,6 +140,8 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   }, [promptText]);
   
   const handelClick=()=>{
+    if(promptLength>500) return
+
     if(pRef.current){
       pRef.current.innerText=""
     }
@@ -146,6 +150,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       return
     }
     generateImage()
+
     
   }
 
@@ -154,14 +159,15 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         localStorage.setItem("image_settings", JSON.stringify(
           {
             model:1,
-            aspectRatio:aspectRatioList[2]
+            aspectRatio:aspectRatioList[2],
+            style:0
           }
         ))
         setRefreshImageSettings(!refreshImageSettings)    
         return;
       }
       
-    },[])
+    },[ ])
 
   const [width, setWidth] = useState(window.innerWidth);
           
@@ -184,9 +190,16 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         console.log(imageSettings)
       }
     },[refreshImageSettings])
+
+    useEffect(()=>{
+      setPromptLength(promptText.trim().length)
+      console.log(promptLength)
+    },[promptText])
     
 
   return (
+    <>
+    
     <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 mb-2'   >
       {
         showIGSetting&&<IGSettingPopUp closePopup={() => setShowIGSetting(false)}/>
@@ -213,7 +226,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         <div className='d-flex'>
           <button className="image-setting-tag d-flex align-items-center br-100 " onClick={()=>setShowIGSetting(true)}>
             <SettingsOutlinedIcon></SettingsOutlinedIcon>
-            <p className='m-0 flex-1'> Image Setting</p>
+            <p className='m-0 flex-1 p-primary'> Image Setting</p>
           </button>
     
           <div className='selected-settings d-flex align-items-center px-1 flex-wrap ' >
@@ -235,7 +248,14 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
             )}
           </div>
         </div>
+        {
+            promptLength>500&&
+            <p className='text-danger p-secondary m-0'>the prompt should be under 500 characters</p>
+          }
+        <div className='d-flex align-items-end p-secondary'>
 
+        
+          <p className='mb-0 me-2'>{promptLength} / 500</p>
           <div>
             {
               
@@ -255,7 +275,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                       
                     </div>
               : 
-              <button className='border-0 send-button d-flex align-items-center justify-content-center br-20' 
+              <button className={`border-0 send-button d-flex align-items-center justify-content-center br-20 ${promptLength>500&&"unclickable"}`}
                       onClick={!loading&&handelClick}
                       >
                         <ArrowForwardOutlinedIcon className='icon'/>
@@ -263,7 +283,9 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                 </button>
             }
           </div>
+          </div>
       </div>
     </div>
+    </>
   )
 }

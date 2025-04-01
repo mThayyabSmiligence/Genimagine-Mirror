@@ -48,6 +48,7 @@
 
       const [error, setError] = useState(false); // Handle errors gracefully
       const [errorMessage, setErrorMessage] = useState(null); // Handle errors
+      const [promptLength,setPromptLength] =useState(0)
 
       
 
@@ -118,7 +119,7 @@
               console.log("newchats",ChatResponse)
               if(response.status==200){
                 console.log("retrives images")
-                setChat((prevChats) => reset ? ChatResponse.message : [ ...ChatResponse.message,...prevChats]);
+                setChat((prevChats) => reset ? ChatResponse.data : [ ...ChatResponse.data,...prevChats]);
                 setHasMoreChats(!!ChatResponse.pagination.nextPage);
                 setCurrentPage(pageNumber + 1);
               }
@@ -166,7 +167,7 @@
           } catch (error) { 
             console.error('Error generating image:', error);
             setError(true);
-            setErrorMessage(error?.response?.data?.message);
+            setErrorMessage(error?.response?.data?.message||error.message||"error generating image");
           } finally {
             setLoading(false);
           }
@@ -180,7 +181,7 @@
               <div className='chat-list-container d-flex flex-column align-items-center justify-content-end pb-80px mt-3 w-100'>
               <div ref={ref} style={{ height: "10px", width: "10px", background: "transparent" }}></div>
                 {
-                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState}></ChatContainer>))
+                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState} chatId={chatId}></ChatContainer>))
                 }
                 {
                   loading&&
@@ -193,7 +194,7 @@
               </div>
       
       
-              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading}></PromptInPutContainer>
+              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading} promptLength={promptLength} setPromptLength={setPromptLength}></PromptInPutContainer>
               {
                 1&&
                 <SuggestionPrompts></SuggestionPrompts>

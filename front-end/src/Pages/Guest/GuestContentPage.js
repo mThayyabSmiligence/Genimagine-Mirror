@@ -41,6 +41,7 @@ export default function GuestContentPage() {
     const [errorMessage, setErrorMessage] = useState(null)
 
     const [searchParams] = useSearchParams();
+    const [promptLength,setPromptLength] =useState(0)
     const prompt = searchParams.get("prompt");
 
     useEffect(()=>{
@@ -114,7 +115,7 @@ export default function GuestContentPage() {
             prompt: prompt ,
             model:model,
             aspect_ratio:aspectRatio.aspectRatio,
-            style: style,
+            style: isNaN(style)?0: style,
           
           },
             )
@@ -126,7 +127,7 @@ export default function GuestContentPage() {
                 prompt: prompt ,
                 model:model,
                 aspect_ratio:aspectRatio.aspectRatio,
-                style: style,
+                style: isNaN(style)?0: style,
                 client_ip:ipAddress
               
               }, // Ensure the response is handled as binary
@@ -166,7 +167,7 @@ export default function GuestContentPage() {
         console.error('Error generating image:', error);
        
         setError(true);
-        setErrorMessage(error?.response?.data?.message);
+        setErrorMessage(error?.response?.data?.message||error.message||"Error generating image");
       } finally {
         setLoading(false);
       }
@@ -194,12 +195,12 @@ export default function GuestContentPage() {
             error&&
             <div className='alert alert-danger w-100'>{errorMessage}</div>
           }
-         
           
+         
         </div>
         
 
-        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}  loading={loading}></PromptInPutContainer>
+        <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText}  loading={loading} promptLength={promptLength} setPromptLength={setPromptLength}></PromptInPutContainer>
         {
           1&&
           <SuggestionPrompts></SuggestionPrompts>

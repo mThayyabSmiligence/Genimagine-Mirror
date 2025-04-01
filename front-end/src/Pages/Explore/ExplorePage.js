@@ -3,7 +3,6 @@ import SortSection from "../../Components/Explore/SortSection";
 import { axiosNoAUth } from "../../API's/axios";
 import "../../Css/ExplorePage.css";
 import { useInView } from "react-intersection-observer";
-import ExplorePopUp from "../../Components/CommonComponents/ExplorePopUp";
 import Masonry from "react-masonry-css";
 import imagesLoaded from "imagesloaded";
 import { useNavigate } from "react-router-dom";
@@ -107,12 +106,7 @@ function ExplorePage() {
                 />
             </div>
             <div className="explore-body">
-                {/* {
-                    selectedImage&&<ExplorePopUp image={selectedImage} onClose={handleClosePopup} view={true}/>
-                }
-                {
-                    selectedImage&&<div onClick={handleClosePopup} className="blur-background"></div>
-                } */}
+
                 <div className="explore-image-container">
                     <Masonry
                         breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }} // Adjusts for responsive layouts

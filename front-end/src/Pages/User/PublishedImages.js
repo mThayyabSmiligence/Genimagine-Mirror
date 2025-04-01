@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import SortSection from '../../Components/Explore/SortSection';
-import ExplorePopUp from '../../Components/CommonComponents/ExplorePopUp';
 import '../../Css/ExplorePage.css'
 import '../../Css/PublishedImages.css'
 import Masonry from "react-masonry-css";

@@ -83,6 +83,7 @@ function App() {
                 <Route path='login' element={<Login></Login>}></Route> 
                 <Route path='terms-and-conditions' element={<TermsAndConditions></TermsAndConditions>}></Route>
                 <Route path='privacy-policy' element={<PrivacyPolicy></PrivacyPolicy>}></Route>
+                
             </Route>
 
 

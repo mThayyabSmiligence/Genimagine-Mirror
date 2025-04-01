@@ -151,7 +151,7 @@ function ExploreImageDetail() {
       }
 
     const handleCopy = (image) => {
-        const style = styleList.find((style) => imageData?.style == style.style_name)
+        const style = styleList.find((style) => imageData?.style == styleList.style_name)
 
         localStorage.setItem("image_settings", JSON.stringify(
           {
@@ -159,7 +159,7 @@ function ExploreImageDetail() {
             aspectRatio: {
               aspectRatio: image.aspect_ratio
             },
-            style: style.id
+            style:  imageData.style=="none"||isNaN(style)?0:style.id
           }
         ))
         setRefreshImageSettings(!refreshImageSettings)
@@ -170,7 +170,7 @@ function ExploreImageDetail() {
     
       const addLikes = async() => {
         if (!loggedIn) {
-            Navigate('/login',{state: {from: location}});
+            Navigate('/login',{state: {from: location},replace:true});
             return;
           }
 
@@ -282,15 +282,15 @@ function ExploreImageDetail() {
                     </div>
                     <div className="image-setting-tag-container d-flex justify-content-start align-items-center p-2 "> 
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                            <p className="m-0">model:{imageData.model}</p>
+                            <p className="m-0 p-primary">model:{imageData.model}</p>
                         </div>
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
                             <AspectRatioIcon className="icon"/>
-                            <p className="m-0">: {imageData.aspect_ratio}</p>
+                            <p className="m-0 p-primary">: {imageData.aspect_ratio}</p>
                         </div>
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
                             <BrushIcon className="icon"/>
-                            <p className="m-0">: {imageData.style}</p>
+                            <p className="m-0 p-primary">: {imageData.style||"none"}</p>
                         </div>
                     </div>
                     {/* caption container */}
@@ -300,7 +300,7 @@ function ExploreImageDetail() {
                                 <img className="user-id-tag-image" src={anime} alt="anime"/>
                                 <p className="mb-0 me-1">{userData?.username||"user name"}</p>
                             </Link>
-                            <div className="d-flex ">                
+                            <div className="d-flex image-detail-options ">                
                                 {
                                     isUsersImage&&
                                     <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>

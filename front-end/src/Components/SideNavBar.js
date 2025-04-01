@@ -354,7 +354,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
                                                             <div key={year}>
                                                               <h6>{year}</h6>
                                                               {
-                                                                Object.entires(months).map(([month,monthChats])=>(
+                                                                Object.entries(months).map(([month,monthChats])=>(
                                                                   <div key={month}>
                                                                     <h6>{month}</h6>
                                                                     {
