@@ -19,6 +19,7 @@ const crypto = require('crypto');
 const verifyToken= require('./middle_ware/VerifyToken');
 const verifyRefreshToken = require('./middle_ware/VerifyRefreshToken');
 const verifyAdminToken = require('./middle_ware/verifyAdminToken');
+const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 
 
 
@@ -43,7 +44,7 @@ app.use(cookieParser());
 // middleware's
 
 // api's --start
-app.use('/api/v1/user',verifyToken,usersRouter);
+app.use('/api/v1/user',verifyToken,checkUserStatus,usersRouter);
 app.use('/api/v1',generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 

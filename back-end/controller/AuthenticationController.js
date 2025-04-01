@@ -166,6 +166,11 @@ exports.userLogin = async (req, res, next) => {
             })
             return
         }
+
+        if(oldUser[0].status === "banned") {
+            return res.status(403).json({ success: false, message: "This account is blocked." });
+        }
+
         if(oldUser[0].register_type!="password"){
             res.status(409).json({
                 message:"sign-in with google"

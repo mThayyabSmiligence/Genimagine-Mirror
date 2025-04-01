@@ -264,12 +264,12 @@ exports.getUserDataByIdController=async(req,res)=>{
 // ban-user
 exports.banUserController = async(req,res)=>{
     const {user_id} = req.params;
-    const banuser = await banUserService(user_id);
-    return res.status(banuser.status).json(banuser)
+    const banUser = await banUserService(user_id);
+    return res.status(banUser.status).json(banUser)
 }
 
 exports.unbanUserController = async(req,res)=>{
     const {user_id} = req.params;
-    const unbanuser = await unbanUserService(user_id);
-    return res.status(unbanuser.status).json(unbanuser)
+    const unbanUser = await unbanUserService(user_id);
+    return res.status(unbanUser.status).json(unbanUser)
 }
