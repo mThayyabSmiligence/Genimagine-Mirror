@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -259,4 +259,17 @@ exports.getUserDataByIdController=async(req,res)=>{
     const {user_id}= req.params;
     const user= await getUserDataService(user_id);
     return res.status(user.status).json(user)
+}
+
+// ban-user
+exports.banUserController = async(req,res)=>{
+    const {user_id} = req.params;
+    const banuser = await banUserService(user_id);
+    return res.status(banuser.status).json(banuser)
+}
+
+exports.unbanUserController = async(req,res)=>{
+    const {user_id} = req.params;
+    const unbanuser = await unbanUserService(user_id);
+    return res.status(unbanuser.status).json(unbanuser)
 }

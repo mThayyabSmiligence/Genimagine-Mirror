@@ -1,6 +1,8 @@
 const express = require('express');
+const { banUserController, unbanUserController } = require('../controller/UsersController');
 const router = express.Router();
 
-router.route('/userList').get();
+router.route('/:user_id/ban').put(banUserController);
+router.route('/:user_id/unban').put(unbanUserController);
 
 module.exports = router;
