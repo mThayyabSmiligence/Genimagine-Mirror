@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -273,3 +273,18 @@ exports.unbanUserController = async(req,res)=>{
     const unbanUser = await unbanUserService(user_id);
     return res.status(unbanUser.status).json(unbanUser)
 }
+
+exports.suspendUserController = async(req,res)=> {
+    const {user_id} = req.params;
+    const {days, reason} = req.body;
+
+    const suspendUser = await suspendUserService(user_id, days, reason);
+    return res.status(suspendUser.status).json(suspendUser);
+}
+
+exports.unsuspendUserController = async (req, res) => {
+    const { user_id } = req.params;
+
+    const unsuspendUser = await unsuspendUserService(user_id);
+    return res.status(unsuspendUser.status).json(unsuspendUser);
+};

@@ -171,6 +171,32 @@ exports.userLogin = async (req, res, next) => {
             return res.status(403).json({ success: false, message: "This account is blocked." });
         }
 
+        if (oldUser[0].status === "suspended") {
+            const [suspension] = await db.execute(
+                "SELECT suspension_end FROM suspended_users WHERE user_id = ?", 
+                [oldUser[0].user_id]
+            );
+
+            if (suspension.length > 0) {
+                const suspensionEnd = new Date(suspension[0].suspension_end).getTime();
+                const currentTime = Date.now();
+
+                if (currentTime < suspensionEnd) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "User is suspended. Try again later.",
+                        suspension_end: suspension[0].suspension_end
+                    });
+                } else {
+                    await db.execute("UPDATE users SET status = 'active' WHERE user_id = ?", [oldUser[0].user_id]);
+                    await db.execute("DELETE FROM suspended_users WHERE user_id = ?", [oldUser[0].user_id]);
+                }
+            }else {
+                    await db.execute("UPDATE users SET status = 'active' WHERE user_id = ?", [oldUser[0].user_id]);
+                    await db.execute("DELETE FROM suspended_users WHERE user_id = ?", [oldUser[0].user_id]);
+                }
+        }
+
         if(oldUser[0].register_type!="password"){
             res.status(409).json({
                 message:"sign-in with google"
