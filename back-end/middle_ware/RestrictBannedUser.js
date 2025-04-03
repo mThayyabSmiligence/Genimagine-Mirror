@@ -5,14 +5,18 @@ const checkUserStatus = async(req, res, next) => {
     const userId = req.user.id
 
     try{
-        const user = await db.execute('SELECT status FROM users WHERE user_id = ?',[userId])
+        const user = await db.execute('SELECT status, is_deleted FROM users WHERE user_id = ?',[userId])
         
         // console.log(user);
         if(user.length === 0){
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        const userStatus = user[0].status;
+        const {userStatus, is_deleted} = user[0].status;
+
+        if (is_deleted === 1) {
+            return res.status(403).json({ success: false, message: "User is deleted" });
+        }
 
         if (userStatus === "banned") {
             return res.status(403).json({ success: false, message: "User is banned" });

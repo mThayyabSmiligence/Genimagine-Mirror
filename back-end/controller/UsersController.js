@@ -1,13 +1,13 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
     try{
-        const [users] = await db.execute('SELECT * FROM users');
+        const [users] = await db.execute('SELECT * FROM users WHERE role = "user"');
 
         res.status(200).json({
             success: true,
@@ -288,3 +288,33 @@ exports.unsuspendUserController = async (req, res) => {
     const unsuspendUser = await unsuspendUserService(user_id);
     return res.status(unsuspendUser.status).json(unsuspendUser);
 };
+
+exports.warnUserController = async (req, res) => {
+    const { user_id } = req.params;
+    const { reason} = req.body;
+    const warnedBy = req.user?.id;
+    const warnedByRole = req.user?.role;
+
+    if (warnedByRole !== "moderator") {
+        return res.status(403).json({ success: false, message: "Only moderators can warn users" });
+    }
+
+    if (!user_id || !reason || !warnedBy) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    try {
+        const result = await warnUser(user_id, reason, warnedBy, warnedByRole);
+        return res.status(result.status).json(result);
+    } catch (error) {
+        console.error("Error in warnUserController:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+exports.deleteUserController = async(req,res) => {
+    const {user_id} = req.params;
+
+    const deleteUser = await deleteUserService(user_id);
+    return res.status(deleteUser.status).json(deleteUser);
+}

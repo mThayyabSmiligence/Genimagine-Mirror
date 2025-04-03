@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
 
-exports.verifyModeratorToken = async(req,res,next) => {
+const verifyModeratorToken = async(req,res,next) => {
     let jwtToken =null;
     let refreshToken =null
 
@@ -32,3 +32,5 @@ exports.verifyModeratorToken = async(req,res,next) => {
             return
     }
 }
+
+module.exports = verifyModeratorToken;

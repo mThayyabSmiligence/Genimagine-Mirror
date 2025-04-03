@@ -167,6 +167,13 @@ exports.userLogin = async (req, res, next) => {
             return
         }
 
+        if (oldUser[0].is_deleted === 1) {
+            return res.status(403).json({
+                success: false,
+                message: "This account has been deleted and cannot be accessed.",
+            });
+        }
+
         if(oldUser[0].status === "banned") {
             return res.status(403).json({ success: false, message: "This account is blocked." });
         }
