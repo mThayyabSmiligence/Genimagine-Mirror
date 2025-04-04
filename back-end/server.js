@@ -22,7 +22,7 @@ const verifyRefreshToken = require('./middle_ware/VerifyRefreshToken');
 const verifyAdminToken = require('./middle_ware/verifyAdminToken');
 const verifyModeratorToken = require('./middle_ware/verifyModeratorToken');
 const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
-
+require('./scheduler/suspensionChecker');
 
 
 
