@@ -276,9 +276,9 @@ exports.unbanUserController = async(req,res)=>{
 
 exports.suspendUserController = async(req,res)=> {
     const {user_id} = req.params;
-    const {days, reason} = req.body;
+    const {minutes, reason} = req.body;
 
-    const suspendUser = await suspendUserService(user_id, days, reason);
+    const suspendUser = await suspendUserService(user_id, minutes, reason);
     return res.status(suspendUser.status).json(suspendUser);
 }
 
