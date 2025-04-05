@@ -40,7 +40,6 @@ const checkUserStatus = async(req, res, next) => {
                     });
                 } else {
                     await db.execute("UPDATE users SET status = 'active' WHERE user_id = ?", [userId]);
-                    await db.execute("DELETE FROM suspended_users WHERE user_id = ?", [userId]);
                 }
             }
         }
