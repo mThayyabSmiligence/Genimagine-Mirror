@@ -33,6 +33,11 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
           };
     }, []);
 
+    const userData = localStorage.getItem("user_data");
+    const parseData = JSON.parse(userData);
+    console.log(parseData);
+
+
   return (
     <>
         <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>

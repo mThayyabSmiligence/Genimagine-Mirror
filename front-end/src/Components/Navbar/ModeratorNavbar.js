@@ -7,21 +7,21 @@ function ModeratorNavbar() {
 
                 <div className='sub-mid-section moderator-nav-sub-section'>
 
-                    <Link to={"/explore" } className='link mb-1'  id='explore-link'>
+                    <Link to={"/user-management" } className='link mb-1'  id='user-management-link'>
                         <div className={`nav-list-item d-flex align-items-center ${path=="/explore"&&'active'}`}>
 
                             <ExploreOutlinedIcon/>
-                            <div to={"/explore" } className='link nav-options ms-1'>Explore</div>
+                            <div to={"/user-management" } className='link nav-options ms-1'>User Management</div>
                         </div>
                     </Link>
-                    <Link to={"/credit-purchase" } className='link mb-1' >
+                    <Link to={"/" } className='link mb-1' >
                         <div className={`nav-list-item d-flex align-items-center ${path=="/credit-purchase"&&'active'}`}>
                             <ShoppingCartOutlinedIcon/>
                             <div to={"/credit-purchase" } className='link nav-options ms-1'>Buy Credits</div>
                         </div>
                     </Link>
 
-                    <Link to={"/image-generation" } className='link'  id='new-chat-link'>
+                    <Link to={"/" } className='link'  id='new-chat-link'>
                         <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
 
                             <AddCircleOutlineOutlinedIcon/>

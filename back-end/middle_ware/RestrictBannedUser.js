@@ -5,22 +5,25 @@ const checkUserStatus = async(req, res, next) => {
     const userId = req.user.id
 
     try{
-        const user = await db.execute('SELECT status, is_deleted FROM users WHERE user_id = ?',[userId])
+        const [user] = await db.execute('SELECT status, is_deleted FROM users WHERE user_id = ?',[userId])
         
-        // console.log(user);
+        console.log(user,"1" );
         if(user.length === 0){
             return res.status(404).json({ success: false, message: "User not found" });
         }
+        
+        const { status: userStatus, is_deleted } = user[0];
 
-        const {userStatus, is_deleted} = user[0].status;
-
+        console.log(userStatus,"2" );
         if (is_deleted === 1) {
             return res.status(403).json({ success: false, message: "User is deleted" });
         }
 
+        console.log(is_deleted,"3")
         if (userStatus === "banned") {
             return res.status(403).json({ success: false, message: "User is banned" });
         }
+        console.log("4")
 
         if (userStatus === "suspended") {
             const [suspension] = await db.execute(
@@ -40,6 +43,7 @@ const checkUserStatus = async(req, res, next) => {
                     });
                 } else {
                     await db.execute("UPDATE users SET status = 'active' WHERE user_id = ?", [userId]);
+                    
                 }
             }
         }
