@@ -76,6 +76,20 @@ export default function Login() {
         await handleVerifyOtp(e);
     }
 
+    const handleNavigate = (userData)=> {
+       const userRole = userData.role;
+       if(userRole === "admin") {
+            navigate("/admin/dashboard", { replace: true });
+        } else if(userRole === "moderator") {
+            navigate("/moderator/dashboard", { replace: true });
+        } else if (location?.state?.from?.pathname){
+            const redirectTo = location?.state?.from?.pathname
+            navigate(redirectTo,{replace:true})
+        }else{
+            navigate("/image-generation", { replace: true });
+        }
+    }
+
     const handlePasswordLogin = async(e)=> {
         e.preventDefault()
         setError(false)
@@ -97,10 +111,7 @@ export default function Login() {
             setLoggedIn(true)
             localStorage.setItem("user_data",JSON.stringify(response.data.user_data))
             localStorage.setItem("credit_balance",JSON.stringify(response.data.user_data.credits))
-            const redirectTo= location?.state?.from?.pathname || "/image-generation"
-            console.log(redirectTo)
-            navigate(redirectTo,{replace:true})
-            
+            handleNavigate(response.data.user_data)
         }catch(err){
             console.error(err)
             setError(true)
@@ -161,9 +172,7 @@ export default function Login() {
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
             setRefreshCreditBalance(!refreshCreditBalance)
-            const redirectTo= location?.state?.from?.pathname || "/image-generation"
-            console.log(redirectTo)
-            navigate(redirectTo,{replace:true})
+            handleNavigate(response.data.user_data)
         }catch(err){
             setError(true)
             if (!err.response) {
@@ -207,11 +216,7 @@ export default function Login() {
             localStorage.setItem("user_data", JSON.stringify(response.data.user_data));
             localStorage.setItem("credit_balance", JSON.stringify(response.data.user_data.credits));
             
-            const redirectTo= location?.state?.from?.pathname || "/image-generation"
-            
-            console.log(redirectTo)
-            navigate(redirectTo,{replace:true})
-            
+            handleNavigate(response.data.user_data)          
                     
         }catch(err){
             console.error("Error during sign-in");

@@ -3,11 +3,14 @@ import logo from "../images/genimagin_logo.png"
 import { Link } from 'react-router-dom'
 import "../Css/SideNavBar.css"
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
-import UserNavbar from './Navbar/UserNavbar';
+import UserNavbar from './SideNavBarBYRole/UserNavbar';
+import ModeratorNavbar from './SideNavBarBYRole/ModeratorNavbar';
+import AdminNavbar from './SideNavBarBYRole/AdminNavbar';
 
 export default function SideNavBar({showNavBar,setShowNavBar,width}){
 
     const [showNavBar2,setShowNavBar2]=useState(true)
+    const [userData,setUserData]=useState("");
 
     useEffect(()=>{
         if(showNavBar){
@@ -33,11 +36,13 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
           };
     }, []);
 
-    const userData = localStorage.getItem("user_data");
-    const parseData = JSON.parse(userData);
-    console.log(parseData);
-
-
+    useEffect(() => {
+      const getUserData = localStorage.getItem("user_data");
+      const userData = JSON.parse(getUserData);
+      setUserData(userData);
+      console.log(userData);
+    },[])
+      
   return (
     <>
         <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
@@ -51,7 +56,10 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
             
             </div>
             <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
-                <UserNavbar/>
+
+              {
+               userData?.role == "admin" ? <AdminNavbar/> : userData ?.role == "moderator" ? <ModeratorNavbar/> : <UserNavbar/>
+              }
                
             </div>
             { 

@@ -22,6 +22,7 @@ function ProfileDropDown() {
             console.log("logged out successfully")
             setLoggedIn(false);
             setShowDropdown(false);
+            localStorage.removeItem('user_data')
             localStorage.removeItem('image_settings')
             navigate('/');
         }catch(error){

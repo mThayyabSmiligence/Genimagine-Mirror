@@ -114,13 +114,11 @@ function App() {
                   <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
                   <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
                   <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
-
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                 </Route>
-
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
-            </Route>
+
 
             <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Navigate to="dashboard" replace />} />
@@ -134,6 +132,9 @@ function App() {
                 <Route path="dashboard" element={<ModeratorDashboard />} />
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
+
+            </Route>
+
 
             <Route
               path='*'
