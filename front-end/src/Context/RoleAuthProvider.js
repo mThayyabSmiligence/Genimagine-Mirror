@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
+import RefreshDataContext from './RefreshDataProvider';
 
 const RoleAuthContext = createContext();
 
@@ -9,6 +10,7 @@ export default function RoleAuthProvider({children}) {
     const navigate = useNavigate();
     console.log("path", path)
     const [userData, setUserData] = useState("");
+    const {refreshUserData,setRefreshUserData} = useContext(RefreshDataContext) 
 
     useEffect(() => {
         const getUserData = localStorage.getItem('user_data');
@@ -16,7 +18,10 @@ export default function RoleAuthProvider({children}) {
           const parsedData = JSON.parse(getUserData);
           setUserData(parsedData);
         }
-      }, []);
+        else{
+            setUserData(null)
+        }
+      }, [refreshUserData]);
 
     useEffect(() => {
         if (userData) {

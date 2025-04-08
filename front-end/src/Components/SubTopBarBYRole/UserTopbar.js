@@ -27,12 +27,12 @@ export default function UserTopbar() {
                 <CreditBalance/>
             
                 <div className="profile-dropdown" ref={dropdownRef}>
-                <button className='profile-button dark-button me-3 ' onClick={() => setShowDropdown(!showDropdown)}>
-                    <PersonOutlineOutlinedIcon/>
-                </button>
-                {showDropdown && 
-                    <ProfileDropDown/>
-                }
+                    <button className='profile-button dark-button me-3 ' onClick={() => setShowDropdown(!showDropdown)}>
+                        <PersonOutlineOutlinedIcon/>
+                    </button>
+                    {showDropdown && 
+                        <ProfileDropDown/>
+                    }
                 </div>
             </div>   
             :

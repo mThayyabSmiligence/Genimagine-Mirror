@@ -20,15 +20,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <RoleAuthProvider>
-        <AuthProvider>
-          <RefreshDataProvider>
-            <DropdownProvider>
-              <App />
-            </DropdownProvider>
-          </RefreshDataProvider>
-        </AuthProvider>
-      </RoleAuthProvider>
+      <RefreshDataProvider>
+          <RoleAuthProvider>
+            <AuthProvider>
+                <DropdownProvider>
+                  <App />
+                </DropdownProvider>
+            </AuthProvider>
+          </RoleAuthProvider>
+      </RefreshDataProvider>
     </Router>
   </React.StrictMode>
   

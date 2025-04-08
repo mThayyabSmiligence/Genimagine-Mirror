@@ -53,7 +53,7 @@ function ProfilePage() {
           }catch(err){
             console.error(err)
           }
-    }
+    }   
 
 
   return (
