@@ -1,14 +1,23 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import logo from "../../images/genimagin_logo.png"
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+
 export default function AdminNavbar() {
     const location = useLocation()
     const path = location.pathname;
     const [height, setHeight] = useState(window.innerHeight);
     return (
         <>
+            <div className='nav-logo-section'>              
+                <Link to={'/admin/dashboard'}>
+                    <img src={logo} className="big-logo" alt='Genimagine logo'/>
+                </Link>                     
+            </div>
+            <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
+                    
             <div className='side-nav-middle-section p-relative h-auto moderator-navbar-section' style={{ height:`${height-150}px`} }>
 
                 <div className='sub-mid-section moderator-nav-sub-section'>
@@ -36,6 +45,7 @@ export default function AdminNavbar() {
                     </Link>
 
                 </div>
+            </div>
             </div>
         </>
     )

@@ -11,7 +11,13 @@ export default function AdminLayout() {
     // }
     useEffect(() => {
         console.log("userData", userData)
-        if (!userData || userData.role!== "admin") {
+        if (userData?.role == "admin") {
+            return
+        }
+        else if (userData?.role == "moderator") {
+            navigate("/moderator/dashboard", {replace: true})     
+        }
+        else {
             navigate("/", {replace: true})
         }
     }, [])

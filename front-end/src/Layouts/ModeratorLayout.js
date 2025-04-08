@@ -8,7 +8,13 @@ const ModeratorLayout = () => {
     //     navigate("/unauthorized", { replace: true });
     // }
     useEffect(() => {
-        if (!userData || userData.role!== "moderator") {
+        if (userData?.role == "moderator") {
+            return
+        }
+        else if (userData?.role == "admin") {
+            navigate("/admin/dashboard", {replace: true})     
+        }
+        else {
             navigate("/", {replace: true})
         }
     }, [])

@@ -11,6 +11,7 @@ import {BrowserRouter as Router } from "react-router-dom"
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import RoleAuthProvider from './Context/RoleAuthProvider';
 
 
 
@@ -19,13 +20,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <AuthProvider>
-        <RefreshDataProvider>
-          <DropdownProvider>
-            <App />
-          </DropdownProvider>
-        </RefreshDataProvider>
-      </AuthProvider>
+      <RoleAuthProvider>
+        <AuthProvider>
+          <RefreshDataProvider>
+            <DropdownProvider>
+              <App />
+            </DropdownProvider>
+          </RefreshDataProvider>
+        </AuthProvider>
+      </RoleAuthProvider>
     </Router>
   </React.StrictMode>
   

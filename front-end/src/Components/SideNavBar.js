@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import logo from "../images/genimagin_logo.png"
+
 import { Link } from 'react-router-dom'
 import "../Css/SideNavBar.css"
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
@@ -48,20 +48,10 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
         <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
         
 
-            <div className='nav-logo-section'>
-        
-                    <Link to={'/'}>
-                    <img src={logo} className="big-logo" alt='Genimagine logo'/>
-                    </Link>
-            
-            </div>
-            <div className='side-nav-options-container d-flex flex-column justify-content-between y-scrollable-container'>
-
-              {
-               userData?.role == "admin" ? <AdminNavbar/> : userData ?.role == "moderator" ? <ModeratorNavbar/> : <UserNavbar/>
-              }
-               
-            </div>
+           
+            {
+                    userData?.role == "admin" ? <AdminNavbar/> : userData ?.role == "moderator" ? <ModeratorNavbar/> : <UserNavbar/>
+            } 
             { 
                 <button className={ `side-nav-close-button  ${showNavBar?'active':'in-active'} `} onClick={()=>setShowNavBar(false)}> <ArrowCircleLeftOutlinedIcon/></button>
             }
