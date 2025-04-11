@@ -210,8 +210,8 @@
 
   .explore-image-detail-container .caption-option-copy-link-container.published-image {
     position: absolute;
-    top: 250px;
-    right: 20px;
+    top: 25px;
+    right: 0px;
   }
   
   .explore-image-detail-container .delete-button{
