@@ -46,9 +46,7 @@ export default function SideNavBar({showNavBar,setShowNavBar,width}){
   return (
     <>
         <nav className={`side-nav ${showNavBar2?'active':'in-active'} Nav d-flex flex-column`}  style={{ height:`${height}px` }}>
-        
-
-           
+          
             {
                     userData?.role == "admin" ? <AdminNavbar/> : userData ?.role == "moderator" ? <ModeratorNavbar/> : <UserNavbar/>
             } 

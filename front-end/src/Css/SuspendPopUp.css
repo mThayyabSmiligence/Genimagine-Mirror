@@ -1,0 +1,15 @@
+.bgblur-container {
+    z-index: 1;
+}
+
+.popup-container{
+    z-index: 2;
+}
+
+.btn-close:focus, 
+.btn-close:active {
+  outline: none ;
+  box-shadow: none;
+  border: none ;
+}
+

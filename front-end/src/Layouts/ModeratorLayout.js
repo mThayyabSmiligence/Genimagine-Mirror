@@ -20,8 +20,8 @@ const ModeratorLayout = () => {
     }, [])
 
     return (
-        <div>
-            <h2>Moderator Panel</h2>
+        <div className="mt-5 pt-3">
+            
             
             {/* <nav>
                 <ul>

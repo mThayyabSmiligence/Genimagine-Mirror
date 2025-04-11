@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -255,9 +255,9 @@ exports.deleteChatController=async(req,res)=>{
     return res.status(result.status).json(result);
 }
 
-exports.getUserDataByIdController=async(req,res)=>{
+exports.getUserNameByIdController=async(req,res)=>{
     const {user_id}= req.params;
-    const user= await getUserDataService(user_id);
+    const user= await getUserNameService(user_id);
     return res.status(user.status).json(user)
 }
 
@@ -317,4 +317,11 @@ exports.deleteUserController = async(req,res) => {
 
     const deleteUser = await deleteUserService(user_id);
     return res.status(deleteUser.status).json(deleteUser);
+}
+
+exports.getUserByIdController = async(req,res) => {
+    const {user_id} = req.params;
+
+    const getUserById = await getUserByIdService(user_id);
+    return res.status(getUserById.status).json(getUserById)
 }

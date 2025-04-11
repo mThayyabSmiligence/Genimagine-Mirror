@@ -38,6 +38,16 @@ const axiosNoAUth = axios.create({
   withCredentials: true,
 });
 
+const axiosAdmin = axios.create({
+  baseURL: `${BASE_URL}/admin/`,
+  withCredentials: true,
+})
+
+const axiosModerator = axios.create({
+  baseURL: `${BASE_URL}/moderator/`,
+  withCredentials: true,
+})
+
 // Variable to track token refreshing process
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -96,7 +106,71 @@ axiosPrivate.interceptors.response.use(
   }
 );
 
-export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth , axiosAuth};
+axiosAdmin.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          await refreshAccessToken();
+          isRefreshing = false;
+          return axiosAdmin(originalRequest); // Retry original request
+        } catch (refreshError) {
+          isRefreshing = false;
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // If another request is already refreshing, queue this request
+      return new Promise((resolve) => {
+        refreshSubscribers.push(() => {
+          resolve(axiosAdmin(originalRequest));
+        });
+      });
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+axiosModerator.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          await refreshAccessToken();
+          isRefreshing = false;
+          return axiosModerator(originalRequest); // Retry original request
+        } catch (refreshError) {
+          isRefreshing = false;
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // If another request is already refreshing, queue this request
+      return new Promise((resolve) => {
+        refreshSubscribers.push(() => {
+          resolve(axiosModerator(originalRequest));
+        });
+      });
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export { axiosInstance, useAxiosGenerateImage, axiosPrivate, axiosNoAUth , axiosAuth, axiosAdmin, axiosModerator };
 
 
 

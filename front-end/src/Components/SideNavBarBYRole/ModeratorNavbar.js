@@ -32,20 +32,32 @@ export default function ModeratorNavbar() {
                                 <div to={"/moderator/dashboard" } className='link nav-options ms-1'>Dashboard</div>
                             </div>
                         </Link>
-                        <Link to={"/managements" } className='link mb-1' id='managements-link'>
-                            <div className={`nav-list-item d-flex align-items-center ${path=="/managements"&&'active'}`}>
-                                {/* <ShoppingCartOutlinedIcon/> */}
-                                <div to={"/managements" } className='link nav-options ms-1'>Managements</div>
+                        
+              
+                        <div className={` d-flex align-items-center w-80`}>
+                            <h6 className='management-list-heading chat-group-heading p-secondary w-100 text-start'>Managements</h6>
+                            {/* <ShoppingCartOutlinedIcon/> */}
+                            {/* <div to={"/managements" } className='link nav-options ms-1'>Managements</div> */}
+                        </div>
+   
+                        <Link to={"/moderator/user-management" } className='link mb-1'  id='user-management-link'>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/user-management"&&'active'}`}>
+
+                                {/* <ExploreOutlinedIcon/> */}
+                                <div to={"/user-management" } className='link nav-options ms-1'>User Management</div>
                             </div>
                         </Link>
 
-                        <Link to={"/report" } className='link'  id='report-link'>
+                        
+
+                        {/* <Link to={"/report" } className='link'  id='report-link'>
                             <div className={`nav-list-item  d-flex align-items-center ${path=="/report"&&'active'}`}>
 
-                                {/* <AddCircleOutlineOutlinedIcon/> */}
-                                <div to={"/report" } className='link nav-options ms-1'>Reports</div>
+                                
+                                
+                                <div to={"/report" } className='link nav-options ms-1'>reports</div>
                             </div>
-                        </Link>
+                        </Link> */}
 
                     </div>
                 </div>

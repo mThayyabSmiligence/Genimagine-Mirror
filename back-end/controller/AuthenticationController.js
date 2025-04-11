@@ -507,7 +507,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
 
         if(rows.length==0){
             try{
-                const insertQuery = "INSERT INTO users (email,username,age,password_hash,register_type) VALUES (?,?,?,?,CAST(? AS CHAR))";
+                const insertQuery = "INSERT INTO users (email,username,age,password_hash,register_type,is_verified) VALUES (?,?,?,?,CAST(? AS CHAR),1)";
 
                 const [response] = await db.execute(insertQuery, [useremail,decodedToken.name,0," ","google-sign-in"]);
                 console.log(response);

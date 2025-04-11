@@ -36,9 +36,8 @@ import AdminLayout from './Layouts/AdminLayout';
 import ModeratorLayout from './Layouts/ModeratorLayout';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import ModeratorDashboard from './Pages/Moderator/ModeratorDashboard';
-
-
-
+import UserManagement from './Pages/Moderator/UserManagement';
+import UserDetail from './Pages/Moderator/UserDetail';
 
 
 function App() {
@@ -130,6 +129,11 @@ function App() {
             <Route path="/moderator" element={<ModeratorLayout />}>  
                 <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<ModeratorDashboard />} />
+                <Route path = "user-management" element={<UserManagement/>} ></Route>
+                <Route path = "user-Detail/:user_id" element={<UserDetail/>} ></Route>
+                {/* <Route path = "image-management" element={<div>Image Management</div>} ></Route>
+                <Route path = "model-management" element={<div>Model Management</div>} ></Route>
+                <Route path = "report-management" element={<div>Reports</div>} ></Route> */}
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 
