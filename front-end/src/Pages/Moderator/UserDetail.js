@@ -4,6 +4,7 @@ import { axiosModerator } from '../../API\'s/axios';
 import "../../Css/UserDetail.css"
 import SuspendPopUp from '../../Components/CommonComponents/SuspendPopUp';
 import dayjs from 'dayjs'; 
+import WarnPopUp from '../../Components/CommonComponents/WarnPopUp';
 
 
 
@@ -18,6 +19,7 @@ export default function UserDetail() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [showSuspendPopup, setShowSuspendPopup] = useState(false);
+  const [showWarnPopUp, setShowWarnPopUp] = useState(false)
 
 
 
@@ -208,29 +210,31 @@ export default function UserDetail() {
         }
     }
    
-    // const handleWarnUser = async () => {
-    //     const confirm = window.confirm("Are you sure you want to warn this user?");
-    //     if (!confirm) return;
+    const handleWarnUser = async () => {
+      if (["banned", "suspended", "deleted"].includes(user?.status)) {
+        alert(`Cannot warn a user who is already ${user.status}.`);
+        return;
+      }  
       
-    //     try {
-    //       const response = await axiosModerator.post(`${user.user_id}/warn`, {
-    //         reason: "Inappropriate behavior", 
-    //         warnedBy: "moderator_name",       
-    //         warnedByRole: "moderator"         
-    //       });
+        try {
+          const response = await axiosModerator.post(`${user.user_id}/warn`, {
+            reason,      
+          });
       
-    //       alert(response.data.message);
-    //       setUser(prevUser => ({
-    //         ...prevUser,
-    //         status: response.data.data.count >= 4 ? "banned" : 
-    //                 response.data.data.count === 3 ? "suspended" : "active",
-    //         warning_data: response.data.data
-    //       }));
-    //     } catch (error) {
-    //       console.error("Error warning user:", error);
-    //       alert("Failed to warn user.");
-    //     }
-    //   };
+          
+          setUser(prevUser => ({
+            ...prevUser,
+            status: response.data.data.count >= 4 ? "banned" : 
+                    response.data.data.count === 3 ? "suspended" : "active",
+            warning_data: response.data.data
+          }));
+
+          setReason(""); 
+        } catch (error) {
+          console.error("Error warning user:", error);
+          alert("Failed to warn user.");
+        }
+      };
 
   return (
     <>
@@ -378,7 +382,17 @@ export default function UserDetail() {
                             </button>
                           </li>
                         )}
-                  <li><button className="dropdown-item text-secondary" onClick={() => alert('Warn functionality coming soon!')}>Warn</button></li>
+                        
+                        <li>
+                          <button 
+                            type='button'
+                            className="dropdown-item text-secondary" 
+                            onClick={() => setShowWarnPopUp(true)}
+                            disabled={["suspended", "banned", "deleted"].includes(user?.status)}
+                          >
+                            Warn
+                          </button>
+                        </li>
                   {user?.status !== "deleted" && (
                           <li>
                             <button 
@@ -410,6 +424,18 @@ export default function UserDetail() {
       setSuspendDate={setSuspendDate}
       reason={reason}
       setReason={setReason}
+    />
+  )
+}
+
+{
+  showWarnPopUp && (
+    <WarnPopUp 
+      reason = {reason}
+      setReason = {setReason}
+      handleWarnUser = {handleWarnUser}
+      showWarnPopUp = {showWarnPopUp}
+      onHide={() => setShowWarnPopUp(false)}
     />
   )
 }

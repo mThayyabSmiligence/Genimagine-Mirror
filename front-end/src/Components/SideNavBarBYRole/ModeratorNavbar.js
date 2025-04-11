@@ -41,10 +41,10 @@ export default function ModeratorNavbar() {
                         </div>
    
                         <Link to={"/moderator/user-management" } className='link mb-1'  id='user-management-link'>
-                            <div className={`nav-list-item d-flex align-items-center ${path=="/user-management"&&'active'}`}>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/moderator/user-management"&&'active'}`}>
 
                                 {/* <ExploreOutlinedIcon/> */}
-                                <div to={"/user-management" } className='link nav-options ms-1'>User Management</div>
+                                <div to={"/moderator/user-management" } className='link nav-options ms-1'>User Management</div>
                             </div>
                         </Link>
 
