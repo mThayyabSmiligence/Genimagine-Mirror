@@ -212,8 +212,11 @@
     color: rgb(241, 49, 49) !important;
   }
 
- .explore-image-detail-container .report-button:disabled .flagicon, .report-text{
+ .explore-image-detail-container .report-button:disabled .flagicon{
   opacity: 0.5;
+ }
+
+ .explore-image-detail-container .report-button:disabled{
   cursor: default;
  }
 

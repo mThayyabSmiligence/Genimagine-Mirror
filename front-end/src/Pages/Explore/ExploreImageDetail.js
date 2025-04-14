@@ -75,6 +75,7 @@ function ExploreImageDetail() {
     const [showCopyOption, setShowCopyOption] = useState(false);
     const [copied, setcopied] = useState(false);
     const [imageCaptionOption, setImageCaptionOption] = useState(false);
+    const dropdownRef = useRef(null); 
     // const [imagePathCopied, setImagePathCopied] = useState(false);
     // const [reportImage, setImageReport] = useState(false);
     const [isUsersImage, setIsUsersImage] = useState(location.pathname.includes("/u/published-images"));
@@ -112,6 +113,19 @@ function ExploreImageDetail() {
             }, 3000);
           }
         },[copied])
+
+        useEffect(() => {
+            const handleClickOutside = (event) => {
+              if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setImageCaptionOption(false); 
+              }
+            };
+        
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+              document.removeEventListener("mousedown", handleClickOutside);
+            };
+          }, []);
 
         // useEffect(() => {
         //     if(imagePathCopied){
@@ -261,7 +275,7 @@ function ExploreImageDetail() {
               }
             
               if (!reportReason.trim()) {
-                alert("Please enter a reason.");
+                alert("Please enter a reason.")
                 return;
               }
 
@@ -347,7 +361,7 @@ function ExploreImageDetail() {
                                 {
                                     imageCaptionOption?
                                     
-                                    <div className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
+                                    <div ref={dropdownRef} className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
                                         <button title="user is already reported" disabled={imageData.isUserReported == true} onClick={() => setShowReportPopUp(true)} className='report-button d-flex'><OutlinedFlagIcon fontSize='small' className="flagicon"></OutlinedFlagIcon><span className="flex-1 report-text">Report</span></button>
                                     </div>
                                     :
