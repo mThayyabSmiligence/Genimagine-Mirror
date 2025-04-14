@@ -7,7 +7,6 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 
 
-
 export default function UserManagement() {
 
   const [users, setUsers] = useState([]);

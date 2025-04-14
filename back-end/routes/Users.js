@@ -3,7 +3,7 @@ const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChats
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
-const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController } = require('../controller/ExploreController');
+const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const router = express.Router();
@@ -45,6 +45,7 @@ router.route("/explore").get(getExploreImageByUserIdController)
 router.route("/explore/:published_id").delete(deleteExploreImageByPublishedIdController)
 
 router.route('/explore/edit-caption/:published_id').post(editCaptionController)
+router.route('/report-image').post(ImageReportController)
  
 
 module.exports = router;

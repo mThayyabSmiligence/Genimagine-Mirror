@@ -17,6 +17,8 @@ import config from "../../Config";
 import EditIcon from '@mui/icons-material/Edit';
 import DeletePopUp from "../../Components/CommonComponents/DeletePopUp";
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
+import ReportPopUp from "../../Components/CommonComponents/ReportPopUp";
 
 const styleList = [
     { id: 1, style_name: "Textured Oil Painting", },
@@ -73,9 +75,12 @@ function ExploreImageDetail() {
     const [showCopyOption, setShowCopyOption] = useState(false);
     const [copied, setcopied] = useState(false);
     const [imageCaptionOption, setImageCaptionOption] = useState(false);
-    const [imagePathCopied, setImagePathCopied] = useState(false);
+    // const [imagePathCopied, setImagePathCopied] = useState(false);
+    // const [reportImage, setImageReport] = useState(false);
     const [isUsersImage, setIsUsersImage] = useState(location.pathname.includes("/u/published-images"));
     const [showDeletePopUp, setShowDeletePopUp] = useState(false);
+    const [showReportPopUp, setShowReportPopUp] = useState(false);
+    const [reportReason, setReportReason] = useState("");
     const Navigate = useNavigate();
 
         useEffect(() => {
@@ -108,14 +113,14 @@ function ExploreImageDetail() {
           }
         },[copied])
 
-        useEffect(() => {
-            if(imagePathCopied){
-                setTimeout(() => {
-                setImagePathCopied(false);
-                setImageCaptionOption(false);
-                }, 3000);
-            }
-            },[imagePathCopied])
+        // useEffect(() => {
+        //     if(imagePathCopied){
+        //         setTimeout(() => {
+        //         setImagePathCopied(false);
+        //         setImageCaptionOption(false);
+        //         }, 3000);
+        //     }
+        //     },[imagePathCopied])
 
 
     const ImageDetail = async () => {
@@ -224,7 +229,7 @@ function ExploreImageDetail() {
               navigator.clipboard.writeText(config.Base_Url + location.pathname)
               .then(() => {
                 setcopied(true);
-                setImagePathCopied(true)
+                // setImagePathCopied(true)
               })
               .catch((error) => {
                 console.error("Failed to copy URL: ", error);
@@ -247,6 +252,37 @@ function ExploreImageDetail() {
 
         const handleDelete = () => {
             handelDeletePublishedImage(imageData.published_id)
+        }
+
+        const handleReport = async() => {
+            if (!loggedIn) {
+                Navigate('/login', { state: { from: location }, replace: true });
+                return;
+              }
+            
+              if (!reportReason.trim()) {
+                alert("Please enter a reason.");
+                return;
+              }
+
+            try{
+               const response =  await axiosPrivate.post("/report-image",{
+                    image_id: imageData.image_id,
+                    published_id: imageData.published_id,
+                    reason: reportReason,
+               });
+
+               if (response.data.success) {
+                alert("Image reported successfully.");
+                setShowReportPopUp(false);
+                setReportReason("");
+                setImageCaptionOption(false);
+              } else {
+                alert(response.data.message);
+              }
+            }catch (error){
+                console.error("Error reporting image:", error);
+            }
         }
     return loading?
     (
@@ -310,16 +346,22 @@ function ExploreImageDetail() {
                                 <button onClick={() => setImageCaptionOption(!imageCaptionOption)} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
                                 {
                                     imageCaptionOption?
-                                    <div className={`caption-option-copy-link-container  ${isUsersImage&& "published-image"}`}>           
-                                    {
-                                        imagePathCopied ?
-                                        <button className='option-copy-link-button'>Copied</button> :
-                                        <button onClick={() => handleShare(imageData)} className='option-copy-link-button'><LinkIcon fontSize='small'></LinkIcon>Copy link</button>
-                                    }   
+                                    
+                                    <div className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
+                                        <button title="user is already reported" disabled={imageData.isUserReported == true} onClick={() => setShowReportPopUp(true)} className='report-button d-flex'><OutlinedFlagIcon fontSize='small' className="flagicon"></OutlinedFlagIcon><span className="flex-1 report-text">Report</span></button>
                                     </div>
                                     :
                                     null
                                 }
+                                {showReportPopUp && (
+                                    <ReportPopUp
+                                        reportReason = {reportReason}
+                                        setReportReason = {setReportReason}
+                                        handleReport = {handleReport}
+                                        showReportPopUp = {showReportPopUp}
+                                        onHide={() => setShowReportPopUp(false)}                                    
+                                    />
+                                )}
                             </div>
                         </div>
                             

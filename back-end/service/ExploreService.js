@@ -211,8 +211,20 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
             WHERE e.published_id = ?;
         `;
 
-
         let [rows] = await db.execute(query,[user_id,explore_id])
+
+        const Report_Image_query = "SELECT * FROM image_reports WHERE published_id = ?"
+        const [reportImageRows] = await db.execute(Report_Image_query, [explore_id])
+
+        if(reportImageRows.length > 0){
+            const reportDetails = reportImageRows[0].report_details
+            const userReport = reportDetails.find(detail => detail.user_id == user_id);
+
+            console.log("User report:", userReport);
+
+            rows[0].isUserReported = !!userReport;
+        }
+
         if (rows.length == 0) {
              return {
                 status:404,
@@ -230,6 +242,7 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
             message:"image found successfully",
             success:true,
             image:rows[0]
+
         }
     }catch( err){
         console.error("error fetching image",err)
@@ -515,5 +528,79 @@ exports.editCaptionService=async(published_id,caption,id)=>{
             message:"internal server error",
             success:false
         }
+    }
+}
+
+exports.ImageReportService = async (image_id, userID, published_id, reason) => {
+    try {
+        if (!image_id || !published_id || !reason) {
+            return {
+                status: 400,
+                message: 'Image ID, published ID, and reason are required.',
+                success: false
+            };
+        }
+
+        // Check if a report already exists
+        const [existingReport] = await db.query(
+            `SELECT report_id, report_details FROM image_reports 
+             WHERE image_id = ? AND published_id = ?`,
+            [image_id, published_id]
+        );
+
+        const newReportEntry = { user_id: userID, reason };
+
+        if (existingReport.length > 0) {
+            const report = existingReport[0];
+            const reportDetails = report.report_details;
+
+            // Check if user has already reported
+            const alreadyReported = reportDetails.some(r => r.user_id === userID);
+            if (alreadyReported) {
+                return {
+                    status: 409,
+                    message: 'You have already reported this image.',
+                    success: false
+                };
+            }
+
+            // Append new report to existing details
+            reportDetails.push(newReportEntry);
+
+            await db.query(
+                `UPDATE image_reports 
+                 SET report_details = ?, report_count = report_count + 1
+                 WHERE report_id = ?`,
+                [JSON.stringify(reportDetails), report.report_id]
+            );
+
+            return {
+                status: 200,
+                message: 'Your report has been added.',
+                success: true
+            };
+        } else {
+            // Create new report entry
+            const reportDetails = JSON.stringify([newReportEntry]);
+
+            await db.query(
+                `INSERT INTO image_reports (image_id, published_id, report_details, report_count)
+                 VALUES (?, ?, ?, 1)`,
+                [image_id, published_id, reportDetails]
+            );
+
+            return {
+                status: 201,
+                message: 'Image reported successfully.',
+                success: true
+            };
+        }
+    } catch (error) {
+        console.error('Error reporting image:', error);
+        return {
+            status: 500,
+            message: 'Server error while reporting image.',
+            success: false
+        };
     }
 }

@@ -190,14 +190,14 @@
     cursor: pointer;
     font-size: 12px;
   }
-  .explore-image-detail-container .caption-option-copy-link-container{
+  .explore-image-detail-container .caption-option-report-container{
     position: absolute;
     top: 25px;
     right: 0px;
   }
 
-  .explore-image-detail-container .option-copy-link-button{
-    width: 90px;
+  .explore-image-detail-container .report-button{
+    width: 80px;
     height: fit-content;
     right: -10px;
     background: white;
@@ -208,10 +208,19 @@
     font-size: 12px;
   }
 
+  .explore-image-detail-container .flagicon{
+    color: rgb(241, 49, 49) !important;
+  }
+
+ .explore-image-detail-container .report-button:disabled .flagicon, .report-text{
+  opacity: 0.5;
+  cursor: default;
+ }
+
   .explore-image-detail-container .caption-option-copy-link-container.published-image {
     position: absolute;
-    top: 25px;
-    right: 0px;
+    top: 250px;
+    right: 20px;
   }
   
   .explore-image-detail-container .delete-button{
