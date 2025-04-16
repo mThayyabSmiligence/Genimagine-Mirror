@@ -38,6 +38,8 @@ import AdminDashboard from './Pages/Admin/AdminDashboard';
 import ModeratorDashboard from './Pages/Moderator/ModeratorDashboard';
 import UserManagement from './Pages/Moderator/UserManagement';
 import UserDetail from './Pages/Moderator/UserDetail';
+import Reports from './Pages/Moderator/Reports';
+import ReportImageDetail from './Pages/Moderator/ReportImageDetail';
 
 
 function App() {
@@ -131,9 +133,10 @@ function App() {
                 <Route path="dashboard" element={<ModeratorDashboard />} />
                 <Route path = "user-management" element={<UserManagement/>} ></Route>
                 <Route path = "user-Detail/:user_id" element={<UserDetail/>} ></Route>
+                <Route path = "reports" element={<Reports/>} ></Route>
+                <Route path= "report-image-detail/:report_id" element={<ReportImageDetail/>}></Route>
                 {/* <Route path = "image-management" element={<div>Image Management</div>} ></Route>
-                <Route path = "model-management" element={<div>Model Management</div>} ></Route>
-                <Route path = "report-management" element={<div>Reports</div>} ></Route> */}
+                <Route path = "model-management" element={<div>Model Management</div>} ></Route> */}
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 

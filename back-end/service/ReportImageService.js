@@ -1,4 +1,5 @@
 const db = require('../config/connectDatabase');
+const { decrypt } = require('./EncrypDecrypt');
 const { banUserService, suspendUserService, warnUser } = require('./UserService');
 
 exports.getAllReportedImagesService = async() =>{
@@ -7,13 +8,17 @@ exports.getAllReportedImagesService = async() =>{
     `
     SELECT 
     ir.report_id,
+    ir.reported_at,
     ir.image_id,
     ir.report_details,
     ir.report_count,
     ir.action_type,
     gi.prompt,
+    gi.image_url,
     e.caption,
-    u.warning_data
+    u.warning_data,
+    u.username AS uploader_username,
+    u.user_id AS uploader_id
     FROM image_reports ir
     LEFT JOIN generated_images gi ON ir.image_id = gi.image_id
     LEFT JOIN explore e ON ir.published_id = e.published_id
@@ -23,11 +28,26 @@ exports.getAllReportedImagesService = async() =>{
     
     const [rows] = await db.execute(query)
     console.log(rows)
+    
+    const decryptedRows = rows.map((row) => {
+      try{
+        return{
+          ...row,
+          prompt : decrypt(row.prompt)
+        };
+      }catch (err) {
+        console.error(`Error decrypting prompt for report_id ${row.report_id}`, err);
+        return {
+          ...row,
+          prompt: "[Decryption Failed]"
+        };
+      }
+    })
 
     return{
         status: 200,
         message: "retrieved all reported images and data",
-        data: rows
+        data: decryptedRows
     };
     
 
@@ -78,6 +98,10 @@ exports.getReportedImageDetailByReportIdService = async(report_id) => {
     if (reportDetails.length === 0) {
     throw new Error("No report found with this ID");
     }
+
+    const image_prompt = decrypt(reportDetails[0].image_prompt)
+    reportDetails[0].image_prompt = image_prompt
+    console.log("prompt decrypted",reportDetails[0].image_prompt)
 
     return{
         status: 200,

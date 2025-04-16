@@ -541,6 +541,8 @@ exports.ImageReportService = async (image_id, userID, published_id, reason) => {
             };
         }
 
+        const [userData] = await db.query(`SELECT username FROM users WHERE user_id = ?`, [userID]);
+
         // Check if a report already exists
         const [existingReport] = await db.query(
             `SELECT report_id, report_details FROM image_reports 
@@ -548,7 +550,13 @@ exports.ImageReportService = async (image_id, userID, published_id, reason) => {
             [image_id, published_id]
         );
 
-        const newReportEntry = { user_id: userID, reason };
+        const newReportEntry = { 
+            user_id: userID, 
+            username: userData[0]?.username || 'Unknown',
+            reason,
+            reported_at: new Date().toISOString(),
+            
+        };
 
         if (existingReport.length > 0) {
             const report = existingReport[0];

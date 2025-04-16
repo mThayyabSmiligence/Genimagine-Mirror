@@ -288,6 +288,10 @@ function ExploreImageDetail() {
 
                if (response.data.success) {
                 alert("Image reported successfully.");
+                setImageData((prevData) => ({
+                    ...prevData,
+                    isUserReported: true, // Update the state to reflect the report
+                }));
                 setShowReportPopUp(false);
                 setReportReason("");
                 setImageCaptionOption(false);
@@ -298,6 +302,10 @@ function ExploreImageDetail() {
                 console.error("Error reporting image:", error);
             }
         }
+
+        const toggleCaptionOption = () => {
+            setImageCaptionOption((prev) => !prev); // Properly toggle the state
+        };
     return loading?
     (
         <div className='w-100 h-100 d-flex justify-content-center align-items-center mt-5 pt-5'>
@@ -357,16 +365,15 @@ function ExploreImageDetail() {
 
                                 }
                                 
-                                <button onClick={() => setImageCaptionOption(!imageCaptionOption)} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
+                                <button onClick={toggleCaptionOption} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
                                 {
-                                    imageCaptionOption?
+                                    imageCaptionOption && (
                                     
                                     <div ref={dropdownRef} className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
                                         <button title="user is already reported" disabled={imageData.isUserReported == true} onClick={() => setShowReportPopUp(true)} className='report-button d-flex'><OutlinedFlagIcon fontSize='small' className="flagicon"></OutlinedFlagIcon><span className="flex-1 report-text">Report</span></button>
                                     </div>
-                                    :
-                                    null
-                                }
+                                    
+                                )}
                                 {showReportPopUp && (
                                     <ReportPopUp
                                         reportReason = {reportReason}

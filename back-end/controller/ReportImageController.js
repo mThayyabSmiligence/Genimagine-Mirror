@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllReportedImagesService, getReportedImageDetailByReportIdService, handleReportedImageActionService } = require('../service/ReportImageService');
+const { getAllReportedImagesService, getReportedImageDetailByReportIdService, handleReportedImageActionService, banReportedImageUserService, suspendReportedImageUserService, warnReportedImageUserService } = require('../service/ReportImageService');
 
 exports.getAllReportedImagesController = async(req, res ) => { 
     const reportedImages = await getAllReportedImagesService();
