@@ -15,32 +15,43 @@ function ReportImageCard({report}) {
       <span className="status-badge">Pending review</span>
     </div>
     <div className="report-details">
-        <h3 className='text-lg font-semibold text-gray-900 mb-2 text-start'>Reported Image: {report.image_id}</h3>
+        <div className='d-flex justify-content-between align-items-center mb-2'>
+          <h3 className='h-3 text-lg font-semibold text-gray-900 m-0 text-start'>ID: {report.image_id}</h3>
+          <div className='report-detail'>
+              <h3 className='h-3 font-semibold'>{report.reported_at.split('T')[0]}</h3>
+          </div>
+        </div>
         
-        <div className='report-detail'>
+        {/* <div className='report-detail'>
             <p><strong>Prompt:</strong></p>
             <span>{truncateString(report.prompt)}</span>
-        </div>
+        </div> */}
+
+                <div className="mb-2">
+                  <span className="d-flex mb-1 prompt-container-text details-title">Prompt:</span>
+                  <div className='prompt-container-box border'>                 
+                    <p>{report.prompt || 'No prompt available'}</p>
+                  </div> 
+                </div>
+
+        {/* <div className='report-detail m-2'>
+          <p><strong>Prompt:</strong></p>
+          <div className="prompt-box">
+            {report.prompt || 'No prompt available'}
+          </div>
+        </div> */}
 
         <div className='report-detail'>
-            <p> <strong>Report Count:</strong></p>
+            <p className='details-title'>Report Count:</p>
             <span>{report.report_count}</span>
         </div>
 
         <div className='report-detail'>
-            <p><strong>Report ID:</strong></p>
+            <p className='details-title'>Report ID:</p>
             <span>{report.report_id}</span>
         </div>
 
-        <div className='report-detail'>
-            <p><strong>Initail Report at:</strong></p>
-            <span>{report.reported_at.split('T')[0]}</span>
-        </div>
-
-        <div className='report-detail'>
-            <p><strong>Action Type:</strong></p>
-            <span>{report.action_type}</span>
-        </div>
+        
 
       <div className="action-buttons">
         <Link to={`/moderator/report-image-detail/${report.report_id}`} className="review-btn link w-100">Review</Link>

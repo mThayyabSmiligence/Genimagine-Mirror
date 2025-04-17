@@ -37,7 +37,7 @@
   }
   
   .report-details {
-    padding: 1rem;
+    padding: 10px;
   }
   
   .report-details h3 {
@@ -73,4 +73,33 @@
 
   .report-detail p{
     margin: 0;
+  }
+
+  .prompt-container-box{
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
+    max-height: 90px;        
+    overflow-y: auto;
+    word-wrap: break-word;    
+    width: 100%;    
+    background-color: #f7f7f7; 
+    border-radius: 10px;          
+  }
+
+  /* .text-muted{
+    width: 100%;
+    margin: 0;
+    align-items: center;
+  } */
+
+  .prompt-container-text{
+    color: grey;
+  }
+
+  .details-title{
+    font-weight: 600;
   }
