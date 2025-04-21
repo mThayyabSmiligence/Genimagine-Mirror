@@ -9,6 +9,7 @@ export default function Reports() {
     const [loading, setLoading] = useState(true);
 
     const reportedImagesList = async() => {
+      
         try{
             const response = await axiosModerator.post('getreportedimages')
             setReportedImages(response.data.data)

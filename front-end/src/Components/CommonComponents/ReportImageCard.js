@@ -4,15 +4,35 @@ import { Link } from 'react-router-dom'
 
 function ReportImageCard({report}) {
 
+  const getStatusBadge = (actionType) => {
+    switch (actionType) {
+      case 'warn':
+        return { label: 'Warned', className: 'badge-warn' };
+      case 'suspend':
+        return { label: 'Suspended', className: 'badge-suspend' };
+      case 'ban':
+        return { label: 'Banned', className: 'badge-ban' };
+      case 'delete':
+        return { label: 'Deleted', className: 'badge-delete' };
+      case 'no_action':
+        return { label: 'No Action', className: 'badge-no-action' };
+      case 'none':
+      default:
+        return { label: 'Pending Review', className: 'badge-pending' };
+    }
+  };
+  
+    const { label, className } = getStatusBadge(report.action_type);
+
     const truncateString=(str)=> {
         return str.length > 20 ? str.substring(0, 17) + "..." : str;
     }
 
   return (
     <div className="report-card">
-    <div className="image-container">
+    <div className="report-image-container">
       <img src={report.image_url || '/placeholder.png'} alt="Reported" />
-      <span className="status-badge">Pending review</span>
+      <span className={`status-badge ${className}`}>{label}</span>
     </div>
     <div className="report-details">
         <div className='d-flex justify-content-between align-items-center mb-2'>

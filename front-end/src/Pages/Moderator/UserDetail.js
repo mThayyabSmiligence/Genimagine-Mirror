@@ -25,11 +25,9 @@ export default function UserDetail() {
 
     useEffect(() => {
         getUserDetails()
-        
     }, []);
 
-    
-
+   
 
     const getUserDetails = async () => {
         try{
@@ -40,6 +38,7 @@ export default function UserDetail() {
             console.log(err)    
         }
     }
+    
 
     const toggleDropdown = () => {
       setDropdownOpen(!dropdownOpen);
@@ -176,6 +175,10 @@ export default function UserDetail() {
 
       console.log(`Difference in minutes: ${diffMinutes}`);
       
+      if (diffMinutes <= 0) {
+        alert("Please select a valid suspension date.");
+        return;
+      }
     
       try {
         const response = await axiosModerator.post(`${user.user_id}/suspend`, {
@@ -326,7 +329,7 @@ export default function UserDetail() {
              <div className="dropdown " ref={dropdownRef}>
                 <button 
                   type="button" 
-                  className="  dropdown-toggle action-button button-wh dark-button-wh" 
+                  className="dropdown-toggle action-button button-wh dark-button-wh m-1" 
                   onClick={toggleDropdown}
                   aria-expanded={dropdownOpen}
                 >
@@ -398,7 +401,7 @@ export default function UserDetail() {
                             <button 
                               type="button"
                               className="dropdown-item text-danger" 
-                              onClick={() => handleDeleteUser(user.user_id)}
+                              onClick={() => handleDeleteUser(user.user_id)}                        
                             >
                               Delete
                             </button>

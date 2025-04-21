@@ -1,6 +1,7 @@
 const express = require('express')
 
 const { forgotPassword, userRegister, userLogin, emailOtpRequest, verifyEmailOtp, VerifyGoogleSignInToken, userLogout , resetPassword, testSendMail, verifyUser} = require('../controller/AuthenticationController');
+const { checkUserStatus } = require('../middle_ware/RestrictBannedUser');
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ router.route("/login").post(userLogin)
 router.route("/email-otp-request").post(emailOtpRequest)
 router.route('/email-otp-verify').post(verifyEmailOtp)
 router.route('/verify-google-token').post((req, res, next) => {
-    console.log("Received Token: ", req.body.token);
+    console.log("Received Token: ", req.body.token);    
     next();
 }, VerifyGoogleSignInToken);
 router.route('/register').post(userRegister);

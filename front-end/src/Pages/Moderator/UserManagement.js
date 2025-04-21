@@ -161,9 +161,9 @@ export default function UserManagement() {
                       )
                     }
 
-                  <button className='icon-button-style delete-icon' disabled={user.status == "deleted"} onClick={() => handleDeleteUser(user.user_id)}>
-                    <DeleteOutlineRoundedIcon  className='action-icon icon' title='delete user'/>
-                  </button>
+                    <button  disabled={user.status == "deleted"} className='icon-button-style delete-icon' onClick={() => handleDeleteUser(user.user_id)}>
+                      <DeleteOutlineRoundedIcon  className='action-icon icon' title='delete user'/>
+                    </button>
                 </td>
               </tr>
             ))}

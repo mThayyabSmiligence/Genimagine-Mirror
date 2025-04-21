@@ -13,6 +13,7 @@ const crypto = require('crypto')
 const admin = require('../config/firebaseConfig');
 const { generateUserVerificationToken, verifyUserWithVerificationToken, generateTestEmailService } = require('../service/AuthenticationService');
 const { deleteUser, getUserById } = require('../service/UserService');
+const { checkUserStatusService } = require('../service/RestrictBannedUserService');
 
 // user register api - api/v1/users/register
 
@@ -502,6 +503,8 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
         const query = "SELECT * FROM users WHERE email = ?"
         const [rows] = await db.execute(query, [useremail]);
 
+        
+
         console.log("logging in user")
         console.log(rows)
 
@@ -537,7 +540,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
 
                     const userData =await getUserById(response.insertId)
 
-                
+                   
 
                     res.status(200).json({
                         success: true,
@@ -566,6 +569,14 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 })
                 return
             }  
+        }
+        const statusCheck = await checkUserStatusService(rows[0].user_id);
+        if (!statusCheck.allowed) {
+            return res.status(403).json({
+                success: false,
+                message: statusCheck.message,
+                suspension_end: statusCheck.suspension_end || null
+            });
         }
 
         if(rows[0].register_type!="google-sign-in"){

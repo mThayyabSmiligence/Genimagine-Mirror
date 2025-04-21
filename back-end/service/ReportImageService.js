@@ -1,5 +1,6 @@
 const db = require('../config/connectDatabase');
 const { decrypt } = require('./EncrypDecrypt');
+const { deleteFromServer } = require('./UploadToServerService');
 const { banUserService, suspendUserService, warnUser } = require('./UserService');
 
 exports.getAllReportedImagesService = async() =>{
@@ -23,6 +24,7 @@ exports.getAllReportedImagesService = async() =>{
     LEFT JOIN generated_images gi ON ir.image_id = gi.image_id
     LEFT JOIN explore e ON ir.published_id = e.published_id
     LEFT JOIN users u ON gi.user_id = u.user_id
+    WHERE ir.action_type != 'no_action' -- Exclude reports with action_type = 'no_action'
     ORDER BY ir.reported_at DESC
     `;
     
@@ -225,9 +227,9 @@ exports.banReportedImageUserService = async (report_id, action_taken_by) => {
     if (!uploader) return { status: 404, success: false, message: "Report not found." };
 
     const result = await banUserService(uploader.user_id);
-
-    if (result.success) {
-        return result;
+    
+    if (result.success == false) {
+      return result;
     }
 
     await db.execute(
@@ -298,3 +300,108 @@ exports.warnReportedImageUserService = async (report_id, action_taken_by, action
     return { status: 500, success: false, message: "Failed to warn user", error: error.message };
   }
 };
+
+
+exports.markReportedImageAsNoAction = async (report_id, action_taken_by) => {
+  try {
+    const uploader = await getUploaderFromReport(report_id);
+    if (!uploader) return { status: 404, success: false, message: "Report not found." };
+
+    await db.execute(
+      `UPDATE image_reports 
+       SET action_type = 'no_action', action_taken_by = ?, action_taken_at = NOW() 
+       WHERE report_id = ?`,
+      [action_taken_by, report_id]
+    );
+
+    return {
+      status: 200,
+      success: true,
+      message: "Marked as no action required for reported image.",
+    };
+
+  } catch (error) {
+    return {
+      status: 500,
+      success: false,
+      message: "Failed to mark as no action",
+      error: error.message
+    };
+  }
+};
+
+// const deleteImageFromServer = async (filePath, userId, chatId, imageId) => {
+//   try {
+//     // Delete file from S3
+//     const params = {
+//       Bucket: process.env.AWS_BUCKET, // Your S3 bucket name
+//       Key: filePath, // File name
+//     };
+//     const command = new DeleteObjectCommand(params);
+//     await s3.send(command);
+//     return {status:200, success:true,message:"file is deleted"}
+//   } catch (err) {
+//     console.error('Error deleting file:', err);
+//     return {status:500,success:false,message:"error deleting file from amazon s3",error:err}
+//   }
+// }
+
+exports.deleteReportedImageService = async ( image_id, published_id, image_path , userId) => {
+  try {
+    
+    // const [rows] = await db.execute(
+    //   `SELECT 
+    //      gi.image_id, gi.prompt, gi.image_url AS generated_url, gi.created_at,
+    //      ex.published_id, ex.caption, ex.image_url AS explore_url, ex.published_date,
+    //      exm.likes_count, exm.views_count, exm.ranking_score,
+    //      ir.report_id, ir.report_details, ir.reported_at, ir.report_count
+    //    FROM generated_images gi
+    //    LEFT JOIN explore ex ON gi.image_id = ex.image_id
+    //    LEFT JOIN exploremetrics exm ON ex.published_id = exm.published_id
+    //    LEFT JOIN image_reports ir ON gi.image_id = ir.image_id OR ex.published_id = ir.published_id
+    //    WHERE gi.image_id = ? AND ex.published_id = ?`,
+    //   [image_id, published_id]
+    // );
+
+    // if (!rows.length) {
+    //   return {
+    //     status: 404,
+    //     success: false,
+    //     message: 'Image or related data not found.'
+    //   };
+    // }
+
+
+    
+
+    const s3DeleteResult = await deleteFromServer(image_path, userId, null, image_id);
+    if (!s3DeleteResult.success) {
+      throw new Error('Failed to delete image from AWS S3');
+    }
+
+    await db.execute('DELETE FROM explorelikes WHERE published_id = ?', [published_id]);
+
+    await db.execute('DELETE FROM exploremetrics WHERE published_id = ?', [published_id]);
+
+    await db.execute('DELETE FROM explore WHERE published_id = ?', [published_id]);
+
+    await db.execute('DELETE FROM image_reports WHERE image_id = ? OR published_id = ?', [image_id, published_id]);
+
+    await db.execute('DELETE FROM generated_images WHERE image_id = ?', [image_id]);
+
+    return {
+      status: 200,
+      success: true,
+      message: 'Image and all related metadata deleted successfully.',
+      // deleted_image_data: rows[0]
+    };
+  } catch (error) {
+    console.error('Service Error:', error);
+    return {
+      status: 500,
+      success: false,
+      message: 'Failed to delete image and metadata.',
+      error: error.message
+    };
+  }
+};  

@@ -2,6 +2,7 @@ import React from 'react'
 import '../../Css/WarnPopUp.css'
 
 export default function WarnPopUp({ reason, setReason, handleWarnUser, showWarnPopUp, onHide }){
+  console.log("WarnPopUp")
   return (
     <div className={`modal fade ${showWarnPopUp ? "show d-block" : "d-none"}`} tabIndex="-1" role="dialog">
           <div onClick={onHide} className="modal-backdrop fade show bgblur-container"></div>
@@ -10,7 +11,7 @@ export default function WarnPopUp({ reason, setReason, handleWarnUser, showWarnP
               <h5 className="mb-3">Warn User</h5>
     
               <div className="form-group mt-3">
-                <label htmlFor="reason">Reason</label>
+                <label htmlFor="reason" className='d-flex'>Reason:</label>
                 <textarea
                   id="reason"
                   className="form-control textarea-container"

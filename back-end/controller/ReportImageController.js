@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllReportedImagesService, getReportedImageDetailByReportIdService, handleReportedImageActionService, banReportedImageUserService, suspendReportedImageUserService, warnReportedImageUserService } = require('../service/ReportImageService');
+const { getAllReportedImagesService, getReportedImageDetailByReportIdService, banReportedImageUserService, suspendReportedImageUserService, warnReportedImageUserService, deleteImageAndReferences, deleteReportedImageService, markReportedImageAsNoAction } = require('../service/ReportImageService');
 
 exports.getAllReportedImagesController = async(req, res ) => { 
     const reportedImages = await getAllReportedImagesService();
@@ -51,3 +51,30 @@ exports.banReportedImageUserController = async (req, res) => {
     const result = await warnReportedImageUserService(report_id, action_taken_by, action_taken_by_role, reason);
     res.status(result.status).json(result);
   };
+
+  exports.noActionReportedImageController = async (req, res) => {
+    const { report_id } = req.params;
+    const action_taken_by = req.user?.id;
+  
+    const result = await markReportedImageAsNoAction(report_id, action_taken_by);
+    res.status(result.status).json(result);
+  };
+
+  exports.deleteReportedImageController = async (req, res) => {
+    
+    console.log("image_id")
+    const { image_id, published_id, image_path } = req.body;
+    const userId = req.user?.id;
+    console.log("image_id")
+
+
+    if (!image_id || !published_id || !image_path) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: image_id, published_id, or image_path'
+      });
+    }
+
+    const result = await deleteReportedImageService(image_id, published_id, image_path, userId);
+    res.status(result.status).json(result);
+  }

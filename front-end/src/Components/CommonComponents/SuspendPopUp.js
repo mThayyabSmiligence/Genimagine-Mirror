@@ -13,7 +13,7 @@ function SuspendPopUp({ onHide, showSuspendPopup, handleSuspendUser, suspendDate
           <DateTimePickerValue value={suspendDate} setValue={setSuspendDate} />
 
           <div className="form-group mt-3">
-            <label htmlFor="reason">Reason</label>
+            <label htmlFor="reason" className='d-flex'>Reason:</label>
             <textarea
               id="reason"
               className="form-control textarea-container"

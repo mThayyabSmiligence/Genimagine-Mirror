@@ -7,14 +7,13 @@ const checkUserStatus = async(req, res, next) => {
     try{
         const [user] = await db.execute('SELECT status, is_deleted FROM users WHERE user_id = ?',[userId])
         
-        console.log(user,"1" );
+
         if(user.length === 0){
             return res.status(404).json({ success: false, message: "User not found" });
         }
         
         const { status: userStatus, is_deleted } = user[0];
 
-        console.log(userStatus,"2" );
         if (is_deleted === 1) {
             return res.status(403).json({ success: false, message: "User is deleted" });
         }

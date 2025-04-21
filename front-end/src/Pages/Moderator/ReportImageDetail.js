@@ -1,32 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { axiosModerator } from '../../API\'s/axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { axiosModerator, axiosPrivate } from '../../API\'s/axios';
 import '../../Css/ReportImageDetail.css'
+import SuspendPopUp from '../../Components/CommonComponents/SuspendPopUp';
+import dayjs from 'dayjs'; 
+import WarnPopUp from '../../Components/CommonComponents/WarnPopUp';
+import DeleteReportImagePopUp from '../../Components/CommonComponents/DeleteReportImagePopUp';
 
 const ReportedImageDetail = () => {
+  const navigate = useNavigate();
   const { report_id } = useParams();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+  const [showWarnPopUp, setShowWarnPopUp] = useState(false);
+  const [showSuspendPopup, setShowSuspendPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [reason, setReason] = useState('');
+  const [suspendDate, setSuspendDate] = useState(dayjs()); 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  // const [showSuspendPopup, setShowSuspendPopup] = useState(false);
   // const [actionStatus, setActionStatus] = useState({ type: '', message: '' });
   // const [suspendMinutes, setSuspendMinutes] = useState('');
+  
+
+  const fetchReportDetails = async () => {
+    try {
+      const res = await axiosModerator.post(`getreportdetail/${report_id}`);
+      console.log('Report details now:', res.data);
+      setReport(res.data?.reportDetails[0]|| {});
+      setError('');
+    } catch (err) {
+      console.error('Error fetching report details:', err);
+      setError('Failed to load report details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchReportDetails = async () => {
-      try {
-        const res = await axiosModerator.post(`getreportdetail/${report_id}`);
-        console.log('Report details now:', res.data);
-        setReport(res.data?.reportDetails[0]|| {});
-        setError('');
-      } catch (err) {
-        console.error('Error fetching report details:', err);
-        setError('Failed to load report details');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReportDetails();
-  }, [report_id]);
+  }, [report_id,user]);
+
+  useEffect(() => {
+    if (report?.uploader_id) {
+      getUserDetails(report.uploader_id);
+    }
+  }, [report?.uploader_id]);
 
   // const takeAction = async (action) => {
   //   try {
@@ -82,6 +104,199 @@ const ReportedImageDetail = () => {
     </div>
   );
 
+  const getUserDetails = async (uploader_id) => {
+    try{
+        const response = await axiosModerator.get(`${uploader_id}/getuser`)
+        console.log(response.data)
+        setUser(response.data.user)
+    }catch(err){
+      console.error("Error fetching user details:", error);
+      alert("Failed to fetch user details.");   
+    }
+  }
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+const handleBanUser = async () => {
+  if (!user) {
+    alert("User details not loaded.");
+    return;
+  }
+
+  if (user.status === "banned") {
+    alert("User is already banned.");
+    return;
+  }
+
+  if (user.status === "deleted") {
+    alert("Cannot ban a deleted user.");
+    return;
+  }
+  try {
+      const response = await axiosModerator.post(`report/${report.report_id}/ban`);
+      alert("User has been banned.");
+      setUser((prev) => ({ ...prev, status: "banned" }));
+      console.log(response.data);
+  } catch (error) {
+      console.error("Error banning user:", error);
+      alert("Failed to ban user.");
+  }
+};
+
+const handleSuspendUser = async () => {
+  if (!user) {
+    alert("User details not loaded.");
+    return;
+  }
+
+  if (user.status === "banned") {
+    alert("Cannot suspend a banned user.");
+    return;
+  }
+
+  if (user.status === "deleted") {
+    alert("Cannot suspend a deleted user.");
+    return;
+  }
+
+  if (!reason.trim()) {
+    alert("Please provide a reason for suspension.");
+    return;
+  }
+  try {
+    const pickedDate = new Date(suspendDate.$d);
+
+    // Current time
+    const now = new Date();
+    console.log(now)
+
+    // Difference in milliseconds
+    const diffMs = pickedDate-now;
+
+    // Convert milliseconds to minutes
+    const diffMinutes = Math.floor(diffMs / 60000);
+
+    console.log(`Difference in minutes: ${diffMinutes}`);
+
+    if (diffMinutes <= 0) {
+      alert("Please select a valid suspension date.");
+      return;
+    }
+
+      const response = await axiosModerator.post(`/report/${report.report_id}/suspend`, {
+          minutes: diffMinutes,
+          reason,
+      });
+      alert("User has been suspended.");
+      setUser((prev) => ({ ...prev, status: "suspended" }));
+      setShowSuspendPopup(false);
+      console.log(response.data);
+  } catch (error) {
+      console.error("Error suspending user:", error);
+      alert("Failed to suspend user.");
+  }
+};
+
+const handleWarnUser = async () => {
+    if (!user) {
+      alert("User details not loaded.");
+      return;
+    }
+  
+    if (["banned", "suspended", "deleted"].includes(user.status)) {
+      alert(`Cannot warn a user who is ${user.status}.`);
+      return;
+    }
+  
+    if (!reason.trim()) {
+      alert("Please provide a reason for warning.");
+      return;
+    }
+
+    try {
+        const response = await axiosModerator.post(`/report/${report.report_id}/warn`, { reason });
+        alert("User has been warned.");
+        console.log(response.data);
+        setUser((prevUser) => ({
+          ...prevUser,
+          warning_data: {
+            ...prevUser.warning_data,
+            count: (prevUser.warning_data?.count || 0) + 1, // Increment warning count
+          },
+        }));
+        console.log(user);
+        setShowWarnPopUp(false);
+        console.log(response.data);
+    } catch (error) {
+        console.error("Error warning user:", error);
+        alert("Failed to warn user.");
+    }
+};
+
+const handleNoAction = async () => {
+  if (!report) {
+    alert("Report details not loaded.");
+    return;
+  }
+
+  if (report.action_type === "no_action") {
+    alert("This report is already marked as no action.");
+    return;
+  }
+
+  try {
+    const response = await axiosModerator.post(`/report/${report.report_id}/no-action`);
+    if (response.data.success) {
+      alert("Report marked as no action.");
+      console.log(response.data);
+
+      // Update the report state to reflect the no-action status
+      setReport((prevReport) => ({
+        ...prevReport,
+        action_type: "no_action",
+      }));
+      navigate('/moderator/reports'); 
+    } else {
+      alert("Failed to mark report as no action.");
+    }
+  } catch (error) {
+    console.error("Error marking report as no action:", error);
+    alert("Failed to mark report as no action.");
+  }
+};
+
+const handleDeleteImage = async () => {
+  if (!report?.image_id || !report?.published_id || !report?.generation_image_url) {
+    alert("Required image information is missing.");
+    return;
+  }
+
+  try {
+    const response = await axiosModerator.post(`/report/image/delete`, {
+      image_id: report.image_id,
+      published_id: report.published_id,
+      image_path: report.image_path,
+    });
+
+    alert("Image has been deleted successfully.");
+    console.log(response.data);
+
+    // Optional: update state to show "Image has been deleted"
+    setReport((prev) => ({
+      ...prev,
+      generation_image_url: null,
+      explore_image_url: null,
+    }));
+    setShowDeletePopup(false);
+    navigate('/moderator/reports'); 
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    alert("Failed to delete image.");
+  }
+};
+
   return (
     <div className="container p-6">
       <h2 className="mb-4 text-start">Reported Image Review</h2>
@@ -132,8 +347,8 @@ const ReportedImageDetail = () => {
                 <h5 className="mb-3 col-12">Uploader Information</h5>
 
                 <div className="uploader-info col-12 col-md-6 col-md-mb-3">
-                  <div className="mb-2">
-                    <span className="fw-bold">Username:</span> {report.uploader_username || 'N/A'}
+                  <div className="mb-2" title='view user detail'>
+                    <span className="fw-bold">Username:</span> <Link to={`/moderator/user-Detail/${report.uploader_id}`} className='link' >{report.uploader_username || 'N/A'}</Link>
                   </div>
                   <div className="mb-2">
                     <span className="fw-bold">User ID:</span> {report.uploader_id || 'N/A'}
@@ -147,6 +362,8 @@ const ReportedImageDetail = () => {
                       {report.warning_data?.count || 0}
                     </span>
                   </div>
+
+                  {/* <Link to={`/moderator/user-Detail/${report.uploader_id }`} className='uploader-view-detail-link text-danger link '>view-details</Link> */}
                 </div>
               </div>    
             </div>
@@ -158,8 +375,9 @@ const ReportedImageDetail = () => {
             <div className="report-details-header mb-3">
               <h5 className="mb-0">REPORTS</h5>
             </div>
-            <div className="card-body">
-              <div className='report-details-card'>
+
+            <div className="scrollable-report-details">
+              <div className="card-body report-details-card">
               {report.report_details && report.report_details.length > 0 ? (
               report.report_details.map((r, index) => (
                 <div key={index} className="border rounded inner-card-detail">
@@ -180,8 +398,104 @@ const ReportedImageDetail = () => {
               </div>
             </div>
           
+            <div className="action-dropdown-container justify-content-between me-4 mt-3">
+            <button
+              type="button"
+              className="no-action-btn me-2"
+              onClick={handleNoAction}
+              disabled={report?.action_type === "no_action"}
+            >
+              No Action
+            </button>
+            
+            <div className="dropdown" ref={dropdownRef}>
+              <button
+                type="button"
+                className="dropdown-toggle report-action-button"
+                onClick={toggleDropdown}
+                aria-expanded={dropdownOpen}
+              >
+                Select Action
+              </button>
+
+              {dropdownOpen && (
+                <ul className="dropdown-menu p-0" aria-labelledby="actionDropdown">
+                      <li>
+                        <button
+                          type="button"
+                          className="dropdown-item text-danger"
+                          onClick={() => handleBanUser(report.report_id)}
+                          disabled={user?.status === "banned" || user?.status === "deleted"}
+                        >
+                          Ban User
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          className="dropdown-item text-warning"
+                          onClick={() => setShowSuspendPopup(true)}
+                          disabled={["banned", "deleted", "suspended"].includes(user?.status)}
+                        >
+                          Suspend User
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          className="dropdown-item text-secondary"
+                          onClick={() => setShowWarnPopUp(true)}
+                          disabled={["banned", "deleted", "suspended"].includes(user?.status)}
+                        >
+                          Warn User
+                        </button>
+                      </li>
+                  {report?.image_id && (
+                    <li>
+                      <button
+                        type="button"
+                        className="dropdown-item text-danger"
+                        onClick={() => setShowDeletePopup(true)}
+                      >
+                        Delete Image
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+      {showSuspendPopup && (
+        <SuspendPopUp
+            onHide={() => setShowSuspendPopup(false)}
+            handleSuspendUser={handleSuspendUser}
+            showSuspendPopup={showSuspendPopup}
+            suspendDate={suspendDate}
+            setSuspendDate={setSuspendDate}
+            reason={reason}
+            setReason={setReason}
+        />
+      )}
+
+      {showWarnPopUp && (
+          <WarnPopUp
+              onHide={() => setShowWarnPopUp(false)}
+              handleWarnUser={handleWarnUser}
+              reason={reason}
+              showWarnPopUp = {showWarnPopUp}    
+              setReason={setReason}
+          />
+      )}
+      {showDeletePopup && (
+        <DeleteReportImagePopUp
+          onHide={() => setShowDeletePopup(false)}
+          handleDeleteImage={handleDeleteImage}
+          showDeletePopUp={showDeletePopup}
+        />
+        
+      )}
     </div>
   );
 };
