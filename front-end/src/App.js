@@ -40,6 +40,7 @@ import UserManagement from './Pages/Moderator/UserManagement';
 import UserDetail from './Pages/Moderator/UserDetail';
 import Reports from './Pages/Moderator/Reports';
 import ReportImageDetail from './Pages/Moderator/ReportImageDetail';
+import Feedbacks from './Pages/Moderator/Feedbacks';
 
 
 function App() {
@@ -135,6 +136,7 @@ function App() {
                 <Route path = "user-Detail/:user_id" element={<UserDetail/>} ></Route>
                 <Route path = "reports" element={<Reports/>} ></Route>
                 <Route path= "report-image-detail/:report_id" element={<ReportImageDetail/>}></Route>
+                <Route path= "feedbacks" element={<Feedbacks/>}></Route>
                 {/* <Route path = "image-management" element={<div>Image Management</div>} ></Route>
                 <Route path = "model-management" element={<div>Model Management</div>} ></Route> */}
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>

@@ -54,7 +54,15 @@ export default function ModeratorNavbar() {
                             <div className={`nav-list-item d-flex align-items-center ${path=="/moderator/reports"&&'active'}`}>
 
                                 
-                                <div to={"/reports" } className='link nav-options ms-1'>Reports</div>
+                                <div to={"/moderator/reports" } className='link nav-options ms-1'>Reports</div>
+                            </div>
+                        </Link>
+
+                        <Link to={"/moderator/feedbacks"} className='link' id='report-link'>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/moderator/feedbacks"&&'active'}`}>
+
+                                
+                                <div to={"/moderator/feedbacks" } className='link nav-options ms-1'>Feedbacks</div>
                             </div>
                         </Link>
 

@@ -6,6 +6,7 @@ const { buyCreditsPackageController } = require('../controller/CreditController'
 const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
+const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -46,6 +47,7 @@ router.route("/explore/:published_id").delete(deleteExploreImageByPublishedIdCon
 
 router.route('/explore/edit-caption/:published_id').post(editCaptionController)
 router.route('/report-image').post(ImageReportController)
- 
+router.route("/submitfeedback").post(submitFeedbackController);
+
 
 module.exports = router;
