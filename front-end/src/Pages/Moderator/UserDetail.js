@@ -21,14 +21,25 @@ export default function UserDetail() {
   const [showSuspendPopup, setShowSuspendPopup] = useState(false);
   const [showWarnPopUp, setShowWarnPopUp] = useState(false)
 
-
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setDropdownOpen(false);
+        }
+      };
+    
+      document.addEventListener("mousedown", handleClickOutside);
+    
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
     useEffect(() => {
         getUserDetails()
     }, []);
 
    
-
     const getUserDetails = async () => {
         try{
             const response = await axiosModerator.get(`${user_id}/getuser`)
@@ -39,12 +50,9 @@ export default function UserDetail() {
         }
     }
     
-
     const toggleDropdown = () => {
       setDropdownOpen(!dropdownOpen);
     };
-
-   
 
     const handleVerificationStatus = (is_verified) => {
         if(is_verified === 0) {

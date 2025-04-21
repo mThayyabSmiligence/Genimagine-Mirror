@@ -25,6 +25,19 @@ const ReportedImageDetail = () => {
   // const [actionStatus, setActionStatus] = useState({ type: '', message: '' });
   // const [suspendMinutes, setSuspendMinutes] = useState('');
   
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const fetchReportDetails = async () => {
     try {
