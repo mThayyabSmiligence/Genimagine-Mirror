@@ -15,10 +15,6 @@ exports.respondToFeedbackController = async (req, res) => {
     const moderatorId = req.user.id;
     const moderatorName = req.user.username;
 
-    if (!response || response.trim().length === 0) {
-        return res.status(400).json({ message: "Response is required" });
-    }
-
     // const wordCount = response.trim().split(/\s+/).length;
     // if (wordCount > 300) {
     //     return res.status(400).json({ message: "Response should not exceed 300 words" });
@@ -75,4 +71,4 @@ exports.submitFeedbackController = async (req, res) => {
   
     const result = await submitFeedbackService({ userId, category, message });
     return res.status(result.status).json(result);
-  };
+};

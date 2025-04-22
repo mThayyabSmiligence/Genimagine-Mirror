@@ -1,4 +1,5 @@
 const db = require('../config/connectDatabase');
+const { sendMailHTML } = require('./emailService');
 
 exports.getAllFeedbacksService = async() => {
     try{
@@ -32,28 +33,80 @@ exports.getAllFeedbacksService = async() => {
   
   exports.sendResponse = async(id, response, moderatorId, moderatorName) => {
     try{
-        const query = `
-        UPDATE user_feedback 
-        SET response = ?, 
-            status = 'reviewed',
-            response_by_id = ?,
-            response_by_name = ?
-        WHERE feedback_id = ?`;
 
-        const [rows] = await db.execute(query, [response, moderatorId, moderatorName, id]);
+        if (!moderatorId || !moderatorName) {
+            return res.status(400).json({ message: "Moderator ID and name are required" });
+        }
+    
+        if (!id) {
+            return res.status(400).json({ message: "Feedback ID is required" });
+        }
+    
+        if (!response || response.trim().length === 0) {
+            return res.status(400).json({ message: "Response is required" });
+        }
 
-        if (rows.affectedRows === 0) {
+        const [feedbackData] = await db.execute(
+            `SELECT uf.feedback_id, uf.message, uf.category, uf.user_id, u.email, u.username
+             FROM user_feedback uf
+             JOIN users u ON uf.user_id = u.user_id
+             WHERE uf.feedback_id = ?`,
+            [id]
+        );
+
+        if (!feedbackData || feedbackData.length === 0) {
             return {
                 status: 404,
                 message: "Feedback not found",
             };
         }
 
-        console.log("Feedback response sent successfully:", rows);
+        const feedback = feedbackData[0];
+
+        const updateQuery = `
+            UPDATE user_feedback 
+            SET response = ?, 
+                status = 'reviewed',
+                response_by_id = ?,
+                response_by_name = ?
+            WHERE feedback_id = ?`;
+
+        const [rows] = await db.execute(updateQuery, [response, moderatorId, moderatorName, id]);
+
+        if (rows.affectedRows === 0) {
+            return {
+                status: 404,
+                message: "Failed to update feedback response",
+            };
+        }
+
+        const subject = `Response to your ${feedback.category} on Genimagine`;
+        const htmlContent = `
+            <p>Hi <strong>${feedback.username}</strong>,</p>
+            <p>Thank you for your <strong>${feedback.category}</strong>:</p>
+            <blockquote style="background: #f8f8f8; padding: 10px; border-left: 4px solid #007bff;">
+                ${feedback.message}
+            </blockquote>
+            <p><strong>Moderator's response:</strong></p>
+            <blockquote style="background: #f0f0f0; padding: 10px; border-left: 4px solid #28a745;">
+                ${response}
+            </blockquote>
+            <p>We appreciate your feedback and your help in improving Genimagine.</p>
+            <p><strong>– Genimagine Moderator Team</strong></p>
+        `;
+
+        const emailSent = await sendMailHTML(feedback.email, subject, htmlContent);
+
+        if (!emailSent) {
+            return {
+                status: 500,
+                message: "Feedback updated, but failed to send email",
+            };
+        }
+
         return {
             status: 200,
-            message: "Feedback response sent successfully",
-            rows
+            message: "Feedback responded and email sent successfully",
         };
     }catch(error) {
         console.error("Error sending feedback response:", error);

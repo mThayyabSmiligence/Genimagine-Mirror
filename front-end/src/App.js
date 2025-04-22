@@ -41,6 +41,7 @@ import UserDetail from './Pages/Moderator/UserDetail';
 import Reports from './Pages/Moderator/Reports';
 import ReportImageDetail from './Pages/Moderator/ReportImageDetail';
 import Feedbacks from './Pages/Moderator/Feedbacks';
+import { Slide, ToastContainer, toast } from 'react-toastify';
 
 
 function App() {
@@ -77,7 +78,19 @@ function App() {
   return (
     <div className="App">
 
-          
+          <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover={false}
+            theme="light"
+            transition={Slide}
+          />
           <Routes>
             <Route element={<HomeLayout></HomeLayout>}>
                 <Route path='' element={<LandingPage/>}></Route>
