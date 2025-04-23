@@ -16,7 +16,7 @@ function FeedbackPopUp({onHide, showFeedbackPopUp, handleSendFeedback}) {
     }
 
     const letterCount = message.length;
-    if (letterCount <= 15 || letterCount >= 300) {
+    if (letterCount < 15 || letterCount > 300) {
       setValidateMessage(true);
       return;
     }
@@ -78,7 +78,7 @@ function FeedbackPopUp({onHide, showFeedbackPopUp, handleSendFeedback}) {
               ></textarea>
               {validateMessage ? (
                 <div className="invalid-feedback">
-                  *Message must be between 20 and 300 words.
+                  *Message must be between 15 and 300 words.
                 </div>
               ):
               null

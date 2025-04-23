@@ -19,7 +19,7 @@ exports.getAllFeedbacksService = async() => {
         return {
             status: 200,
             message: "Feedbacks fetched successfully",   
-            rows: rows[0]
+            rows: rows
         }
     } catch(error) {
         console.error("Error fetching feedbacks:", error);
@@ -56,6 +56,7 @@ exports.getAllFeedbacksService = async() => {
 
         if (!feedbackData || feedbackData.length === 0) {
             return {
+                succuss: false,
                 status: 404,
                 message: "Feedback not found",
             };
@@ -68,13 +69,15 @@ exports.getAllFeedbacksService = async() => {
             SET response = ?, 
                 status = 'reviewed',
                 response_by_id = ?,
-                response_by_name = ?
+                response_by_name = ?,
+                response_at = NOW()
             WHERE feedback_id = ?`;
 
         const [rows] = await db.execute(updateQuery, [response, moderatorId, moderatorName, id]);
 
         if (rows.affectedRows === 0) {
             return {
+                success: false,
                 status: 404,
                 message: "Failed to update feedback response",
             };
@@ -99,18 +102,21 @@ exports.getAllFeedbacksService = async() => {
 
         if (!emailSent) {
             return {
+                success: false,
                 status: 500,
                 message: "Feedback updated, but failed to send email",
             };
         }
 
         return {
+            success: true,
             status: 200,
             message: "Feedback responded and email sent successfully",
         };
     }catch(error) {
         console.error("Error sending feedback response:", error);
         return {
+            success: false,
             status: 500,
             message: "Internal server error",
             error: error.message
@@ -192,8 +198,6 @@ exports.submitFeedbackService = async({ userId, category, message }) => {
             message: "All fields are required",
         };
     }
-
-
 
     if (!message || message.trim().length === 0) {
         return res.status(400).json({ message: "Message is required" });

@@ -1,0 +1,28 @@
+.feedback-response-container{
+    outline: none!important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+}
+
+.send-response-btn{
+    padding: 5px 15px;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+.notice-feedback-btn{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: black;
+
+    /* box-shadow: 1px 1.5px rgba(0, 0, 0, 0.1); */
+    cursor: pointer;
+    outline: none;
+    text-transform: capitalize;
+    transition: border-color 0.3s ease-in-out;
+}

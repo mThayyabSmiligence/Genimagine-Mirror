@@ -1,0 +1,85 @@
+.status-dropdown {
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+    text-transform: capitalize;
+    transition: border-color 0.3s ease-in-out;
+  }
+  
+  .status-dropdown option[disabled] {
+    color: gray;
+    background-color: #f5f5f5;
+  }
+
+  .status-dropdown.pending {
+    background-color: #fdecea;
+    color: #d32f2f; /* red */
+    border-color: #f5c6cb;
+  }
+  
+  .status-dropdown.in_progress {
+    background-color: #fff3e0;
+    color: #ef6c00; /* orange */
+    border-color: #ffe0b2;
+  }
+  
+  .status-dropdown.reviewed {
+    background-color: #e3f2fd;
+    color: #1565c0; /* greenish (reviewed) */
+    border-color:  #bbdefb;
+  }
+  /* #2e7d32 */
+
+  .status-dropdown.resolved {
+    background-color:#e8f5e9 ;
+    color:#388e3c ; /* deep green */
+    border-color:#c8e6c9 ;
+  }
+
+.status-option{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: black;
+    cursor: pointer;
+    outline: none;
+    text-transform: capitalize;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  .feedback-response-btn{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: white;
+    background-color: rgb(32, 69, 102);
+    /* box-shadow: 1px 1.5px rgba(0, 0, 0, 0.1); */
+    cursor: pointer;
+    outline: none;
+    text-transform: capitalize;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  .user-message-container{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    
+  }
+
+  .moderator-response-container{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
