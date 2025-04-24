@@ -8,6 +8,7 @@ exports.getAllFeedbacksService = async() => {
 
         if (rows.length === 0) {
             return {
+                success: false,
                 status: 404,
                 message: "No feedbacks found",
                 
@@ -17,6 +18,7 @@ exports.getAllFeedbacksService = async() => {
         console.log("Feedbacks fetched successfully:", rows[0]);
 
         return {
+            success: true,
             status: 200,
             message: "Feedbacks fetched successfully",   
             rows: rows
@@ -24,6 +26,7 @@ exports.getAllFeedbacksService = async() => {
     } catch(error) {
         console.error("Error fetching feedbacks:", error);
         return {
+            success: false,
             status: 500,
             message: "Internal server error",
             error: error.message
@@ -131,6 +134,7 @@ exports.updateFeedbackStatusService = async(id, status) => {
 
         if (rows.affectedRows === 0) {
             return {
+                success: false,
                 status: 404,
                 message: "Feedback not found",
             };
@@ -138,6 +142,7 @@ exports.updateFeedbackStatusService = async(id, status) => {
 
         console.log("Feedback status updated successfully:", rows);
         return {
+            success: true,
             status: 200,
             message: "Feedback status updated successfully",
             rows
@@ -145,6 +150,7 @@ exports.updateFeedbackStatusService = async(id, status) => {
     }catch(error) {
         console.error("Error updating feedback status:", error);
         return {
+            success: false,
             status: 500,
             message: "Internal server error",
             error: error.message
@@ -168,6 +174,7 @@ exports.escalateFeedbackService = async(id, note, moderatorId, moderatorName) =>
 
     if (rows.affectedRows === 0) {
         return {
+            success: false,
             status: 404,
             message: "Feedback not found",
         };
@@ -176,6 +183,7 @@ exports.escalateFeedbackService = async(id, note, moderatorId, moderatorName) =>
     console.log("Feedback escalated successfully:", rows);
 
     return {
+        success: true,
         status: 200,
         message: "Feedback escalated successfully",
         rows
@@ -184,6 +192,7 @@ exports.escalateFeedbackService = async(id, note, moderatorId, moderatorName) =>
     }catch(error) {
         console.error("Error escalating feedback:", error);
         return {
+            success: false,
             status: 500,
             message: "Internal server error",
             error: error.message
@@ -194,6 +203,7 @@ exports.escalateFeedbackService = async(id, note, moderatorId, moderatorName) =>
 exports.submitFeedbackService = async({ userId, category, message }) => {
     if (!userId || !category || !message) {
         return {
+            success: false,
             status: 400,
             message: "All fields are required",
         };
@@ -210,14 +220,15 @@ exports.submitFeedbackService = async({ userId, category, message }) => {
 
     try{
         const query = `
-          INSERT INTO user_feedback (user_id, category, message)
-          VALUES (?, ?, ?)
+          INSERT INTO user_feedback (user_id, category, message, status)
+          VALUES (?, ?, ?, ?)
         `;
         
-        const [submitFeedback] = await db.execute(query, [userId, category, message]);
+        const [submitFeedback] = await db.execute(query, [userId, category, message, "pending"]);
 
         console.log("Feedback submitted successfully:", submitFeedback);
         return {
+            success: true,
             status: 200,
             message: "Feedback submitted successfully",
             // feedbackId: submitFeedback.insertId\\
@@ -226,6 +237,7 @@ exports.submitFeedbackService = async({ userId, category, message }) => {
     } catch(error) {
         console.error("Error submitting feedback:", error);
         return {
+            success: false,
             status: 500,
             message: "Internal server error",
             error: error.message

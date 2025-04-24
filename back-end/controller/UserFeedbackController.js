@@ -1,4 +1,5 @@
 const { getAllFeedbacksService, sendResponse, escalateFeedbackService, updateFeedbackStatusService, submitFeedbackService } = require("../service/UserFeedbackService");
+const db = require('../config/connectDatabase');
 
 // get all feedbacks
 exports.getAllFeedbacksController = async(req, res) => {
@@ -28,16 +29,46 @@ exports.respondToFeedbackController = async (req, res) => {
 exports.updateFeedbackStatusController = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-  
+
+    const categoryStatusMap = {
+        feature_request: ["pending", "in_progress", "reviewed"],
+        complaint: ["pending", "in_progress", "reviewed", "resolved"],
+        bug_report: ["pending", "in_progress", "reviewed", "resolved"],
+      };
+    
+      try {
+        const [rows] = await db.execute(
+          "SELECT category FROM user_feedback WHERE feedback_id = ?",
+          [id]
+        );
+    
+        if (!rows.length) {
+          return res.status(404).json({ message: "Feedback not found" });
+        }
+    
+        const category = rows[0].category;
+        const allowedStatuses = categoryStatusMap[category];
+    
+        if (!allowedStatuses.includes(status)) {
+          return res.status(400).json({
+            message: `Invalid status '${status}' for category '${category}'`,
+            allowedStatuses,
+          });
+        }
+
     // Optional: validate status
-    const validStatuses = ["pending", "in_progress", "reviewed", "resolved"];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status value" });
-    }
+    // const validStatuses = ["pending", "in_progress", "reviewed", "resolved"];
+    // if (!validStatuses.includes(status)) {
+    //   return res.status(400).json({ message: "Invalid status value" });
+    // }
   
     const updateFeedbackStatus =  await updateFeedbackStatusService(id, status);
 
-    return res.status(updateFeedbackStatus.status).json(updateFeedbackStatus);   
+    return res.status(updateFeedbackStatus.status).json(updateFeedbackStatus);  
+    } catch (error) {
+        console.error("Error updating feedback status:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    } 
 };
   
 

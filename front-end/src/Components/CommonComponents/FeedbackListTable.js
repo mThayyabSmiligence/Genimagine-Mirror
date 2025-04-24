@@ -11,19 +11,24 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import TablePagination from '@mui/material/TablePagination';
 import { axiosModerator } from '../../API\'s/axios';
 import '../../Css/FeedbackListTable.css'
 import { useState } from 'react';
 import FeedbackResponsePopUp from './FeedbackResponsePopUp';
 import { useEffect } from 'react';
+import EscalationPopUp from './EscalationPopUp';
 
 
 function Row({row}) {
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = useState(row.status || "pending");
   const [showResponsePopup, setShowResponsePopup] = useState(false);
+  const [showEscalationPopup, setShowEscalationPopup] = useState(false);
+ 
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
@@ -55,8 +60,31 @@ function Row({row}) {
     }
   };
 
+  const handleEscalationSubmit = async(feedbackId, escalationNote) => {
+    try {
+      const response = await axiosModerator.post(`escalate/${feedbackId}`, {
+        escalation_note: escalationNote,
+      });
+      if (response.data.success) {
+        setStatus('in_progress');
+        setShowEscalationPopup(false);
+        console.log('Escalation submitted:', response.data);
+      }
+    } catch (err) {
+      console.error('Error escalating feedback:', err);
+    }
+  };
 
-console.log("Row data:", row);
+  const categoryStatusMap = {
+    feature_request: ["pending", "in_progress", "reviewed"],
+    complaint: ["pending", "in_progress","reviewed", "resolved"],
+    bug_report: ["pending", "in_progress","reviewed", "resolved"],
+  };
+  
+  // Get allowed statuses for this feedback category
+  const allowedStatuses = categoryStatusMap[row.category] || [];
+
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -67,10 +95,10 @@ console.log("Row data:", row);
         <TableCell align="center">{row.user_id}</TableCell>
         <TableCell align="center">{row.category}</TableCell>
         <TableCell align="center">
-        <select
+        {/* <select
             value={status}
             onChange={handleStatusChange}
-             className={`status-dropdown ${status}`}
+            className={`status-dropdown ${status}`}
           >
             {["pending", "in_progress", "reviewed", "resolved"].map((option) => (
             <option
@@ -82,13 +110,31 @@ console.log("Row data:", row);
                 {option.replace(/_/g, " ").replace(/^\w/, c => c.toUpperCase())}
             </option>
             ))}
-        </select>
+        </select> */}
+
+          <select
+            value={status}
+            onChange={handleStatusChange}
+            className={`status-dropdown ${status}`}
+            title='feedback status'
+          >
+            {allowedStatuses.map((option) => (
+              <option
+                className="status-option"
+                key={option}
+                value={option}
+                disabled={option === status}
+              >
+                {option.replace(/_/g, " ").replace(/^\w/, c => c.toUpperCase())}
+              </option>
+            ))}
+          </select>
         </TableCell>
         <TableCell align="center">
-            <button onClick={() => setShowResponsePopup(true)} className='feedback-response-btn'>Response</button>
+            <button title='respond to feedback' onClick={() => setShowResponsePopup(true)} className='feedback-response-btn'>Response</button>
         </TableCell>
         <TableCell align="center">
-            <button className='notice-feedback-btn'>notify</button>
+            <button title='notice to admin' onClick={() => setShowEscalationPopup(true)} className='notice-feedback-btn'>notify</button>
         </TableCell>
         <TableCell align='center'>
           <IconButton
@@ -99,37 +145,42 @@ console.log("Row data:", row);
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        
+        </TableCell>  
       </TableRow>
+
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Feedback Details
+                {/* Feedback Details */}
               </Typography>
-              <Table aria-label="purchases">
-                {/* <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead> */}
-                <TableBody>
-                  <div className='user-message-container mb-2'>
-                    <div className='p-2 '>
-                        <p>{row.message}</p>
-                    </div>
-                  </div>
-                  <div className='moderator-response-container'>
-                    <div className='p-2 '>
-                        <p>{row.response}</p>
-                    </div>
-                  </div>            
-                </TableBody>
+              <Table aria-label="purchases">     
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  {/* User Message Section */}
+                  <Box sx={{ flex: 1, minWidth: '300px' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                      User Message
+                    </Typography>
+                    <Paper elevation={1} sx={{ padding: 2, mt: 1 }}>
+                      <Typography variant="body2">
+                        {row.message || "No message provided by the user."}
+                      </Typography>
+                    </Paper>
+                  </Box>
+
+                  {/* Moderator Response Section */}
+                  <Box sx={{ flex: 1, minWidth: '300px' }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                      Moderator Response
+                    </Typography>
+                    <Paper elevation={1} sx={{ padding: 2, mt: 1 }}>
+                      <Typography variant="body2">
+                        {row.response || "No response provided yet."}
+                      </Typography>
+                    </Paper>
+                  </Box>
+                </Box>
               </Table>
             </Box>
           </Collapse>
@@ -142,6 +193,15 @@ console.log("Row data:", row);
           show={showResponsePopup}
           feedbackId={row.feedback_id}
           handleResponseSubmit={handleResponseSubmit}
+        />
+      )}
+
+      {showEscalationPopup && (
+        <EscalationPopUp
+          onHide={() => setShowEscalationPopup(false)}
+          show={showEscalationPopup}
+          feedbackId={row.feedback_id}
+          handleEscalationSubmit={handleEscalationSubmit}
         />
       )}
     </React.Fragment>
@@ -170,13 +230,12 @@ export default function CollapsibleTable({feedbacks}) {
           </TableRow>
         </TableHead>
         <TableBody>
-  {feedbacks.length > 0 && 
-    [...feedbackList].reverse().map((feedback) => (
-      <Row key={feedback.feedback_id} row={feedback} />
-    ))
-  }
-</TableBody>
-
+          {feedbacks.length > 0 && 
+            [...feedbackList].reverse().map((feedback) => (
+              <Row key={feedback.feedback_id} row={feedback} />
+            ))
+          }
+        </TableBody>
       </Table>
     </TableContainer>
   );

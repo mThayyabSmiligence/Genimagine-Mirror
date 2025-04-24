@@ -513,3 +513,11 @@ input[type="number"] {
     box-shadow: none;
     border: 1px solid rgb(0, 0, 0);
 }
+
+.send-response-btn, .send-escalation-btn{
+    padding: 5px 15px;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 10px;
+}

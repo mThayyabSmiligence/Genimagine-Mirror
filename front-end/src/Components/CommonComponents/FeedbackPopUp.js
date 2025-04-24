@@ -6,12 +6,19 @@ function FeedbackPopUp({onHide, showFeedbackPopUp, handleSendFeedback}) {
     const [category, setCategory] = useState('bug_report');
     const [message, setMessage] = useState('');
     const [validateMessage,setValidateMessage]=useState(false)
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!category || !message) {
         console.error('Category and message are required fields.');
+        return;
+    }
+
+    if (!message.trim()) {
+        setValidateMessage(true);
+        setErrorMessage('Message is required.');
         return;
     }
 
@@ -33,11 +40,15 @@ function FeedbackPopUp({onHide, showFeedbackPopUp, handleSendFeedback}) {
     
         const letterCount = value.length;
 
-        console.log("word count",letterCount)
-        if (letterCount >= 15 && letterCount <= 300) {
-          setValidateMessage(false); 
+        if (!value.trim()) {
+            setValidateMessage(true); 
+            setErrorMessage('Message is required.');
+        } else if (letterCount >= 15 && letterCount <= 300) {
+            setValidateMessage(false);
+            setErrorMessage('');
         } else {
-          setValidateMessage(true); 
+            setValidateMessage(true);
+            setErrorMessage('Message must be between 15 and 300 characters.');
         }
       };
 

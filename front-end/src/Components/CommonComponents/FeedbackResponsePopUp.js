@@ -12,21 +12,21 @@ function FeedbackResponsePopUp({onHide, show, feedbackId, handleResponseSubmit }
       if (!responseMessage) {
         console.error('Response message is required.');
         return;
-    }
+      }
 
-    if (!responseMessage.trim()) {
+      if (!responseMessage.trim()) {
+          setValidateMessage(true);
+          setErrorMessage('Response message is required.');
+          return;
+        }
+    
+      const letterCount = responseMessage.length;
+      if (letterCount < 15 || letterCount > 300) {
         setValidateMessage(true);
-        setErrorMessage('Response message is required.');
         return;
       }
-  
-    const letterCount = responseMessage.length;
-    if (letterCount < 15 || letterCount > 300) {
-      setValidateMessage(true);
-      return;
-    }
 
-    setValidateMessage(false);
+      setValidateMessage(false);
   
       // Call the API handler
       handleResponseSubmit(feedbackId, responseMessage);
