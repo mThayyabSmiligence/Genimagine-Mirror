@@ -264,28 +264,32 @@ exports.getUserNameByIdController=async(req,res)=>{
 // ban-user
 exports.banUserController = async(req,res)=>{
     const {user_id} = req.params;
-    const banUser = await banUserService(user_id);
+    const changedBy = req.user?.id;
+    const banUser = await banUserService(user_id, changedBy);
     return res.status(banUser.status).json(banUser)
 }
 
 exports.unbanUserController = async(req,res)=>{
     const {user_id} = req.params;
-    const unbanUser = await unbanUserService(user_id);
+    const changedBy = req.user?.id;
+    const unbanUser = await unbanUserService(user_id, changedBy);
     return res.status(unbanUser.status).json(unbanUser)
 }
 
 exports.suspendUserController = async(req,res)=> {
     const {user_id} = req.params;
     const {minutes, reason} = req.body;
+    const changedBy = req.user?.id;
 
-    const suspendUser = await suspendUserService(user_id, minutes, reason);
+    const suspendUser = await suspendUserService(user_id, minutes, reason, changedBy );
     return res.status(suspendUser.status).json(suspendUser);
 }
 
 exports.unsuspendUserController = async (req, res) => {
     const { user_id } = req.params;
+    const changedBy = req.user?.id;
 
-    const unsuspendUser = await unsuspendUserService(user_id);
+    const unsuspendUser = await unsuspendUserService(user_id, changedBy);
     return res.status(unsuspendUser.status).json(unsuspendUser);
 };
 
@@ -314,8 +318,9 @@ exports.warnUserController = async (req, res) => {
 
 exports.deleteUserController = async(req,res) => {
     const {user_id} = req.params;
+    const changedBy = req.user?.id;
 
-    const deleteUser = await deleteUserService(user_id);
+    const deleteUser = await deleteUserService(user_id, changedBy);
     return res.status(deleteUser.status).json(deleteUser);
 }
 

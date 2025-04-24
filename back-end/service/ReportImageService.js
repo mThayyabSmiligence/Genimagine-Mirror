@@ -226,7 +226,7 @@ exports.banReportedImageUserService = async (report_id, action_taken_by) => {
     const uploader = await getUploaderFromReport(report_id);
     if (!uploader) return { status: 404, success: false, message: "Report not found." };
 
-    const result = await banUserService(uploader.user_id);
+    const result = await banUserService(uploader.user_id, action_taken_by);
     
     if (result.success == false) {
       return result;
@@ -250,10 +250,15 @@ exports.banReportedImageUserService = async (report_id, action_taken_by) => {
 
 exports.suspendReportedImageUserService = async (report_id, action_taken_by, { minutes, reason }) => {
   try {
+    if (!minutes || !reason) {
+      console.error("Suspension requires 'minutes' and 'reason'.");
+      return { status: 400, success: false, message: "Suspension requires 'minutes' and 'reason'." };
+    }
+
     const uploader = await getUploaderFromReport(report_id);
     if (!uploader) return { status: 404, success: false, message: "Report not found." };
 
-    const result = await suspendUserService(uploader.user_id, minutes, reason);
+    const result = await suspendUserService(uploader.user_id, minutes, reason, action_taken_by);
 
     if (result.success == false) {
         return result;
@@ -276,6 +281,12 @@ exports.suspendReportedImageUserService = async (report_id, action_taken_by, { m
 
 exports.warnReportedImageUserService = async (report_id, action_taken_by, action_taken_by_role, reason) => {
   try {
+
+    if (!reason) {
+      console.error("Warning requires 'reason'.");
+      return { status: 400, success: false, message: "Warning requires 'reason'." };
+    }
+
     const uploader = await getUploaderFromReport(report_id);
     if (!uploader) return { status: 404, success: false, message: "Report not found." };
 
