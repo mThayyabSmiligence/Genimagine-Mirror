@@ -20,7 +20,7 @@ router.route("/report/:report_id/ban").post(banReportedImageUserController);
 router.route("/report/:report_id/suspend").post(suspendReportedImageUserController);
 router.route("/report/:report_id/warn").post(warnReportedImageUserController);
 router.route("/report/:report_id/no-action").post(noActionReportedImageController);
-router.route("/report/image/delete").post(deleteReportedImageController);
+router.route("/report/image/delete/:report_id").post(deleteReportedImageController);
 
 
 // feedbacks management

@@ -357,7 +357,7 @@ exports.markReportedImageAsNoAction = async (report_id, action_taken_by) => {
 //   }
 // }
 
-exports.deleteReportedImageService = async ( image_id, published_id, image_path , userId) => {
+exports.deleteReportedImageService = async (report_id, image_id, published_id, image_path , userId, reason  ) => {
   try {
     
     // const [rows] = await db.execute(
@@ -383,12 +383,33 @@ exports.deleteReportedImageService = async ( image_id, published_id, image_path 
     // }
 
 
-    
+    // const [reportRows] = await db.execute(
+    //   `SELECT report_details FROM image_reports WHERE image_id = ? OR published_id = ? LIMIT 1`,
+    //   [image_id, published_id]
+    // );
+
+    // if (reportRows.length === 0) {
+    //   return {
+    //     status: 404,
+    //     success: false,
+    //     message: 'Report not found for the given image_id or published_id.',
+    //   };
+    // }
+
+    // console.log(reportRows, "check details")
+    // const reportedBy = reportRows[0].user_id;
+
+    await db.execute(
+      `INSERT INTO moderator_image_actions (image_id, action, reason, report_id, deleted_by)
+       VALUES (?, 'delete', ?, ?, ?)`,
+      [image_id, reason, report_id, userId]
+    );
 
     const s3DeleteResult = await deleteFromServer(image_path, userId, null, image_id);
     if (!s3DeleteResult.success) {
       throw new Error('Failed to delete image from AWS S3');
     }
+
 
     await db.execute('DELETE FROM explorelikes WHERE published_id = ?', [published_id]);
 
@@ -399,6 +420,7 @@ exports.deleteReportedImageService = async ( image_id, published_id, image_path 
     await db.execute('DELETE FROM image_reports WHERE image_id = ? OR published_id = ?', [image_id, published_id]);
 
     await db.execute('DELETE FROM generated_images WHERE image_id = ?', [image_id]);
+
 
     return {
       status: 200,

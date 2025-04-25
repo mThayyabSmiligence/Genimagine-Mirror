@@ -280,17 +280,18 @@ const handleNoAction = async () => {
   }
 };
 
-const handleDeleteImage = async () => {
+const handleDeleteImage = async (reason) => {
   if (!report?.image_id || !report?.published_id || !report?.generation_image_url) {
     alert("Required image information is missing.");
     return;
   }
 
   try {
-    const response = await axiosModerator.post(`/report/image/delete`, {
+    const response = await axiosModerator.post(`/report/image/delete/${report.report_id}`, {
       image_id: report.image_id,
       published_id: report.published_id,
       image_path: report.image_path,
+      reason,
     });
 
     alert("Image has been deleted successfully.");

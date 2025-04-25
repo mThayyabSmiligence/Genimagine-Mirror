@@ -63,7 +63,8 @@ exports.banReportedImageUserController = async (req, res) => {
   exports.deleteReportedImageController = async (req, res) => {
     
     console.log("image_id")
-    const { image_id, published_id, image_path } = req.body;
+    const { report_id } = req.params;
+    const { image_id, published_id, image_path, reason } = req.body;
     const userId = req.user?.id;
     console.log("image_id")
 
@@ -75,6 +76,6 @@ exports.banReportedImageUserController = async (req, res) => {
       });
     }
 
-    const result = await deleteReportedImageService(image_id, published_id, image_path, userId);
+    const result = await deleteReportedImageService(report_id, image_id, published_id, image_path, userId, reason);
     res.status(result.status).json(result);
   }
