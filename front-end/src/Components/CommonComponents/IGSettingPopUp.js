@@ -173,6 +173,7 @@ function IGSettingPopUp({closePopup,}) {
   useEffect(()=>{
     moveToFirst()
   },[tempTrackStyle])
+ 
 
 
   useEffect(()=>{
