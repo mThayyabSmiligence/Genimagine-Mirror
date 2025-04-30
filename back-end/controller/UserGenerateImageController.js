@@ -59,7 +59,7 @@ const styleList = [
   ]
 
 exports.userGenerateImageController=async(req,res,next)=>{
-    const {prompt,model,chat_id,aspect_ratio,style} =req.body;
+    const {prompt,model,chat_id,aspect_ratio,quality,style} =req.body;
     console.log(aspect_ratio)
     console.log("body",req.body)
     console.log("prompt :"+prompt+"model :"+model)
@@ -70,7 +70,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     //     return
     // }
 
-    const w_h = handelAspectRatio(model,aspect_ratio)
+    const w_h = handelAspectRatio(quality,aspect_ratio)
     console.log("w_h",w_h)
 
     //getting jwt token from cookies
@@ -111,7 +111,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(canUserGenerateForFree.status).json(canUserGenerateForFree)
             return
         }
-
+        
         const inputs={
             prompt:updatedPrompt,
             negative_prompt:"skull",
@@ -142,7 +142,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             user_id:id,
             prompt:encryptedPrompt,
             model:model!=null?model:1,
-            chat_id:chatId,
+            chat_id:chatId, 
             image_url:"storage is not defined",
             aspect_ratio:aspect_ratio,
             resolution:`${w_h.width}*${w_h.height}`,
@@ -185,17 +185,22 @@ exports.userGenerateImageController=async(req,res,next)=>{
             height:w_h.height,
             style:style
         }
-        const model_data=handelModel(model)
+        const model_data=await handelModel(model)
 
-
-        const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
-
-        if(!enoughCredits){
-            res.status(402).json({
-                message:"not enough credits"
-            })
-            return
+        if (!model_data.success) {
+            res.status(model_data.status).json({ message: model_data.message });
+            return;
         }
+// yesterday  change 
+
+        // const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
+
+        // if(!enoughCredits){
+        //     res.status(402).json({
+        //         message:"not enough credits"
+        //     })
+        //     return
+        // }
 
         const image=await paidGenerateImageService(inputs,model_data.model_url)
 
@@ -207,7 +212,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
 
-        await deductCredit(id,model_data.cp_required) ;
+// yesterday  change
+
+        // await deductCredit(id,model_data.cp_required) ;
         let chatId= null
         if(chat_id==null){
             const newChatId= await createChat(id,prompt);

@@ -13,7 +13,7 @@ const generateImageRouter = require('./routes/GenerateImage')
 const AuthenticationRoutes = require('./routes/AuthenticationRoute')
 const jwtRouter= require("./routes/JWTRoute");
 const NoAuthRouter= require("./routes/NoAuthRoute")
-// const AdminRouter = require("./routes/AdminRoute");
+const AdminRouter = require("./routes/AdminRoute");
 const ModeratorRouter = require('./routes/ModeratorRoute');
 
 const crypto = require('crypto'); 
@@ -58,6 +58,7 @@ app.use('/api/v1/no-auth',NoAuthRouter)
 
 // moderator routes
 app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);
+app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // api's --end
 

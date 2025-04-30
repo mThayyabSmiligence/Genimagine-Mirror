@@ -1,10 +1,23 @@
-// const express = require('express');
-// const { banUserController, unbanUserController, suspendUserController, unsuspendUserController, warnUserController } = require('../controller/UsersController');
-// const router = express.Router();
-// router.route('/:user_id/ban').post(banUserController);
-// router.route('/:user_id/unban').post(unbanUserController);
-// router.route('/:user_id/suspend').post(suspendUserController);
-// router.route('/:user_id/unsuspend').post(unsuspendUserController);
-// router.route('/:user_id/warn').post(warnUserController);
+const express = require('express');
+const router = express.Router();
+// const SettingsController = require('../controller/SettingsController');
+// const { verifyAdmin } = require('../middleware/authMiddleware');
 
-// module.exports = router;
+// Public routes
+// router.get('/aspect-ratios', SettingsController.getAspectRatios);
+// router.get('/models', SettingsController.getModels);
+// router.get('/models/:id', SettingsController.getModel);
+// router.get('/styles', SettingsController.getStyles);
+// router.get('/styles/:id', SettingsController.getStyle);
+// router.get('/generation-limits', SettingsController.getGenerationLimits);
+
+// // Admin protected routes
+// router.post('/aspect-ratios', verifyAdmin, SettingsController.createAspectRatio);
+// router.put('/aspect-ratios', verifyAdmin, SettingsController.updateAspectRatio);
+// router.post('/models', verifyAdmin, SettingsController.createModel);
+// router.put('/models', verifyAdmin, SettingsController.updateModel);
+// router.post('/styles', verifyAdmin, SettingsController.createStyle);
+// router.put('/styles', verifyAdmin, SettingsController.updateStyle);
+// router.put('/generation-limits', verifyAdmin, SettingsController.updateGenerationLimit);
+
+module.exports = router;
