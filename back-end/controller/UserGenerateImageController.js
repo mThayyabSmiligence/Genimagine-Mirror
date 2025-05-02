@@ -70,10 +70,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
     //     return
     // }
 
-    const w_h = handelAspectRatio(quality,aspect_ratio)
-    console.log("w_h",w_h)
+    const w_h = await handelAspectRatio(quality,aspect_ratio)
+    console.log("w_h 1232",w_h)
 
-    //getting jwt token from cookies
+    // getting jwt token from cookies
         let cookies =null
         let token =null
         let decodeToken=null
@@ -99,7 +99,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
     const updatedPrompt =style==0?prompt:prompt+" in style of "+styleList[style-1].style_name;
 
 
-// encrypt
+    // encrypt
     const encryptedPrompt = encrypt(prompt);
     console.log("Encrypted Prompt: ", encryptedPrompt)
         
@@ -191,16 +191,16 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(model_data.status).json({ message: model_data.message });
             return;
         }
-// yesterday  change 
+    // yesterday  change 
 
-        // const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
+        const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
 
-        // if(!enoughCredits){
-        //     res.status(402).json({
-        //         message:"not enough credits"
-        //     })
-        //     return
-        // }
+        if(!enoughCredits){
+            res.status(402).json({
+                message:"not enough credits"
+            })
+            return
+        }
 
         const image=await paidGenerateImageService(inputs,model_data.model_url)
 
@@ -212,9 +212,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
 
-// yesterday  change
+    // yesterday  change
 
-        // await deductCredit(id,model_data.cp_required) ;
+        await deductCredit(id,model_data.cp_required) ;
         let chatId= null
         if(chat_id==null){
             const newChatId= await createChat(id,prompt);

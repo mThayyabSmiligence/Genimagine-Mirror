@@ -18,6 +18,7 @@ export default function GuestContentPage() {
 
     const [model,setModel]= useState(null)
     const [aspectRatio,setAspectRatio]= useState(null)
+    const [quality, setQuality] = useState(null)
     const[style,setStyle] = useState(null)
 
     const navigate =useNavigate()
@@ -57,7 +58,8 @@ export default function GuestContentPage() {
       if(localStorage.getItem("image_settings")){
         const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
         setModel(imageSettings.model)
-        setAspectRatio(imageSettings.aspectRatio)
+        setAspectRatio(imageSettings.aspectRatioid)
+        setQuality(imageSettings.quality)
         setStyle(imageSettings.style)
       }
     },[refreshImageSettings])
@@ -114,7 +116,8 @@ export default function GuestContentPage() {
           { 
             prompt: prompt ,
             model:model,
-            aspect_ratio:aspectRatio.aspectRatio,
+            aspect_ratio:aspectRatio,
+            quality:quality,
             style: isNaN(style)?0: style,
           
           },
@@ -126,7 +129,8 @@ export default function GuestContentPage() {
               { 
                 prompt: prompt ,
                 model:model,
-                aspect_ratio:aspectRatio.aspectRatio,
+                aspect_ratio:aspectRatio,
+                quality:quality,
                 style: isNaN(style)?0: style,
                 client_ip:ipAddress
               

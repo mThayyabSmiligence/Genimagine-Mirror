@@ -1,5 +1,5 @@
 const express = require('express')
-const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController} = require('../controller/UsersController');
+const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
@@ -7,6 +7,7 @@ const { publishToExploreController, ViewExploreImageController, LikeExploreImage
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
+const { getAspectRatioShape } = require('../service/UserService');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -36,6 +37,12 @@ router.route('/falied-payment').post(handelFailedPaymentController)
 router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
+
+
+
+
+
+
 
 //explore page routes
 router.route('/publish-to-explore').post(publishToExploreController);

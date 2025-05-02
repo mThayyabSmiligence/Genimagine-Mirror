@@ -5,34 +5,29 @@ import RefreshDataContext from '../../Context/RefreshDataProvider'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
 import AuthContext from '../../Context/AuthProvider';
-const aspectRatioList = [
-  {
-    id: 1,
-    aspectRatio: "16:9",
-    width: 80, 
-    height: 45
-  },
-  // {
-  //   id: 2,
-  //   aspectRatio: "3:2"
-  // },
-  {
-    id: 2,
-    aspectRatio: "1:1",
-    width: 50,
-    height: 50
-  },
-  // {
-  //   id: 4,
-  //   aspectRatio: "4:5"
-  // },
-  {
-    id: 3,
-    aspectRatio: "9:16",
-    width: 45,
-    height: 80 
-  },
-]
+import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
+// const aspectRatioList = [
+//   {
+//     id: 1,
+//     aspectRatio: "16:9",
+//     width: 80, 
+//     height: 45
+//   },
+  
+//   {
+//     id: 2,
+//     aspectRatio: "1:1",
+//     width: 50,
+//     height: 50
+//   },
+
+//   {
+//     id: 3,
+//     aspectRatio: "9:16",
+//     width: 45,
+//     height: 80 
+//   },
+// ]
  const styleList = [
         { id: 1, style_name: "Textured Oil Painting", },
         { id: 2, style_name: "Chalk and Charcoal", },
@@ -85,12 +80,37 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const [selectSetting, setSelectSetting] = useState(null)
   const {loggedIn}= useContext(AuthContext)
 
+  const [modelsList, setModelsList] = useState([]);
+  const [aspectRatioList, setAspectRatioList] = useState([]);
+  const [qualityLevelsList, setQualityLevelsList] = useState([]);
 
 
 
   
 
+  const fetchData = async () => {
+      try{
+        console.log("get ig setting response")
+        const response = await axiosNoAUth.post("/get-image-settings")
+        console.log("response of fetch data",response.data.data)
+        const { models,aspect_ratios_shapes, quality_levels } = response.data.data;
+        console.log("get ig setting response",models)
+        console.log("as[+pect ratios",aspect_ratios_shapes)
+        console.log("get ig quality response of levels",quality_levels) 
+        // console.log("get ig s  response",aspect_ratios)
+  
+        setModelsList(models);
+        setAspectRatioList(aspect_ratios_shapes);
+        // setStyleList(styles);
+        setQualityLevelsList(quality_levels);
+
+  
+      }catch (error) {
+        console.error("Error fetching data:", error);
+    }
+  };
   const pRef= useRef(null)
+
 
 
   const spinnerStyle = {
@@ -154,20 +174,38 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     
   }
 
-   useEffect(()=>{
-      if(!localStorage.getItem("image_settings")){
+  useEffect(()=>{
+     // getting default model,ascept ratio and quality when no image setting is found in local storage
+      if(!localStorage.getItem("image_settings") && modelsList.length>0 && aspectRatioList.length>0 && qualityLevelsList.length>0){
+        const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
+        const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
+        const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
+        const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
+
+        console.log("default model",defaultModel)
+        console.log("default aspect ratio",defaultAspectRatio)
+        console.log("default quality",defaultQuality)
+        console.log("default style",defaultStyle)
+
         localStorage.setItem("image_settings", JSON.stringify(
           {
-            model:1,
-            aspectRatio:aspectRatioList[2],
-            style:0
+            model:defaultModel?.id ,
+            modelname: defaultModel?.name,
+            aspectRatioid: defaultAspectRatio?.id,
+            aspectRatio: defaultAspectRatio?.ratio,
+            quality: defaultQuality?.id,
+            qualityResolution: defaultQuality?.resolution,
+            style: defaultStyle?.id
           }
         ))
         setRefreshImageSettings(!refreshImageSettings)    
         return;
       }
+      else if(!localStorage.getItem("image_settings") ){ 
+        fetchData()
+      }
       
-    },[ ])
+    },[modelsList,aspectRatioList,qualityLevelsList])
 
   const [width, setWidth] = useState(window.innerWidth);
           
@@ -202,7 +240,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
     
     <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 mb-2'   >
       {
-        showIGSetting&&<IGSettingPopUp closePopup={() => setShowIGSetting(false)}/>
+        showIGSetting&&<IGSettingPopUp closePopup={() => setShowIGSetting(false)} modelsList={modelsList} setModelsList={setModelsList} aspectRatioList={aspectRatioList} setAspectRatioList={setAspectRatioList} qualityLevelsList={qualityLevelsList} setQualityLevelsList={setQualityLevelsList} fetchData={fetchData} />
       }
       {
         showIGSetting&&<div onClick={()=>setShowIGSetting(false)} className='blur-background'></div>
@@ -236,10 +274,13 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
             {selectSetting && (
               <>
                 <div className='setting-tags p-secondary' title='model'>
-                  Model : {loggedIn?selectSetting.model:"1"}
+                  Model : {loggedIn? selectSetting.modelname:"lightning"}
                 </div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>
-                  Aspect Ratio : {loggedIn?selectSetting.aspectRatio.aspectRatio:"1:1"}
+                  {/* Aspect Ratio : {loggedIn?selectSetting.aspectRatio:"1:1"} */}
+                </div>
+                <div className='setting-tags p-secondary' title='aspect ratio'>
+                  quality : {loggedIn?selectSetting.qualityResolution :"720p"}
                 </div>
                 <div className='setting-tags p-secondary' title='Style'>
                   Style : {loggedIn?styleList[selectSetting.style-1]?.style_name||"none":"none"}

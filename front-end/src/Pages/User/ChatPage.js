@@ -16,6 +16,7 @@
       
       const [model,setModel]= useState(null)
       const [aspectRatio,setAspectRatio]= useState(null)
+      const [quality, setQuality] = useState(null)
       const[style,setStyle] = useState(null)
 
 
@@ -61,7 +62,8 @@
         if(localStorage.getItem("image_settings")){
           const imageSettings = JSON.parse(localStorage.getItem("image_settings"));
           setModel(imageSettings.model)
-          setAspectRatio(imageSettings.aspectRatio)
+          setAspectRatio(imageSettings.aspectRatioid)
+          setQuality(imageSettings.quality)
           setStyle(imageSettings.style)
           
         }
@@ -149,7 +151,8 @@
                     prompt: prompt ,
                     chat_id:chatId,
                     model:model,
-                    aspect_ratio:aspectRatio.aspectRatio,
+                    aspect_ratio:aspectRatio,
+                    quality:quality,
                     style:style  
               }
             ) 

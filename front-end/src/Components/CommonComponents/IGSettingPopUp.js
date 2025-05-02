@@ -45,62 +45,55 @@ import styleImage37 from '../../images/style/ultra-realistic-HDR-style.png';
 import styleImage38 from '../../images/style/urban-street-art-style.png';
 import styleImage39 from '../../images/style/vaporwave-aesthetic.png';
 import styleImage40 from '../../images/style/vibrant-pop-art-illustration.png';
+import { axiosPrivate } from "../../API's/axios";
 
 
-const modelsList = [
-  {
-    model_id: 1,
-    model_name: "Base Model",
-    model_resolution: "480p",
-    required_credits: 0
-  },
-  {
-    model_id: 2,
-    model_name : "Ultra Model",
-    model_resolution: "720p",
-    required_credits:5
-  },
-  {
-    model_id: 3,
-    model_name: "Master Model",
-    model_resolution: "1080p",
-    required_credits: 10
-  }
-]
+// const modelsList = [
+//   {
+//     model_id: 1,
+//     model_name: "Base Model",
+//     model_resolution: "480p",
+//     required_credits: 0
+//   },
+//   {
+//     model_id: 2,
+//     model_name : "Ultra Model",
+//     model_resolution: "720p",
+//     required_credits:5
+//   },
+//   {
+//     model_id: 3,
+//     model_name: "Master Model",
+//     model_resolution: "1080p",
+//     required_credits: 10
+//   }
+// ]
 
-const aspectRatioList = [
-  {
-    id: 1,
-    aspectRatio: "16:9",
-    width: 64, 
-    height: 36
-  },
-  // {
-  //   id: 2,
-  //   aspectRatio: "3:2"
-  // },
-  {
-    id: 2,
-    aspectRatio: "1:1",
-    width: 45,
-    height: 45
-  },
-  // {
-  //   id: 4,
-  //   aspectRatio: "4:5"
-  // },
-  {
-    id: 3,
-    aspectRatio: "9:16",
-    width: 36,
-    height: 64 
-  },
-]
+// const aspectRatioList = [
+//   {
+//     id: 1,
+//     aspectRatio: "16:9",
+//     width: 64, 
+//     height: 36
+//   },
+//   {
+//     id: 2,
+//     aspectRatio: "1:1",
+//     width: 45,
+//     height: 45
+//   },
+//   {
+//     id: 3,
+//     aspectRatio: "9:16",
+//     width: 36,
+//     height: 64 
+//   },
+// ]
 
 
 
 
-function IGSettingPopUp({closePopup,}) {
+function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, setAspectRatioList, qualityLevelsList,setQualityLevelsList, fetchData}) {
 
   const [styleList,setStyleList]=useState( [
     { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
@@ -144,23 +137,30 @@ function IGSettingPopUp({closePopup,}) {
     { id: 39, style_name: "Vaporwave Aesthetic", style_image: styleImage39 },
     { id: 40, style_name: "Vibrant Pop Art Illustration", style_image: styleImage40 }
 ])
-
   const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
   const {loggedIn}= useContext(AuthContext)
 
-  const [tempTrackModel, setTempTrackModel] = useState(1);
-  const [tempSelectedAspectRatio, setTempSelectedAspectRatio] = useState(aspectRatioList[0]);
-  const [tempTrackStyle, setTempTrackStyle] = useState(0);
+ 
+
+  const [tempTrackModel, setTempTrackModel] = useState(null);
+  const [tempSelectedAspectRatio, setTempSelectedAspectRatio] = useState(null);
+  const [tempTrackStyle, setTempTrackStyle] = useState(null);
+  const [tempSelectedQuality, setTempSelectedQuality] = useState(null);
   const [seeMore, setSeeMore] = useState(false);
   
 
+  
+
+  useEffect(() => {
+   fetchData();
+  },[])
 
   const moveToFirst = () => {
     setStyleList((prevItems) => {
       if (prevItems.length==0) return prevItems; // No change if invalid index
 
       const index = prevItems.findIndex(item => item.id==tempTrackStyle);
-    //   if (index === -1) return prevItems;   
+      // if (index === -1) return prevItems;   
 
       const updatedItems = [...prevItems]; // Create a copy of the array
       const [movedItem] = updatedItems.splice(index, 1); // Remove item at index
@@ -178,26 +178,41 @@ function IGSettingPopUp({closePopup,}) {
 
   useEffect(()=>{
     console.log("isuserLoggedIn :",loggedIn)
-    if(!loggedIn){
-      setTempTrackModel(1)
-      setTempSelectedAspectRatio(aspectRatioList[1])
-      setTempTrackStyle(0)
-      return
+    if(!loggedIn){  
+      const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
+      const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
+      const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
+      const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
+
+      setTempTrackModel(defaultModel?.id || null);
+      setTempSelectedAspectRatio(defaultAspectRatio?.id || null);
+      setTempSelectedQuality(defaultQuality?.id || null);
+      setTempTrackStyle(defaultStyle?.id || null);
+      return;
     }
 
     if(localStorage.getItem("image_settings")){
       const settings = JSON.parse(localStorage.getItem("image_settings"));
-      setTempTrackModel(settings.model);
-      setTempSelectedAspectRatio(aspectRatioList.find( aspectRatio => aspectRatio.aspectRatio == settings.aspectRatio.aspectRatio));
-      setTempTrackStyle(settings.style);
-      return;
+        setTempTrackModel(settings.model || modelsList[0]?.id || null);
+        setTempSelectedAspectRatio(
+           settings.aspectRatioid || aspectRatioList[0]?.id || null
+        );
+        setTempSelectedQuality(
+            settings.quality || qualityLevelsList[0]?.id || null
+        );
+        setTempTrackStyle(settings.style || styleList[0]?.id || null);
+        return;
     }
 
     localStorage.setItem("image_settings", JSON.stringify(
       {
-        model:tempTrackModel,
-        aspectRatio:tempSelectedAspectRatio,
-        style:tempTrackStyle
+        model: tempTrackModel,
+        modalname: modelsList.find((model) => model.id === tempTrackModel)?.name,
+        aspectRatioid: tempSelectedAspectRatio,
+        aspectRatio: aspectRatioList.find((ar) => ar.id === tempSelectedAspectRatio)?.ratio,
+        quality: tempSelectedQuality,
+        qualityResolution: qualityLevelsList.find((ql) => ql.id === tempSelectedQuality)?.resolution,
+        style: tempTrackStyle,
       }
     ))
     setRefreshImageSettings(!refreshImageSettings)
@@ -210,7 +225,11 @@ function IGSettingPopUp({closePopup,}) {
     localStorage.setItem("image_settings", JSON.stringify(
       {
         model:tempTrackModel,
-        aspectRatio:tempSelectedAspectRatio,
+        modelname: modelsList.find((model) => model.id === tempTrackModel)?.name,
+        aspectRatioid:tempSelectedAspectRatio, 
+        aspectRatio: aspectRatioList.find((ar) => ar.id === tempSelectedAspectRatio)?.ratio,
+        quality: tempSelectedQuality,
+        qualityResolution: qualityLevelsList.find((ql) => ql.id === tempSelectedQuality)?.resolution,
         style:tempTrackStyle
       }))
       setRefreshImageSettings(!refreshImageSettings)
@@ -247,15 +266,16 @@ function IGSettingPopUp({closePopup,}) {
                 <div className="model-list d-flex flex-wrap ">
                 {  
                   modelsList.map((model) => (
-
-                      <div key={model.model_id} onClick={() => setTempTrackModel(model.model_id)} className={`pop-up-model-content ${model.model_id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${((!loggedIn) &&model.model_id!=1)?"unclickable":"not-disable"}`}>
+                    
+                      <div key={model.id} onClick={() => setTempTrackModel(model.id)} className={`pop-up-model-content ${model.id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${((!loggedIn) && model.id!=1)?"unclickable":"not-disable"}`}>
                         <div>   
-                          <h5 className="h-4">{model.model_name}</h5>
-                          <p className="p-primary m-0">{model.model_resolution}</p>
+                          <h5 className="h-4">{model.name}</h5>
+                          <p className="p-primary m-0">{model.resolution}</p>
                         </div>
                         <div>
                           <p className="p-primary m-0 ms-2">{model.required_credits} cp<br/>/img</p>
                         </div>
+                        
                       </div>
                   ))
                 }
@@ -264,14 +284,30 @@ function IGSettingPopUp({closePopup,}) {
                 <h5 className="h-3">Aspect Ratio</h5>
                 <div className="d-flex justify-content-start flex-wrap ">
                   {
-                    aspectRatioList.map((shape) => (
-                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape)}className={`aspect-ratio-box ${tempSelectedAspectRatio.id === shape.id && "active"} mb-3 ${!loggedIn&& shape.aspectRatio!="1:1"&&"unclickable"}`}
+                    aspectRatioList.length>0&&aspectRatioList.map((shape) => (
+
+                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape.id)}
+                      className={`aspect-ratio-box ${ shape.id == tempSelectedAspectRatio && "active"} mb-3 ${!loggedIn&& shape.id!=2 &&"unclickable"}`}
                       style={{ width: `${shape.width}px`, height: `${shape.height}px` }}
                     >
-                      {shape.aspectRatio}
+                      {shape.ratio}
+
                     </div>
                     ))
                   }
+                </div>
+
+                <h5 className="h-3">Quality</h5>
+                <div className="d-flex justify-content-start flex-wrap">
+                    {qualityLevelsList.map((quality) => (
+                        <div
+                            key={quality.id}
+                            onClick={() => setTempSelectedQuality(quality.id)}
+                            className={`quality-box ${ quality.id == tempSelectedQuality && "active"} mb-3 ${!loggedIn&& quality.id!=2&&"unclickable"}`}
+                        >
+                            {quality.resolution}
+                        </div>
+                    ))}
                 </div>
  
                 <div className="d-flex justify-content-between align-items-center ">

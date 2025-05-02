@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -329,4 +329,29 @@ exports.getUserByIdController = async(req,res) => {
 
     const getUserById = await getUserByIdService(user_id);
     return res.status(getUserById.status).json(getUserById)
+}
+
+exports.getAllModelsController = async(req, res) => {
+    const result = await getAllModelsService();
+    return res.status(result.status).json(result);
+};
+
+exports.getAllAspectRatiosController = async(req, res) =>{
+    const result = await getAllAspectRatiosService();
+    return res.status(result.status).json(result);
+}
+
+exports.getAllQualityLevelsController = async(req, res) => {
+    const result = await getAllQualityLevelsService();
+    return res.status(result.status).json(result);
+}
+
+exports.getAllStylesController = async (req, res) => {
+    const result = await getAllStylesService();
+    return res.status(result.status).json(result);
+};
+
+exports.getImageSettingsController = async (req, res) => {
+    const result = await getImageSettingsService();
+    return res.status(result.status).json(result)
 }
