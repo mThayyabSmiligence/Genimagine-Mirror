@@ -90,19 +90,25 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
 
   const fetchData = async () => {
       try{
-        console.log("get ig setting response")
         const response = await axiosNoAUth.post("/get-image-settings")
-        console.log("response of fetch data",response.data.data)
         const { models,aspect_ratios_shapes, quality_levels } = response.data.data;
-        console.log("get ig setting response",models)
-        console.log("as[+pect ratios",aspect_ratios_shapes)
-        console.log("get ig quality response of levels",quality_levels) 
-        // console.log("get ig s  response",aspect_ratios)
   
         setModelsList(models);
-        setAspectRatioList(aspect_ratios_shapes);
-        // setStyleList(styles);
+        // sorted and stored in aspect ratio list
+        const sortedAspectRatios = [...aspect_ratios_shapes].sort((a, b) => {
+          const ratioA = a.width / a.height;
+          const ratioB = b.width / b.height;
+          return ratioB - ratioA; 
+        });
+        setAspectRatioList(sortedAspectRatios);
+
+        // const sortedQuality = [...quality_levels].sort((a, b) => {
+        //   return a.resolution.localeCompare(b.resolution);                                 // for string-based sorting
+        // });        
         setQualityLevelsList(quality_levels);
+
+        // setStyleList(styles);
+
 
   
       }catch (error) {

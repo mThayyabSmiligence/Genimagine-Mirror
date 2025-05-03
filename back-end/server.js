@@ -58,7 +58,7 @@ app.use('/api/v1/no-auth',NoAuthRouter)
 
 // moderator routes
 app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);
-app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
+// app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // api's --end
 

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, replace, useLocation, useNavigate, useParams } from "react-router-dom";
 import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 import "../../Css/ExploreImageDetail.css";
+import Slider from 'react-slick';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import anime from '../../images/style/Anime.png'
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
@@ -311,10 +312,34 @@ function ExploreImageDetail() {
                 console.error("Error reporting image:", error);
             }
         }
+        
 
         const toggleCaptionOption = () => {
             setImageCaptionOption((prev) => !prev); // Properly toggle the state
         };
+
+        // const settings = {
+        //     slidesToShow: 4,
+        //     slidesToScroll: 1,
+        //     autoplay: false,
+        //     infinite: true,
+        //     arrow:true,
+        //     responsive: [
+        //       {
+        //         breakpoint: 1200,
+        //         settings: { slidesToShow: 3 }
+        //       },
+        //       {
+        //         breakpoint: 900,
+        //         settings: { slidesToShow: 2 }
+        //       },
+        //       {
+        //         breakpoint: 550,
+        //         settings: { slidesToShow: 1 }
+        //       }
+        //     ]
+        //   };
+
     return loading?
     (
         <div className='w-100 h-100 d-flex justify-content-center align-items-center mt-5 pt-5'>
@@ -348,20 +373,22 @@ function ExploreImageDetail() {
                         </div>  
                     </div>
                     <div className="image-setting-tag-container d-flex  justify-content-start align-items-center p-2 "> 
-                        <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                            <p className="m-0 p-primary">model: {imageData.model}</p>
-                        </div>
-                        <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2">
-                            <AspectRatioIcon className="icon"/><p className="m-0 p-primary"><span>: {imageData.aspect_ratio_label}</span></p>
-                        </div>
-                        <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                            <AspectRatioIcon className="icon"/>
-                            <p className="m-0 p-primary">:{imageData.quality_resolution}</p>
-                        </div>
-                        <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                            <BrushIcon className="icon"/>
-                                <p className="m-0 p-primary d-flex align-items-center">: {imageData.style||"none"}</p>    
-                        </div>  
+                        {/* <Slider {...settings}> */}
+                            <div className="image-settings-tag d-flex justify-content-between align-items-center">
+                                <p className="m-0 p-primary">model: {imageData.model}</p>
+                            </div>
+                            <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2">
+                                <AspectRatioIcon className="icon"/><p className="m-0 p-primary"><span>: {imageData.aspect_ratio_label}</span></p>
+                            </div>
+                            {/* <div className="image-settings-tag d-flex justify-content-between align-items-center">
+                                <AspectRatioIcon className="icon"/>
+                                <p className="m-0 p-primary">:{imageData.quality_resolution}</p>
+                            </div> */}
+                            <div className="image-settings-tag d-flex justify-content-between align-items-center">
+                                <BrushIcon className="icon"/>
+                                    <p className="m-0 p-primary d-flex align-items-center">: {imageData.style||"none"}</p>    
+                            </div>  
+                        {/* </Slider> */}
                     </div>
                     {/* caption container */}
                     <div className='image-caption p-2'>
