@@ -2,7 +2,7 @@
 
   import AuthContext from '../../Context/AuthProvider'
   import RefreshDataContext from '../../Context/RefreshDataProvider'
-  import { axiosPrivate, useAxiosGenerateImage } from '../../API\'s/axios'
+  import { axiosNoAUth, axiosPrivate, useAxiosGenerateImage } from '../../API\'s/axios'
   import { useParams } from 'react-router-dom'
   import axios from 'axios'
   import PromptInPutContainer from '../../Components/CommonComponents/PromptInputContainer'
@@ -31,7 +31,7 @@
       const { ref, inView } = useInView();
       
       
-      const { refreshCreditBalance,setRefreshCreditBalance,setResortChatList,refreshImageSettings} = useContext(RefreshDataContext)
+      const { refreshCreditBalance,setRefreshCreditBalance,setResortChatList,refreshImageSettings,refreshResizeHeightWidth,setRefreshResizeHeightWidth} = useContext(RefreshDataContext)
     
 
       const axiosGenerateImage=useAxiosGenerateImage()
@@ -51,9 +51,7 @@
       const [errorMessage, setErrorMessage] = useState(null); // Handle errors
       const [promptLength,setPromptLength] =useState(0)
 
-      
-
-
+    
 
     
 
@@ -178,13 +176,53 @@
         const handelDeleteFromState =  (id)=>{
           setChat(prevItems => prevItems.filter((item) => item.image_id!== id));
         }
+
+
+
+        const resizedHeightWidth = async () => {
+          try {
+            const response = await axiosNoAUth.post('resize-aspect-ratio-shape');
+            console.log("resized height and width", response.data);
+        
+            localStorage.setItem('resized_height_width', JSON.stringify(response.data.scaledShapes));
+            
+
+            setRefreshResizeHeightWidth(!refreshResizeHeightWidth)
+          } catch (err) {
+            console.error("Error resizing image:", err);
+          }
+        };
+        
+        useEffect(() => {
+          const Resized_Height_Width = localStorage.getItem('resized_height_width');
+          
+          if (Resized_Height_Width) {
+            try {
+              const Height_Width = JSON.parse(Resized_Height_Width);
+        
+              if (!Resized_Height_Width.height || !Resized_Height_Width.width || !Resized_Height_Width.aspectRatio ) {
+                resizedHeightWidth();
+              } else {
+                console.log("Valid image settings found:", Height_Width);
+              }
+            } catch (err) {
+              console.error("Invalid JSON in image_settings:", err);
+              resizedHeightWidth(); 
+            }
+          } else {
+            resizedHeightWidth(); 
+          }
+        }, []);
+          
+        
+
     return (
       <div className=' guest-content-container h-100 flex-grow-1  d-flex flex-column align-items-center justify-content-end'>
       
               <div className='chat-list-container d-flex flex-column align-items-center justify-content-end pb-80px mt-3 w-100'>
               <div ref={ref} style={{ height: "10px", width: "10px", background: "transparent" }}></div>
                 {
-                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState} chatId={chatId}></ChatContainer>))
+                  chat.map((item,index)=>(<ChatContainer key={index} data={item} handelDeleteFromState={handelDeleteFromState} chatId={chatId} resizedHeightWidth={resizedHeightWidth}></ChatContainer>))
                 }
                 {
                   loading&&

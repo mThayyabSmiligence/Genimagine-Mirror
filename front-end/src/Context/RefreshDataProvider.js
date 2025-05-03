@@ -16,6 +16,7 @@ export const RefreshDataProvider =({children})=>{
     const [resortChatList,setResortChatList] = useState(0)
 
     const [refreshImageSettings,setRefreshImageSettings] = useState(true)
+    const [refreshResizeHeightWidth, setRefreshResizeHeightWidth] = useState(true)
 
 
     
@@ -51,7 +52,9 @@ export const RefreshDataProvider =({children})=>{
             resortChatList,
             setResortChatList,
             refreshImageSettings,
-            setRefreshImageSettings
+            setRefreshImageSettings,
+            refreshResizeHeightWidth,
+            setRefreshResizeHeightWidth
         }}>
             {children}
         </RefreshDataContext.Provider>

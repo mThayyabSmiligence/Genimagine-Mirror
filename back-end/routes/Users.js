@@ -39,11 +39,6 @@ router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
 
 
-
-
-
-
-
 //explore page routes
 router.route('/publish-to-explore').post(publishToExploreController);
 router.route('/explore/:published_id/like').post(LikeExploreImageController)

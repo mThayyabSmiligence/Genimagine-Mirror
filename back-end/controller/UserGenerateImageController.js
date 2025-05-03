@@ -138,6 +138,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chatId=chat_id
             const result = await updateChatUpdatedAt(chatId)
         }
+        
         const generated_image_data={
             user_id:id,
             prompt:encryptedPrompt,
@@ -145,10 +146,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId, 
             image_url:"storage is not defined",
             aspect_ratio:aspect_ratio,
+            quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
             style:style==0?"none":styleList[style-1].style_name
         }
-
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
 
@@ -173,6 +174,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             model:1,
             prompt:prompt,
             aspect_ratio:aspect_ratio,
+            quality:quality,
             resolution:`${w_h.width}*${w_h.height}`
           });
 
@@ -232,6 +234,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             chat_id:chatId,
             image_url:"storage is not defined",
             aspect_ratio:aspect_ratio,
+            quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
             style:style==0?"none":styleList[style-1].style_name
         }
@@ -261,6 +264,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             model:1,
             prompt:prompt,
             aspect_ratio:aspect_ratio,
+            quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
             credits:credits[0].credits,
           });

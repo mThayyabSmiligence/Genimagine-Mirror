@@ -32,8 +32,8 @@ exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
 
 
     try{
-        const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio,style) VALUES (?, ?,?, ?, ?,?,?,?,?,?)"
-        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,generated_image_data.image_url,generated_image_data.image_path,generated_image_data.resolution,generated_image_data.aspect_ratio,generated_image_data.style])
+        const query ="INSERT INTO explore (user_id,prompt,model, caption,image_id, image_url, image_path,resolution,aspect_ratio,quality,style) VALUES (?, ?,?, ?, ?,?,?,?,?,?,?)"
+        const [rows] = await db.execute(query,[user_id,generated_image_data.prompt,generated_image_data.model,caption,image_id,generated_image_data.image_url,generated_image_data.image_path,generated_image_data.resolution,generated_image_data.aspect_ratio,generated_image_data.quality,generated_image_data.style])
 
         if (rows.affectedRows == 0) {
              return {
@@ -195,22 +195,29 @@ exports.getExploreImagesService = async ( sort, time, page ,user_id) => {
 
 exports.getExploreImageByIdService=async(explore_id,user_id)=>{
     try{
-        const query = `
-            SELECT 
-                e.*, 
-                em.likes_count, 
-                em.views_count, 
-                em.ranking_score,
-                CASE 
-                    WHEN el.user_id IS NOT NULL THEN TRUE 
-                    ELSE FALSE 
-                END AS isUserLiked
-            FROM explore e
-            JOIN exploremetrics em ON e.published_id = em.published_id
-            LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ?
-            WHERE e.published_id = ?;
-        `;
+        const query = 
+        `
+        SELECT 
+        e.*, 
+        em.likes_count, 
+        em.views_count, 
+        em.ranking_score,
+        ql.resolution AS quality_resolution,
+        m.name AS model_name,
+        ar.ratio AS aspect_ratio_label,
+        CASE 
+            WHEN el.user_id IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS isUserLiked
+        FROM explore e
+        JOIN exploremetrics em ON e.published_id = em.published_id
+        LEFT JOIN explorelikes el ON e.published_id = el.published_id AND el.user_id = ?
+        LEFT JOIN quality_levels ql ON e.quality = ql.id
+        LEFT JOIN models m ON e.model = m.id
+        LEFT JOIN aspect_ratios ar ON e.aspect_ratio = ar.id
+        WHERE e.published_id = ?;
 
+        `
         let [rows] = await db.execute(query,[user_id,explore_id])
 
         const Report_Image_query = "SELECT * FROM image_reports WHERE published_id = ?"

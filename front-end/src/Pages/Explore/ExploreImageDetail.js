@@ -176,10 +176,12 @@ function ExploreImageDetail() {
 
         localStorage.setItem("image_settings", JSON.stringify(
           {
+            aspectRatio: image.aspect_ratio_label,
+            aspectRatioid: image.aspect_ratio,
             model: image.model,
-            aspectRatio: {
-              aspectRatio: image.aspect_ratio
-            },
+            modelname: image.model_name,
+            quality: image.quality,
+            qualityResolution: image.quality_resolution,
             style:  imageData.style=="none"||style===undefined?0:style.id
           }
         ))
@@ -345,18 +347,21 @@ function ExploreImageDetail() {
                             </div>
                         </div>  
                     </div>
-                    <div className="image-setting-tag-container d-flex justify-content-start align-items-center p-2 "> 
+                    <div className="image-setting-tag-container d-flex  justify-content-start align-items-center p-2 "> 
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                            <p className="m-0 p-primary">model:{imageData.model}</p>
+                            <p className="m-0 p-primary">model: {imageData.model}</p>
+                        </div>
+                        <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2">
+                            <AspectRatioIcon className="icon"/><p className="m-0 p-primary"><span>: {imageData.aspect_ratio_label}</span></p>
                         </div>
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
                             <AspectRatioIcon className="icon"/>
-                            <p className="m-0 p-primary">: {imageData.aspect_ratio}</p>
+                            <p className="m-0 p-primary">:{imageData.quality_resolution}</p>
                         </div>
                         <div className="image-settings-tag d-flex justify-content-between align-items-center">
                             <BrushIcon className="icon"/>
-                            <p className="m-0 p-primary">: {imageData.style||"none"}</p>
-                        </div>
+                                <p className="m-0 p-primary d-flex align-items-center">: {imageData.style||"none"}</p>    
+                        </div>  
                     </div>
                     {/* caption container */}
                     <div className='image-caption p-2'>
@@ -365,7 +370,7 @@ function ExploreImageDetail() {
                                 <img className="user-id-tag-image" src={anime} alt="anime"/>
                                 <p className="mb-0 me-1">{userData?.username||"user name"}</p>
                             </Link>
-                            <div className="d-flex image-detail-options ">                
+                            <div className="d-flex image-detail-options ">    
                                 {
                                     isUsersImage&&
                                     <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>

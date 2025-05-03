@@ -183,7 +183,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
 
         console.log("default model",defaultModel)
-        console.log("default aspect ratio",defaultAspectRatio)
+        console.log("default aspect ratio",defaultAspectRatio)  
         console.log("default quality",defaultQuality)
         console.log("default style",defaultStyle)
 
@@ -277,7 +277,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                   Model : {loggedIn? selectSetting.modelname:"lightning"}
                 </div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>
-                  {/* Aspect Ratio : {loggedIn?selectSetting.aspectRatio:"1:1"} */}
+                  Aspect Ratio : {loggedIn?selectSetting.aspectRatio:"1:1"}
                 </div>
                 <div className='setting-tags p-secondary' title='aspect ratio'>
                   quality : {loggedIn?selectSetting.qualityResolution :"720p"}

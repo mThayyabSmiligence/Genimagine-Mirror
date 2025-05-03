@@ -5,7 +5,7 @@ import "../../Css/ChatContainer.css"
 import { useNavigate} from 'react-router-dom'
 
 import axios from 'axios';
-import { axiosInstance, axiosPrivate } from '../../API\'s/axios';
+import { axiosInstance, axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 import AuthContext from '../../Context/AuthProvider';
 import DeletePopUp from './DeletePopUp';
 import RemoveFromLibrary from './RemoveFromLibrary';
@@ -18,11 +18,11 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
 
  
-export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index ,chatId }) {
+export default function ChatContainer({data,handelDeleteFromState,showOptionsId,setShowOptionsId, handleGuestImageDelete, index ,chatId, resizedHeightWidth }) {
 
   const Navigate = useNavigate();
   
-  const { setTempImageData ,refreshLibraryData,setRefreshLibraryData,refreshImageSettings} = useContext(RefreshDataContext); 
+  const { setTempImageData ,refreshLibraryData,setRefreshLibraryData,refreshImageSettings, refreshResizeHeightWidth, setRefreshResizeHeightWidth} = useContext(RefreshDataContext); 
   const {loggedIn} = useContext(AuthContext)
 
   const navigate = useNavigate();
@@ -41,6 +41,10 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
   const [showRemoveLibraryPopUp, setShowRemoveLibraryPopUp] = useState(false);
   const [aspectRatio,setAspectRatio] =useState(null);
 
+  const [getHeight, setGetHeight] = useState(400);
+  const [getWidth, setGetWidth] = useState(400);
+
+
   useEffect(()=>{
     setIsLibrary(false);
   },[chatId])
@@ -55,7 +59,6 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
   const handleToggleOptions = () => {
     setShowOptions((prev) => !prev);
   };
-
 
  const [width, setWidth] = useState(window.innerWidth);
            
@@ -89,34 +92,48 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
       };
     }, [showOptions]);
 
-    
 
-    const getWidth=(aspect_ratio)=>{
-        if(aspect_ratio=="16:9"){
-         return width>700?432:300
-        }else if(aspect_ratio=="9:16"){
-          return  width>700?243:160;
-         }
-         else if(aspect_ratio=="1:1"){
-          return  width>700?400:280;
-         }
+      useEffect(() => {
+        if(localStorage.getItem('resized_height_width')){
+          const parsed = JSON.parse(localStorage.getItem('resized_height_width'));
+          const r_w_h = parsed.find(item => item.aspectRatio == data.aspect_ratio);  
+          if (r_w_h) {
+            setGetHeight(r_w_h.height);
+            setGetWidth(r_w_h.width);
+          }
+        }
+      },[refreshResizeHeightWidth])
 
-    }
-    const getHeight=(aspect_ratio)=>{
-      if(aspect_ratio=="16:9"){
-       return width>700?243:160
-      }else if(aspect_ratio=="9:16"){
-        return  width>700?432:300;
-       }
-       else if(aspect_ratio=="1:1"){
-        return  width>700?400:280;
-       }
 
-  }
+
+  
+
+  //   const getWidth=(aspect_ratio)=>{
+  //       if(aspect_ratio=="16:9"){
+  //        return width>700?432:300
+  //       }else if(aspect_ratio=="9:16"){
+  //         return  width>700?243:160;
+  //        }
+  //        else if(aspect_ratio=="1:1"){
+  //         return  width>700?400:280;
+  //        }
+
+  //   }
+  //   const getHeight=(aspect_ratio)=>{
+  //     if(aspect_ratio=="16:9"){
+  //      return width>700?243:160
+  //     }else if(aspect_ratio=="9:16"){
+  //       return  width>700?432:300;
+  //      }
+  //      else if(aspect_ratio=="1:1"){
+  //       return  width>700?400:280;
+  //      }
+
+  // }
 
     const boxStyle = {
-        width: getWidth(data.aspect_ratio||"1:1"),
-        height:getHeight(data.aspect_ratio||"1:1"),
+        width: getWidth,
+        height:getHeight,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
