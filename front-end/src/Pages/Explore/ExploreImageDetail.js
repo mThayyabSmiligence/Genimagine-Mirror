@@ -319,11 +319,11 @@ function ExploreImageDetail() {
         };
 
         // const settings = {
-        //     slidesToShow: 4,
+        //     slidesToShow: 3,
         //     slidesToScroll: 1,
         //     autoplay: false,
-        //     infinite: true,
-        //     arrow:true,
+        //     infinite: false,
+        //     arrow: true,
         //     responsive: [
         //       {
         //         breakpoint: 1200,
@@ -372,8 +372,8 @@ function ExploreImageDetail() {
                             </div>
                         </div>  
                     </div>
-                    <div className="image-setting-tag-container d-flex  justify-content-start align-items-center p-2 "> 
-                        {/* <Slider {...settings}> */}
+                    <div className="image-setting-tag-container d-flex  justify-content-around align-items-center p-2 "> 
+                        {/* <Slider className="ig-slick" {...settings}> */}
                             <div className="image-settings-tag d-flex justify-content-between align-items-center">
                                 <p className="m-0 p-primary">model: {imageData.model}</p>
                             </div>
@@ -384,7 +384,7 @@ function ExploreImageDetail() {
                                 <AspectRatioIcon className="icon"/>
                                 <p className="m-0 p-primary">:{imageData.quality_resolution}</p>
                             </div> */}
-                            <div className="image-settings-tag d-flex justify-content-between align-items-center">
+                            <div className="image-settings-tag style-tag-container d-flex justify-content-between align-items-center">
                                 <BrushIcon className="icon"/>
                                     <p className="m-0 p-primary d-flex align-items-center">: {imageData.style||"none"}</p>    
                             </div>  

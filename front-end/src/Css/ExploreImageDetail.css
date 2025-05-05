@@ -231,9 +231,15 @@
   }
 
   .explore-image-detail-container .image-settings-tag{
-    min-width: 60px;
-
+    min-width: 60px
   }
+
+/* 
+  .ig-slick{
+    width: 350px;
+    height: 30px;
+
+  } */
 
 @media (max-width: 767px) {
 
