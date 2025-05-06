@@ -1,9 +1,36 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import AdminModelsListTable from '../../Components/CommonComponents/AdminModelsListTable'
+import { axiosAdmin } from '../../API\'s/axios';
+import '../../Css/AdminModelManagement.css'
 
-function AdminModelManagement() {
+export default function AdminModelManagement() {
+
+  const [models, setModels] = useState([]);
+
+  useEffect(()=>{
+    getAllModels()
+  },[]);
+  const getAllModels = async() => {
+    try{
+      const response = await axiosAdmin.get("models")
+      setModels(response.data.rows)
+      console.log("modles data", response.data.rows)
+    }catch(error){
+      console.log("error fetching data",error)
+    }
+  }
+
   return (
-    <div>models management</div>
+    <div className='model-list-container p-4 mx-4'>
+      <div className='create-btn-container d-flex justify-content-end align-items-center mb-2'>
+        <button className='create-btn'>create</button>
+      </div>
+      <div className='model-wrapper'>
+        <h1 className='model-heading-title text-start mb-3'>Models List</h1>
+          <AdminModelsListTable
+            models={models}
+          />
+      </div>
+    </div>
   )
 }
-
-export default AdminModelManagement

@@ -521,3 +521,28 @@ input[type="number"] {
     border: none;
     border-radius: 10px;
 }
+
+.active-btn{
+    background-color:#e8f5e9 ;
+    color:#388e3c ; /* deep green */
+    border-color:#c8e6c9 ;
+}
+
+.inactive-btn{
+    background-color: #fdecea;
+    color: #d32f2f; /* red */
+    border-color: #f5c6cb;
+}
+
+.review-btn{
+    background-color: #e3f2fd;
+    color: #1565c0; /* greenish (reviewed) */
+    border-color:  #bbdefb;
+}
+
+.in-progress-btn{
+    background-color: #fff3e0;
+    color: #ef6c00; /* orange */
+    border-color: #ffe0b2;
+}
+
