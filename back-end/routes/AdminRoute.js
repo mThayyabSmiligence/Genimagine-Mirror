@@ -1,12 +1,13 @@
-// const express = require('express');/
-// const router = express.Router();
-// const SettingsController = require('../controller/SettingsController');
-// const { verifyAdmin } = require('../middleware/authMiddleware');
+const express = require('express');
+const { getAllModelsController, getModelController, configureModelSettingsController } = require('../controller/IGSettingController');
+const router = express.Router();
 
 // Public routes
-// router.get('/aspect-ratios', SettingsController.getAspectRatios);
-// router.get('/models', SettingsController.getModels);
-// router.get('/models/:id', SettingsController.getModel);
+router.get('/models', getAllModelsController);
+router.get('/models/:id', getModelController);
+router.post('/models/:id/configure', configureModelSettingsController);
+// router.get('/aspect-ratios', getAspectRatiosController);
+
 // router.get('/styles', SettingsController.getStyles);
 // router.get('/styles/:id', SettingsController.getStyle);
 // router.get('/generation-limits', SettingsController.getGenerationLimits);
@@ -20,4 +21,4 @@
 // router.put('/styles', verifyAdmin, SettingsController.updateStyle);
 // router.put('/generation-limits', verifyAdmin, SettingsController.updateGenerationLimit);
 
-// module.exports = router;
+module.exports = router;

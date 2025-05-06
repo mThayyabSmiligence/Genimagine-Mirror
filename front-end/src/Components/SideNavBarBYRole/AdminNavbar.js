@@ -22,25 +22,32 @@ export default function AdminNavbar() {
 
                 <div className='sub-mid-section moderator-nav-sub-section'>
 
-                    <Link to={"/explore" } className='link mb-1'  id='explore-link'>
-                        <div className={`nav-list-item d-flex align-items-center ${path=="/explore"&&'active'}`}>
+                    <Link to={"/admin/dashboard" } className='link mb-1'  id='admin/dashboard-link'>
+                        <div className={`nav-list-item d-flex align-items-center ${path=="/admin/dashboard"&&'active'}`}>
 
-                            <ExploreOutlinedIcon/>
-                            <div to={"/explore" } className='link nav-options ms-1'>Explore</div>
+                            {/* <ExploreOutlinedIcon/> */}
+                            <div to={"/admin/dashboard" } className='link nav-options ms-1'>Dashboard</div>
                         </div>
                     </Link>
-                    <Link to={"/credit-purchase" } className='link mb-1' >
-                        <div className={`nav-list-item d-flex align-items-center ${path=="/credit-purchase"&&'active'}`}>
-                            <ShoppingCartOutlinedIcon/>
-                            <div to={"/credit-purchase" } className='link nav-options ms-1'>Buy Credits</div>
+                    <div className={` d-flex align-items-center w-80`}>
+                        <h6 className='management-list-heading chat-group-heading p-secondary w-100 text-start'>Managements</h6>
+                        {/* <ShoppingCartOutlinedIcon/> */}
+                        {/* <div to={"/managements" } className='link nav-options ms-1'>Managements</div> */}
+                    </div>
+
+                    <Link to={"/admin/model-management" } className='link'  id='/admin/model-management-link'>
+                        <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/model-management"&&'active'}`}>
+
+                            {/* <AddCircleOutlineOutlinedIcon/> */}
+                            <div to={"/admin/model-management" } className='link nav-options ms-1'>Models-Management</div>
                         </div>
                     </Link>
 
-                    <Link to={"/image-generation" } className='link'  id='new-chat-link'>
-                        <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
+                    <Link to={"/admin/plans-management" } className='link'  id='/admin/plans-management-link'>
+                        <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/plans-management"&&'active'}`}>
 
-                            <AddCircleOutlineOutlinedIcon/>
-                            <div to={"/image-generation" } className='link nav-options ms-1'></div>
+                            {/* <AddCircleOutlineOutlinedIcon/> */}
+                            <div to={"/admin/plans-management" } className='link nav-options ms-1'>Plans-Management</div>
                         </div>
                     </Link>
 

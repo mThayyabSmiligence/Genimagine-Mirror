@@ -43,6 +43,8 @@ import ReportImageDetail from './Pages/Moderator/ReportImageDetail';
 
 import { Slide, ToastContainer, toast } from 'react-toastify';
 import ModeratorFeedbacks from './Pages/Moderator/ModeratorFeedbacks';
+import AdminModelManagement from './Pages/Admin/AdminModelManagement';
+import PlansManagement from './Pages/Admin/PlansManagement';
 
 
 function App() {
@@ -139,6 +141,8 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path='model-management' element={<AdminModelManagement/>}></Route>
+                <Route path='plans-management' element={<PlansManagement/>}></Route>
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 
