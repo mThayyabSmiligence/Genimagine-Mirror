@@ -1,4 +1,4 @@
-.create-btn{
+.create-btn-link{
     padding: 5px 15px;
     background-color: rgb(8, 8, 8);
     color: #fff;
@@ -8,7 +8,7 @@
     transition: transform 0.2s ease-in-out; 
 }
 
-.create-btn:hover {
+.create-btn-link:hover {
     transform: translateY(-1px)
 }
 
@@ -75,9 +75,26 @@
   }
 
   .model-detail-heading span{
-    color: #697a8d;
-    font-size: 18px;
+    color: #576f8a;
+    font-size: 16px;
+    font-weight: bold;
   }
+
+  .edit-btn{
+    padding: 5px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background-color: rgb(72, 145, 167);
+    color: #fff;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .edit-btn:hover{
+    transform: translateY(-1px)
+  };
+  
 
 
   

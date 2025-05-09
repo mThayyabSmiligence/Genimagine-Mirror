@@ -534,7 +534,7 @@ input[type="number"] {
     border-color: #f5c6cb;
 }
 
-.review-btn{
+.review-btn {
     background-color: #e3f2fd;
     color: #1565c0; /* greenish (reviewed) */
     border-color:  #bbdefb;

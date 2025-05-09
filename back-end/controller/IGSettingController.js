@@ -19,7 +19,7 @@
 //     updateGenerationLimit
 // } = require('../service/SettingsService');
 
-const { getAllModels, getModelById, configureModelSettingsService } = require("../service/IGSettingService");
+const { getAllModels, getModelById, configureModelSettingsService, createModelService, updateModelService, deleteModelService, getQualityLevelAspectRatioForSelectService } = require("../service/IGSettingService");
 
 // Aspect Ratio Controllers
 // exports.getAspectRatios = async (req, res) => {
@@ -62,9 +62,10 @@ exports.getAllModelsController = async (req, res) => {
     res.status(models.status).json(models);
 };
 
+
 exports.getModelController = async (req, res) => {
-    const { id } = req.params;
-    const model = await getModelById(id);
+    const { modelId } = req.params;
+    const model = await getModelById(modelId);
     if (!model) {
         return res.status(404).json({ message: 'Model not found' });
     }
@@ -84,27 +85,79 @@ exports.configureModelSettingsController = async(req, res) => {
     res.status(result.status).json(result)
 }
 
-// exports.createModel = async (req, res) => {
-//     try {
-//         const { name, qualityLevelId, modelUrl, creditPoints } = req.body;
-//         const id = await createModel(name, qualityLevelId, modelUrl, creditPoints);
-//         res.status(201).json({ id, name });
-//     } catch (error) {
-//         console.error('Error creating model:', error);
-//         res.status(500).json({ message: 'Error creating model' });
-//     }
-// };
+exports.getQualityLevelAspectRatioForSelect = async (req, res) => {
 
-// exports.updateModel = async (req, res) => {
-//     try {
-//         const { id, name, qualityLevelId, modelUrl, isActive, creditPoints } = req.body;
-//         await updateModel(id, name, qualityLevelId, modelUrl, isActive, creditPoints);
-//         res.status(200).json({ message: 'Model updated successfully' });
-//     } catch (error) {
-//         console.error('Error updating model:', error);
-//         res.status(500).json({ message: 'Error updating model' });
-//     }
-// };
+    const result = await getQualityLevelAspectRatioForSelectService();
+    res.status(result.status).json(result);
+}
+
+
+exports.createModelController = async (req, res) => {
+    const {
+        name,
+        description,
+        model_url,
+        resolution_config,
+        aspect_ratio_config,
+        is_active,
+        is_default
+      } = req.body;
+  
+      const resConfigJSON = JSON.stringify(resolution_config);
+      const aspectConfigJSON = JSON.stringify(aspect_ratio_config);
+  
+      const result = await createModelService(name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default);
+      res.status(result.status).json(result);
+  };
+  
+  exports.updateModelController = async (req, res) => {
+      
+    const {id} = req.params;
+    const {
+            name,
+            description,
+            model_url,
+            resolution_config,
+            aspect_ratio_config,
+            is_active,
+            is_default
+        } = req.body;
+      
+          const resConfigJSON = JSON.stringify(resolution_config);
+          const aspectConfigJSON = JSON.stringify(aspect_ratio_config);
+      
+    const result = await updateModelService(id, name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default);
+    res.status(result.status).json(result);
+    
+  };
+  
+  exports.deleteModelController = async (req, res) => {
+      const modelId = req.params.id;
+      const result = await deleteModelService(modelId);
+      res.status(result.status).json(result);
+  };
+
+
+
+// exports.createModelController = async (req, res) => {
+//     const { name, description, model_url, resolution_config, aspect_ratio_config } = req.body;
+//     const result = await createModelService(name, description, model_url, resolution_config, aspect_ratio_config);
+//     res.status(result.status).json(result);
+//   };
+  
+//   exports.updateModelController = async (req, res) => {
+//     const { id } = req.params;
+//     const { name, description, model_url, resolution_config, aspect_ratio_config } = req.body;
+//     const result = await updateModelService(id, name, description, model_url, resolution_config, aspect_ratio_config);
+//     res.status(result.status).json(result);
+//   };
+  
+//   exports.deleteModelController = async (req, res) => {
+//     const { id } = req.params;
+//     const result = await deleteModelService(id);
+//     res.status(result.status).json(result);
+//   };
+
 
 // // Style Controllers
 // exports.getStyles = async (req, res) => {

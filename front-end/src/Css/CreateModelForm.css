@@ -1,0 +1,56 @@
+.model-create-form {
+    border: 1px solid #ddd;             
+    border-radius: 8px;                 
+    padding: 20px;                      
+    background-color: #fff;           
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* .model-create-form {
+    width: 100%;
+    max-width: 75%;
+    margin: auto;     
+} */
+
+/* .model-create-form {
+    max-width: 99000px; 
+    margin: 0 auto;
+  } */
+  
+  .required-label::after {
+    content: " *";
+    color: rgb(255, 29, 29);
+  }
+
+.form-title-text{
+    color: #5a7492;
+    font-size: 20px;
+}
+
+.description-box:focus, .name-box:focus, .url-box:focus, .quality-select:focus, .aspectratio-select:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+.default-switch-btn, .status-switch-btn {
+    width: 150px;
+}
+
+.name-text, .description-text, .url-text, .default-btn-text, .status-btn-text, .quality-text, .aspect-ratio-text{
+    font-size: 16px;
+    font-weight: 550;
+    /* font-weight: bold;    */
+}
+
+.basic-multi-select {
+    min-width: 200px;
+  }
+
+  .create-model-btn{
+    padding: 5px 15px;
+    background-color: rgb(8, 8, 8);
+    color: #fff;
+    border: none;
+    box-shadow:0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+  }

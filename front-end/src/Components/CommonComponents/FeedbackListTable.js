@@ -167,7 +167,7 @@ function Row({row}) {
                     <Paper elevation={1} sx={{ padding: 2, mt: 1 }}>
                       <Typography variant="body2">
                         {row.message || "No message provided by the user."}
-                      </Typography>
+                        </Typography>
                     </Paper>
                   </Box>
 

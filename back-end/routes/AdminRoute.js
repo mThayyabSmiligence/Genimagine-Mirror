@@ -1,11 +1,16 @@
 const express = require('express');
-const { getAllModelsController, getModelController, configureModelSettingsController } = require('../controller/IGSettingController');
+const { getAllModelsController, getModelController, configureModelSettingsController, createModelController, deleteModelController, updateModelController, getQualityLevelAspectRatioForSelect } = require('../controller/IGSettingController');
 const router = express.Router();
 
 // Public routes
 router.get('/models', getAllModelsController);
-router.get('/models/:id', getModelController);
+router.get('/models/:modelId', getModelController);
 router.post('/models/:id/configure', configureModelSettingsController);
+router.get('/model/select-options', getQualityLevelAspectRatioForSelect);
+
+router.route('/create-model').post(createModelController)        
+router.route('/edit/model/:id').post(updateModelController)        
+router.post('/model/:id', deleteModelController); 
 // router.get('/aspect-ratios', getAspectRatiosController);
 
 // router.get('/styles', SettingsController.getStyles);

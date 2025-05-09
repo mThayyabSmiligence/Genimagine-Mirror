@@ -106,46 +106,178 @@ exports.configureModelSettingsService = async(id, resolution_config, aspect_rati
     }
 }
 
-// async function createModel(name, qualityLevelId, modelUrl, creditPoints) {
-//     const [modelResult] = await db.execute(
-//         'INSERT INTO models (name, quality_level_id, cloudflare_model_url) VALUES (?, ?, ?)',
-//         [name, qualityLevelId, modelUrl]
-//     );
-    
-//     if (creditPoints > 0) {
-//         await db.execute(
-//             'INSERT INTO model_credit_points (model_id, credit_points) VALUES (?, ?)',
-//             [modelResult.insertId, creditPoints]
-//         );
-//     }
-    
-//     return modelResult.insertId;
-// }
 
-// async function updateModel(id, name, qualityLevelId, modelUrl, isActive, creditPoints) {
-//     await db.execute(
-//         'UPDATE models SET name = ?, quality_level_id = ?, cloudflare_model_url = ?, is_active = ?, updated_at = NOW() WHERE id = ?',
-//         [name, qualityLevelId, modelUrl, isActive, id]
-//     );
-    
-//     // Update or insert credit points
-//     const [existing] = await db.execute(
-//         'SELECT id FROM model_credit_points WHERE model_id = ?',
-//         [id]
-//     );
-    
-//     if (existing.length > 0) {
-//         await db.execute(
-//             'UPDATE model_credit_points SET credit_points = ? WHERE model_id = ?',
-//             [creditPoints, id]
-//         );
-//     } else if (creditPoints > 0) {
-//         await db.execute(
-//             'INSERT INTO model_credit_points (model_id, credit_points) VALUES (?, ?)',
-//             [id, creditPoints]
-//         );
+
+exports.getQualityLevelAspectRatioForSelectService = async () => {
+    try {
+      const [qualityLevels] = await db.execute(`
+        SELECT 
+          id AS value, 
+          resolution AS label, 
+          is_default, 
+          is_active 
+        FROM quality_levels
+      `);
+  
+      const [aspectRatios] = await db.execute(`
+        SELECT 
+          id AS value, 
+          ratio AS label, 
+          is_default,
+          is_active
+        FROM aspect_ratios
+      `);
+  
+      return {
+        status: 200,
+        quality_levels: qualityLevels,
+        aspect_ratios: aspectRatios
+      };
+    } catch (error) {
+      console.error("Error fetching quality levels or aspect ratios:", error.message);
+      return{
+        status: 500,
+        message: error.message
+      }
+    }
+  };
+
+exports.resetOtherModelsDefaultService = async () => {
+    try {
+      const query = `UPDATE models SET is_default = 0`;
+      await db.execute(query);
+    } catch (error) {
+      console.error("Error resetting default models:", error.message);
+      throw error;
+    }
+  };
+
+exports.createModelService = async (name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
+    try {
+      if (is_default === 1 || "true") {
+        await this.resetOtherModelsDefaultService(); 
+      }
+      
+      const query = `
+      INSERT INTO models 
+      (name, description, cloudflare_model_url, is_active, is_default, resolution_config, aspect_ratio_config) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      
+      await db.execute(query, [
+        name,
+        description,
+        model_url,
+        is_active,
+        is_default,
+        resConfigJSON,
+        aspectConfigJSON
+      ]);
+      
+      return { status: 201, message: "Model created successfully" };
+    } catch (error) {
+      console.error("Error creating model:", error.message);
+      return { status: 500, message: "Error creating model",error: error.message };
+    }
+  };
+  
+  exports.updateModelService = async (id, name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
+    try {
+
+        if (is_default === 1 || "true") {
+            await this.resetOtherModelsDefaultService(); 
+        }
+      
+      const query = `
+        UPDATE models 
+        SET name = ?, description = ?, cloudflare_model_url = ?, 
+            is_active = ?, is_default = ?, resolution_config = ?, aspect_ratio_config = ?, updated_at = NOW()
+        WHERE id = ?`;
+
+        
+        await db.execute(query, [
+          name,
+          description,
+        model_url,
+        is_active,
+        is_default,
+        resConfigJSON,
+        aspectConfigJSON,
+        id
+      ]);
+      
+      console.log("check data", query);
+
+  
+      return { status: 200, message: "Model updated successfully" };
+    } catch (error) {
+      console.error("Error updating model:", error.message);
+      return { status: 500, message: "Error updating model" };
+    }
+  };
+  
+  exports.deleteModelService = async (id) => {
+    try {
+      const query = "DELETE FROM models WHERE id = ?";
+      await db.execute(query, [id]);
+      return { status: 200, message: "Model deleted successfully" };
+    } catch (error) {
+      console.error("Error deleting model:", error.message);
+      return { status: 500, message: "Error deleting model" };
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+// exports.createModelService = async (name, description, model_url, resolution_config, aspect_ratio_config) => {
+//     try {
+//       const resConfigJSON = JSON.stringify(resolution_config);
+//       const aspectConfigJSON = JSON.stringify(aspect_ratio_config);
+//       const [result] = await db.execute(
+//         `INSERT INTO models (name, description, model_url, resolution_config, aspect_ratio_config, created_at)
+//          VALUES (?, ?, ?, ?, ?, NOW())`,
+//         [name, description, model_url, resConfigJSON, aspectConfigJSON]
+//       );
+//       return { status: 201, message: "Model created successfully", id: result.insertId };
+//     } catch (error) {
+//       console.error("Create model error:", error);
+//       return { status: 500, message: "Error creating model" };
 //     }
-// }
+//   };
+  
+//   exports.updateModelService = async (id, name, description, model_url, resolution_config, aspect_ratio_config) => {
+//     try {
+//       const resConfigJSON = JSON.stringify(resolution_config);
+//       const aspectConfigJSON = JSON.stringify(aspect_ratio_config);
+//       await db.execute(
+//         `UPDATE models
+//          SET name = ?, description = ?, model_url = ?, resolution_config = ?, aspect_ratio_config = ?, updated_at = NOW()
+//          WHERE id = ?`,
+//         [name, description, model_url, resConfigJSON, aspectConfigJSON, id]
+//       );
+//       return { status: 200, message: "Model updated successfully" };
+//     } catch (error) {
+//       console.error("Update model error:", error);
+//       return { status: 500, message: "Error updating model" };
+//     }
+//   };
+  
+//   exports.deleteModelService = async (id) => {
+//     try {
+//       await db.execute(`DELETE FROM models WHERE id = ?`, [id]);
+//       return { status: 200, message: "Model deleted successfully" };
+//     } catch (error) {
+//       console.error("Delete model error:", error);
+//       return { status: 500, message: "Error deleting model" };
+//     }
+//   };
 
 // // Aspect Ratio Dimensions Functions
 // async function getDimensionsForQuality(qualityLevelId) {
