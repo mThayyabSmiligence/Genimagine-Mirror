@@ -144,7 +144,7 @@ function App() {
                 <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path='model-management' element={<AdminModelManagement/>}></Route>
-                <Route path='model-details' element={<ModelDetail/>}></Route>
+                <Route path='model-detail/:modelId' element={<ModelDetail/>}></Route>
                 <Route path='model-management/create-model' element={<CreateModelForm/>}></Route>
                 <Route path="/admin/model/edit/:modelId" element={<CreateModelForm isEditMode={true} />} />
                 <Route path='plans-management' element={<PlansManagement/>}></Route>

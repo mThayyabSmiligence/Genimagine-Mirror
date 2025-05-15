@@ -1,6 +1,5 @@
-import * as React from 'react';
 import '../../Css/AdminModelManagement.css'
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -12,15 +11,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import TablePagination from '@mui/material/TablePagination';
-import { axiosModerator } from '../../API\'s/axios';    
 import { useState } from 'react';
-import FeedbackResponsePopUp from './FeedbackResponsePopUp';
 import { useEffect } from 'react';
-import EscalationPopUp from './EscalationPopUp';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -32,6 +26,9 @@ function Row({row}) {
     navigate(`/admin/model/edit/${modelId}`);
   };
 
+  const handleViewModelDetail = (modelId) => {
+    navigate(`/admin/model-detail/${modelId}`)
+  }
 
   return (
     <React.Fragment>
@@ -40,7 +37,7 @@ function Row({row}) {
         <TableCell component="th" scope="row" align='center'>
           {row.id}
         </TableCell>
-        <TableCell align="center">{row.name}</TableCell>
+        <TableCell align="center" className={` model-name-field ${row.name ? "data-acquired" : "no-data-acquired"}`}><span>{row.name || "model name is empty"}</span></TableCell>
         <TableCell align="center">{row.description || "this is model with super fast"}</TableCell>
         <TableCell align="center">
             <button title={row?.is_active ? 'Active' : 'In Active'} className={`status-btn ${row?.is_active ? 'active' : 'Inactive'}`}>{row.is_active ? 'Active' : 'In Active'}</button>
@@ -60,7 +57,7 @@ function Row({row}) {
           <button className="edit-btn reviewd-btn" onClick={() => handleEdit(row.id)}>Edit</button>
         </TableCell>
         <TableCell align="center">
-          <button className="edit-btn reviewd-btn" >View Details</button>
+          <button className="view-detail-btn" onClick={() => handleViewModelDetail(row.id)}>View Details</button>
         </TableCell>
  
       </TableRow>

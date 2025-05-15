@@ -175,65 +175,135 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
   },[tempTrackStyle])
  
 
-
-  useEffect(()=>{
-    console.log("isuserLoggedIn :",loggedIn)
-    if(!loggedIn){  
-      const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
-      const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
-      const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
-      const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
-
-      setTempTrackModel(defaultModel?.id || null);
-      setTempSelectedAspectRatio(defaultAspectRatio?.id || null);
-      setTempSelectedQuality(defaultQuality?.id || null);
-      setTempTrackStyle(defaultStyle?.id || null);
-      return;
-    }
-
-    if(localStorage.getItem("image_settings")){
-      const settings = JSON.parse(localStorage.getItem("image_settings"));
-        setTempTrackModel(settings.model || modelsList[0]?.id || null);
-        setTempSelectedAspectRatio(
-           settings.aspectRatioid || aspectRatioList[0]?.id || null
-        );
-        setTempSelectedQuality(
-            settings.quality || qualityLevelsList[0]?.id || null
-        );
-        setTempTrackStyle(settings.style || styleList[0]?.id || null);
-        return;
-    }
-
-    localStorage.setItem("image_settings", JSON.stringify(
-      {
-        model: tempTrackModel,
-        modalname: modelsList.find((model) => model.id === tempTrackModel)?.name,
-        aspectRatioid: tempSelectedAspectRatio,
-        aspectRatio: aspectRatioList.find((ar) => ar.id === tempSelectedAspectRatio)?.ratio,
-        quality: tempSelectedQuality,
-        qualityResolution: qualityLevelsList.find((ql) => ql.id === tempSelectedQuality)?.resolution,
-        style: tempTrackStyle,
-      }
-    ))
-    setRefreshImageSettings(!refreshImageSettings)
-    
-  },[])
+ useEffect(() => {
+  const selectedModel = modelsList.find(model => model.id === tempTrackModel);
   
+  if (selectedModel) {
+   
+    const sortedAspectRatios = [...(selectedModel.aspect_ratio_config || [])].sort((a, b) => {
+      const ratioA = a.width / a.height;
+      const ratioB = b.width / b.height;
+      return ratioB - ratioA;
+    });
+    setAspectRatioList(sortedAspectRatios);
+
+    
+    const qualityLevels = (selectedModel.resolution_config || []).map(({ name, quality_level_id, ...rest }) => ({
+      ...rest,
+      id: quality_level_id,
+      resolution: name,
+    }));
+    setQualityLevelsList(qualityLevels);
+
+    // Set default selections
+    const defaultAspectRatio = sortedAspectRatios.find(ar => ar.is_default === 1) || sortedAspectRatios[0];
+    const defaultQuality = qualityLevels.find(q => q.is_default === 1) || qualityLevels[0];
+
+    setTempSelectedAspectRatio(defaultAspectRatio?.aspect_ratio_id || null);
+    setTempSelectedQuality(defaultQuality?.id || null);
+  }
+}, [tempTrackModel]);
+
+
+
+    useEffect(()=>{
+      console.log("isuserLoggedIn :",loggedIn)
+      console.log("model list show" , modelsList)
+      console.log("aspect ratio list show", aspectRatioList)
+      console.log("quality level list", qualityLevelsList)
+      
+      if(modelsList.length==0){
+        return;
+      }
+      
+      const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
+        console.log("default model", defaultModel)
+        const modelAspectRatios = defaultModel.aspect_ratio_config || [];
+        const modelResolutions = defaultModel.resolution_config || [];
+
+        const defaultAspectRatio = modelAspectRatios.find(ar => ar.is_default === 1) || modelAspectRatios[0];
+        const defaultQuality = modelResolutions.find(q => q.is_default === 1) || modelResolutions[0];
+        const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
+
+      if(!loggedIn){  
+        
+        // const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
+        // const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
+
+        setTempTrackModel(defaultModel?.id || null);
+        setTempSelectedAspectRatio(defaultAspectRatio?.aspect_ratio_id || null);
+        setTempSelectedQuality(defaultQuality?.quality_level_id || null);
+        setTempTrackStyle(defaultStyle?.id || null);
+        return;
+      }
+
+      // if(localStorage.getItem("image_settings")){
+      //   const settings = JSON.parse(localStorage.getItem("image_settings"));
+      //     setTempTrackModel(settings.model || modelsList[0]?.id || null);
+      //     setTempSelectedAspectRatio(
+      //       settings.aspectRatioid || aspectRatioList[0]?.aspect_ratio_id || null
+      //     );
+      //     setTempSelectedQuality(
+      //         settings.quality || qualityLevelsList[0]?.id || null
+      //     );
+      //     setTempTrackStyle(settings.style || styleList[0]?.id || null);
+      //     return;
+      // }
+
+        const savedSettings = localStorage.getItem("image_settings");
+
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+
+          const selectedModel = modelsList.find((model) => model.id === settings.model) || defaultModel;
+          const selectedAspectRatios = selectedModel.aspect_ratio_config || [];
+          const selectedResolutions = selectedModel.resolution_config || [];
+
+          const selectedAspectRatio = selectedAspectRatios.find((ar) => ar.aspect_ratio_id === settings.aspectRatioid) || selectedAspectRatios[0];
+          const selectedQuality = selectedResolutions.find((ql) => ql.quality_level_id === settings.quality) || selectedResolutions[0];
+          const selectedStyle = styleList.find((style) => style.id === settings.style) || styleList[0];
+
+          setTempTrackModel(selectedModel.id);
+          setTempSelectedAspectRatio(selectedAspectRatio?.aspect_ratio_id || null);
+          setTempSelectedQuality(selectedQuality?.quality_level_id || null);
+          setTempTrackStyle(selectedStyle?.id || null);
+          return;
+        }
+
+
+
+      localStorage.setItem("image_settings", JSON.stringify(
+        {
+          model: defaultModel.id,
+          modalname: defaultModel.name,
+          aspectRatioid: defaultAspectRatio?.aspect_ratio_id,
+          aspectRatio:  defaultAspectRatio?.ratio,
+          quality: defaultQuality?.quality_level_id,
+          qualityResolution: defaultQuality?.name,
+          style: defaultStyle?.id,
+        }
+      ))
+      setRefreshImageSettings(!refreshImageSettings)
+      
+    },[modelsList])
+    
 
   
   const handlesubmit = () => {  
+    
     localStorage.setItem("image_settings", JSON.stringify(
-      {
-        model:tempTrackModel,
-        modelname: modelsList.find((model) => model.id === tempTrackModel)?.name,
-        aspectRatioid:tempSelectedAspectRatio, 
-        aspectRatio: aspectRatioList.find((ar) => ar.id === tempSelectedAspectRatio)?.ratio,
-        quality: tempSelectedQuality,
-        qualityResolution: qualityLevelsList.find((ql) => ql.id === tempSelectedQuality)?.resolution,
-        style:tempTrackStyle
-      }))
+    {
+      model:tempTrackModel,
+      modelname: modelsList.find((model) => model.id === tempTrackModel)?.name,
+      aspectRatioid:tempSelectedAspectRatio, 
+      aspectRatio: aspectRatioList.find((ar) => ar.aspect_ratio_id === tempSelectedAspectRatio)?.ratio,
+      quality: tempSelectedQuality,
+      qualityResolution: qualityLevelsList.find((ql) => ql.id === tempSelectedQuality)?.resolution,
+      style:tempTrackStyle
+    }))
+
       setRefreshImageSettings(!refreshImageSettings)
-    closePopup();
+      closePopup();
   }
 
   return  (
@@ -286,8 +356,8 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                   {
                     aspectRatioList.length>0&&aspectRatioList.map((shape) => (
 
-                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape.id)}
-                      className={`aspect-ratio-box ${ shape.id == tempSelectedAspectRatio && "active"} mb-3 ${!loggedIn&& shape.id!=2 &&"unclickable"}`}
+                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape.aspect_ratio_id)}
+                      className={`aspect-ratio-box ${ shape.aspect_ratio_id == tempSelectedAspectRatio && "active"} mb-3 ${!loggedIn&& shape.aspect_ratio_id!=2 &&"unclickable"}`}
                       style={{ width: `${shape.width}px`, height: `${shape.height}px` }}
                     >
                       {shape.ratio}

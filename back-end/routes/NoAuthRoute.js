@@ -1,9 +1,10 @@
 const express = require('express');
 const { getCreditPackagesController } = require('../controller/CreditController');
 const { getAllExploreImagesController, getExploreImageByIdController, ViewExploreImageController, getExploreImageByUserIdController } = require('../controller/ExploreController');
-const { getUserDataByIdController, getUserNameByIdController, getAllModelsController, getAllAspectRatiosController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, getResizedHeightWidthController } = require('../controller/UsersController');
+const { getUserDataByIdController, getUserNameByIdController, getAllModelsController, getAllAspectRatiosController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, getResizedHeightWidthController, getModelByIdController } = require('../controller/UsersController');
 const { checkdimension, checkmodel } = require('../controller/CheckController');
 const { getAspectRatioShape, getResizedAspectRatio, getResizedHeightWidth } = require('../service/UserService');
+const { getModelById } = require('../service/IGSettingService');
 const router = express.Router();
 
 router.route('/get-packages').get(getCreditPackagesController);
@@ -16,6 +17,7 @@ router.route('/explore/:published_id/view').post(ViewExploreImageController)
 router.route('/user/:user_id').get(getUserNameByIdController)
 
 router.route("/models").post(getAllModelsController);
+router.route('/model/:id').post(getModelByIdController);
 router.route("/aspect-ratios").post(getAllAspectRatiosController);
 router.route("/quality-levels").post(getAllQualityLevelsController);
 router.route("/styles").post( getAllStylesController);

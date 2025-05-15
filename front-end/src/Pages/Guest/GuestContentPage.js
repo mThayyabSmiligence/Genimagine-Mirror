@@ -109,7 +109,6 @@ export default function GuestContentPage() {
           console.log("logged in ?" , loggedIn)
           let response;     
 
-
           if(loggedIn){
             response = await axiosPrivate.post(
               '/generate-image',

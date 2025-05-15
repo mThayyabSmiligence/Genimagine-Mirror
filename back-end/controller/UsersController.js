@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService, getResizedHeightWidth} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService, getResizedHeightWidth, getModelByIdService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 // get all users api - api/v1/users/list
 
@@ -333,6 +333,13 @@ exports.getUserByIdController = async(req,res) => {
 
 exports.getAllModelsController = async(req, res) => {
     const result = await getAllModelsService();
+    return res.status(result.status).json(result);
+};
+
+exports.getModelByIdController = async(req, res) => {
+    const {id} = req.params;
+
+    const result = await getModelByIdService(id);
     return res.status(result.status).json(result);
 };
 

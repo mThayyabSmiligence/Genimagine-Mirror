@@ -187,7 +187,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             height:w_h.height,
             style:style
         }
-        const model_data=await handelModel(model)
+        const model_data=await handelModel(model, aspect_ratio, quality)
 
         if (!model_data.success) {
             res.status(model_data.status).json({ message: model_data.message });

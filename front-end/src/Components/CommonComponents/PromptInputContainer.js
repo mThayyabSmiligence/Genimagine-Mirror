@@ -81,12 +81,10 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const {loggedIn}= useContext(AuthContext)
 
   const [modelsList, setModelsList] = useState([]);
+  const [getModelById, setGetModelById] = useState(null);
   const [aspectRatioList, setAspectRatioList] = useState([]);
   const [qualityLevelsList, setQualityLevelsList] = useState([]);
 
-
-
-  
 
   const fetchData = async () => {
       try{
@@ -94,27 +92,39 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         const { models,aspect_ratios_shapes, quality_levels } = response.data.data;
   
         setModelsList(models);
-        // sorted and stored in aspect ratio list
-        const sortedAspectRatios = [...aspect_ratios_shapes].sort((a, b) => {
+
+        const imageSetting = JSON.parse(localStorage.getItem('image_settings'));
+        const selectedModel = models.find((model)=>imageSetting?imageSetting.model == model.id:model.is_default==1);
+
+        const allAspectRatios = selectedModel.aspect_ratio_config;
+        const sortedAspectRatios = allAspectRatios.sort((a, b) => {
           const ratioA = a.width / a.height;
           const ratioB = b.width / b.height;
           return ratioB - ratioA; 
         });
         setAspectRatioList(sortedAspectRatios);
 
-        // const sortedQuality = [...quality_levels].sort((a, b) => {
-        //   return a.resolution.localeCompare(b.resolution);                                 // for string-based sorting
-        // });        
-        setQualityLevelsList(quality_levels);
+              
+
+        const allQualityLevels= (selectedModel.resolution_config || []).map(({ name,quality_level_id, ...rest }) => ({
+          ...rest, 
+          id: quality_level_id,                       
+          resolution: name           
+        }))
+
+
+        setQualityLevelsList(allQualityLevels);
+        console.log("this is quality config :::: ", allQualityLevels)
 
         // setStyleList(styles);
 
 
-  
+        return models 
       }catch (error) {
         console.error("Error fetching data:", error);
     }
   };
+
   const pRef= useRef(null)
 
 
@@ -182,10 +192,17 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
 
   useEffect(()=>{
      // getting default model,ascept ratio and quality when no image setting is found in local storage
-      if(!localStorage.getItem("image_settings") && modelsList.length>0 && aspectRatioList.length>0 && qualityLevelsList.length>0){
-        const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
-        const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
-        const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
+      if(!localStorage.getItem("image_settings") && modelsList.length>0 ){
+        const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0]; 
+
+        const modelAspectRatios = defaultModel.aspect_ratio_config || [];
+        const modelResolutions = defaultModel.resolution_config || [];
+
+        const defaultAspectRatio = modelAspectRatios.find(ar => ar.is_default === 1) || modelAspectRatios[0];
+        const defaultQuality = modelResolutions.find(q => q.is_default === 1) || modelResolutions[0];
+
+        // const defaultAspectRatio = aspectRatioList.find((ar) => ar.is_default === 1) || aspectRatioList[0];
+        // const defaultQuality = qualityLevelsList.find((ql) => ql.is_default === 1) || qualityLevelsList[0];
         const defaultStyle = styleList.find((style) => style.is_default === 1) || styleList[0];
 
         console.log("default model",defaultModel)
@@ -197,10 +214,10 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
           {
             model:defaultModel?.id ,
             modelname: defaultModel?.name,
-            aspectRatioid: defaultAspectRatio?.id,
+            aspectRatioid: defaultAspectRatio?.aspect_ratio_id,
             aspectRatio: defaultAspectRatio?.ratio,
-            quality: defaultQuality?.id,
-            qualityResolution: defaultQuality?.resolution,
+            quality: defaultQuality?. quality_level_id,
+            qualityResolution: defaultQuality?.name,
             style: defaultStyle?.id
           }
         ))
@@ -211,7 +228,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         fetchData()
       }
       
-    },[modelsList,aspectRatioList,qualityLevelsList])
+    },[modelsList])
 
   const [width, setWidth] = useState(window.innerWidth);
           

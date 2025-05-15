@@ -1,35 +1,21 @@
-.create-btn-link{
-    padding: 5px 15px;
-    background-color: rgb(8, 8, 8);
-    color: #fff;
-    border: none;
-    box-shadow:0 2px 8px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    transition: transform 0.2s ease-in-out; 
-}
-
-.create-btn-link:hover {
-    transform: translateY(-1px)
-}
-
-.model-wrapper {
+.model-detail-container{
     border: 1px solid #ddd;             
     border-radius: 8px;                 
     padding: 20px;                      
     background-color: #fff;           
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
-  }
+}
 
-.model-heading-title{
+.model-detail-heading-title{
     color: #697a8d;
     font-size: 20px;
 }
 
-.models-table-title span{
+/* .models-table-title span{
     color: #697a8d;
     font-size: 13px;
     font-weight: bold;
-}
+} */
 
 .status-btn.active , .default-btn.isDefault{
     padding: 5px 8px;
@@ -66,39 +52,23 @@
     cursor: text;
   }
 
-  .view-detail-btn{
-    padding: 5px 15px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    background-color: rgb(72, 93, 167);
-    color: #fff;
-    transition: transform 0.2s ease-in-out;
+  .model-details-preview{
+   
   }
 
-  .view-detail-btn:hover{
-    transform: translateY(-1px)
+  .model-detail-heading span{
+    color: #576f8a;
+    font-size: 20px;
+    font-weight: 500;
   }
 
-  .edit-btn{
-    padding: 5px 15px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    background-color: rgb(72, 145, 167);
-    color: #fff;
-    transition: transform 0.2s ease-in-out;
+  .heading-color{
+    color: #496686;
   }
 
-  .edit-btn:hover{
-    transform: translateY(-1px)
+  .ar-config, .q-config{
+    color: #576f8a;
+    font-size: 18px;
+    font-weight: bold;
   }
-
-  .model-name-field.no-data-acquired{
-  color: #c24242 !important;
-}
- 
-
   
