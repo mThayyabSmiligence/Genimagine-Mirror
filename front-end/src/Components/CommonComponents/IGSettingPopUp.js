@@ -208,16 +208,12 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
 
     useEffect(()=>{
       console.log("isuserLoggedIn :",loggedIn)
-      console.log("model list show" , modelsList)
-      console.log("aspect ratio list show", aspectRatioList)
-      console.log("quality level list", qualityLevelsList)
       
       if(modelsList.length==0){
         return;
       }
       
       const defaultModel = modelsList.find((model) => model.is_default === 1) || modelsList[0];
-        console.log("default model", defaultModel)
         const modelAspectRatios = defaultModel.aspect_ratio_config || [];
         const modelResolutions = defaultModel.resolution_config || [];
 

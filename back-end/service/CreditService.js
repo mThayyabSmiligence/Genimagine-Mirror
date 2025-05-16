@@ -8,7 +8,7 @@ exports.getCreditPackagesService=async()=>{
         const [packages] = await db.execute('SELECT * FROM credit_purchase_packages  WHERE package_id <> 0');
         return packages;
     } catch (error) {
-        console.log("eorror retriving packages",error);
+        console.log("error retriving packages",error);
         return false;
     }
  

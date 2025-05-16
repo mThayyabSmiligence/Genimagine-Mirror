@@ -8,6 +8,7 @@ const { getExploreImagesByUserIdService } = require('../service/ExploreService')
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
+const { getAllPlansController, getPlanByIdController, subscribeToPlanController } = require('../controller/PlanController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -38,6 +39,11 @@ router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
 
+router.route("/plans").post(getAllPlansController);
+router.route("/plan/:id").post(getPlanByIdController);
+router.post("/subscribe/:plan_id").post(subscribeToPlanController);
+// router.post('/renew', renewPlanController);
+// router.post('/top-up', topUpPlanController);
 
 //explore page routes
 router.route('/publish-to-explore').post(publishToExploreController);

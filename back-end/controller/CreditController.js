@@ -10,7 +10,7 @@ exports.getCreditPackagesController=async(req,res)=>{
             message: 'Failed to get credit purchase packages',
      });
     }
-
+    
     return res.status(200).json({
         success: true,
         data: credit_purchase_packages,
