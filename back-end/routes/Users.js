@@ -39,9 +39,9 @@ router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
 
-router.route("/plans").post(getAllPlansController);
-router.route("/plan/:id").post(getPlanByIdController);
-router.post("/subscribe/:plan_id").post(subscribeToPlanController);
+// router.route("/plans").post(getAllPlansController);
+// router.route("/plan/:id").post(getPlanByIdController);
+// router.post("/subscribe/:plan_id").post(subscribeToPlanController);
 // router.post('/renew', renewPlanController);
 // router.post('/top-up', topUpPlanController);
 

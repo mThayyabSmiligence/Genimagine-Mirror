@@ -1,60 +1,60 @@
-const db = require('../config/connectDatabase');
+// const db = require('../config/connectDatabase');
 
-exports.getAllPlansService = async() => {
-    try{
-        const query = "SELECT * FROM plans WHERE is_active = 1 ORDER BY id ASC";
-        const [rows] = await db.execute(query)
+// exports.getAllPlansService = async() => {
+//     try{
+//         const query = "SELECT * FROM plans WHERE is_active = 1 ORDER BY id ASC";
+//         const [rows] = await db.execute(query)
         
-        console.log("retrieved plans successfully", rows )
-        return{
-            status : 200,
-            success: true,
-            message: "retrieved plans successfully",
-            rows                                  //data comes from array inside the object
-        }
+//         console.log("retrieved plans successfully", rows )
+//         return{
+//             status : 200,
+//             success: true,
+//             message: "retrieved plans successfully",
+//             rows
+//         }
         
-    }catch(error){
-        console.error("error getting list of plans",error.message)
-        return{
-            status: 500,
-            message: "error getting list of plans"
-        }
-    }
-}
-exports.getPlanByIdService = async(planId) => {
-   try{
-        const query = "SELECT * FROM pLans WHERE id = ?"
-        const [rows] = await db.execute(query, [planId])
+//     }catch(error){
+//         console.error("error getting list of plans",error.message)
+//         return{
+//             status: 500,
+//             message: "error getting list of plans"
+//         }
+//     }
+// }
+// exports.getPlanByIdService = async(planId) => {
+//    try{
+//         const query = "SELECT * FROM pLans WHERE id = ?"
+//         const [rows] = await db.execute(query, [planId])
         
-        console.log("retrieved plan by id successfully", rows )
-        return{
-            status : 200,
-            success: true,
-            message: "retrieved plan by id successfully",
-            rows: rows[0]                   //data comes directly in object
-        }
+//         console.log("retrieved plan by id successfully", rows )
+//         return{
+//             status : 200,
+//             success: true,
+//             message: "retrieved plan by id successfully",
+//             rows: rows[0]                 
+//         }
         
-    }catch(error){
-        console.error("error getting plan by id",error.message)
-        return{
-            status: 500,
-            message: "error getting plan by id"
-        }
-    }
-}
+//     }catch(error){
+//         console.error("error getting plan by id",error.message)
+//         return{
+//             status: 500,
+//             message: "error getting plan by id"
+//         }
+//     }
+// }
 
-exports.subscribeToPlanService = async (userId, planId) => {
-  const [[plan]] = await db.query(`SELECT * FROM plans WHERE id = ? AND is_active = 1`, [planId]);
-  if (!plan) throw new Error('Plan not found');
+// exports.subscribeToPlanService = async (userId, planId) => {
+//   const [[plan]] = await db.query(`SELECT * FROM plans WHERE id = ? AND is_active = 1`, [planId]);
+//   if (!plan) throw new Error('Plan not found');
 
-  const expiryDate = new Date();
-  expiryDate.setDate(expiryDate.getDate() + plan.validity_days);
+//   const expiryDate = new Date();
+//   expiryDate.setDate(expiryDate.getDate() + plan.validity_days);
 
-  await db.query(`
-    INSERT INTO user_plan_credits (user_id, plan_id, credits_remaining, start_date, expiry_date)
-    VALUES (?, ?, ?, NOW(), ?)
-  `, [userId, planId, plan.credit_amount, expiryDate]);
-};
+//   await db.query(`
+//     INSERT INTO user_plan_credits (user_id, plan_id, credits_remaining, start_date, expiry_date)
+//     VALUES (?, ?, ?, NOW(), ?)
+//   `, [userId, planId, plan.credit_amount, expiryDate]);
+// };
 
 // exports.renewSubscription = async (userPlanId) => {
 //   const [[data]] = await db.query(`

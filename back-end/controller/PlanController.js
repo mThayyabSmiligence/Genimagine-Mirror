@@ -1,26 +1,26 @@
-const { getAllPlansService, getPlanByIdService, subscribeToPlanService } = require("../service/PlanService")
+// const { getAllPlansService, getPlanByIdService, subscribeToPlanService } = require("../service/PlanService")
 
-exports.getAllPlansController = async(req, res) => {
-    const result = await getAllPlansService()
+// exports.getAllPlansController = async(req, res) => {
+//     const result = await getAllPlansService()
 
-    res.status(result.status).json(result);
-}
+//     res.status(result.status).json(result);
+// }
 
-exports.getPlanByIdController = async(req, res) => {
-    const {id} = req.params
+// exports.getPlanByIdController = async(req, res) => {
+//     const {id} = req.params
 
-    const result = await getPlanByIdService(id)
-    res.status(result.status).json(result);
-}
+//     const result = await getPlanByIdService(id)
+//     res.status(result.status).json(result);
+// }
 
-exports.subscribeToPlanController = async (req, res) => {
+// exports.subscribeToPlanController = async (req, res) => {
 
-    const {planId}= req.params;
-    const {id}= req.user;
-    const result = await subscribeToPlanService(planId, id);
+//     const {planId}= req.params;
+//     const {id}= req.user;
+//     const result = await subscribeToPlanService(planId, id);
     
-    res.status(result.status).json(result);
-};
+//     res.status(result.status).json(result);
+// };
 
 // exports.renewPlanController = async (req, res) => {
 //   try {
