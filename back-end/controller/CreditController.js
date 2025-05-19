@@ -18,19 +18,19 @@ exports.getCreditPackagesController=async(req,res)=>{
  
 }
 
-exports.buyCreditsPackageController=async(req,res)=>{
-    //logic to buy credits
-    const {package_id}= req.params;
-    const {id}= req.user;
+// exports.buyCreditsPackageController=async(req,res)=>{
 
-    const response = await buyCreditsPackageService(package_id,id);
+//     const {package_id}= req.params;
+//     const {id}= req.user;
+
+//     const response = await buyCreditsPackageService(package_id,id);
     
-    res.status(response.status).json(
-        {
-            message: response.message,
-            credits_purchased:response.credits_purchased
+//     res.status(response.status).json(
+//         {
+//             message: response.message,
+//             credits_purchased:response.credits_purchased
 
-        }
-    )
+//         }
+//     )
 
-}
+// }

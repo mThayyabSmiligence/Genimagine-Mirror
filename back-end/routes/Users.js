@@ -28,7 +28,7 @@ router.route('/delete-image/:image_id').delete(deleteImageController)
 router.route('/delete-chat/:chat_id').delete(deleteChatController)
 
 
-router.route('/buy-credits/:package_id').put(buyCreditsPackageController)
+// router.route('/buy-credits/:package_id').put(buyCreditsPackageController)
 
 router.route('/order').post(RayzorPayOrderController)
 router.route('/validate-payment').post(validatePaymentController)

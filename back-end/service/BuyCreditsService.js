@@ -117,7 +117,7 @@ exports.updatePaymentStatus=async(payment_id,payment_method,status,order_id)=>{
     try{
         const query= "update credit_purchase_logs set payment_status=? , completed_at= now() , payment_id=? , payment_method = ? where order_id=?"
         const [rows] = await db.execute(query,[status, payment_id,payment_method,order_id])
-        console.log("payment status updated successfully")
+        console.log("payment status updated successfully", status, payment_id,payment_method,order_id)
         return {
             status:200,
             message:"payment status updated successfully",

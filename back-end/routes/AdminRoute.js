@@ -11,6 +11,13 @@ router.get('/model/select-options', getQualityLevelAspectRatioForSelect);
 router.route('/create-model').post(createModelController)        
 router.route('/edit/model/:id').post(updateModelController)        
 router.post('/model/:id', deleteModelController); 
+
+router.route('/plans').post(getAllPlansController);
+router.route("/plan/:id").post(getPlanByIdController);
+router.route('/create-plan').post(createPlanController);
+router.route('/update-plan/:id').post(updateplanController);
+router.route("/delete-plan/:id").post(deletePlanController);
+
 // router.get('/aspect-ratios', getAspectRatiosController);
 
 // router.get('/styles', SettingsController.getStyles);
