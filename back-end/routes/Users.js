@@ -1,5 +1,5 @@
 const express = require('express')
-const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController} = require('../controller/UsersController');
+const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, generateImageWithStabilityController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController } = require('../controller/CreditController');
@@ -9,6 +9,7 @@ const { RayzorPayOrderController, validatePaymentController, handelFailedPayment
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController } = require('../controller/PlanController');
+const { generateSDImage, generateImageWithStability } = require('../service/generateSDImage');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -56,6 +57,8 @@ router.route("/explore/:published_id").delete(deleteExploreImageByPublishedIdCon
 router.route('/explore/edit-caption/:published_id').post(editCaptionController)
 router.route('/report-image').post(ImageReportController)
 router.route("/submitfeedback").post(submitFeedbackController);
+
+// router.route("/generatebySD").post( generateImageWithStabilityController)
 
 
 module.exports = router;

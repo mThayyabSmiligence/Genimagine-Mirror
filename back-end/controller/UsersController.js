@@ -367,3 +367,27 @@ exports.getResizedHeightWidthController = async(req, res) => {
     const getHeightWidth = await getResizedHeightWidth()
     return res.status(getHeightWidth.status).json(getHeightWidth)
 }
+
+//  exports.generateImageWithStabilityController = async (req, res) => {
+//   try {
+//     const { prompt } = req.body;
+
+//     if (!prompt || typeof prompt !== 'string') {
+//       return res.status(400).json({ success: false, message: 'Prompt is required and must be a string.' });
+//     }
+
+//     const image = await generateImageWithStability(prompt);
+
+//     return res.status(200).json({
+//       success: true,
+//       image, // base64 string with data:image/png;base64,...
+//     });
+//   } catch (error) {
+//     console.error('Error generating image:', error);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Image generation failed',
+//       error: error.message,
+//     });
+//   }
+// };

@@ -12,6 +12,7 @@ const { paidGenerateImageService } = require('../service/PaidGenerateImageServic
 const { uploadImageToServer } = require('../service/UploadToServerService');
 const { encrypt } = require('../service/EncrypDecrypt');
 const { decrypt } = require('../service/EncrypDecrypt');
+const { generateSDImage } = require('../service/generateSDImage');
 
 
 
@@ -203,8 +204,18 @@ exports.userGenerateImageController=async(req,res,next)=>{
             })
             return
         }
+    
+        // today change 20/5/2025
+        // const image=await paidGenerateImageService(inputs,model_data.model_url)
 
-        const image=await paidGenerateImageService(inputs,model_data.model_url)
+        let image;
+
+        if (model_data.model_url === "SD_1_6") {
+            image = await generateSDImage(inputs); // Stability AI
+        } else {
+            image = await paidGenerateImageService(inputs, model_data.model_url); // Cloudflare
+        }
+
 
 
         if(!image){
