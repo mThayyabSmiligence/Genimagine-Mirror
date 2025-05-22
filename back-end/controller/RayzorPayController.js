@@ -12,7 +12,7 @@ var instance = new Razorpay({ key_id: process.env.RAZOR_PAY_KEY, key_secret: pro
 exports.RayzorPayOrderController=async(req,res)=>{
 
     try{
-        const {package_id,custom_credits,currency } = req.body; 
+        const {package_id,custom_credits,currency, package_type} = req.body; 
         const {id,username}=req.user;
 
         if(!package_id && (custom_credits<10||custom_credits>100000)){
@@ -20,7 +20,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
         }
          
         //generating receipt id
-        const receipt_id =generateReceiptId(id) 
+        const receipt_id = generateReceiptId(id) 
         
         //checking if the razor pay keys exist and handling if they dont exist
         if (!process.env.RAZOR_PAY_KEY || !process.env.RAZOR_PAY_SECRET) {
@@ -31,7 +31,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
         }
         
         //creating the puchase log in database
-        const receipt =await createPurchaseLog(id,package_id,custom_credits,currency,receipt_id)
+        const receipt =await createPurchaseLog(id,package_id,custom_credits,currency,receipt_id, package_type)
         
         //checking if the recipt is created successfully and handling if doesn't exist
         if(!receipt){

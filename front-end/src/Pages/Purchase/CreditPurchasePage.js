@@ -78,7 +78,7 @@ function CreditPurchasePage() {
         setLoading(true)
         try {
             const response = await axiosInstance.get('/no-auth/get-packages');
-            console.log(response.data)
+            console.log(response.data , "credit purchase options")
             setCreditPurchaseOptions(response.data.data);
             sessionStorage.setItem('creditPurchaseOptions', JSON.stringify(response.data.data))
             setLoading(false)
@@ -251,9 +251,10 @@ function CreditPurchasePage() {
                 />
             }
 
-            <div className='row'>
+            <div className='row d-flex flex-wrap justify-content-start'>
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
-                    <div key={index} className='col-md-4 mb-4'>
+                    
+                    <div key={index} className='col-md-3 mb-4 '>
                         <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
                     </div>
                 ))}

@@ -25,12 +25,11 @@ exports.createPlanController = async (req, res) => {
         cost,
         currency,
         allow_renewal,
-        allow_top_up,
         is_active,
         validity_days
     } = req.body;
 
-    const result = await createPlanService(package_name,credits,description,cost,currency,allow_renewal,allow_top_up,is_active,validity_days);
+    const result = await createPlanService(package_name,credits,description,cost,currency,allow_renewal,is_active,validity_days);
     res.status(result.status).json(result);
   
 };
@@ -45,12 +44,11 @@ exports.updatePlanController = async (req, res) => {
         cost,
         currency,
         allow_renewal,
-        allow_top_up,
         is_active,
         validity_days
     } = req.body;
 
-    const result = await updatePlanService(package_id, package_name, credits, description, cost, currency, allow_renewal, allow_top_up, is_active, validity_days);
+    const result = await updatePlanService(package_id, package_name, credits, description, cost, currency, allow_renewal, is_active, validity_days);
     res.status(result.status).json(result)
 
 };

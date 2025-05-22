@@ -1,0 +1,54 @@
+.package-card-detail{
+    width: 255m px;
+    height: 265px;
+    position: relative;
+    border: '1px solid #ccc' 
+}
+
+.card-content-container{
+    width: 250px;
+    height: 28px;
+}
+
+.title-text{
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 120%;
+}
+
+.plan-credits{
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 120%;
+    letter-spacing: 0%;    
+}
+
+.plan-COST-container{
+    width: 161px;
+    height: 38px;
+}
+
+.plan-cost{
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 120%;
+}
+
+.plan-cost span{
+    font-weight: 500;
+    font-size: 16px;
+    color: #535353;
+    line-height: 120%;
+    letter-spacing: 0%;
+}
+
+.card-descrption{
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
+    letter-spacing: 0%;
+}
+
+.purchase-button{
+    width: 100% ;
+}

@@ -2,7 +2,7 @@ const db = require('../config/connectDatabase');
 
 exports.getAllPlansService = async () => {
     try{
-        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages WHERE is_latest = 1 ORDER BY created_at DESC');
+        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages WHERE is_latest = 1 ORDER BY created_at ASC');
         return {
             status: 200,
             message: "plans fetched successfully",
@@ -26,6 +26,11 @@ exports.getPlanByIdService = async (id) => {
                 message: "plan not found"
             }
         } 
+        return {
+            status: 200,
+            message: "plan fetched successfully",
+            rows : rows
+        }
     }catch(error){
         console.error("Error fetching plan by ID", error);
         return{
@@ -36,7 +41,7 @@ exports.getPlanByIdService = async (id) => {
   
 };
 
-exports.createPlanService = async (package_name,credits,description,cost,currency,allow_renewal,allow_top_up,is_active,validity_days) => {
+exports.createPlanService = async (package_name,credits,description,cost,currency,allow_renewal,is_active,validity_days) => {
     try{
         const [maxResult] = await db.execute(`SELECT MAX(package_id) AS max_id FROM credit_purchase_packages`);
         const maxId = maxResult[0].max_id || 0;
@@ -55,9 +60,9 @@ exports.createPlanService = async (package_name,credits,description,cost,currenc
 
         const [result] = await db.execute(`
         INSERT INTO credit_purchase_packages 
-        (package_id, package_name, credits, description, cost, currency, allow_renewal, allow_top_up, is_active, parent_package_id, validity_days, is_latest)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [Package_id ,package_name, credits, description, cost, currency, allow_renewal, allow_top_up, is_active, Package_id, validity_days]
+        (package_id, package_name, credits, description, cost, currency, allow_renewal, is_active, parent_package_id, validity_days, is_latest)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [Package_id ,package_name, credits, description, cost, currency, allow_renewal, is_active, Package_id, validity_days]
     );
 
     return {
@@ -74,7 +79,7 @@ exports.createPlanService = async (package_name,credits,description,cost,currenc
     }
 };
 
-exports.updatePlanService = async (id, package_name, credits, description, cost, currency, allow_renewal, allow_top_up, is_active, validity_days) => {
+exports.updatePlanService = async (id, package_name, credits, description, cost, currency, allow_renewal, is_active, validity_days) => {
 
     try{
         const [existingRows] = await db.execute(
@@ -111,8 +116,8 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
 
         await db.execute(
           `INSERT INTO credit_purchase_packages
-            (package_id, package_name, credits, description, cost, currency, allow_renewal, allow_top_up, is_active, parent_package_id, validity_days, is_latest)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (package_id, package_name, credits, description, cost, currency, allow_renewal, is_active, parent_package_id, validity_days, is_latest)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             newPackageId,
             package_name,
@@ -121,7 +126,6 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
             cost,
             currency ,
             allow_renewal ,
-            allow_top_up ,
             is_active,
             parentPackageId,
             validity_days,

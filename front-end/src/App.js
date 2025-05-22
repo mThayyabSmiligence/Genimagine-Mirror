@@ -47,6 +47,7 @@ import AdminModelManagement from './Pages/Admin/AdminModelManagement';
 import PlansManagement from './Pages/Admin/PlansManagement';
 import CreateModelForm from './Pages/Admin/CreateModelForm';
 import ModelDetail from './Pages/Admin/ModelDetail';
+import CreatePlanForm from './Pages/Admin/CreatePlanForm';
 
 
 function App() {
@@ -148,6 +149,8 @@ function App() {
                 <Route path='model-management/create-model' element={<CreateModelForm/>}></Route>
                 <Route path="/admin/model/edit/:modelId" element={<CreateModelForm isEditMode={true} />} />
                 <Route path='plans-management' element={<PlansManagement/>}></Route>
+                <Route path='plans-management/create-plan' element={<CreatePlanForm/>}></Route>
+                <Route path="/admin/plan/edit/:packageId" element={<CreatePlanForm isEditMode={true} />} />
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 

@@ -1,0 +1,33 @@
+.plan-create-form {
+    border: 1px solid #ddd;             
+    border-radius: 8px;                 
+    padding: 20px;                      
+    background-color: #fff;           
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.required-label::after {
+    content: " *";
+    color: rgb(255, 29, 29);
+  }
+
+  .form-title-text{
+    color: #5a7492;
+    font-size: 20px;
+} 
+
+.package-name-text, .description-text, .cost-text,.credits-text, .allow-renewal-btn-text, .allow-topup-btn-text, .plan-status-btn-text{
+    font-size: 16px;
+    font-weight: 550;
+    color: #374151;
+    /* font-weight: bold;    */
+}
+
+.description-box:focus, .package-name-box:focus, .credits-box:focus, .cost-box:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+.allow-renewal-switch-btn, .allow-topup-switch-btn, .plan-status-switch-btn{
+    width: 150px;
+}
