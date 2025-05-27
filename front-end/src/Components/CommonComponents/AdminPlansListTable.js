@@ -1,4 +1,5 @@
 import * as React from 'react';
+import '../../Css/PlansManagement.css'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,17 +9,26 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 export default function AdminPlansListTable({plans}) {
+    const navigate = useNavigate();
      const [plansList, setPlansList] = useState(plans);
+
+     
         useEffect(() => {
             setPlansList(plans);
         },[plans])
 
          const handleEdit = (packageID) => {
-            Navigate(`/admin/plan/edit/${packageID}`);
+            navigate(`/admin/plan/edit/${packageID}`);
         };
+
+        const  handleViewDetails = (packageID) => {
+            navigate(`/admin/plan-detail/${packageID}`)
+        }
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="caption table">
@@ -42,7 +52,10 @@ export default function AdminPlansListTable({plans}) {
               <TableCell align="center">{row.credits}</TableCell>
               <TableCell align="center">{row.validity_days}</TableCell>
               <TableCell align="center"> <button title={row?.is_active ? 'Active' : 'In Active'} className={`status-btn ${row?.is_active ? 'active' : 'Inactive'}`}>{row.is_active ? 'Active' : 'In Active'}</button></TableCell>
-              <TableCell align="center"> <button className="edit-btn reviewd-btn" onClick={() => handleEdit(row.package_id)}>Edit</button></TableCell>
+              <TableCell align="center"> <button className="edit-btn reviewd-btn" onClick={() => handleEdit(row.package_id)}>Edit</button>
+              <button className="view-details-btn ms-2" onClick={() => handleViewDetails(row.package_id)}>View</button>
+              </TableCell>
+              
 
             </TableRow>
           ))}

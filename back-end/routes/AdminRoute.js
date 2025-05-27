@@ -16,7 +16,7 @@ router.post('/model/:id', deleteModelController);
 router.route('/plans').post(getAllPlansController);
 router.route("/plan/:package_id").post(getPlanByIdController);
 router.route('/create-plan').post(createPlanController);
-router.route('/update-plan/:package_id').post(updatePlanController);
+router.route('/edit/plan/:package_id').post(updatePlanController);
 router.route("/delete-plan/:package_id").post(deletePlanController);
 
 // router.get('/aspect-ratios', getAspectRatiosController);

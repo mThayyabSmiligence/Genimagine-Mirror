@@ -65,3 +65,34 @@
     border-color: #ffcdd2;
     cursor: text;
   }
+
+   .view-details-btn:hover{
+    transform: translateY(-1px)
+  }
+
+  .edit-btn{
+    padding: 5px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background-color: rgb(72, 145, 167);
+    color: #fff;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .edit-btn:hover{
+    transform: translateY(-1px)
+  }
+
+  .view-details-btn{
+    padding: 5px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    /* background-color: rgb(72, 93, 167); */
+    color: #fff;
+    transition: transform 0.2s ease-in-out;
+    background-color: #166e9d;
+  }

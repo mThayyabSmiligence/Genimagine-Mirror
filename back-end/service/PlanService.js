@@ -29,7 +29,7 @@ exports.getPlanByIdService = async (id) => {
         return {
             status: 200,
             message: "plan fetched successfully",
-            rows : rows
+            rows : rows[0]
         }
     }catch(error){
         console.error("Error fetching plan by ID", error);
