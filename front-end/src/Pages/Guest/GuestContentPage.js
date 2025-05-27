@@ -139,8 +139,8 @@ export default function GuestContentPage() {
           }
         
         console.log(response.data)
-        if(response.data.credits||response.data.credits==0){
-          localStorage.setItem("credit_balance", JSON.stringify(response.data.credits));
+        if(response.data.credits_remaining||response.data.credits_remaining==0){
+          localStorage.setItem("credit_balance", JSON.stringify(response.data.credits_remaining));
           setRefreshCreditBalance(!refreshCreditBalance)
         }
 

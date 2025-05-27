@@ -62,7 +62,7 @@ exports.createPlanService = async (package_name,credits,description,cost,currenc
         INSERT INTO credit_purchase_packages 
         (package_id, package_name, credits, description, cost, currency, allow_renewal, is_active, parent_package_id, validity_days, is_latest)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [Package_id ,package_name, credits, description, cost, currency, allow_renewal, is_active, Package_id, validity_days]
+        [Package_id ,package_name, credits, description, cost, currency, allow_renewal, is_active, Package_id, validity_days, 1]
     );
 
     return {

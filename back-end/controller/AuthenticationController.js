@@ -539,8 +539,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 });
 
                     const userData =await getUserById(response.insertId)
-
-                   
+                    
 
                     res.status(200).json({
                         success: true,

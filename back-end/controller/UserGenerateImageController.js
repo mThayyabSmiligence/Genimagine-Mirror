@@ -196,7 +196,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         }
     // yesterday  change 
 
-        const enoughCredits =await  checkCreditBalance(id,model_data.cp_required)
+        const enoughCredits =await checkCreditBalance(id,model_data.cp_required)
 
         if(!enoughCredits){
             res.status(402).json({
@@ -227,13 +227,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     // yesterday  change
 
-        await deductCredit(id,model_data.cp_required) ;
+        const remaining = await deductCredit(id,model_data.cp_required) ;
+
         let chatId= null
         if(chat_id==null){
             const newChatId= await createChat(id,prompt);
             const insertedImage = 0;
             chatId=newChatId
-        }else{
+        }else{ 
             chatId=chat_id
             const result = await updateChatUpdatedAt(chatId)
         }
@@ -265,7 +266,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
-        const credits=await getCreditByUserId(id)
+        // const credits=await getCreditByUserId(id)
         
         res.status(200).json({
             image_id: image_id,
@@ -277,7 +278,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
-            credits:credits[0].credits,
+            // credits:credits[0].credits,
+            credits_remaining: remaining
           });
         return
 

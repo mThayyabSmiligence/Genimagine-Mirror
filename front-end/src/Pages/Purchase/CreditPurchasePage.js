@@ -108,7 +108,7 @@ function CreditPurchasePage() {
     //         setErrorMessage(error?.response?.data?.message)
     //     }
     // }
-    const buyCredits=async(package_id,custom_credits,e)=>{
+     const buyCredits=async(package_id,custom_credits,e)=>{
         if(!loggedIn){
             Navigate('/login',{state: {from: location},replace:true})
 
@@ -143,15 +143,23 @@ function CreditPurchasePage() {
                   try{
                         const transactionValidity= await axiosPrivate.post('/validate-payment',body)
                         console.log(transactionValidity)
-                        if(transactionValidity.status==200){
-                            const currentCreditsBalance= localStorage.getItem('credit_balance')
+                        // if(transactionValidity.status==200){
+                        //     const currentCreditsBalance= localStorage.getItem('credit_balance')
 
-                            localStorage.setItem("credit_balance",Number(transactionValidity.data.credits_received)+Number(currentCreditsBalance))
-                            setRefreshCreditBalance(!refreshCreditBalance)
+                        //     localStorage.setItem("credit_balance",Number(transactionValidity.data.credits_received)+Number(currentCreditsBalance))
+                        //     setRefreshCreditBalance(!refreshCreditBalance)
+                        //     setPurchaseSuccess(true);
+                        // }
+
+                        console.log("Transaction validity response:", transactionValidity);
+                        if (transactionValidity.data.status === 200) {
+
+                            const newBalance = transactionValidity.data.credits_received;
+                            localStorage.setItem("credit_balance", JSON.stringify(newBalance));
+                            setRefreshCreditBalance(!refreshCreditBalance); 
                             setPurchaseSuccess(true);
-                        }
-                       
-                        
+                        }       
+                    
                     }  
                     catch(error){
                         console.error(error)

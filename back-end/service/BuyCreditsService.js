@@ -15,8 +15,15 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
     let credits=null
 
     //geting amount and credits from pakage if the package_id exists and if not the custom crdit is taken
-    if(package_id){
-        package_details= await this.getPackageDetails(package_id)
+        if(package_id){
+            if (package_type === 'topup') {
+            
+            package_details = await this.getTopupPackageDetails(package_id);
+        } else {
+            
+            package_details = await this.getPackageDetails(package_id);
+        }
+
         if (!package_details) {
             return res.status(400).json({ 
                 message: 'Invalid package ID.',
@@ -31,11 +38,11 @@ exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,recei
         amount=Number(custom_credits).toFixed(2);
         credits=custom_credits
     }
-
   
     //creating query and inserting data into table
     const query= " insert into credit_purchase_logs (user_id,package_id,custom_credits,amount,currency,credits_received,receipt_id,package_type) values(?,?,?,?,?,?,?,?)"
-    const [rows] = await db.execute(query,[user_id,package_id||0,custom_credits||0,amount,currency,credits,receipt_id, package_type])
+    const [rows] = await db.execute(query,[user_id,package_id||0,custom_credits||0,amount,currency,credits,receipt_id, package_type||"new"])
+
 
     //returning successful message and data
     return {
@@ -211,6 +218,17 @@ exports.getPackageDetails=async(package_id)=>{
     }
 }
 
+exports.getTopupPackageDetails=async(package_id)=>{
+    try{
+        const query = "SELECT * FROM topup_credit_packages WHERE topup_package_id =?"
+        const [result] = await db.query(query,[package_id])
+        return result[0]
+    }catch(err){
+        console.log(err)
+        return null
+    }
+}
+
 exports.getPurchaseLogDetails=async(receipt_id)=>{
     try{
         const query = "SELECT * FROM credit_purchase_logs WHERE receipt_id =?"
@@ -362,3 +380,164 @@ exports.savePurchaseErrorLogs=async(errorData)=>{
         console.log("error saving purchase error logs :",err)
     }
 }
+
+
+exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id, razorpay_order_id, packageType) => {
+    const user_id = purchaseLog.user_id;
+    const package_id = purchaseLog.package_id;
+    const creditsToAdd = purchaseLog.credits_received;
+
+    const packageDetails = await this.getPackageDetails(package_id);
+
+    console.log("package details", packageDetails)                                          // 4
+    let validityDays = packageDetails?.validity_days || 30;
+
+    //  const [activePlans] = await db.execute(
+    //     `SELECT * FROM user_plan_credits WHERE user_id = ? AND is_active = 1`,
+    //     [user_id]
+    // );
+
+    
+     const [latestPlan] = await db.execute(
+        `SELECT * FROM user_plan_credits WHERE user_id = ? ORDER BY expiry_date DESC LIMIT 1`,
+        [user_id]
+    );
+
+    let startDate = `NOW()`;
+    console.log("1 start date", startDate)                                                       // 5
+    let expiryDate = `DATE_ADD(NOW(), INTERVAL ${validityDays} Minute)`;                        // changed date to minutues for testing
+    console.log("1 expiry date", expiryDate)                                                     // 6
+    let startParams = [];
+    let expiryParams = [];
+
+    let isActive = 1; 
+
+    if (latestPlan.length > 0) {
+        console.log("no current plan")
+        const currentPlan = latestPlan?.[0];
+        console.log("current plan", currentPlan)
+        const [isExpired] = await db.execute(
+            `SELECT NOW() > ? AS expired`, [currentPlan.expiry_date]
+        );
+
+        if (isExpired[0].expired) {
+            await db.execute(
+                `UPDATE user_plan_credits SET is_active = 0  WHERE id = ?`,
+                [currentPlan.id]
+            );
+        } else {
+            isActive = 0;
+            startDate = `DATE_ADD(?, INTERVAL 0 SECOND)`; // force bind for safety
+            expiryDate = `DATE_ADD(?, INTERVAL ${validityDays} Minute)`;                                       // changed date to minutues for testing
+            startParams = [currentPlan.expiry_date];
+            expiryParams = [currentPlan.expiry_date];
+        }
+
+        if (packageType === 'renew') {
+            console.log("type is renew", packageType)
+            await db.execute(
+                `UPDATE user_plan_credits SET last_renewal_date = ? WHERE id = ?`,
+                [currentPlan.expiry_date, currentPlan.id]
+            );
+        }
+
+    }
+
+    console.log("all insert for user_plan_credits", user_id, package_id, packageType, creditsToAdd, startDate, expiryDate, isActive, validityDays)
+
+    await db.execute(
+        `INSERT INTO user_plan_credits 
+            (user_id, package_id, package_type, received_credits, credits_remaining, start_date, expiry_date, is_active, validity_days)
+        VALUES (?, ?, ?, ?, ?, ${startDate}, ${expiryDate}, ?, ?)`,
+        [
+            user_id,
+            package_id,
+            packageType,
+            creditsToAdd,
+            creditsToAdd,
+             ...startParams,
+            ...expiryParams,
+            isActive,
+            validityDays
+        ]
+    );    
+    const totalCredits = await this.getTotalActiveCredits(user_id);
+    console.log("Total credits after processing", totalCredits)                                    // 7
+
+    return {
+        status: 200,
+        success: true,
+        message: "Plan processed successfully.",
+        credits_received: totalCredits
+    };
+}
+
+exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, razorpay_order_id, packageType) => {
+    try{
+        const planId = purchaseLog.package_id;
+        const userId = purchaseLog.user_id;
+        const creditsToAdd = purchaseLog.credits_received;
+
+        console.log("planId from purchase log", planId)                                             // 8
+        console.log("userId from purchase log", userId)                                              // 9
+        console.log("credits to add from purchase log", creditsToAdd)                               // 10
+
+        const [activeBasePlan] = await db.execute(`SELECT package_id, expires_at FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expires_at > NOW() LIMIT 1`, 
+            [userId]
+        )
+
+        const basePlanExpiry = activeBasePlan.expires_at;
+        const basePlanPackageId = activeBasePlan.package_id;
+
+        console.log("base plan expiry", basePlanExpiry)                                        // 11 
+        console.log("user plan package id", basePlanPackageId)                                 // 12
+
+        await db.query(
+            `INSERT INTO user_topups 
+            (user_id, plan_id, base_plan_package_id, received_credits ,credits_remaining, is_active, start_date, end_date) 
+            VALUES (?, ?, ?, ?, ?, 1, NOW(), ?)`,
+            [userId, planId, basePlanPackageId, creditsToAdd, creditsToAdd, basePlanExpiry]
+        );
+
+       const totalCredits = await this.getTotalActiveCredits(userId);
+          console.log("Total credits after processing", totalCredits)                              // 13
+
+        return {
+            status: 200,
+            success: true,
+            message: "Top-up successful and linked to active base plan.",
+            credits_received: totalCredits
+        };
+
+    }catch(error){
+        console.error("Error in handleTopupPayment:", error);
+        return {
+            status: 500,
+            success: false,
+            message: 'An error occurred while processing the top-up payment.'
+        };
+    }
+}
+
+exports.getTotalActiveCredits = async (userId) => {
+    const [planCreditsResult] = await db.execute(
+        `SELECT SUM(credits_remaining) AS total_plan_credits FROM user_plan_credits WHERE user_id = ? AND is_active = 1`,
+        [userId]
+    );
+    console.log("plan credits result", planCreditsResult)                                          // 14
+
+    const [topupCreditsResult] = await db.execute(
+        `SELECT SUM(credits_remaining) AS total_topup_credits FROM user_topups WHERE user_id = ? AND is_active = 1`,
+        [userId]
+    );
+    console.log("topup credits result", topupCreditsResult)  
+
+    const planCredits = Number(planCreditsResult[0].total_plan_credits) || 0;
+    console.log("get plancredits", planCredits)                                                   // 15
+    const topupCredits = Number(topupCreditsResult[0].total_topup_credits) || 0;
+    console.log("get top up credits", topupCredits)                                               // 16
+
+    console.log("total credits", planCredits+topupCredits)                                      // 17
+
+    return planCredits + topupCredits;
+};
