@@ -14,6 +14,7 @@ const admin = require('../config/firebaseConfig');
 const { generateUserVerificationToken, verifyUserWithVerificationToken, generateTestEmailService } = require('../service/AuthenticationService');
 const { deleteUser, getUserById } = require('../service/UserService');
 const { checkUserStatusService } = require('../service/RestrictBannedUserService');
+const { getTotalActiveCredits } = require('../service/BuyCreditsService');
 
 // user register api - api/v1/users/register
 
@@ -225,6 +226,11 @@ exports.userLogin = async (req, res, next) => {
             })
             return
         }
+
+        const totalCredits = await getTotalActiveCredits(oldUser[0].user_id);
+        await db.execute("UPDATE users SET credits = ? WHERE user_id = ?", [totalCredits, oldUser[0].user_id]);
+        oldUser[0].credits = totalCredits;
+
         const token =generateToken(oldUser[0]) ;
         const refreshToken= await generateRefreshToken(oldUser[0])
         
@@ -436,6 +442,10 @@ exports.verifyEmailOtp = async(req, res, next) => {
                 console.log(userRows)
                 
 
+                const totalCredits = await getTotalActiveCredits(userRows[0].user_id);
+                await db.execute("UPDATE users SET credits = ? WHERE user_id = ?", [totalCredits, userRows[0].user_id]);
+                userRows[0].credits = totalCredits;
+
                 const token = generateToken(userRows[0]);
                 const refreshToken =await generateRefreshToken(userRows[0]);
 
@@ -520,6 +530,10 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                     username: decodedToken.name,
                     role: "user"
                 }
+
+                const totalCredits = await getTotalActiveCredits(response.insertId);
+                await db.execute("UPDATE users SET credits = ? WHERE user_id = ?", [totalCredits, response.insertId]);
+
                 
                 const token = generateToken(user);
                 const refreshToken =await generateRefreshToken(user);
@@ -539,6 +553,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 });
 
                     const userData =await getUserById(response.insertId)
+                    // userData[0].credits = totalCredits;
                     
 
                     res.status(200).json({
@@ -553,7 +568,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                             email: userData[0].email,
                             role: userData[0].role,
                             age: userData[0].age,
-                            credits: userData[0].credits,
+                            credits: totalCredits,
                             register_type: userData[0].register_type,
                             free_generation_count: userData[0].free_generation_count
                         }        
@@ -589,6 +604,9 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
             const token = generateToken(rows[0]);
             const refreshToken =await generateRefreshToken(rows[0])
 
+            const totalCredits = await getTotalActiveCredits(rows[0].user_id);
+            await db.execute("UPDATE users SET credits = ? WHERE user_id = ?", [totalCredits, rows[0].user_id]);
+
             res.cookie("token", token, {
                 httpOnly: true,  
                 secure: true,    
@@ -614,7 +632,7 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                     email: rows[0].email,
                     role: rows[0].role,
                     age: rows[0].age,
-                    credits: rows[0].credits,
+                    credits: totalCredits,
                     register_type: rows[0].register_type,
                     free_generation_count: rows[0].free_generation_count
                 }        
