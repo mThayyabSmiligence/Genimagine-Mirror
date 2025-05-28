@@ -1,0 +1,32 @@
+.create-btn-link{
+    padding: 5px 15px;
+    background-color: rgb(8, 8, 8);
+    color: #fff;
+    border: none;
+    box-shadow:0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out; 
+}
+
+.create-btn-link:hover{
+    transform: translateY(-1px)
+}
+
+.top-up-wrapper{
+     border: 1px solid #ddd;             
+    border-radius: 8px;                 
+    padding: 20px;                      
+    background-color: #fff;           
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
+}
+
+.top-up-heading-title{
+    color: #697a8d;
+    font-size: 20px;
+}
+
+/* .plans-table-title span{
+    color: #697a8d;
+    font-size: 13px;
+    font-weight: bold;
+} */

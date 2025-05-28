@@ -135,7 +135,7 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
 
             return {
             status: 200, 
-            message: "plan updated  successfully",
+            message: "plan updated successfully",
         }
     } catch(error){
         console.error("Error creating plans", error);
@@ -162,5 +162,4 @@ exports.deletePlanService = async (id) => {
             message: "error deleting plan by ID"
         }
     }
-  
 };

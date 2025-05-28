@@ -52,7 +52,19 @@
     transition: 0.2s;
 }
 
-/* .desc-container{
-    height: 50px;
-    flex-wrap: wrap;
-} */
+/* .desc-container {
+    width: 50%;
+    height: auto; 
+    overflow-wrap: break-word; 
+    word-break: normal; ; 
+    white-space: normal; 
+    display: block; 
+    
+}  */
+
+.desc-container {
+  width: 55%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal; 
+}

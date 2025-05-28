@@ -93,11 +93,13 @@ export default function PlanDetail() {
 
             <div className="col-12 d-flex justify-content-start">
               <span className="text-muted description-data-text">Description</span>
-              <p className="mb-0 text-end plan-data-value">{planDetail.description === 'none' ? 'No description available.' : planDetail.description}</p>
+              <div className=' desc-container'>
+                <p className="mb-0 text-start plan-data-value">{planDetail.description === 'none' ? 'No description available.' : planDetail.description}</p>
+              </div>
             </div>
 
             <div className="col-12 d-flex justify-content-start">
-              <span className="text-muted cost-data-text">Cost</span>
+              <span className="text-muted cost-data-text">Cost</span> 
               <span className='plan-data-value'>{parseFloat(planDetail.cost).toFixed(2)}</span>
             </div>
 
@@ -116,11 +118,6 @@ export default function PlanDetail() {
             <div className="col-12 d-flex justify-content-start">
               <span className="text-muted allow-renewal-data-text">Allow Renewal</span>
               <span className='plan-data-value'>{planDetail.allow_renewal ? 'Yes' : 'No'}</span>
-            </div>
-
-            <div className="col-12 d-flex justify-content-start">
-              <span className="text-muted allow-topup-data-text">Allow Top up</span>
-              <span className='plan-data-value'>{planDetail.is_latest ? 'Yes' : 'No'}</span>
             </div>
 
             <div className="col-12 d-flex justify-content-start">

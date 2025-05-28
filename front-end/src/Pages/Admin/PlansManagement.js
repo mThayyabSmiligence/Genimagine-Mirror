@@ -23,8 +23,10 @@ function PlansManagement() {
 
   return (
     <div className='plan-list-container p-4 mx-4'>
-      <div className='create-btn-container d-flex justify-content-end align-items-center mb-2'>
-        <Link to={"/admin/plans-management/create-plan"} className='create-btn-link link'>create</Link>
+  
+      <div className='action-btn-container d-flex justify-content-end align-items-center mb-2'>
+        <Link to={"/admin/plans-management/create-plan"} className='create-btn-link link'>Create</Link>
+        <Link to={"/admin/Top-up-management"} className='go-to-topup-link link ms-3' title='go to top-up management page'>Top Up <span>{`>>`}</span></Link>
       </div>
       <div className='plan-wrapper'>
         <h1 className='plan-heading-title text-start mb-3'>Plans List</h1>

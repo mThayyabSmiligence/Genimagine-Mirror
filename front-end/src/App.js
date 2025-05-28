@@ -49,6 +49,8 @@ import CreateModelForm from './Pages/Admin/CreateModelForm';
 import ModelDetail from './Pages/Admin/ModelDetail';
 import CreatePlanForm from './Pages/Admin/CreatePlanForm';
 import PlanDetail from './Pages/Admin/PlanDetail';
+import TopUpManagement from './Pages/Admin/TopUpManagement';
+import CreateTopUpForm from './Pages/Admin/CreateTopUpForm';
 
 
 function App() {
@@ -153,6 +155,8 @@ function App() {
                  <Route path='plan-detail/:packageId' element={<PlanDetail/>}></Route>
                 <Route path='plans-management/create-plan' element={<CreatePlanForm/>}></Route>
                 <Route path="/admin/plan/edit/:packageId" element={<CreatePlanForm isEditMode={true} />} />
+                <Route path='top-up-management' element={<TopUpManagement/>}></Route>
+                <Route path='top-up-management/create-plan' element={<CreateTopUpForm/>}></Route>
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const { getAllModelsController, getModelController, configureModelSettingsController, createModelController, deleteModelController, updateModelController, getQualityLevelAspectRatioForSelect } = require('../controller/IGSettingController');
 const { getAllPlansController, getPlanByIdController, createPlanController, updatePlanController, deletePlanController } = require('../controller/PlanController');
+const { getAllTopUpController, getTopUpByIdController, createTopUpController, updateTopUpController, deleteTopUpController } = require('../controller/TopUpController');
 const router = express.Router();
 
 // Public routes
@@ -18,6 +19,14 @@ router.route("/plan/:package_id").post(getPlanByIdController);
 router.route('/create-plan').post(createPlanController);
 router.route('/edit/plan/:package_id').post(updatePlanController);
 router.route("/delete-plan/:package_id").post(deletePlanController);
+
+// top-up
+router.route('/top-ups').post(getAllTopUpController);
+router.route('/top-up/:plan_id').post(getTopUpByIdController);
+router.route('/create-top-up').post(createTopUpController);
+router.route('/edit/top-up/:plan_id').post(updateTopUpController);
+router.route('/delete-top-up/:plan-id').post(deleteTopUpController);
+
 
 // router.get('/aspect-ratios', getAspectRatiosController);
 
