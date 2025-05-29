@@ -42,7 +42,7 @@ exports.getTopUpByIdService = async (planId) => {
 
 exports.createTopUpService = async (credits,cost,currency,is_active) => {
     try{
-        const [result] = await db.execute(`Insert INTO topup_credit_packages (credits, cost, currency, is_active) 
+        const [result] = await db.execute(`Insert INTO topup_credit_packages(credits, cost, currency, is_active) 
             VALUES( ?, ?, ?, ?)`,[credits, cost, currency, is_active]
         );
 

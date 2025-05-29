@@ -157,6 +157,7 @@ function App() {
                 <Route path="/admin/plan/edit/:packageId" element={<CreatePlanForm isEditMode={true} />} />
                 <Route path='top-up-management' element={<TopUpManagement/>}></Route>
                 <Route path='top-up-management/create-plan' element={<CreateTopUpForm/>}></Route>
+                <Route path="/admin/topup/edit/:planId" element={<CreateTopUpForm isEditMode={true} />} />
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 

@@ -1,4 +1,75 @@
+.top-up-create-form{
+    border: 1px solid #ddd;             
+    border-radius: 8px;                 
+    padding: 20px;                      
+    background-color: #fff;           
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);  
+    width: 90%;
+}
+
 .switch-status{
     width: 300px;
 }
 
+.card-title{
+    color: #374151;
+    font-size: 20px;
+}
+
+.credit-input-text, .cost-input-text, .currency-select-text, .status-switch-text {
+    font-size: 17px;
+    font-weight: 550;
+    color: #374151;
+}
+
+.credits-input, .cost-input, .currency-input{
+    height: 40px;
+}
+
+.credits-input:focus, .cost-input:focus, .currency-input:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+.top-up-submit-button{
+    font-size: 16px;
+    height: 35px;
+    border-radius: 10px;
+    border: none;
+    background-color: black;
+    color: white;
+    width: 100px;
+
+    /* background-color: white;
+    color: black; */
+
+}
+
+.top-up-submit-button:hover{
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border: 2px solid #000;
+}
+
+.back-topup-btn{
+    width: 80px;
+    background-color: #000;
+    color: #fff;
+    height: 35px;
+    border-radius: 10px;
+}
+
+.back-topup-btn:hover{
+    background-color: #fff;
+    color: #000;
+}
+
+
+.back-text{
+    font-size: 16px;
+}
+
+.left-arrow-image{
+    width: 10px;
+    height: 10px;
+}

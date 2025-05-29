@@ -24,9 +24,21 @@ exports.createTopUpController = async (req, res) => {
             currency,
             is_active,
         } = req.body;
+
+        if (
+    credits === undefined ||
+    cost === undefined ||
+    currency === undefined ||
+    is_active === undefined
+  ) {
+    return res.status(400).json({
+      status: 400,
+      message: "Missing required fields: credits, cost, currency, is_active"
+    });
+  }
     
-        const result = await createTopUpService(credits,cost,currency,is_active);
-        res.status(result.status).json(result);
+    const result = await createTopUpService(credits,cost,currency,is_active);
+    res.status(result.status).json(result);
       
 }
 

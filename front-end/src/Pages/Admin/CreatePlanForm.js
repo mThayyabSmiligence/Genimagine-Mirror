@@ -30,6 +30,7 @@ export default function CreatePlanForm({ isEditMode = false }) {
 
     const { packageId } = useParams(); 
     const [planData, setPlanData] = useState(null);
+    const [allPlans, setAllPlans] = useState([]);
     
 
     const [selectedCurrency, setSelectedCurrency] = useState(null);
@@ -49,32 +50,70 @@ export default function CreatePlanForm({ isEditMode = false }) {
            }
       }, [isEditMode, packageId])
 
-      useEffect(() =>{
-        if (planData) {
-          setPackageName(planData.package_name || '');
-          setDescription(planData.description || '');
-          setCredits(planData.credits || '');
-          setCost(planData.cost || '');
-          setIsRenewal(planData.allow_renewal || false);
-          setIsActive(planData.is_active || true);
-          setSelectedCurrency(currencyOptions.find(opt => opt.value === planData.currency) || null);
-          setSelectedValidity(validityOptions.find(opt => opt.value === planData.validity_days) || null);
-        }
-      })
+     useEffect(() => {
+      if (planData) {
+        setPackageName(planData.package_name || '');
+        setDescription(planData.description || '');
+        setCredits(planData.credits || '');
+        setCost(planData.cost || '');
+        setIsRenewal(planData.allow_renewal || false);
+        setIsActive(planData.is_active || true);
+        setSelectedCurrency(currencyOptions.find(opt => opt.value === planData.currency) || null);
+        setSelectedValidity(validityOptions.find(opt => opt.value === planData.validity_days) || null);
+      }
+    }, [planData]);  
+
+     useEffect(() => {
+      axiosAdmin.post('plans')
+        .then(res => {
+          setAllPlans(res.data.data || []);
+        })
+        .catch(err => {
+          console.error("Failed to fetch all plans:", err);
+        });
+    }, []);
 
       const handleSubmit = async () => {
         const planData = {
           package_name: packageName,
+          credits: parseInt(credits),
           description: description,
-          credits: credits,
           cost: cost, 
           currency: selectedCurrency ? selectedCurrency.value : '',
-          allow_renewal: isRenewal,
-          is_active: isActive,
+          allow_renewal: isRenewal ? 1: 0,
+          is_active: isActive? 1 : 0,
           validity_days: selectedValidity ? selectedValidity.value : 0
         }
+        // const planData = {
+        //   package_name: packageName,
+        //   credits: parseInt(credits),
+        //   description: description,
+        //   cost: parseFloat(cost),
+        //   currency: selectedCurrency?.value || '',
+        //   allow_renewal: isRenewal ? 1 : 0,
+        //   is_active: isActive ? 1 : 0,
+        //   validity_days: selectedValidity?.value || 0
+        // }
+
+         if (!packageName.trim()) return alert("Package name is required");
+          if (!description.trim()) return alert("Description is required");
+          if (!cost || isNaN(parseFloat(cost))) return alert("Valid cost is required");
+          if (!credits || isNaN(parseInt(credits))) return alert("Valid credits number is required");
+          if (!selectedCurrency) return alert("Currency must be selected");
+          if (!selectedValidity) return alert("Validity must be selected");
+
+          // Check for duplicate name
+          if(isEditMode){
+            const nameExists = allPlans.some(plan =>
+              plan.package_name.toLowerCase() === packageName.trim().toLowerCase() 
+            );
+            if (nameExists) {
+              return alert("A plan with this package name already exists.");
+            }
+          }
 
         try{
+          console.log("PLAN DATA", planData)
           const response = isEditMode
           ? await axiosAdmin.post(`/edit/plan/${packageId}`, planData)
           : await axiosAdmin.post('create-plan',planData); 
@@ -166,7 +205,7 @@ export default function CreatePlanForm({ isEditMode = false }) {
                     </div>
 
                     <div className="submit-create-model-container d-flex justigy-content-start align-items-center mt-4 gap-2">
-                        <button className="create-model-btn" onClick={() => navigate("/admin/plans-management")}>back</button>
+                        <button className="create-model-btn" onClick={() => navigate("/admin/plans-management")}>Back</button>
                         <button className="create-model-btn" onClick={handleSubmit}>{isEditMode ? "Edit" : "Create"}</button>    
                     </div>
               

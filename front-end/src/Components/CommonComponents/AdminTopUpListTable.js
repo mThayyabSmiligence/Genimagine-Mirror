@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 function AdminTopUpListTable({ TopUpList }) {
   const navigate = useNavigate();
@@ -18,8 +19,8 @@ function AdminTopUpListTable({ TopUpList }) {
     setTopUpList(TopUpList || []);
   }, [TopUpList]);
 
-  const handleEdit = (packageID) => {
-    navigate(`/admin/topup/edit/${packageID}`);
+  const handleEdit = (topup_package_id) => {
+    navigate(`/admin/topup/edit/${topup_package_id}`);
   };
 
   return (
@@ -61,13 +62,16 @@ function AdminTopUpListTable({ TopUpList }) {
                 {new Date(row.updated_at).toLocaleString()}
               </TableCell>
               
-              <TableCell align="center">
+              <TableCell align="center" className='d-flex justify-content-start align-items-center'>
                 <button
-                  className="edit-btn reviewd-btn"
+                  className="edit-btn"
+                  style={{height : "35px"}}
                   onClick={() => handleEdit(row.topup_package_id)}
                 >
                   Edit
                 </button>
+
+                <button className='ms-2  d-flex align-items-center br-100 p-1'><DeleteOutlineIcon></DeleteOutlineIcon></button>
               </TableCell>
             </TableRow>
           ))}
