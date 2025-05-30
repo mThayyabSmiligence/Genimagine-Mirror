@@ -51,6 +51,7 @@ import CreatePlanForm from './Pages/Admin/CreatePlanForm';
 import PlanDetail from './Pages/Admin/PlanDetail';
 import TopUpManagement from './Pages/Admin/TopUpManagement';
 import CreateTopUpForm from './Pages/Admin/CreateTopUpForm';
+import TopUpPage from './Pages/Purchase/TopUpPage';
 
 
 function App() {
@@ -139,6 +140,7 @@ function App() {
                   <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
                   <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
+                  <Route path='top-up' element={<TopUpPage></TopUpPage>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 

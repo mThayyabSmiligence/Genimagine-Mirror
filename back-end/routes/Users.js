@@ -2,7 +2,7 @@ const express = require('express')
 const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, generateImageWithStabilityController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
-const { buyCreditsPackageController } = require('../controller/CreditController');
+const { buyCreditsPackageController, getCreditTopUpController, getUserPurchasedTopUp } = require('../controller/CreditController');
 const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
@@ -60,5 +60,7 @@ router.route("/submitfeedback").post(submitFeedbackController);
 
 // router.route("/generatebySD").post( generateImageWithStabilityController)
 
+router.route('/get-active-topUp').get(getCreditTopUpController)
+router.route('/user/active-topups').get(getUserPurchasedTopUp)
 
 module.exports = router;

@@ -31,8 +31,8 @@ function CreditPurchasePage() {
 
     const [purchaseSuccess, setPurchaseSuccess] = useState(false);
 
-    const[customCreditsFocus,setCustomCreditsFocus]=useState(false)
-    const[customCreditsValidation,setCustomCreditsValidation]=useState(true)
+    // const[customCreditsFocus,setCustomCreditsFocus]=useState(false)
+    // const[customCreditsValidation,setCustomCreditsValidation]=useState(true)
 
     
     useEffect(() => {
@@ -48,21 +48,7 @@ function CreditPurchasePage() {
 
     const user= JSON.parse(localStorage.getItem("user_data"))
 
-    useEffect(()=>{
-        if(credits<10||credits>100000){
-            setCustomCreditsValidation(false);
-        }else{
-            setCustomCreditsValidation(true);
-        }
-    },[credits])
-
     useEffect(() => {
-        // if(sessionStorage.getItem('creditPurchaseOptions')){
-        //     const purchaseOptions = sessionStorage.getItem('creditPurchaseOptions')
-        //     setCreditPurchaseOptions(JSON.parse(purchaseOptions))
-        //     setLoading(false)
-        // return
-        // }
         getCreditPurchaseOptions()
     }, [])
 
@@ -86,28 +72,7 @@ function CreditPurchasePage() {
             console.error(error);
         }
     }
-    // const buyCredits=async(package_id)=>{
-    //     try {
-    //         const response = await axiosInstance.put(`/user/buy-credits/${package_id}`, { package_id: Amount });
-
-    //         setCredits(response.data.credits)
-    //         setErrorMessage("")
-    //         setError(false)
-    //         setSuccessMessage(response.data.message)
-    //         setSuccess(true)
-
-
-    //         const currentCreditsBalance= localStorage.getItem('credit_balance')
-
-    //         localStorage.setItem("credit_balance",response.data.credits_purchased+Number(currentCreditsBalance))
-
-    //         setRefreshCreditBalance(!refreshCreditBalance)
-    //     } catch (error) {
-    //         console.error(error);
-    //         setError(true)
-    //         setErrorMessage(error?.response?.data?.message)
-    //     }
-    // }
+  
      const buyCredits=async(package_id,custom_credits,e)=>{
         if(!loggedIn){
             Navigate('/login',{state: {from: location},replace:true})
@@ -196,39 +161,12 @@ function CreditPurchasePage() {
                 }finally{
                     setCredits(0)
                 }
-
-                // alert(response.error.code);
-                // alert(response.error.description);
-                // alert(response.error.source);
-                // alert(response.error.step);
-                // alert(response.error.reason);
-                // alert(response.error.metadata.order_id);
-                // alert(response.error.metadata.payment_id);
               });
         }
         catch(err){
             console.error(err)
         }
     }
-
-    const handleEnterCustomCredits = (e) => {
-        const value = e.target.value;
-        const valueString= e.target.value.toString();
-        
-        if(valueString.length>7){
-            return
-        }
-        console.log("hello")
-        // Allow only numbers and prevent negative values
-        if (!/^\d*$/.test(value)) return;
-      
-        // Restrict value to 100000
-        const limitedValue = Math.min(Number(value), 100000);
-      
-        // Update state
-        setCredits(limitedValue);
-      };
-
   return (
     <div className='mt-5'>
         <div className='container'>
@@ -237,6 +175,7 @@ function CreditPurchasePage() {
                 <h5>Loading...</h5>
             }
             <div className='text-center mb-4'>
+                <Link to={'/u/top-up'} className='h-50 w-50'>top up</Link>
                 <h3>Purchase Credits</h3>
             </div>
             {
@@ -260,48 +199,13 @@ function CreditPurchasePage() {
             }
 
             <div className='row d-flex flex-wrap justify-content-start'>
+                
                 {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                     
                     <div key={index} className='col-md-3 mb-4 '>
                         <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
                     </div>
                 ))}
-            </div>
-        </div>
-
-        <div className='customise-credit-purchase-container d-flex flex-column align-items-center'>
-            <div className='divider d-flex align-items-center mb-3 w-100'>
-                <span className='divider-line-2 flex-1'></span>
-                <h3 className='divider-or '>Customise Credit Purchase</h3>
-                <span className='divider-line-2 flex-1'></span>
-            </div>
-            
-            <div className='container d-flex  justify-content-center'>
-                <div className='col-md-4 mb-4'>
-                    <div className="card text-center shadow-sm">
-                        <div className="card-body">
-                            
-                            <h5 className="card-title"> Custom Credits </h5>
-                            
-                            <p className="card-text m-0"><strong></strong> Credits</p>
-                            <input type="number" placeholder='enter credits' max="100000" className="credit-input mb-1" value={credits} onChange={(e) => { handleEnterCustomCredits(e) }} onFocus={()=>{setCustomCreditsFocus(true)}} onBlur={()=>setCustomCreditsFocus(false)}/>
-                            <p id="uidnote" className={`${credits && !customCreditsValidation ? "instructions" : "offscreen"} white-bg text-danger w-ft  text-center w-100 p-0 mb-3` }>                          
-                            credits ahould be between 10 and 100,000 
-                            </p>
-
-                            <p className="card-text m-0"><strong></strong> Rupees</p>
-                            <p className="card-text text-success mb-2">₹{credits||0}</p>
-
-                            <p className="text-muted">description</p>
-                            {
-                                loggedIn?
-                                <button className='button dark-button me-2' disabled={!customCreditsValidation} onClick={(e)=>{buyCredits(null,credits,e)}}>Purchase</button>
-                                :
-                                <Link to={"/login"}  onClick={() => localStorage.setItem('lastVisitedPage', "/credit-purchase")} className="button dark-button ">Buy Now</Link>
-                            }
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

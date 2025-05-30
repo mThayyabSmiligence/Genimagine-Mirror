@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCreditPackagesController } = require('../controller/CreditController');
+const { getCreditPackagesController, getCreditTopUpController } = require('../controller/CreditController');
 const { getAllExploreImagesController, getExploreImageByIdController, ViewExploreImageController, getExploreImageByUserIdController } = require('../controller/ExploreController');
 const { getUserDataByIdController, getUserNameByIdController, getAllModelsController, getAllAspectRatiosController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, getResizedHeightWidthController, getModelByIdController } = require('../controller/UsersController');
 const { checkdimension, checkmodel } = require('../controller/CheckController');
@@ -8,6 +8,7 @@ const { getModelById } = require('../service/IGSettingService');
 const router = express.Router();
 
 router.route('/get-packages').get(getCreditPackagesController);
+
 
 router.route('/explore').get(getAllExploreImagesController)
 router.route("/explore/:user_id").get(getExploreImageByUserIdController)

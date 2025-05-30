@@ -3,15 +3,13 @@ const db = require('../config/connectDatabase');
 const crypto = require('crypto') 
 
 exports.getCreditPackagesService=async()=>{
-
     try {
-        const [packages] = await db.execute('SELECT * FROM credit_purchase_packages  WHERE package_id <> 0');
+        const [packages] = await db.execute('SELECT * FROM credit_purchase_packages WHERE package_id <> 0');
         return packages;
     } catch (error) {
         console.log("error retriving packages",error);
         return false;
     }
- 
 }
 
 exports.getCreditPackagedataService=async(package_id)=>{
@@ -26,6 +24,41 @@ exports.getCreditPackagedataService=async(package_id)=>{
     }
 }
 
+exports.getCreditTopUpService = async() => {
+    try{
+        const query = "SELECT * FROM topup_credit_packages WHERE is_active = 1 order by topup_package_id ASC"
+        const [rows] = await db.execute(query)
+        console.log("top up list", rows)
+        return {
+            status: 200,
+            message: "retrieved top up list successfully",
+            data: rows
+        }
+    }catch(error){
+        return{
+            status: 500,
+            message: "error retrieving top up"
+        }
+    }
+}
+
+exports.getUserPurchasedTopUpService = async (userId) => {
+    try {
+        const [rows] = await db.execute(
+            `SELECT plan_id FROM user_topups WHERE user_id = ? AND is_active = 1`,
+            [userId]
+        );
+        return {
+            status: 200,
+            data : rows
+        }
+    } catch (err) {
+        return{
+            status: 500,
+            message: "error getting purchased top up for the user"
+        }
+    }
+};
     // exports.buyCreditsPackageService=async(package_id,user_id ,action = 'new')=>{
     //     const credit_package_data = await this.getCreditPackagedataService(package_id)
 
