@@ -482,19 +482,25 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
         console.log("userId from purchase log", userId)                                              // 9
         console.log("credits to add from purchase log", creditsToAdd)                               // 10
 
-        const [activeBasePlan] = await db.execute(`SELECT package_id, expires_at FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expires_at > NOW() LIMIT 1`, 
+        const [activeBasePlan] = await db.execute(`SELECT package_id, expiry_date FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expiry_date > NOW() LIMIT 1`, 
             [userId]
         )
 
-        const basePlanExpiry = activeBasePlan.expires_at;
-        const basePlanPackageId = activeBasePlan.package_id;
+        // const [activeBasePlan] = await db.execute(`SELECT package_id, expiry_date FROM user_plan_credits WHERE user_id = ? AND is_active = 1 `, 
+        //     [userId]
+        // )
+
+        // console.log("active p[lamns", activeBasePlan)
+
+        const basePlanExpiry = activeBasePlan[0].expiry_date;
+        const basePlanPackageId = activeBasePlan[0].package_id;
 
         console.log("base plan expiry", basePlanExpiry)                                        // 11 
         console.log("user plan package id", basePlanPackageId)                                 // 12
 
         await db.query(
             `INSERT INTO user_topups 
-            (user_id, plan_id, base_plan_package_id, received_credits ,credits_remaining, is_active, start_date, end_date) 
+            (user_id, plan_id, base_plan_package_id, received_credits ,credits_remaining, is_active, start_date, expiry_date) 
             VALUES (?, ?, ?, ?, ?, 1, NOW(), ?)`,
             [userId, planId, basePlanPackageId, creditsToAdd, creditsToAdd, basePlanExpiry]
         );

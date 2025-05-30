@@ -7,9 +7,12 @@ import logo from '../../images/genimagin_short_logo.png'
 import AuthContext from '../../Context/AuthProvider';
 import SuccessMessageContainer from '../../Components/CommonComponents/SuccessMessageContainer';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import '../../Css/TopUpCard.css'
+import TopUpCard from '../../Components/CreditPurchase/TopUpCard';
 
 
-function CreditPurchasePage() {
+
+function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
 
     const { refreshCreditBalance,setRefreshCreditBalance,refreshUserData,setRefreshUserData} = useContext(RefreshDataContext)
 
@@ -33,6 +36,7 @@ function CreditPurchasePage() {
 
     // const[customCreditsFocus,setCustomCreditsFocus]=useState(false)
     // const[customCreditsValidation,setCustomCreditsValidation]=useState(true)
+    const [isPlan, setIsPlan] = useState(defaultValue === 'plan');
 
     
     useEffect(() => {
@@ -59,6 +63,66 @@ function CreditPurchasePage() {
             },2000)
         }
     },[purchaseSuccess])
+
+
+    const [topUpList, setTopUpList] = useState([]);
+    const [activeTopUps, setActiveTopUps] = useState([]);
+    
+        useEffect(() => {
+            handleGetTopUp();
+        },[]);
+
+        useEffect(() => {
+        const interval = setInterval(() => {
+            fetchUserActiveTopUps();
+        }, 10000); 
+
+        return () => clearInterval(interval);
+        }, []);
+
+
+        useEffect(() => {
+            fetchUserActiveTopUps();
+        },[purchaseSuccess])
+    
+        const handleGetTopUp = async () => {
+            try {
+                const response = await axiosPrivate.get('/get-active-topUp');
+                console.log("top up list data", response.data);
+                setTopUpList(response.data.data);
+            } catch (error) {
+                console.error("error getting top up data",error);
+            }
+        };
+
+    //     const fetchUserActiveTopUps = async () => {
+    //     try {
+    //         const response = await axiosPrivate.get('/user/active-topups');
+    //         if(response.data.data.length > 0){
+    //             const activePlanIds = response.data.data.map(item => item.plan_id);
+    //             setActiveTopUps(activePlanIds);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error getting user's active top-ups:", error);
+    //     }
+    // };
+
+    const fetchUserActiveTopUps = async () => {
+    try {
+        const response = await axiosPrivate.get('/user/active-topups');
+        const data = response.data.data;
+
+        const activePlanIds = data.length > 0
+            ? data.map(item => item.plan_id)
+            : [];
+
+        setActiveTopUps(activePlanIds); // Always update state
+    } catch (error) {
+        console.error("Error getting user's active top-ups:", error);
+        setActiveTopUps([]); // Optional fallback to ensure UI consistency
+    }
+};
+
     
     const getCreditPurchaseOptions = async () => {
         setLoading(true)
@@ -72,8 +136,10 @@ function CreditPurchasePage() {
             console.error(error);
         }
     }
+
+   
   
-     const buyCredits=async(package_id,custom_credits,e)=>{
+     const buyCredits=async(package_id,custom_credits,e, package_type)=>{
         if(!loggedIn){
             Navigate('/login',{state: {from: location},replace:true})
 
@@ -84,7 +150,8 @@ function CreditPurchasePage() {
                     package_id: package_id,
                     custom_credits: custom_credits,
                     currency:"INR",
-                    amount:100
+                    amount:100,
+                    package_type: package_type 
                 }
             )
             console.log(response)
@@ -103,6 +170,7 @@ function CreditPurchasePage() {
                   const body = {
                     ...response,
                     receipt_id:order.receipt_id,
+                    package_type: package_type
                   };
                   console.log(body);
                   try{
@@ -158,15 +226,36 @@ function CreditPurchasePage() {
                     const result = await axiosPrivate.post('/falied-payment',response)
                 }catch(err){
                     console.error(err)
+                     if (err.response && err.response.data) {
+                        const { message } = err.response.data;     
+                        alert(message); 
+                    } else {
+                        alert("Something went wrong while initiating the payment.");
+                    }
                 }finally{
                     setCredits(0)
                 }
               });
         }
         catch(err){
-            console.error(err)
+        console.error(err)
+        if (err.response && err.response.data) {
+                const { message } = err.response.data;     
+                alert(message); 
+            } else {
+                alert("Something went wrong while initiating the payment.");
+            }
         }
     }
+
+    
+
+    const handleToggle = (value) => {
+        setIsPlan(value);
+        if (onToggle) {
+        onToggle(value);
+        }
+    };
   return (
     <div className='mt-5'>
         <div className='container'>
@@ -174,10 +263,55 @@ function CreditPurchasePage() {
                 loading&&
                 <h5>Loading...</h5>
             }
-            <div className='text-center mb-4'>
-                <Link to={'/u/top-up'} className='h-50 w-50'>top up</Link>
-                <h3>Purchase Credits</h3>
+            <div className='text-center mb-4'>  
+                {/* <h3>Purchase Credits</h3> */}
+                   <div className="toggle-container mt-3">
+                        <div className="toggle-switch">
+                            
+                            <div
+                                className={`toggle-option ${isPlan ? 'active' : ''}`}
+                                onClick={() => handleToggle(true)}
+                            >
+                                Plan
+                            </div>
+                           
+                            <div
+                                className={`toggle-option ${!isPlan ? 'active' : ''}`}
+                                onClick={() => handleToggle(false)}
+                            >
+                                Top Up
+                            </div>
+                           
+                        </div>
+                    </div>
             </div>
+
+            {
+                isPlan? (
+                <div className='row d-flex flex-wrap justify-content-start'>
+                    
+                    {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
+                        
+                        <div key={index} className='col-md-3 mb-4 '>
+                            <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
+                        </div>
+                    ))}
+                </div>
+                ):(
+                    <div className="top-up-container">
+                        <div className="card-container">
+                            {topUpList.map((topUp, index) => (
+                                <div key={index} className="card top-up-buy-card mb-2 ms-4">
+                                    <TopUpCard activeTopUps = {activeTopUps} topUp = {topUp} buyCredits={buyCredits} loggedIn={loggedIn}/> 
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
+            }
+
+
+
             {
                 error &&
                 <div className="alert alert-danger" role="alert">
@@ -198,15 +332,7 @@ function CreditPurchasePage() {
                 />
             }
 
-            <div className='row d-flex flex-wrap justify-content-start'>
-                
-                {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
-                    
-                    <div key={index} className='col-md-3 mb-4 '>
-                        <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
-                    </div>
-                ))}
-            </div>
+            
         </div>
     </div>
   )

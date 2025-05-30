@@ -21,7 +21,7 @@ exports.RayzorPayOrderController=async(req,res)=>{
 
         if (package_type === 'topup') {
             const [activeBasePlan] = await db.execute(
-                `SELECT id FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expires_at > NOW()`,
+                `SELECT id FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expiry_date > NOW()`,
                 [id]
             );
             console.log("active base plan ",activeBasePlan);

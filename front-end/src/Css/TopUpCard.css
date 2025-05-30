@@ -54,7 +54,6 @@
 }
 
 .credit-pill {
-  display: inline-block;
   padding: 8px 10px;
   width: 100px;
   font-weight: bold;
@@ -88,6 +87,7 @@
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
+
 
 
 @media (max-width: 1024px) {
