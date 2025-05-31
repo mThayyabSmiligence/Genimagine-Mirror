@@ -3,7 +3,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./Css/common.css"
 import './App.css';
 import {BrowserRouter as Router , Routes,Route, Navigate} from "react-router-dom" 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
 import Imagetest from './Pages/Imagetest';
 import Login from './Pages/Login';
@@ -52,9 +52,12 @@ import PlanDetail from './Pages/Admin/PlanDetail';
 import TopUpManagement from './Pages/Admin/TopUpManagement';
 import CreateTopUpForm from './Pages/Admin/CreateTopUpForm';
 import TopUpPage from './Pages/Purchase/TopUpPage';
+import { updateCreditsInLocalStorage } from './utils/creditUtils';
+import RefreshDataContext from './Context/RefreshDataProvider';
 
 
 function App() {
+  const { setRefreshCreditBalance } = useContext(RefreshDataContext);
 
   const[showNavBar,setShowNavBar]=useState(false)
   const [width, setWidth] = useState(window.innerWidth);
@@ -72,19 +75,29 @@ function App() {
           };
     }, []);
 
+    useEffect(() => {
+    const fetchCredits = async () => {
+      await updateCreditsInLocalStorage();
+      setRefreshCreditBalance(prev => !prev); // notify UI to re-read localStorage
+    };
 
-  useEffect(()=>{
-    if(fresh){
-      if(localStorage.getItem('side-nav-open')){
-        setShowNavBar(localStorage.getItem('side-nav-open')=="true"?true:false);
-        setFresh(false)
-        return
+    fetchCredits();
+  }, [setRefreshCreditBalance]);
+
+
+    useEffect(()=>{
+      if(fresh){
+        if(localStorage.getItem('side-nav-open')){
+          setShowNavBar(localStorage.getItem('side-nav-open')=="true"?true:false);
+          setFresh(false)
+          return
+        }
       }
-    }
-    
-    localStorage.setItem('side-nav-open',showNavBar)
-  },[showNavBar])
-  useEffect(()=>{},[])
+      
+      localStorage.setItem('side-nav-open',showNavBar)
+    },[showNavBar])
+
+    useEffect(()=>{},[])
   return (
     <div className="App">
 

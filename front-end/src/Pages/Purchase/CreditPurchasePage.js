@@ -37,6 +37,10 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
     // const[customCreditsFocus,setCustomCreditsFocus]=useState(false)
     // const[customCreditsValidation,setCustomCreditsValidation]=useState(true)
     const [isPlan, setIsPlan] = useState(defaultValue === 'plan');
+    const [planStatus, setPlanStatus] = useState(null);
+
+    const [topUpList, setTopUpList] = useState([]);
+    const [activeTopUps, setActiveTopUps] = useState([]);
 
     
     useEffect(() => {
@@ -64,36 +68,47 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
         }
     },[purchaseSuccess])
 
-
-    const [topUpList, setTopUpList] = useState([]);
-    const [activeTopUps, setActiveTopUps] = useState([]);
+    useEffect(() => {
+        checkPlanStatus();
+    },[])
     
-        useEffect(() => {
-            handleGetTopUp();
-        },[]);
+    useEffect(() => {
+        handleGetTopUp();
+    },[]);
 
-        useEffect(() => {
-        const interval = setInterval(() => {
-            fetchUserActiveTopUps();
-        }, 10000); 
+    useEffect(() => {
+    const interval = setInterval(() => {
+        fetchUserActiveTopUps();
+    }, 10000); 
 
-        return () => clearInterval(interval);
-        }, []);
+    return () => clearInterval(interval);
+    }, []);
 
 
-        useEffect(() => {
-            fetchUserActiveTopUps();
-        },[purchaseSuccess])
-    
-        const handleGetTopUp = async () => {
-            try {
-                const response = await axiosPrivate.get('/get-active-topUp');
-                console.log("top up list data", response.data);
-                setTopUpList(response.data.data);
-            } catch (error) {
-                console.error("error getting top up data",error);
-            }
-        };
+    useEffect(() => {
+        fetchUserActiveTopUps();
+    },[purchaseSuccess])
+
+
+    const handleGetTopUp = async () => {
+        try {
+            const response = await axiosPrivate.get('/get-active-topUp');
+            console.log("top up list data", response.data);
+            setTopUpList(response.data.data);
+        } catch (error) {
+            console.error("error getting top up data",error);
+        }
+    };
+
+    const checkPlanStatus = async () => {
+        try{
+            const planRes = await axiosPrivate.get('/user/plan-status');
+            console.log("plan status", planRes.data)
+            setPlanStatus(planRes.data)
+        }catch(error){
+            console.error("error getting plan status data",error);
+        }
+    }
 
     //     const fetchUserActiveTopUps = async () => {
     //     try {
@@ -108,20 +123,20 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
     // };
 
     const fetchUserActiveTopUps = async () => {
-    try {
-        const response = await axiosPrivate.get('/user/active-topups');
-        const data = response.data.data;
+        try {
+            const response = await axiosPrivate.get('/user/active-topups');
+            const data = response.data.data;
 
-        const activePlanIds = data.length > 0
-            ? data.map(item => item.plan_id)
-            : [];
+            const activePlanIds = data.length > 0
+                ? data.map(item => item.plan_id)
+                : [];
 
-        setActiveTopUps(activePlanIds); // Always update state
-    } catch (error) {
-        console.error("Error getting user's active top-ups:", error);
-        setActiveTopUps([]); // Optional fallback to ensure UI consistency
-    }
-};
+            setActiveTopUps(activePlanIds); // Always update state
+        } catch (error) {
+            console.error("Error getting user's active top-ups:", error);
+            setActiveTopUps([]); // Optional fallback to ensure UI consistency
+        }
+    };
 
     
     const getCreditPurchaseOptions = async () => {
@@ -138,7 +153,6 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
     }
 
    
-  
      const buyCredits=async(package_id,custom_credits,e, package_type)=>{
         if(!loggedIn){
             Navigate('/login',{state: {from: location},replace:true})
@@ -191,6 +205,8 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
                             localStorage.setItem("credit_balance", JSON.stringify(newBalance));
                             setRefreshCreditBalance(!refreshCreditBalance); 
                             setPurchaseSuccess(true);
+
+                            await checkPlanStatus();
                         }       
                     
                     }  
@@ -293,7 +309,7 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
                     {CreditPurchaseOptions&&CreditPurchaseOptions.map((option, index) => (
                         
                         <div key={index} className='col-md-3 mb-4 '>
-                            <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn}/>
+                            <CreditPurchaseCard data={option} buyCredits={buyCredits} loggedIn={loggedIn} planStatus={planStatus}/>
                         </div>
                     ))}
                 </div>

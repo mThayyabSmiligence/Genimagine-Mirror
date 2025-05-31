@@ -228,3 +228,27 @@ exports.updatePurchaseLogStatus=async(purchase_id,status )=>{
         return false;
     }
 }
+
+exports.getTotalActiveCredits = async (userId) => {
+    const [planCreditsResult] = await db.execute(
+        `SELECT SUM(credits_remaining) AS total_plan_credits FROM user_plan_credits WHERE user_id = ? AND is_active = 1`,
+        [userId]
+    );
+    console.log("plan credits result", planCreditsResult)                                          // 14
+
+    const [topupCreditsResult] = await db.execute(
+        `SELECT SUM(credits_remaining) AS total_topup_credits FROM user_topups WHERE user_id = ? AND is_active = 1`,
+        [userId]
+    );
+    console.log("topup credits result", topupCreditsResult)  
+
+    const planCredits = Number(planCreditsResult[0].total_plan_credits) || 0;
+    console.log("get plancredits", planCredits)                                                   // 15
+    const topupCredits = Number(topupCreditsResult[0].total_topup_credits) || 0;
+    console.log("get top up credits", topupCredits)                                               // 16
+
+    console.log("total credits", planCredits+topupCredits)                                      // 17
+
+    return planCredits + topupCredits;
+    
+};

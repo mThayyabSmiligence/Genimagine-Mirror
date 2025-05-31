@@ -1,4 +1,4 @@
-const {  buyCreditsPackageService, getCreditPackagesService, getCreditTopUpService, getUserPurchasedTopUpService } = require("../service/CreditService")
+const {  buyCreditsPackageService, getCreditPackagesService, getCreditTopUpService, getUserPurchasedTopUpService, getTotalActiveCredits } = require("../service/CreditService")
 
 
 exports.getCreditPackagesController=async(req,res)=>{
@@ -32,19 +32,10 @@ exports.getUserPurchasedTopUp =async(req, res)=>{
     res.status(result.status).json(result);
 }
 
-// exports.buyCreditsPackageController=async(req,res)=>{
+exports.getTotalActiveCreditsController = async(req, res)=>{
+    const userId = req.user.id;
 
-//     const {package_id}= req.params;
-//     const {id}= req.user;
+    const result = await getTotalActiveCredits(userId);
 
-//     const response = await buyCreditsPackageService(package_id,id);
-    
-//     res.status(response.status).json(
-//         {
-//             message: response.message,
-//             credits_purchased:response.credits_purchased
-
-//         }
-//     )
-
-// }
+    res.status(200).json({credits : result});
+}

@@ -2,13 +2,13 @@ const express = require('express')
 const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, generateImageWithStabilityController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
-const { buyCreditsPackageController, getCreditTopUpController, getUserPurchasedTopUp } = require('../controller/CreditController');
+const { buyCreditsPackageController, getCreditTopUpController, getUserPurchasedTopUp, getTotalActiveCreditsController } = require('../controller/CreditController');
 const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
-const { getAllPlansController, getPlanByIdController, subscribeToPlanController } = require('../controller/PlanController');
+const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
 const { generateSDImage, generateImageWithStability } = require('../service/generateSDImage');
 const router = express.Router();
 
@@ -33,6 +33,8 @@ router.route('/delete-chat/:chat_id').delete(deleteChatController)
 
 router.route('/order').post(RayzorPayOrderController)
 router.route('/validate-payment').post(validatePaymentController)
+router.route('/user/plan-status').get(getUserPlanStatusContoller)
+router.route('/get-total-credits/:userId').get(getTotalActiveCreditsController)
 
 router.route('/falied-payment').post(handelFailedPaymentController)
 
@@ -40,11 +42,6 @@ router.route('/add-to-library/:image_id').put(addToLibraryController)
 router.route(`/get-library-images`).get(getLibraryImagesController)
 router.route(`/delete-from-library/:image_id`).delete(deleteFromLibraryController)
 
-// router.route("/plans").post(getAllPlansController);
-// router.route("/plan/:id").post(getPlanByIdController);
-// router.post("/subscribe/:plan_id").post(subscribeToPlanController);
-// router.post('/renew', renewPlanController);
-// router.post('/top-up', topUpPlanController);
 
 //explore page routes
 router.route('/publish-to-explore').post(publishToExploreController);

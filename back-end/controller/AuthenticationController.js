@@ -14,7 +14,7 @@ const admin = require('../config/firebaseConfig');
 const { generateUserVerificationToken, verifyUserWithVerificationToken, generateTestEmailService } = require('../service/AuthenticationService');
 const { deleteUser, getUserById } = require('../service/UserService');
 const { checkUserStatusService } = require('../service/RestrictBannedUserService');
-const { getTotalActiveCredits } = require('../service/BuyCreditsService');
+const { getTotalActiveCredits } = require('../service/CreditService');
 
 // user register api - api/v1/users/register
 

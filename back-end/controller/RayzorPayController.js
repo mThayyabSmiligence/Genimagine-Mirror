@@ -2,7 +2,7 @@ const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const Razorpay = require('razorpay');
-const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits, setOrderId, savePaymentHistory, savePaymentLog, savePurchaseErrorLogs, getPackageDetails, getPurchaseLogDetails, handleNewPackageFlow, handleTopupPayment, getTotalActiveCredits } = require('../service/BuyCreditsService');
+const { generateReceiptId, createPurchaseLog, updatePaymentStatus, addPurchasedCradit, addPurchasedCredits, setOrderId, savePaymentHistory, savePaymentLog, savePurchaseErrorLogs, getPackageDetails, getPurchaseLogDetails, handleNewPackageFlow, handleTopupPayment, getTotalActiveCredits, getUserPlanStatusService } = require('../service/BuyCreditsService');
 const crypto = require('crypto');
 const { response } = require('express');
 
@@ -141,7 +141,7 @@ exports.validatePaymentController=async(req,res)=>{
         let response;
 
         if (packageType === 'topup') {
-            console.log("top up package flow 1", packageType)                                  // 1
+        console.log("top up package flow 1", packageType)                                  // 1
         response = await handleTopupPayment(purchaseLog, payment ,razorpay_payment_id ,razorpay_order_id, packageType);
         console.log("top up response", response)                                                // 2
         }else {
@@ -165,9 +165,10 @@ exports.validatePaymentController=async(req,res)=>{
 }
 
 
-exports.expireOldPlans = async() => {
+
+exports.expireOldPlans = async(req,res) => {
      try {
-         db.execute(`
+        await db.execute(`
             UPDATE user_plan_credits
             SET is_active = 0 ,credits_remaining = 0
             WHERE is_active = 1 AND expiry_date < NOW()
@@ -184,19 +185,6 @@ exports.expireOldPlans = async() => {
             SET is_active = 1
             WHERE is_active = 0 AND start_date <= NOW() AND expiry_date > NOW()
         `);
-
-        // const [activeUsers] = await db.execute(`
-        //     SELECT DISTINCT user_id FROM user_plan_credits WHERE is_active = 1
-        // `);
-
-        // // 4. Calculate updated credits for each user
-        // for (const row of activeUsers) {
-        //     const totalCredits = await getTotalActiveCredits(row.user_id);
-        //     console.log(`[Cron Job] Updated total credits for user ${row.user_id}: ${totalCredits}`);
-
-        //     // Optionally: update a cached field in `users` table or log somewhere
-        //     // await db.execute(`UPDATE users SET total_credits = ? WHERE id = ?`, [totalCredits, row.user_id]);
-        // }
 
         console.log(`[Cron Job] Plan activation/deactivation done `);
     } catch (error) {

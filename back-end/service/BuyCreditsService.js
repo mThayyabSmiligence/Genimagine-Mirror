@@ -2,6 +2,7 @@ const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const { customAlphabet } = require("nanoid");
+const { getTotalActiveCredits } = require('./CreditService');
 
 
 exports.createPurchaseLog=async(user_id,package_id,custom_credits,currency,receipt_id, package_type)=>{
@@ -405,10 +406,11 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
 
     let startDate = `NOW()`;
     console.log("1 start date", startDate)                                                       // 5
-    let expiryDate = `DATE_ADD(NOW(), INTERVAL ${validityDays} Minute)`;                        // changed date to minutues for testing
+    // let expiryDate = `DATE_ADD(NOW(), INTERVAL ${validityDays} Minute)`;                        // changed date to minutues for testing
+    let expiryDate = `DATE_FORMAT(DATE_ADD(NOW(), INTERVAL ? DAY), '%Y-%m-%d 23:59:59')`;          
     console.log("1 expiry date", expiryDate)                                                     // 6
     let startParams = [];
-    let expiryParams = [];
+    let expiryParams = [validityDays];
 
     let isActive = 1; 
 
@@ -427,10 +429,13 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
             );
         } else {
             isActive = 0;
-            startDate = `DATE_ADD(?, INTERVAL 0 SECOND)`; // force bind for safety
-            expiryDate = `DATE_ADD(?, INTERVAL ${validityDays} Minute)`;                                       // changed date to minutues for testing
+            // startDate = `DATE_ADD(?, INTERVAL 0 SECOND)`; 
+            // expiryDate = `DATE_ADD(?, INTERVAL ${validityDays} Minute)`; 
+            
+            startDate = `DATE_FORMAT(DATE_ADD(?, INTERVAL 1 DAY), '%Y-%m-%d 00:01:00')`;
+            expiryDate = `DATE_FORMAT(DATE_ADD(?, INTERVAL ? DAY), '%Y-%m-%d 23:59:59')`;                                      
             startParams = [currentPlan.expiry_date];
-            expiryParams = [currentPlan.expiry_date];
+            expiryParams = [currentPlan.expiry_date, validityDays];
         }
 
         if (packageType === 'renew') {
@@ -455,13 +460,13 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
             packageType,
             creditsToAdd,
             creditsToAdd,
-             ...startParams,
+            ...startParams,
             ...expiryParams,
             isActive,
             validityDays
         ]
     );    
-    const totalCredits = await this.getTotalActiveCredits(user_id);
+    const totalCredits = await getTotalActiveCredits(user_id);
     console.log("Total credits after processing", totalCredits)                                    // 7
 
     return {
@@ -505,7 +510,7 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
             [userId, planId, basePlanPackageId, creditsToAdd, creditsToAdd, basePlanExpiry]
         );
 
-       const totalCredits = await this.getTotalActiveCredits(userId);
+       const totalCredits = await getTotalActiveCredits(userId);
           console.log("Total credits after processing", totalCredits)                              // 13
 
         return {
@@ -525,25 +530,7 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
     }
 }
 
-exports.getTotalActiveCredits = async (userId) => {
-    const [planCreditsResult] = await db.execute(
-        `SELECT SUM(credits_remaining) AS total_plan_credits FROM user_plan_credits WHERE user_id = ? AND is_active = 1`,
-        [userId]
-    );
-    console.log("plan credits result", planCreditsResult)                                          // 14
 
-    const [topupCreditsResult] = await db.execute(
-        `SELECT SUM(credits_remaining) AS total_topup_credits FROM user_topups WHERE user_id = ? AND is_active = 1`,
-        [userId]
-    );
-    console.log("topup credits result", topupCreditsResult)  
 
-    const planCredits = Number(planCreditsResult[0].total_plan_credits) || 0;
-    console.log("get plancredits", planCredits)                                                   // 15
-    const topupCredits = Number(topupCreditsResult[0].total_topup_credits) || 0;
-    console.log("get top up credits", topupCredits)                                               // 16
 
-    console.log("total credits", planCredits+topupCredits)                                      // 17
 
-    return planCredits + topupCredits;
-};

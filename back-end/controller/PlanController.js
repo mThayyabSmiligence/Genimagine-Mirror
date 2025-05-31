@@ -1,4 +1,4 @@
-const { deletePlanService, updatePlanService, createPlanService, getPlanByIdService, getAllPlansService } = require('../service/PlanService');
+const { deletePlanService, updatePlanService, createPlanService, getPlanByIdService, getAllPlansService, getUserPlanStatusService } = require('../service/PlanService');
 
 
 exports.getAllPlansController = async (req, res) => {
@@ -62,3 +62,10 @@ exports.deletePlanController = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete plan' });
   }
 };
+
+exports.getUserPlanStatusContoller = async(req, res) => {
+    const userId = req.user.id;
+    const result = await getUserPlanStatusService(userId);
+
+    res.status(result.status).json(result);
+}

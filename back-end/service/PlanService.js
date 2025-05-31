@@ -163,3 +163,78 @@ exports.deletePlanService = async (id) => {
         }
     }
 };
+
+exports.getUserPlanStatusService = async(userId) =>{
+    try{     
+        const [activePlans] = await db.execute(
+            `SELECT * FROM user_plan_credits 
+             WHERE user_id = ? AND is_active = 1 
+             ORDER BY expiry_date DESC LIMIT 1`,
+            [userId]
+        );
+    
+        let currentPlan = activePlans[0] || null;
+        let scheduledPlan = null;
+        let isExpiringSoon = false;
+        let daysLeft = null;
+    
+        if (currentPlan) {
+            const [futurePlans] = await db.execute(
+                `SELECT * FROM user_plan_credits 
+                 WHERE user_id = ? AND is_active = 0 AND start_date > NOW() 
+                 ORDER BY start_date ASC LIMIT 1`,
+                [userId]
+            );
+            scheduledPlan = futurePlans[0] || null;
+    
+            const [daysResult] = await db.execute(
+                `SELECT DATEDIFF(expiry_date, NOW()) AS days_left 
+                 FROM user_plan_credits WHERE id = ?`,
+                [currentPlan.id]
+            );
+            daysLeft = daysResult[0]?.days_left ?? null;
+    
+            if (daysLeft !== null && daysLeft <= 2 && daysLeft >= 0) {
+                isExpiringSoon = true;
+            }
+    
+            // Auto-activate scheduled plan if expired
+            const [expiredCheck] = await db.execute(
+                `SELECT NOW() > expiry_date AS expired 
+                 FROM user_plan_credits WHERE id = ?`,
+                [currentPlan.id]
+            );
+    
+            if (expiredCheck[0].expired && scheduledPlan) {
+                await db.execute(
+                    `UPDATE user_plan_credits SET is_active = 0 WHERE id = ?`,
+                    [currentPlan.id]
+                );
+    
+                await db.execute(
+                    `UPDATE user_plan_credits SET is_active = 1 WHERE id = ?`,
+                    [scheduledPlan.id]
+                );
+    
+                currentPlan = scheduledPlan;
+                scheduledPlan = null;
+                isExpiringSoon = false;
+            }
+        }
+    
+        return {
+            status: 200,
+            success: true,
+            current_plan: currentPlan,
+            scheduled_plan: scheduledPlan,
+            is_expiring_soon: isExpiringSoon,
+            days_left: daysLeft,
+        };
+    }catch(error){
+        console.error("error checking plan status: ", error)
+        return {
+            status: 500,
+            message: "error checking plan status"
+        }
+    }
+};
