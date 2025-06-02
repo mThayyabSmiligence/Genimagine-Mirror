@@ -210,13 +210,11 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         let image;
 
-        if (model_data.model_url === "SD_1_6") {
+        if (model_data.model_type === "stability") {
             image = await generateSDImage(inputs); // Stability AI
         } else {
             image = await paidGenerateImageService(inputs, model_data.model_url); // Cloudflare
         }
-
-
 
         if(!image){
             res.status(429).json({

@@ -141,19 +141,19 @@ export default function CreatePlanForm({ isEditMode = false }) {
                     
                     <div className="mb-3">
                         <label htmlFor="package-name" className="form-label package-name-text required-label">Model Name</label>
-                        <input value={packageName} onChange={(e) => setPackageName(e.target.value)} type="text" className="form-control package-name-box" placeholder="Enter Package Name" aria-label="package name" id="package-name" />
+                        <input value={packageName} onChange={(e) => setPackageName(e.target.value)} type="text" className="form-control package-name-box" placeholder="Enter Package Name" aria-label="package name" id="package-name" required/>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="credits" className="form-label credits-text required-label">Credits</label>
-                        <input value={credits} onChange={(e) => setCredits(e.target.value)} type="text" className="form-control credits-box" placeholder="Enter Credits" aria-label="credits" id="credits" />
+                        <input value={credits} onChange={(e) => setCredits(e.target.value)} type="text" className="form-control credits-box" placeholder="Enter Credits" aria-label="credits" id="credits" required/>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="description" className="form-label description-text required-label">Description</label>
-                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" />
+                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" required/>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="cost" className="form-label cost-text required-label">Cost</label>
-                        <input value={cost} onChange={(e) => setCost(e.target.value)} type="text" className="form-control cost-box" placeholder="Enter cost" aria-label="Cost" id="Cost" />
+                        <input value={cost} onChange={(e) => setCost(e.target.value)} type="text" className="form-control cost-box" placeholder="Enter cost" aria-label="Cost" id="Cost" required/>
                     </div>
 
                     <div className="mb-3">
@@ -165,6 +165,7 @@ export default function CreatePlanForm({ isEditMode = false }) {
                         placeholder="Select Currency"
                         className="currency-select text-start"
                         classNamePrefix="select"
+                        required
                       />
                     </div>
 
@@ -201,6 +202,7 @@ export default function CreatePlanForm({ isEditMode = false }) {
                         placeholder="Select Validity (in days)"
                         className="validity-select text-start"
                         classNamePrefix="select"
+                        required 
                       />
                     </div>
 

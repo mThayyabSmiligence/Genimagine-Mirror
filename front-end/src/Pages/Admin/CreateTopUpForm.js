@@ -91,6 +91,7 @@ useEffect(() => {
               placeholder="Enter credits amount"
               value={formData.credits}
               onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+              required
             />
           </div>
 
@@ -108,6 +109,7 @@ useEffect(() => {
               placeholder="Enter cost amount"
               value={formData.cost}
               onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+              required
             />
           </div>
 
@@ -121,6 +123,7 @@ useEffect(() => {
               id="currency"
               value={formData.currency}
               onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              required
             >
               <option value="">Select currency</option>
               {currencies.map((currency) => (

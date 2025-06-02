@@ -3,6 +3,7 @@ const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
 const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService, getResizedHeightWidth, getModelByIdService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
+const { generateImageWithStability } = require('../service/generateSDImage');
 // get all users api - api/v1/users/list
 
 exports.getUsersList = async (req, res, next) => {
@@ -368,26 +369,26 @@ exports.getResizedHeightWidthController = async(req, res) => {
     return res.status(getHeightWidth.status).json(getHeightWidth)
 }
 
-//  exports.generateImageWithStabilityController = async (req, res) => {
-//   try {
-//     const { prompt } = req.body;
+ exports.generateImageWithStabilityController = async (req, res) => {
+  try {
+    const { prompt } = req.body;
 
-//     if (!prompt || typeof prompt !== 'string') {
-//       return res.status(400).json({ success: false, message: 'Prompt is required and must be a string.' });
-//     }
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ success: false, message: 'Prompt is required and must be a string.' });
+    }
 
-//     const image = await generateImageWithStability(prompt);
+    const image = await generateImageWithStability(prompt);
 
-//     return res.status(200).json({
-//       success: true,
-//       image, // base64 string with data:image/png;base64,...
-//     });
-//   } catch (error) {
-//     console.error('Error generating image:', error);
-//     return res.status(500).json({
-//       success: false,
-//       message: 'Image generation failed',
-//       error: error.message,
-//     });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      image, // base64 string with data:image/png;base64,...
+    });
+  } catch (error) {
+    console.error('Error generating image:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Image generation failed',
+      error: error.message,
+    });
+  }
+};

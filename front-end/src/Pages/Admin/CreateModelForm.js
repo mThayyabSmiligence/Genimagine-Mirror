@@ -5,13 +5,17 @@ import makeAnimated from 'react-select/animated';
 import { axiosAdmin } from "../../API's/axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-
+const modelTypeOptions = [
+  { value: 'cloudflare', label: 'Cloudflare' },
+  { value: 'stability', label: 'Stability' },
+];
 
 export default function CreateModelForm({ isEditMode = false }) {
   const navigate = useNavigate();
 
   const [qualityOptions, setQualityOptions] = useState([]);
   const [aspectRatioOptions, setAspectRatioOptions] = useState([]);
+  const [selectedModelType, setSelectedModelType] = useState(null);
   const [defaultQuality, setDefaultQuality] = useState(null);
   const [defaultAspectRatio, setDefaultAspectRatio] = useState(null);
 
@@ -221,15 +225,29 @@ export default function CreateModelForm({ isEditMode = false }) {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label name-text required-label">Model Name</label>
-                  <input value={modelName} onChange={(e) => setModelName(e.target.value)} type="text" className="form-control name-box" placeholder="Name" aria-label="Model name" id="name" />
+                  <input value={modelName} onChange={(e) => setModelName(e.target.value)} type="text" className="form-control name-box" placeholder="Name" aria-label="Model name" id="name" required/>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="description" className="form-label description-text required-label">Description</label>
-                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" />
+                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" required/>
                 </div>
+
+                <div className="mb-3">
+                  <label htmlFor="modelType" className="form-label required-label model-type-text">Model Type</label>
+                  <Select
+                    id="modelType"
+                    options={modelTypeOptions}
+                    value={selectedModelType}
+                    onChange={(selectedOption) => setSelectedModelType(selectedOption)}
+                    placeholder="Select model type"
+                    className="model-type-select text-start"
+                    required
+                  />
+                </div>
+
                 <div className="mb-3">
                   <label htmlFor="url" className="form-label url-text required-label">Model URL</label>
-                  <input value={modelUrl} onChange={(e) => setModelUrl(e.target.value)} type="text" className="form-control url-box" placeholder="Enter URL" aria-label="URL" id="url" />
+                  <input value={modelUrl} onChange={(e) => setModelUrl(e.target.value)} type="text" className="form-control url-box" placeholder="Enter URL" aria-label="URL" id="url" required/>
                 </div>
     
                 <div className='default-switch-btn d-flex justify-content-between align-items-center mb-3'>
@@ -268,6 +286,7 @@ export default function CreateModelForm({ isEditMode = false }) {
                         value={selectedQualities}
                         className="quality-select text-start"
                         classNamePrefix="select-quality"
+                        required
                     />
                 </div>
                 {selectedQualities.map((q) => (
@@ -302,6 +321,7 @@ export default function CreateModelForm({ isEditMode = false }) {
                         value={selectedAspectRatios}
                         className="aspectratio-select text-start"
                         classNamePrefix="select-aspect-ratio"
+                        required
                     />
                 </div>
                 
@@ -336,4 +356,3 @@ export default function CreateModelForm({ isEditMode = false }) {
         </div> 
    )
 };
-

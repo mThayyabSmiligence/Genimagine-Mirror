@@ -9,7 +9,6 @@ const { RayzorPayOrderController, validatePaymentController, handelFailedPayment
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
-const { generateSDImage, generateImageWithStability } = require('../service/generateSDImage');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -55,7 +54,7 @@ router.route('/explore/edit-caption/:published_id').post(editCaptionController)
 router.route('/report-image').post(ImageReportController)
 router.route("/submitfeedback").post(submitFeedbackController);
 
-// router.route("/generatebySD").post( generateImageWithStabilityController)
+router.route("/generatebySD").post( generateImageWithStabilityController )                                   //stability diffusion
 
 router.route('/get-active-topUp').get(getCreditTopUpController)
 router.route('/user/active-topups').get(getUserPurchasedTopUp)
