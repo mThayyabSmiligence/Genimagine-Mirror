@@ -178,10 +178,13 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const handelClick=()=>{
     if(promptLength>500) return
 
+    
+    const trimmedPrompt = promptText.trim();
+
     if(pRef.current){
       pRef.current.innerText=""
     }
-    if(promptText==""){
+    if(trimmedPrompt==""){
       alert("fill the prompt")
       return
     }

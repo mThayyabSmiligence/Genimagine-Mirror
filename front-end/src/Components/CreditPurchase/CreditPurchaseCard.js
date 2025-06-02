@@ -7,7 +7,11 @@ function CreditPurchaseCard({ data,buyCredits,loggedIn,planStatus}) {
 
     const location = useLocation()
     const handelBuy=(e)=>{
-        buyCredits(data.package_id,null,e)
+     let package_type = 'new';
+    if (isActivePlan && isExpiringSoon) {
+        package_type = 'renew';
+    }
+        buyCredits(data.package_id,null,e,package_type)
     }
 
    const isActivePlan = planStatus?.current_plan?.package_id === data.package_id;
