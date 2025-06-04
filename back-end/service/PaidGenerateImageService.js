@@ -30,7 +30,7 @@ exports.paidGenerateImageService= async(inputs,model_url)=>{
             // console.log(response.data.result.image)
             // const decodedString= atob(response.data.result.image)
             // const imageBuffer = Uint8Array.from(decodedString,(m)=>m.codePointAt(0))
-            const imageBuffer= Buffer(response.data,'base64')
+            const imageBuffer= Buffer.from(response.data,'base64')
             
             return imageBuffer
         }catch(error){

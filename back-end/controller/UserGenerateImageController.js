@@ -12,7 +12,7 @@ const { paidGenerateImageService } = require('../service/PaidGenerateImageServic
 const { uploadImageToServer } = require('../service/UploadToServerService');
 const { encrypt } = require('../service/EncrypDecrypt');
 const { decrypt } = require('../service/EncrypDecrypt');
-const { generateSDImage } = require('../service/generateSDImage');
+const { generateImageWithStability } = require('../service/generateSDImage');
 
 
 
@@ -211,7 +211,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
         let image;
 
         if (model_data.model_type === "stability") {
-            image = await generateSDImage(inputs); // Stability AI
+            // image = await generateSDImage(inputs); // Stability AI
+            image = await generateImageWithStability(inputs); 
         } else {
             image = await paidGenerateImageService(inputs, model_data.model_url); // Cloudflare
         }

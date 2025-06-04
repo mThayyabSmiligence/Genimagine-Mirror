@@ -377,12 +377,15 @@ exports.getResizedHeightWidthController = async(req, res) => {
       return res.status(400).json({ success: false, message: 'Prompt is required and must be a string.' });
     }
 
-    const image = await generateImageWithStability(prompt);
+    const imageBuffer = await generateImageWithStability(prompt);
 
-    return res.status(200).json({
-      success: true,
-      image, // base64 string with data:image/png;base64,...
+   res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': imageBuffer.length,
     });
+
+    res.end(imageBuffer); 
+
   } catch (error) {
     console.error('Error generating image:', error);
     return res.status(500).json({
