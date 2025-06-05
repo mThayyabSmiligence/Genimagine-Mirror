@@ -146,22 +146,65 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
     }
 };
 
+// exports.deletePlanService = async (id) => {
+//      try{
+//         const [rows] = await db.execute('DELETE FROM credit_purchase_packages WHERE package_id = ?', [id]);
+//         if(rows.length == 0){
+//             return{
+//                 status: 404,
+//                 message: "plan not found"
+//             }
+//         } 
+//     }catch(error){
+//         console.error("Error deleting plan by ID", error);
+//         return{
+//             status: 500,
+//             message: "error deleting plan by ID"
+//         }
+//     }
+// };
+
 exports.deletePlanService = async (id) => {
-     try{
-        const [rows] = await db.execute('DELETE FROM credit_purchase_packages WHERE package_id = ?', [id]);
-        if(rows.length == 0){
-            return{
-                status: 404,
-                message: "plan not found"
-            }
-        } 
-    }catch(error){
-        console.error("Error deleting plan by ID", error);
-        return{
-            status: 500,
-            message: "error deleting plan by ID"
-        }
+  try {
+    const [result] = await db.execute(
+      'UPDATE credit_purchase_packages SET is_deleted = 1 WHERE package_id = ?',
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return {
+        status: 404,
+        message: "Plan not found"
+      };
     }
+
+//    const [remainingPlans] = await db.execute(
+//       'SELECT * FROM credit_purchase_packages WHERE is_deleted = 0 ORDER BY created_at DESC'
+//     );
+
+    return {
+      status: 200,
+      message: "Plan soft-deleted"
+    };
+  } catch (error) {
+    console.error("Error soft deleting plan", error);
+    return {
+      status: 500,
+      message: "Error soft deleting plan"
+    };
+  }
+};
+
+exports.getAllRemainingPlans = async () => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM credit_purchase_packages WHERE is_deleted = 0 ORDER BY created_at DESC'
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error fetching plans:", error);
+    throw error;
+  }
 };
 
 exports.getUserPlanStatusService = async(userId) =>{

@@ -116,6 +116,7 @@ exports.createModelController = async (req, res) => {
     const {
             name,
             description,
+            model_type,
             model_url,
             resolution_config,
             aspect_ratio_config,
@@ -126,7 +127,7 @@ exports.createModelController = async (req, res) => {
           const resConfigJSON = JSON.stringify(resolution_config);
           const aspectConfigJSON = JSON.stringify(aspect_ratio_config);
       
-    const result = await updateModelService(id, name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default);
+    const result = await updateModelService(id, name, description, model_type, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default);
     res.status(result.status).json(result);
     
   };

@@ -99,6 +99,7 @@ exports.updateTopUpService = async (planId, credits,cost,currency,is_active) => 
 }
 
 exports.deleteTopUpService = async (id) => {
+    console.log("del;ete", id)
      try{
         const [rows] = await db.execute('DELETE FROM topup_credit_packages WHERE topup_package_id = ?', [id]);
         if(rows.length == 0){
@@ -107,6 +108,11 @@ exports.deleteTopUpService = async (id) => {
                 message: "top up not found"
             }
         } 
+
+        return{
+            status: 200,
+            message: "top up deleted successfully"
+        }
     }catch(error){
         console.error("Error deleting top up by ID", error);
         return{

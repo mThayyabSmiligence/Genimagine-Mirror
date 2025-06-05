@@ -58,6 +58,12 @@ export default function CreateModelForm({ isEditMode = false }) {
       setIsDefault(modelData.is_default);
       // setSelectedQualities(modelData.resolution_config);
       // setSelectedAspectRatios(modelData.aspect_ratio_config) 
+
+      const matchedModelType = modelTypeOptions.find(opt => opt.value === modelData.model_type);
+      if (matchedModelType) {
+        setSelectedModelType(matchedModelType);
+      }
+
       const qualities = (modelData.resolution_config || []).map((q) => ({
         label: q.name,
         value: q.quality_level_id,
@@ -132,6 +138,7 @@ export default function CreateModelForm({ isEditMode = false }) {
       const payload = {
         name: modelName,
         description,  
+        model_type : selectedModelType.value,
         model_url: modelUrl,
         is_default: isDefault,
         is_active: isActive,

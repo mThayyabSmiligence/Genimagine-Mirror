@@ -16,9 +16,10 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { axiosAdmin } from '../../API\'s/axios';
 
 
-function Row({row}) {
+function Row({row, setModelsList}) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
@@ -30,9 +31,37 @@ function Row({row}) {
     navigate(`/admin/model-detail/${modelId}`)
   }
 
+  const handleDelete = async (modelId) => {
+  const confirm = window.confirm("Are you sure you want to delete this model?");
+  if (!confirm) return;
+
+  try {
+    const response = await axiosAdmin.post(`/delete-model/${modelId}`);
+    
+     if (response.data.status === 200) {
+      setModelsList(prev =>
+        prev.map(model =>
+          model.id === modelId
+            ? { ...model, is_active: 0, is_deleted: 1 }
+            : model
+        )
+      );
+    } else {
+      alert("Failed to delete model: " + response.data.message);
+    }
+  } catch (error) {
+    console.error("Delete failed:", error);
+    alert("An error occurred while deleting the model.");
+  }
+};
+
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}
+      //  className={`clickable-row ${row.is_deleted ? 'row-disabled' : ''}`}
+       className={`clickable-row `}
+       onClick={() => handleViewModelDetail(row.id)} 
+      >
 
         <TableCell component="th" scope="row" align='center'>
           {row.id}
@@ -47,18 +76,39 @@ function Row({row}) {
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() => setOpen(!open)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(!open)}
+            }
             title='click to open'
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell> 
         <TableCell align="center">
-          <button className="edit-btn reviewd-btn" onClick={() => handleEdit(row.id)}>Edit</button>
+          <button  disabled={row.is_deleted === 1} className="edit-btn reviewd-btn" onClick={(e) => {
+            e.stopPropagation();
+            handleEdit(row.id)}
+          }>
+            Edit
+          </button>
+
+          <button
+            className="delete-btn ms-2"
+            disabled= {row.is_deleted === 1}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(row.id); 
+            }}
+           
+          >
+            {row.is_deleted === 1 ? 'Deleted' : 'Delete'}
+          </button>
+          {/* <button className="view-detail-btn ms-2" onClick={() => handleViewModelDetail(row.id)}>View</button> */}
+
         </TableCell>
-        <TableCell align="center">
-          <button className="view-detail-btn" onClick={() => handleViewModelDetail(row.id)}>View Details</button>
-        </TableCell>
+        {/* <TableCell align="center">
+        </TableCell> */}
  
       </TableRow>
 
@@ -143,14 +193,14 @@ export default function AdminModelsListTable({models}) {
             <TableCell className='models-table-title' align='center'><span>DESCRIPTION</span></TableCell>
             <TableCell className='models-table-title' align='center'><span>STATUS</span></TableCell>
             <TableCell className='models-table-title' align='center'><span>VIEW DETAILS</span></TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
+            <TableCell className='models-table-title' align='center'><span>ACTION</span></TableCell>
+            {/* <TableCell></TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {models.length > 0 && 
-            models.map((model) => (
-              <Row key={model.id} row={model} />
+          {modelsList.length > 0 && 
+            modelsList.map((model) => (
+              <Row key={model.id} row={model} setModelsList={setModelsList} />
             ))
           }
         </TableBody>

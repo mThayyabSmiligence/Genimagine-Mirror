@@ -12,7 +12,7 @@ router.get('/model/select-options', getQualityLevelAspectRatioForSelect);
 
 router.route('/create-model').post(createModelController)        
 router.route('/edit/model/:id').post(updateModelController)        
-router.post('/model/:id', deleteModelController); 
+router.post('/delete-model/:id', deleteModelController); 
 
 router.route('/plans').post(getAllPlansController);
 router.route("/plan/:package_id").post(getPlanByIdController);
@@ -25,7 +25,7 @@ router.route('/top-ups').post(getAllTopUpController);
 router.route('/top-up/:plan_id').post(getTopUpByIdController);
 router.route('/create-top-up').post(createTopUpController);
 router.route('/edit/top-up/:plan_id').post(updateTopUpController);
-router.route('/delete-top-up/:plan-id').post(deleteTopUpController);
+router.route('/delete-top-up/:topup_package_id').post(deleteTopUpController);
 
 
 // router.get('/aspect-ratios', getAspectRatiosController);

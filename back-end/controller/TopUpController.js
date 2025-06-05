@@ -55,11 +55,13 @@ exports.updateTopUpController = async (req, res) => {
 }
 
 exports.deleteTopUpController = async (req, res) => {
-    try {
-        await deleteTopUpService(req.params.id);
-        res.status(200).json({ success: true, message: 'Plan deleted successfully' });
-      } catch (err) {
-        console.error("Error deleting plan:", err);
-        res.status(500).json({ success: false, message: 'Failed to delete plan' });
-      }
+
+  // console.log("del;ete4", req.params)/
+    const {topup_package_id} = req.params
+    // console.log("del;ete", plan_id)
+    
+    const result = await deleteTopUpService(topup_package_id);
+
+    res.status(result.status).json(result);
+      
 }

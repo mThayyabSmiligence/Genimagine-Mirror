@@ -194,3 +194,5 @@ export const generateImageWithStability = async (inputs, res) => {
 
     res.end(imageBuffer);
 };
+
+

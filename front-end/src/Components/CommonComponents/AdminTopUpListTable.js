@@ -9,7 +9,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+// import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { axiosAdmin } from '../../API\'s/axios';
 
 function AdminTopUpListTable({ TopUpList }) {
   const navigate = useNavigate();
@@ -22,6 +25,25 @@ function AdminTopUpListTable({ TopUpList }) {
   const handleEdit = (topup_package_id) => {
     navigate(`/admin/topup/edit/${topup_package_id}`);
   };
+
+  const handleDelete = async(topup_package_id) => {
+  if (!window.confirm("Are you sure you want to delete this top-up?")) return;
+
+  try {
+    const response = await axiosAdmin.post(`delete-top-up/${topup_package_id}`);
+
+    if (response.data.status === 200) {
+      
+      setTopUpList(prevList =>
+        prevList.filter(item => item.topup_package_id !== topup_package_id)
+      );
+    } else {
+      console.error("Delete failed:", response.data.message);
+    }
+  } catch (error) {
+    console.error("Error deleting top up plan", error);
+  }
+}
 
   return (
     <TableContainer component={Paper}>
@@ -62,16 +84,16 @@ function AdminTopUpListTable({ TopUpList }) {
                 {new Date(row.updated_at).toLocaleString()}
               </TableCell>
               
-              <TableCell align="center" className='d-flex justify-content-start align-items-center'>
+              <TableCell align="center" className='d-flex justify-content-center align-items-center'>
                 <button
-                  className="edit-btn"
-                  style={{height : "35px"}}
+                  className="edit-topup-btn"
                   onClick={() => handleEdit(row.topup_package_id)}
+                  title='edit'
                 >
-                  Edit
+                  <EditRoundedIcon className=''></EditRoundedIcon>
                 </button>
 
-                <button className='ms-2  d-flex align-items-center br-100 p-1'><DeleteOutlineIcon></DeleteOutlineIcon></button>
+                <button onClick={(e) => handleDelete(row.topup_package_id)} className='ms-2 icon-button-style delete-icon delete-topup-btn' title='delete' ><DeleteOutlineRoundedIcon className='action-icon icon'></DeleteOutlineRoundedIcon></button>
               </TableCell>
             </TableRow>
           ))}

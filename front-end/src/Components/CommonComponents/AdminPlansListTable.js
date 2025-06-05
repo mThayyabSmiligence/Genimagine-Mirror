@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { axiosPrivate } from '../../API\'s/axios';
 
 
 
@@ -29,6 +30,21 @@ export default function AdminPlansListTable({plans}) {
         const  handleViewDetails = (packageID) => {
             navigate(`/admin/plan-detail/${packageID}`)
         }
+ 
+        const handleDelete = async (packageId) => {
+          if (!window.confirm("Are you sure you want to delete this plan?")) return;
+
+          try {
+            const response = await axiosPrivate.post(`/delete-plan/${packageId}`);
+            if (response.data.success) {
+              setPlansList(prev => prev.filter(plan => plan.package_id !== packageId));
+            } 
+          } catch (error) {
+            console.error("Delete failed:", error);
+            alert("An error occurred while deleting the plan.");
+          }
+        };
+        
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="caption table">
@@ -44,7 +60,10 @@ export default function AdminPlansListTable({plans}) {
         </TableHead>
         <TableBody>
           {plans.map((row) => (
-            <TableRow key={row.name}>
+            <TableRow  key={row.package_id} 
+                className="clickable-row"
+                onClick={() => handleViewDetails(row.package_id)}
+            >
               <TableCell component="th" scope="row">
                 {row.package_id}
               </TableCell>
@@ -52,8 +71,20 @@ export default function AdminPlansListTable({plans}) {
               <TableCell align="center">{row.credits}</TableCell>
               <TableCell align="center">{row.validity_days}</TableCell>
               <TableCell align="center"> <button title={row?.is_active ? 'Active' : 'In Active'} className={`status-btn ${row?.is_active ? 'active' : 'Inactive'}`}>{row.is_active ? 'Active' : 'In Active'}</button></TableCell>
-              <TableCell align="center"> <button className="edit-btn reviewd-btn" onClick={() => handleEdit(row.package_id)}>Edit</button>
-              <button className="view-details-btn ms-2" onClick={() => handleViewDetails(row.package_id)}>View</button>
+              <TableCell align="center"> 
+                <button className="edit-btn reviewd-btn" onClick={(e) => {
+                  e.stopPropagation(); 
+                  handleEdit(row.package_id)
+                }}>
+                    Edit
+                </button>
+                {/* <button className="view-details-btn ms-2" onClick={() => handleViewDetails(row.package_id)}>View</button> */}
+                <button className="delete-btn ms-2" onClick={(e) => {
+                    e.stopPropagation(); // prevent triggering row click
+                    handleDelete(row.package_id);
+                  }}>
+                    Delete
+                </button>
               </TableCell>
               
 

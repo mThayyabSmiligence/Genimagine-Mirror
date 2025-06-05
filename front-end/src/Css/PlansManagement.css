@@ -105,8 +105,37 @@
     font-weight: 600;
     border: none;
     border-radius: 8px;
-    /* background-color: rgb(72, 93, 167); */
     color: #fff;
     transition: transform 0.2s ease-in-out;
     background-color: #166e9d;
   }
+
+  .clickable-row {
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .clickable-row:hover {
+    background-color: #f0f0f0; 
+    cursor: pointer;
+  }
+
+  .clickable-row:active {
+    background-color: #e0e0e0;
+  }
+
+  .delete-btn {
+  background-color: #e53935;
+  padding: 5px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+ transform: translateY(-1px)
+}
+

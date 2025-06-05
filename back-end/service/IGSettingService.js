@@ -180,7 +180,7 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
     }
   };
   
-  exports.updateModelService = async (id, name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
+  exports.updateModelService = async (id, name, description, model_type, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
     try {
 
         if (is_default === 1 || "true") {
@@ -189,7 +189,7 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
       
       const query = `
         UPDATE models 
-        SET name = ?, description = ?, cloudflare_model_url = ?, 
+        SET name = ?, description = ?, model_type = ?, cloudflare_model_url = ?, 
             is_active = ?, is_default = ?, resolution_config = ?, aspect_ratio_config = ?, updated_at = NOW()
         WHERE id = ?`;
 
@@ -197,16 +197,14 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
         await db.execute(query, [
           name,
           description,
-        model_url,
-        is_active,
-        is_default,
-        resConfigJSON,
-        aspectConfigJSON,
-        id
+          model_type,
+          model_url,
+          is_active,
+          is_default,
+          resConfigJSON,
+          aspectConfigJSON,
+          id
       ]);
-      
-      console.log("check data", query);
-
   
       return { status: 200, message: "Model updated successfully" };
     } catch (error) {
@@ -215,16 +213,34 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
     }
   };
   
-  exports.deleteModelService = async (id) => {
-    try {
-      const query = "DELETE FROM models WHERE id = ?";
-      await db.execute(query, [id]);
-      return { status: 200, message: "Model deleted successfully" };
-    } catch (error) {
-      console.error("Error deleting model:", error.message);
-      return { status: 500, message: "Error deleting model" };
+  // exports.deleteModelService = async (id) => {
+  //   try {
+  //     const query = "DELETE FROM models WHERE id = ?";
+  //     await db.execute(query, [id]);
+  //     return { status: 200, message: "Model deleted successfully" };
+  //   } catch (error) {
+  //     console.error("Error deleting model:", error.message);
+  //     return { status: 500, message: "Error deleting model" };
+  //   }
+  // };
+
+
+exports.deleteModelService = async (id) => {
+  try {
+    const query = "UPDATE models SET is_deleted = 1, is_active = 0  WHERE id = ?";
+    const [result] = await db.execute(query, [id]);
+
+    if (result.affectedRows === 0) {
+      return { status: 404, message: "Model not found" };
     }
-  };
+
+    return { status: 200, message: "Model soft-deleted successfully" };
+  } catch (error) {
+    console.error("Error soft deleting model:", error.message);
+    return { status: 500, message: "Error soft deleting model" };
+  }
+};
+
 
 
 
