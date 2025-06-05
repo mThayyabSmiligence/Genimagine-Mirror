@@ -2,7 +2,7 @@ const db = require('../config/connectDatabase');
 
 exports.getAllPlansService = async () => {
     try{
-        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages WHERE is_latest = 1 ORDER BY created_at ASC');
+        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages WHERE is_latest = 1 AND is_deleted = 0 ORDER BY created_at ASC');
         return {
             status: 200,
             message: "plans fetched successfully",
@@ -88,7 +88,11 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
         );
      
         if (existingRows.length === 0) {
-          return res.status(404).json({ message: 'Package not found' });
+          return {
+            status: 404,
+            message: 'Package not found'
+            };
+
         }
 
         const [allPlans] = await db.execute("SELECT * from credit_purchase_packages");
@@ -164,36 +168,76 @@ exports.updatePlanService = async (id, package_name, credits, description, cost,
 //     }
 // };
 
+// exports.deletePlanService = async (id) => {
+//   try {
+
+//     const [existingPlans] = await db.execute("")
+
+//     const [result] = await db.execute(
+//       'UPDATE credit_purchase_packages SET is_deleted = 1 WHERE package_id = ?',
+//       [id]
+//     );
+
+//     if (result.affectedRows === 0) {
+//       return {
+//         status: 404,
+//         message: "Plan not found"
+//       };
+//     }
+
+// //    const [remainingPlans] = await db.execute(
+// //       'SELECT * FROM credit_purchase_packages WHERE is_deleted = 0 ORDER BY created_at DESC'
+// //     );
+
+//     return {
+//       status: 200,
+//       message: "Plan soft-deleted"
+//     };
+//   } catch (error) {
+//     console.error("Error soft deleting plan", error);
+//     return {
+//       status: 500,
+//       message: "Error soft deleting plan"
+//     };
+//   }
+// };
+
 exports.deletePlanService = async (id) => {
   try {
-    const [result] = await db.execute(
-      'UPDATE credit_purchase_packages SET is_deleted = 1 WHERE package_id = ?',
+    const [existingRows] = await db.execute(
+      'SELECT * FROM credit_purchase_packages WHERE package_id = ? AND is_deleted = 0',
       [id]
     );
 
-    if (result.affectedRows === 0) {
+    if (existingRows.length === 0) {
       return {
         status: 404,
-        message: "Plan not found"
+        message: "Plan not found or already deleted"
       };
     }
 
-//    const [remainingPlans] = await db.execute(
-//       'SELECT * FROM credit_purchase_packages WHERE is_deleted = 0 ORDER BY created_at DESC'
-//     );
+    const plan = existingRows[0];
+
+    await db.execute(
+      `UPDATE credit_purchase_packages 
+       SET is_deleted = 1, is_active = 0, is_latest = 0 
+       WHERE package_id = ?`,
+      [id]
+    );
 
     return {
       status: 200,
-      message: "Plan soft-deleted"
+      message: "Plan soft-deleted successfully"
     };
   } catch (error) {
     console.error("Error soft deleting plan", error);
     return {
       status: 500,
-      message: "Error soft deleting plan"
+      message: "Internal server error while deleting plan"
     };
   }
 };
+
 
 exports.getAllRemainingPlans = async () => {
   try {

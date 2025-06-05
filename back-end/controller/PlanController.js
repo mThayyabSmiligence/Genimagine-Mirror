@@ -54,13 +54,13 @@ exports.updatePlanController = async (req, res) => {
 };
 
 exports.deletePlanController = async (req, res) => {
-  try {
-    await deletePlanService(req.params.id);
-    res.status(200).json({ success: true, message: 'Plan deleted successfully' });
-  } catch (err) {
-    console.error("Error deleting plan:", err);
-    res.status(500).json({ success: false, message: 'Failed to delete plan' });
-  }
+    
+    const {package_id} = req.params
+
+   const result = await deletePlanService(package_id);
+
+    res.status(result.status).json(result);
+  
 };
 
 exports.getUserPlanStatusContoller = async(req, res) => {

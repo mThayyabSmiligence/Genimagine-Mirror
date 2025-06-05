@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { axiosPrivate } from '../../API\'s/axios';
+import { axiosAdmin, axiosPrivate } from '../../API\'s/axios';
 
 
 
@@ -35,10 +35,16 @@ export default function AdminPlansListTable({plans}) {
           if (!window.confirm("Are you sure you want to delete this plan?")) return;
 
           try {
-            const response = await axiosPrivate.post(`/delete-plan/${packageId}`);
-            if (response.data.success) {
-              setPlansList(prev => prev.filter(plan => plan.package_id !== packageId));
-            } 
+            const response = await axiosAdmin.post(`/delete-plan/${packageId}`);
+             if (response.data.success) {
+                setPlansList(prev =>
+                  prev.map(plan =>
+                    plan.package_id === packageId
+                      ? { ...plan, is_deleted: 1, is_active: 0 }
+                      : plan
+                  )
+                );
+              }
           } catch (error) {
             console.error("Delete failed:", error);
             alert("An error occurred while deleting the plan.");
@@ -72,18 +78,18 @@ export default function AdminPlansListTable({plans}) {
               <TableCell align="center">{row.validity_days}</TableCell>
               <TableCell align="center"> <button title={row?.is_active ? 'Active' : 'In Active'} className={`status-btn ${row?.is_active ? 'active' : 'Inactive'}`}>{row.is_active ? 'Active' : 'In Active'}</button></TableCell>
               <TableCell align="center"> 
-                <button className="edit-btn reviewd-btn" onClick={(e) => {
+                <button className="edit-btn reviewd-btn" disabled= {row.is_deleted === 1} onClick={(e) => {
                   e.stopPropagation(); 
                   handleEdit(row.package_id)
                 }}>
                     Edit
                 </button>
                 {/* <button className="view-details-btn ms-2" onClick={() => handleViewDetails(row.package_id)}>View</button> */}
-                <button className="delete-btn ms-2" onClick={(e) => {
+                <button className="delete-btn ms-2" disabled= {row.is_deleted === 1} onClick={(e) => {
                     e.stopPropagation(); // prevent triggering row click
                     handleDelete(row.package_id);
                   }}>
-                    Delete
+                   {row.is_deleted === 1 ? 'Deleted' : 'Delete'}
                 </button>
               </TableCell>
               
