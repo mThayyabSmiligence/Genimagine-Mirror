@@ -70,7 +70,7 @@ function AdminTopUpListTable({ TopUpList }) {
               <TableCell align="center">
                 <button
                 //   title={row.is_active ? 'Active' : 'Inactive'}
-                  className={`status-btn ${row.is_active ? 'active' : 'inactive'}`}
+                  className={`status-btn ${row.is_active ? 'active' : 'Inactive'}`}
                 >
                   {row.is_active ? 'Active' : 'Inactive'}
                 </button>
