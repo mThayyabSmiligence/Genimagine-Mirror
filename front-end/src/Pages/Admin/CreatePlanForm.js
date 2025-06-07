@@ -84,23 +84,13 @@ export default function CreatePlanForm({ isEditMode = false }) {
           is_active: isActive? 1 : 0,
           validity_days: selectedValidity ? selectedValidity.value : 0
         }
-        // const planData = {
-        //   package_name: packageName,
-        //   credits: parseInt(credits),
-        //   description: description,
-        //   cost: parseFloat(cost),
-        //   currency: selectedCurrency?.value || '',
-        //   allow_renewal: isRenewal ? 1 : 0,
-        //   is_active: isActive ? 1 : 0,
-        //   validity_days: selectedValidity?.value || 0
-        // }
 
-         if (!packageName.trim()) return alert("Package name is required");
-          if (!description.trim()) return alert("Description is required");
-          if (!cost || isNaN(parseFloat(cost))) return alert("Valid cost is required");
-          if (!credits || isNaN(parseInt(credits))) return alert("Valid credits number is required");
-          if (!selectedCurrency) return alert("Currency must be selected");
-          if (!selectedValidity) return alert("Validity must be selected");
+        if (!packageName.trim()) return alert("Package name is required");
+        if (!description.trim()) return alert("Description is required");
+        if (!cost || isNaN(parseFloat(cost))) return alert("Valid cost is required");
+        if (!credits || isNaN(parseInt(credits))) return alert("Valid credits number is required");
+        if (!selectedCurrency) return alert("Currency must be selected");
+        if (!selectedValidity) return alert("Validity must be selected");
 
           // Check for duplicate name
           if(isEditMode){

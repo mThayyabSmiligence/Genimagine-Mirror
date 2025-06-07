@@ -22,8 +22,7 @@ const frontendBaseUrl= process.env.FRONTEND_BASE_URL;
 
 exports.userRegister = async(req, res, next) => {
     const {username, password, dob, email, confirmPassword, role='user'} = req.body
-
-    
+    console.log("registre dob",dob)
 
     const today = new Date();
     const dobDate=new Date(dob)

@@ -1,0 +1,49 @@
+const { getAllModeratorsService, createModeratorService, updateModeratorService, getModeratorDetailService } = require("../service/createModeratorService");
+
+
+
+exports.createModeratorController = async (req, res) => {
+    try {
+        const { username, email, password, dob } = req.body;
+
+        if (!username || !email || !password || !dob) {
+            return res.status(400).json({ success: false, message: 'All fields are required' });
+        }
+
+        const result = await createModeratorService( username, email, password, dob );
+
+        return res.status(result.status).json(result);
+    } catch (error) {
+        console.error("Create moderator error:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+exports.getAllModeratorsController = async (req, res) => {
+    
+    const result = await getAllModeratorsService();
+
+    return res.status(result.status).json(result);
+};
+
+exports.getModeratorDetailController = async (req, res) => {
+
+    const { user_id } = req.params;
+    
+    const result = await getModeratorDetailService(user_id);
+
+    return res.status(result.status).json(result)
+}
+
+exports.updateModeratorController = async (req, res) => {
+    const { user_id } = req.params;
+    const { username, email, password, dob } = req.body;
+
+    if (!username || !email || !dob) {
+      return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+    const result = await updateModeratorService(user_id, username, email, password, dob);
+
+    return res.status(result.status).json(result);
+}

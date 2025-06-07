@@ -34,6 +34,13 @@ export default function AdminNavbar() {
                         {/* <ShoppingCartOutlinedIcon/> */}
                         {/* <div to={"/managements" } className='link nav-options ms-1'>Managements</div> */}
                     </div>
+                    <Link to={"/admin/moderator-management" } className='link'  id='/admin/moderator-management-link'>
+                        <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/moderator-management"&&'active'}`}>
+
+                            {/* <AddCircleOutlineOutlinedIcon/> */}
+                            <div to={"/admin/moderator-management" } className='link nav-options ms-1'>Moderator-Management</div>
+                        </div>
+                    </Link>
 
                     <Link to={"/admin/model-management" } className='link'  id='/admin/model-management-link'>
                         <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/model-management"&&'active'}`}>
@@ -50,6 +57,7 @@ export default function AdminNavbar() {
                             <div to={"/admin/plans-management" } className='link nav-options ms-1'>Plans-Management</div>
                         </div>
                     </Link>
+
 
                 </div>
             </div>

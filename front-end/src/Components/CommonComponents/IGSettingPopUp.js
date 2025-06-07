@@ -336,11 +336,12 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                       <div key={model.id} onClick={() => setTempTrackModel(model.id)} className={`pop-up-model-content ${model.id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${((!loggedIn) && model.id!=1)?"unclickable":"not-disable"}`}>
                         <div>   
                           <h5 className="h-4">{model.name}</h5>
+                          <p>{model.description}</p>
                           <p className="p-primary m-0">{model.resolution}</p>
                         </div>
-                        <div>
+                        {/* <div>
                           <p className="p-primary m-0 ms-2">{model.required_credits} cp<br/>/img</p>
-                        </div>
+                        </div> */}
                         
                       </div>
                   ))
