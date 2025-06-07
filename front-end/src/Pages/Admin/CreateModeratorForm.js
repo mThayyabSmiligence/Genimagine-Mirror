@@ -31,10 +31,11 @@ function CreateModeratorForm({ isEditMode = false }) {
 
     const [moderatorData, setModeratorData] = useState(null);
      useEffect(() => {
-        if (isEditMode) {
-            fetchModeratorDetails();
+        if (isEditMode && userId) {
+            fetchModeratorDetails(userId);
         }
-    }, [isEditMode]);
+    }, [isEditMode, userId]);
+
 
     const fetchModeratorDetails = async () => {
         try {
