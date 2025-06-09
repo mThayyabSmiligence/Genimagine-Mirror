@@ -26,6 +26,17 @@ const verifyModeratorToken = async(req,res,next) => {
             res.status(401).json({ message: 'Access Denied'}); 
             return
         }
+
+        const [rows] = await db.query(
+            `SELECT is_verified FROM users WHERE user_id = ?`,
+            [verified.user_id]
+        );
+
+        if (!rows.length || rows[0].is_verified !== 1) {
+            return res.status(403).json({ message: 'Access Denied. Moderator not verified.' });
+        }
+
+
         next();
     } catch (err) {
         res.status(401).json({ message: 'Invalid token.' });
