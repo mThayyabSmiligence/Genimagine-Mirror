@@ -27,14 +27,14 @@ const verifyModeratorToken = async(req,res,next) => {
             return
         }
 
-        const [rows] = await db.query(
-            `SELECT is_verified FROM users WHERE user_id = ?`,
-            [verified.user_id]
-        );
+        // const [rows] = await db.query(
+        //     `SELECT is_verified FROM users WHERE user_id = ?`,
+        //     [verified.user_id]
+        // );
 
-        if (!rows.length || rows[0].is_verified !== 1) {
-            return res.status(403).json({ message: 'Access Denied. Moderator not verified.' });
-        }
+        // if (!rows.length || rows[0].is_verified !== 1) {
+        //     return res.status(403).json({ message: 'Access Denied. Moderator not verified.' });
+        // }
 
 
         next();

@@ -57,6 +57,7 @@ import RefreshDataContext from './Context/RefreshDataProvider';
 import ModeratorManagement from './Pages/Admin/ModeratorManagement';
 import CreateModeratorForm from './Pages/Admin/CreateModeratorForm';
 import ModeratorDetail from './Pages/Admin/ModeratorDetail';
+import ModeratorProfilePage from './Pages/Moderator/ModeratorProfilePage';
 
 
 function App() {
@@ -191,6 +192,8 @@ function App() {
                 <Route path = "reports" element={<Reports/>} ></Route>
                 <Route path= "report-image-detail/:report_id" element={<ReportImageDetail/>}></Route>
                 <Route path = "feedbacks" element={<ModeratorFeedbacks/>} ></Route>
+                <Route path = "profile-page" element={<ModeratorProfilePage/>} ></Route>
+                <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                 {/* <Route path = "image-management" element={<div>Image Management</div>} ></Route>
                 <Route path = "model-management" element={<div>Model Management</div>} ></Route> */}
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>

@@ -2,6 +2,7 @@ const express = require('express');
 const { banUserController, unbanUserController, suspendUserController, unsuspendUserController, warnUserController, deleteUserController, getUserByIdController } = require('../controller/UsersController');
 const { getAllReportedImagesController, getReportedImageDetail, banReportedImageUserController, suspendReportedImageUserController, warnReportedImageUserController, deleteReportedImageController, noActionReportedImageController } = require('../controller/ReportImageController');
 const { getAllFeedbacksController, respondToFeedbackController, escalateFeedbackController, updateFeedbackStatusController } = require('../controller/UserFeedbackController');
+const { getModeratorDetailController } = require('../controller/ModeratorController');
 const router = express.Router();
 // user management
 router.route('/:user_id/getuser').get(getUserByIdController)
@@ -11,6 +12,7 @@ router.route('/:user_id/suspend').post(suspendUserController);
 router.route('/:user_id/unsuspend').post(unsuspendUserController);
 router.route('/:user_id/warn').post(warnUserController);
 router.route("/:user_id/delete").post(deleteUserController);
+
 
 // reports management
 router.route("/getreportedimages").post(getAllReportedImagesController);
@@ -28,5 +30,10 @@ router.route("/getfeedbacks").post(getAllFeedbacksController);
 router.route("/respond/:id").post(respondToFeedbackController);
 router.route("/updatestatus/:id").post(updateFeedbackStatusController);
 router.route("/escalate/:id").post(escalateFeedbackController);
+
+// moderatr detail
+router.route('/get-moderator-detail').post(getModeratorDetailController);
+// router.route('/update-moderator-profile-image').post(updateModeratorProfileImageController);
+
 
 module.exports = router;

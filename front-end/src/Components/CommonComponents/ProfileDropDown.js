@@ -98,7 +98,7 @@ function ProfileDropDown() {
         {
             userData?.role == "moderator" &&
             // <Link to="" className="dropdown-item" onClick={handleNavigation}>Moderator Panel</Link>
-            <Link></Link>
+            <Link to="/moderator/profile-page" className="dropdown-item">Profile</Link>
         }
         <button className="dropdown-item" onClick={()=>setShowSignOutPopUp(true)}>Sign Out</button>
         {

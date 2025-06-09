@@ -57,13 +57,29 @@ function ChangePassword() {
         animation: 'spin 1s linear infinite',
       };
 
-    useEffect(() =>{
-        if(success){
-            setTimeout(()=>{
-                Navigate('/u/profile', {replace: true})
-            },2500)
+    // useEffect(() =>{
+    //     if(success){
+    //         setTimeout(()=>{
+    //             Navigate('/u/profile', {replace: true})
+    //         },2500)
+    //     }
+    // },[success])
+
+    useEffect(() => {
+    if (success) {
+        const userData = JSON.parse(localStorage.getItem("user_data"));
+        const role = userData?.role;
+
+        setTimeout(() => {
+        if (role === "moderator") {
+            Navigate('/moderator/profile-page', { replace: true });
+        } else {
+            Navigate('/u/profile', { replace: true });
         }
-    },[success])
+        }, 2500);
+    }
+    }, [success]);
+
 
     const handelSubmit=async(e)=>{
         e.preventDefault()
