@@ -1,4 +1,4 @@
-const { getAllModeratorsService, createModeratorService, updateModeratorService, getModeratorDetailService } = require("../service/createModeratorService");
+const { getAllModeratorsService, createModeratorService, updateModeratorService, getModeratorDetailService, deleteModeratorService } = require("../service/createModeratorService");
 
 
 
@@ -47,3 +47,11 @@ exports.updateModeratorController = async (req, res) => {
 
     return res.status(result.status).json(result);
 }
+
+exports.deleteModeratorController = async (req, res) => {
+    const { user_id } = req.params;
+ 
+    const result = await deleteModeratorService(user_id);
+
+    return res.status(result.status).json(result);
+};

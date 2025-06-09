@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useNavigate } from 'react-router-dom';
+import { axiosAdmin } from '../../API\'s/axios';
 
 function AdminModeratorsListTable({moderatorList}) {
   const navigate = useNavigate();
@@ -15,6 +16,23 @@ function AdminModeratorsListTable({moderatorList}) {
    const handleEdit = (userId) => {
         navigate(`/admin/moderator/update/${userId}`);
     };
+
+  const handleDelete = async (userId) => {
+    try {
+      const response = await axiosAdmin.post(`/delete-moderator/${userId}`);
+      if (response.status === 200) {
+        alert("Moderator soft-deleted successfully.");
+        window.location.reload(); // or re-fetch data via props
+      }
+    } catch (err) {
+      console.error("Failed to delete moderator", err);
+      alert("Error deleting moderator.");
+    }
+  };
+
+  const  handleViewDetails = (userId) => {
+    navigate(`/admin/moderator-detail/${userId}`)
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -35,7 +53,7 @@ function AdminModeratorsListTable({moderatorList}) {
           {moderatorList.map((row) => (
             <TableRow  key={row.user_id} 
                 className="clickable-row"
-                // onClick={() => handleViewDetails(row.user_id)}
+                onClick={() => handleViewDetails(row.user_id)}
             >
               <TableCell component="th" scope="row">
                 {row.user_id}
@@ -62,7 +80,7 @@ function AdminModeratorsListTable({moderatorList}) {
                 </button>
                 <button className="delete-btn ms-2" disabled= {row.is_deleted === 1} onClick={(e) => {
                     e.stopPropagation(); 
-                    // handleDelete(row.package_id);
+                    handleDelete(row.user_id);
                   }}>
                    {row.is_deleted === 1 ? 'Deleted' : 'Delete'}
                 </button>

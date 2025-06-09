@@ -123,3 +123,36 @@ exports.updateModeratorService = async (user_id, username, email, dob, is_verifi
   }
 };
 
+
+exports.deleteModeratorService = async (user_id) => {
+  try {
+    const [result] = await db.query(
+      `UPDATE users 
+       SET is_verified = 0, status = 'deleted', is_deleted = 1 
+       WHERE user_id = ? AND role = 'moderator'`,
+      [user_id]
+    );
+
+    if (result.affectedRows === 0) {
+      return {
+        status: 404,
+        success: false,
+        message: "Moderator not found or already deleted.",
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      message: "Moderator soft-deleted successfully.",
+    };
+  } catch (error) {
+    console.error("Service error deleting moderator:", error);
+    return {
+      status: 500,
+      success: false,
+      message: "Database error.",
+    };
+  }
+};
+

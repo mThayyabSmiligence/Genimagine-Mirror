@@ -56,6 +56,7 @@ import { updateCreditsInLocalStorage } from './utils/creditUtils';
 import RefreshDataContext from './Context/RefreshDataProvider';
 import ModeratorManagement from './Pages/Admin/ModeratorManagement';
 import CreateModeratorForm from './Pages/Admin/CreateModeratorForm';
+import ModeratorDetail from './Pages/Admin/ModeratorDetail';
 
 
 function App() {
@@ -166,6 +167,7 @@ function App() {
                 <Route path='moderator-management' element={<ModeratorManagement/>}></Route>
                 <Route path='moderator-management/create-moderator' element={<CreateModeratorForm/>}></Route>
                 <Route path="/admin/moderator/update/:userId" element={<CreateModeratorForm isEditMode={true} />}></Route>
+                <Route path='moderator-detail/:userId' element={<ModeratorDetail/>}></Route>
                 <Route path='model-management' element={<AdminModelManagement/>}></Route>
                 <Route path='model-detail/:modelId' element={<ModelDetail/>}></Route>
                 <Route path='model-management/create-model' element={<CreateModelForm/>}></Route>
