@@ -4,13 +4,13 @@ const { getAllModeratorsService, createModeratorService, updateModeratorService,
 
 exports.createModeratorController = async (req, res) => {
     try {
-        const { username, email, password, dob } = req.body;
+        const { username, email, password, dob, isVerified } = req.body;
 
-        if (!username || !email || !password || !dob) {
+        if (!username || !email || !password || !dob || !isVerified) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
 
-        const result = await createModeratorService( username, email, password, dob );
+        const result = await createModeratorService( username, email, password, dob, isVerified);
 
         return res.status(result.status).json(result);
     } catch (error) {
@@ -37,13 +37,13 @@ exports.getModeratorDetailController = async (req, res) => {
 
 exports.updateModeratorController = async (req, res) => {
     const { user_id } = req.params;
-    const { username, email, password, dob } = req.body;
+    const { username, email, dob, is_verified } = req.body;
 
-    if (!username || !email || !dob) {
+    if (!username || !email || !dob || typeof is_verified === 'undefined') {
       return res.status(400).json({ message: 'Missing required fields.' });
     }
 
-    const result = await updateModeratorService(user_id, username, email, password, dob);
+    const result = await updateModeratorService(user_id, username, email, dob, is_verified);
 
     return res.status(result.status).json(result);
 }

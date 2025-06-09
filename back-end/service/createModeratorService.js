@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase');
 const bcrypt = require('bcrypt');
 
-exports.createModeratorService = async ( username, email, password, dob ) => {
+exports.createModeratorService = async ( username, email, password, dob, isVerified ) => {
     try {
         // Check if email already exists
         const [existing] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -24,8 +24,8 @@ exports.createModeratorService = async ( username, email, password, dob ) => {
         await db.query(
             `INSERT INTO users 
              (username, email, password_hash, age, DOB, role, register_type, is_verified, status) 
-             VALUES (?, ?, ?, ?, ?, 'moderator', 'password', 1, 'active')`,
-            [username, email, hashedPassword, age, dob]
+             VALUES (?, ?, ?, ?, ?, 'moderator', 'password', ?, 'active')`,
+            [username, email, hashedPassword, age, dob, isVerified]
         );
 
         return { status: 200, success: true, message: 'Moderator created successfully' };
@@ -38,7 +38,7 @@ exports.createModeratorService = async ( username, email, password, dob ) => {
 exports.getAllModeratorsService = async () => {
     try {
         const [rows] = await db.query(
-            `SELECT user_id, username, email, age, DOB, status, created_at, is_deleted
+            `SELECT user_id, username, email, age, DOB, status, created_at, is_deleted, is_verified
              FROM users 
              WHERE role = 'moderator'
              ORDER BY created_at ASC`
@@ -90,27 +90,14 @@ exports.getModeratorDetailService = async (userId) => {
   }
 }
 
-exports.updateModeratorService = async (user_id, username, email, password, dob) => {
+exports.updateModeratorService = async (user_id, username, email, dob, is_verified) => {
   try {
-    let query = '';
-    let values = [];
-
-    if (password && password.trim() !== '') {
-        // need to add is active if needed
-      query = `
-        UPDATE moderators 
-        SET username = ?, email = ?, password = ?, dob = ?                                                 
-        WHERE id = ?
-      `;
-      values = [username, email, password, dob, user_id];
-    } else {
-      query = `
-        UPDATE moderators 
-        SET username = ?, email = ?, dob = ?
-        WHERE id = ?
-      `;
-      values = [username, email, dob, user_id];
-    }
+    const query = `
+      UPDATE users 
+      SET username = ?, email = ?, dob = ?, is_verified = ?
+      WHERE user_id = ? AND role = 'moderator'
+    `;
+    const values = [username, email, dob, is_verified, user_id];
 
     const [result] = await db.query(query, values);
 
@@ -118,22 +105,21 @@ exports.updateModeratorService = async (user_id, username, email, password, dob)
       return {
         status: 404,
         success: false,
-        message: 'Moderator not found or no changes made.' 
-        };
+        message: 'Moderator not found or no changes made.'
+      };
     }
 
-    return { 
-        status: 200,
-        success: true
+    return {
+      status: 200,
+      success: true
     };
   } catch (error) {
     console.error("Service error updating moderator:", error);
-    return { 
-        status: 500,
-        success: false, 
-        message: 'Database error.' 
+    return {
+      status: 500,
+      success: false,
+      message: 'Database error.'
     };
   }
 };
-
 

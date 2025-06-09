@@ -20,7 +20,7 @@ function CreateModeratorForm({ isEditMode = false }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [DOB, setDOB] = useState(null);
-    const [isActive, setIsActive] = useState(true);
+    const [isVerified, setIsVerified] = useState(true);
 
 
     const [emailValidity, setEmailValidity] = useState(false)
@@ -52,10 +52,10 @@ function CreateModeratorForm({ isEditMode = false }) {
         if(moderatorData){
             setUserName(moderatorData.username || " ");
             setEmail(moderatorData.email || " ");
-            setPassword(""); // Do not show password
             setDOB(dayjs(moderatorData.dob));
+            setIsVerified(moderatorData.is_verified)
         }
-    },[])
+    },[moderatorData])
 
     useEffect(() => {
             setPasswordValidity(PWD_REGEX.test(password));
@@ -79,14 +79,14 @@ function CreateModeratorForm({ isEditMode = false }) {
         email,
         password,
         dob: formattedDOB,
-        isActive
+        is_verified: isVerified 
     };
 
     console.log("Submitting form with:", formData);
 
     try {
        const response = isEditMode
-        ? await axiosAdmin.post(`/update-moderator/:user_id`, formData)
+        ? await axiosAdmin.post(`/update-moderator/${userId}`, formData)
         : await axiosAdmin.post('/create-moderator', formData);
 
         if (response.status === 200 || response.status === 201) {
@@ -123,6 +123,7 @@ function CreateModeratorForm({ isEditMode = false }) {
                             </div>
                         )}
                     </div>
+                    {!isEditMode && (
                     <div className="mb-3">
                         <label htmlFor="password" className="form-label password-text required-label">Password</label>
                         <input value={password} type="text"   onBlur={() => setPasswordTouched(true)} onChange={(e) => setPassword(e.target.value)}className={`form-control password-box ${!passwordValidity && passwordTouched ? 'is-invalid' : ''}`} placeholder="Password" aria-label="password description" id="password" required/>
@@ -132,6 +133,7 @@ function CreateModeratorForm({ isEditMode = false }) {
                             </div>
                         )}
                     </div>
+                    )}
 
                     <div className="mb-3">
                     <label htmlFor="dob" className="form-label dob-text required-label">DOB</label>
@@ -171,12 +173,12 @@ function CreateModeratorForm({ isEditMode = false }) {
                    
  
                     <div className='moderator-status-switch-btn d-flex flex-column justify-content-between align-items-start mb-3'>
-                      <label className="plan-status-btn-text mb-1">Set Active</label>
+                      <label className="plan-status-btn-text mb-1">Set Verify</label>
                       <label className='switch kids-mode-switch'>
                         <input 
                         type="checkbox" 
-                        checked={isActive}
-                        onChange={(e) => setIsActive(e.target.checked)}
+                        checked={isVerified}
+                        onChange={(e) => setIsVerified(e.target.checked)}
                         />
                         <span className='slider round'></span>
                       </label>

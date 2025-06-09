@@ -45,7 +45,14 @@ function AdminModeratorsListTable({moderatorList}) {
               <TableCell align="center">{row.age}</TableCell>
               {/* <TableCell align="center">{row.DOB.split('T')[0]}</TableCell> */}
               <TableCell align="center">{row.created_at.split('T')[0]}</TableCell>
-              <TableCell align="center"> <button title={row?.status ? 'Active' : 'In Active'} className={`status-btn ${row?.status ? 'active' : 'Inactive'}`}>{row.status? 'Active' : 'In Active'}</button></TableCell>
+              <TableCell align="center">
+                <button
+                  title={row?.is_verified ? 'Active' : 'Inactive'}
+                  className={`status-btn ${row?.is_verified ? 'active' : 'Inactive'}`}
+                >
+                  {row.is_verified ? 'Active' : 'Inactive'}
+                </button>
+              </TableCell>
               <TableCell align="center"> 
                 <button className="edit-btn reviewd-btn" disabled= {row.is_deleted === 1} onClick={(e) => {
                   e.stopPropagation(); 
