@@ -377,6 +377,11 @@ const handleDeleteImage = async (reason) => {
                     </span>
                   </div>
 
+                  {/* <div className="mb-2">
+                    <span className="fw-bold">Report Count:</span> {report.report_count || 'N/A'}
+                  </div> */}
+
+                  
                   {/* <Link to={`/moderator/user-Detail/${report.uploader_id }`} className='uploader-view-detail-link text-danger link '>view-details</Link> */}
                 </div>
               </div>    
