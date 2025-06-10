@@ -110,33 +110,39 @@ function ModeratorProfilePage() {
           </div>
         </div>
 
-        <div className='row mb-3'>
-          <div className='col-md-6'>
-            <label className='form-label'>USER NAME</label>
-            <input type='text' className='form-control' value={moderatorDetail.username} disabled />
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="profile-username-text d-flex mb-1">USER NAME</label>
+            <input type="text" className="form-control" value={moderatorDetail.username} disabled />
           </div>
-          <div className='col-md-6'>
-            <label className='form-label'>ROLE</label>
-            <input type='text' className='form-control' value={moderatorDetail.role} disabled />
-          </div>
-        </div>
-
-        <div className='row mb-3'>
-          <div className='col-md-6'>
-            <label className='form-label'>E-MAIL</label>
-            <input type='email' className='form-control' value={moderatorDetail.email} disabled />
-          </div>
-          <div className='col-md-6'>
-            <label className='form-label'>DATE OF BIRTH</label>
-            <input type='text' className='form-control' value={formatDate(moderatorDetail.dob)} disabled />
+          <div className="col-md-6 mb-3">
+            <label className="profile-role-text d-flex mb-1">ROLE</label>
+            <input type="text" className="form-control" value={moderatorDetail.role} disabled />
           </div>
         </div>
 
-        <div className='d-flex justify-content-between'>
-          <button  onClick={() => navigate('/moderator/user-management')} className='btn btn-secondary'>← Back</button>
-          <div>
-            <button className='custom-btn'>Update Profile</button>
-            <button onClick={handelResetPassword} className='custom-btn ms-2'>Reset Password</button>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="profile-email-text d-flex mb-1">E-MAIL</label>
+            <input type="email" className="form-control" value={moderatorDetail.email} disabled />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="profile-dob-text d-flex mb-1">DATE OF BIRTH</label>
+            <input type="text" className="form-control" value={formatDate(moderatorDetail.dob)} disabled />
+          </div>
+        </div>
+
+        <div className='d-flex justify-content-between mt-4 responsive-btn-group'>
+          <div className='back-btn-wrapper'>
+            <button onClick={() => navigate('/moderator/user-management')} className='btn btn-secondary'>
+              ← Back
+            </button>
+          </div>
+          <div className='d-flex gap-2 action-profile-btn'>
+            <button className='custom-btn update-btn-wrapper'>Update Profile</button>
+            <button onClick={handelResetPassword} className='custom-btn reset-password-btn-wrapper'>
+              Reset Password
+            </button>
           </div>
         </div>
       </div>

@@ -58,3 +58,35 @@
 .custum-profile-bg{
     background-color: #5a6469
 }
+
+.profile-dob-text, .profile-email-text, .profile-username-text, .profile-role-text{
+   font-size: 17px;
+    font-weight: 550;
+    color: #374151;
+}
+
+@media (max-width: 510px) {
+  .responsive-btn-group {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .action-profile-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    order: 1;
+  }
+
+  .back-btn-wrapper {
+    width: 100%;
+    order: 2;
+  }
+
+  .responsive-btn-group button {
+    width: 100%;
+  }
+}
+
+
