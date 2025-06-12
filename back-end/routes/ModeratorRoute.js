@@ -1,10 +1,12 @@
 const express = require('express');
 const { banUserController, unbanUserController, suspendUserController, unsuspendUserController, warnUserController, deleteUserController, getUserByIdController } = require('../controller/UsersController');
-const { getAllReportedImagesController, getReportedImageDetail, banReportedImageUserController, suspendReportedImageUserController, warnReportedImageUserController, deleteReportedImageController, noActionReportedImageController } = require('../controller/ReportImageController');
+const { getAllReportedImagesController, getReportedImageDetail, banReportedImageUserController, suspendReportedImageUserController, warnReportedImageUserController, deleteReportedImageController, noActionReportedImageController, getReportedImagesByUserController, getUserListWithReportCountController, getUserReportedImageCountsController } = require('../controller/ReportImageController');
 const { getAllFeedbacksController, respondToFeedbackController, escalateFeedbackController, updateFeedbackStatusController } = require('../controller/UserFeedbackController');
 const { getModeratorDetailController } = require('../controller/ModeratorController');
 const router = express.Router();
 // user management
+// router.route('/user-report-list').get(getUserListWithReportCountController);
+router.route('/user-reported-image-counts').get(getUserReportedImageCountsController);
 router.route('/:user_id/getuser').get(getUserByIdController)
 router.route('/:user_id/ban').post(banUserController);
 router.route('/:user_id/unban').post(unbanUserController);
@@ -17,6 +19,7 @@ router.route("/:user_id/delete").post(deleteUserController);
 // reports management
 router.route("/getreportedimages").post(getAllReportedImagesController);
 router.route("/getreportdetail/:report_id").post(getReportedImageDetail);
+// router.route('/reported-images/user/:userId').get(getReportedImagesByUserController);
 // Moderator Actions on Reported Images
 router.route("/report/:report_id/ban").post(banReportedImageUserController);
 router.route("/report/:report_id/suspend").post(suspendReportedImageUserController);

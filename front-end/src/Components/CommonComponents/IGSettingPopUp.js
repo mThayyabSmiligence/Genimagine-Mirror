@@ -318,7 +318,10 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
       ):(
         <>
         <div className="pop-up-title d-flex justify-content-between align-items-center">
+                <div>
                 <h4 className="h-2">Image Generation Settings</h4>
+                <p className="text-start">Configure yourcreative vision</p>
+                </div>
                 <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
         </div>
         <div className="pop-up-body ">
@@ -339,9 +342,6 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                           <p>{model.description}</p>
                           <p className="p-primary m-0">{model.resolution}</p>
                         </div>
-                        {/* <div>
-                          <p className="p-primary m-0 ms-2">{model.required_credits} cp<br/>/img</p>
-                        </div> */}
                         
                       </div>
                   ))

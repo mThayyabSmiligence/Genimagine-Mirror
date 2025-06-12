@@ -3,6 +3,60 @@ const { decrypt } = require('./EncrypDecrypt');
 const { deleteFromServer } = require('./UploadToServerService');
 const { banUserService, suspendUserService, warnUser } = require('./UserService');
 
+// exports.getUserListWithReportCountService = async () => {
+//   try {
+//     const [users] = await db.execute(`
+//       SELECT 
+//         u.*, 
+//         COUNT(DISTINCT ir.report_id) AS reported_image_count
+//       FROM users u
+//       LEFT JOIN explore e ON e.user_id = u.user_id
+//       LEFT JOIN image_reports ir ON ir.published_id = e.published_id
+//       GROUP BY u.user_id
+//       ORDER BY u.created_at DESC
+//     `);
+
+//     return { status: 200, users };
+//   } catch (err) {
+//     console.error("Error fetching user report data:", err);
+//     return { status: 500, message: "Failed to fetch user data with report counts" };
+//   }
+// };
+
+exports.getUserReportedImageCountsService = async () => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        u.user_id, 
+        COUNT(ir.report_id) AS report_count,
+        COUNT(CASE WHEN ir.action_type = 'no_action' THEN 1 END) AS no_action_count,
+        COALESCE(s.suspend_count, 0) AS suspend_count
+      FROM users u
+      LEFT JOIN explore e ON u.user_id = e.user_id
+      LEFT JOIN image_reports ir ON ir.published_id = e.published_id
+       LEFT JOIN (
+        SELECT user_id, COUNT(*) AS suspend_count
+        FROM suspended_users
+        GROUP BY user_id
+      ) s ON u.user_id = s.user_id
+      GROUP BY u.user_id
+    `);
+
+    return {
+      status: 200,
+      message: "Reported image counts fetched successfully",
+      data: rows
+    };
+  } catch (err) {
+    console.error("Error in getUserReportedImageCountsService:", err);
+    return {
+      status: 500,
+      message: "Database error fetching reported image counts",
+      error: err
+    };
+  }
+};
+
 exports.getAllReportedImagesService = async() =>{
     try{
     const query = 
@@ -121,6 +175,52 @@ exports.getReportedImageDetailByReportIdService = async(report_id) => {
         }
     }
 } 
+
+// exports.getReportedImagesByUserService = async(userId) => {
+  
+//     try {
+//         const [rows] = await db.execute(
+//             `SELECT
+//                 ir.image_id,
+//                 ir.report_count,
+//                 ir.report_details,
+//                 ir.action_type
+//              FROM image_reports ir
+//              JOIN explore e ON ir.published_id = e.published_id
+//              WHERE e.user_id = ?
+//              ORDER BY ir.reported_at DESC`,
+//             [userId]
+//         );
+
+//         // Parse report_details JSON and extract reasons
+//         // const formattedReports = rows.map(row => {
+//         //     const details = JSON.parse(row.report_details || '[]');
+//         //     const reasons = details.map(item => item.reason).filter(Boolean);
+//         //     return {
+//         //         image_id: row.image_id,
+//         //         report_count: row.report_count,
+//         //         report_reasons: reasons,
+//         //         action_type: row.action_type
+//         //     };
+//         // });
+
+//         return{
+//           status: 200,
+//           message: "retrieved reported image data of the user successfully ",
+//           // reportedImages: formattedReports
+//           rows
+//         }
+//         // res.status(200).json({ reportedImages: formattedReports });
+
+//     } catch (err) {
+//         console.error("Error fetching reported images by user:", err);
+//         // res.status(500).json({ message: "Internal server error" });
+//         return{
+//           status: 500,
+//           message: "Error fetching reported images by user",
+//         }
+//     }
+// };
 
 // exports.handleReportedImageActionService = async (
 //     report_id,

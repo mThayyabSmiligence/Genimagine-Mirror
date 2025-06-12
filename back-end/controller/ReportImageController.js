@@ -1,7 +1,20 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllReportedImagesService, getReportedImageDetailByReportIdService, banReportedImageUserService, suspendReportedImageUserService, warnReportedImageUserService, deleteImageAndReferences, deleteReportedImageService, markReportedImageAsNoAction } = require('../service/ReportImageService');
+const { getAllReportedImagesService, getReportedImageDetailByReportIdService, banReportedImageUserService, suspendReportedImageUserService, warnReportedImageUserService, deleteImageAndReferences, deleteReportedImageService, markReportedImageAsNoAction, getReportedImagesByUserService, getUserListWithReportCountService, getUserReportedImageCountsService } = require('../service/ReportImageService');
+
+
+// exports.getUserListWithReportCountController = async(req, res) => {
+//   const result = await getUserListWithReportCountService()
+  
+//   return res.status(result.status).json(result); 
+// }
+
+exports.getUserReportedImageCountsController = async(req, res) => {
+  const result = await getUserReportedImageCountsService()
+
+  return res.status(result.status).json(result); 
+}
 
 exports.getAllReportedImagesController = async(req, res ) => { 
     const reportedImages = await getAllReportedImagesService();
@@ -16,6 +29,14 @@ exports.getReportedImageDetail = async (req, res) => {
 
   return res.status(getReportedImageDetail.status).json(getReportedImageDetail)
 }
+
+// exports.getReportedImagesByUserController = async(req, res) => {
+//     const {userId} = req.params;
+
+//     const result = getReportedImagesByUserService(userId)
+
+//     return res.status(result.status).json(result)
+// }
 
 // exports.takeActionOnReportedImage = async (req, res) => {
 //     const { report_id } = req.params;
