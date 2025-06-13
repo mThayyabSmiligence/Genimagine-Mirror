@@ -211,9 +211,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 20px;
-    padding: 20px;
+    /* padding: 20px; */
     min-height: fit-content;
-    height: fit-content;
+    /* height: fit-content; */
+    height: 90%;
 }
 
 .blur-background {

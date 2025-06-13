@@ -304,7 +304,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
 
   return  (
 
-    <div className="settings-pop-up pop-up-container white-bg"> 
+    <div className="settings-pop-up pop-up-container white-bg mt-4"> 
     {
       seeMore ?(
       <div className="pop-up-style-container ">
@@ -318,53 +318,66 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
       ):(
         <>
         <div className="pop-up-title d-flex justify-content-between align-items-center">
-                <div>
-                <h4 className="h-2">Image Generation Settings</h4>
-                <p className="text-start">Configure yourcreative vision</p>
-                </div>
-                <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
+            <div>
+              <h4 className="h-6">Image Generation Settings</h4>
+              <p className="ig-desc text-start">Configure yourcreative vision</p>
+            </div>
+            <div className="d-flex align-items-center gap-3 mb-1">
+              <button onClick={handlesubmit} className="done-click done-btn br-10 px-3 py-1 d-flex justify-content-between align-items-center">DONE</button>
+              <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={closePopup}>close</CloseOutlinedIcon>
+            </div>
         </div>
         <div className="pop-up-body ">
             {
             !loggedIn&&  
             <p className="text-danger">Login to access image setting</p>
             }
-            <div className="pop-up-content d-flex flex-column text-start mt-3"> 
+            <div className="pop-up-content d-flex flex-column text-start mt-2 p-3"> 
               
-                <h5 className="pop-up-model h-3">Model</h5>
-                <div className="model-list d-flex flex-wrap ">
-                {  
-                  modelsList.map((model) => (
-                    
-                      <div key={model.id} onClick={() => setTempTrackModel(model.id)} className={`pop-up-model-content ${model.id == tempTrackModel&&"active"} ms-3 d-flex justify-content-between align-items-center mb-3 ${((!loggedIn) && model.id!=1)?"unclickable":"not-disable"}`}>
-                        <div>   
-                          <h5 className="h-4">{model.name}</h5>
-                          <p>{model.description}</p>
-                          <p className="p-primary m-0">{model.resolution}</p>
-                        </div>
-                        
-                      </div>
-                  ))
-                }
-                </div>
-
-                <h5 className="h-3">Aspect Ratio</h5>
-                <div className="d-flex justify-content-start flex-wrap ">
-                  {
-                    aspectRatioList.length>0&&aspectRatioList.map((shape) => (
-
-                      <div key={shape.id} onClick={() => setTempSelectedAspectRatio(shape.aspect_ratio_id)}
-                      className={`aspect-ratio-box ${ shape.aspect_ratio_id == tempSelectedAspectRatio && "active"} mb-3 ${!loggedIn&& shape.aspect_ratio_id!=2 &&"unclickable"}`}
-                      style={{ width: `${shape.width}px`, height: `${shape.height}px` }}
+                <h5 className="pop-up-model h-5 mb-3">Model</h5>
+                <div className="model-list d-flex flex-wrap">
+                  {modelsList.map((model) => (
+                    <div
+                      key={model.id}
+                      onClick={() => setTempTrackModel(model.id)}
+                      className={`pop-up-model-content ms-3 d-flex flex-column justify-content-between align-items-start mb-3 ${
+                        model.id === tempTrackModel ? 'active' : ''
+                      } ${!loggedIn && model.id !== 1 ? 'unclickable' : 'not-disable'}`}
                     >
-                      {shape.ratio}
-
+                      <div className="model-label-box">
+                        <div className="model-label-inner-box" />
+                      </div>
+                      <h5 className="h-4 mb-1">{model.name}</h5>
+                      <p className="text-muted small m-0">{model.description}</p>
                     </div>
-                    ))
-                  }
+                  ))}
                 </div>
 
-                <h5 className="h-3">Quality</h5>
+
+               <h5 className="h-5 mb-3">Aspect Ratio</h5>
+                <div className="d-flex justify-content-start flex-wrap gap-3 mb-2">
+                  {aspectRatioList.length > 0 &&
+                    aspectRatioList.map((shape) => (
+                      <div
+                        key={shape.id}
+                        onClick={() => setTempSelectedAspectRatio(shape.aspect_ratio_id)}
+                        className={`aspect-ratio-card ${
+                          shape.aspect_ratio_id === tempSelectedAspectRatio ? "selected" : ""
+                        } ${!loggedIn && shape.aspect_ratio_id !== 2 ? "disabled" : ""}`}
+                      >
+                        <div
+                          className="aspect-visual"
+                          style={{
+                            width: `${shape.width}px`,
+                            height: `${shape.height}px`,
+                          }}
+                        />
+                        <span className="aspect-label">{shape.ratio}</span>
+                      </div>
+                    ))}
+                </div>
+
+                <h5 className="h-5 mb-3">Quality</h5>
                 <div className="d-flex justify-content-start flex-wrap">
                     {qualityLevelsList.map((quality) => (
                         <div
@@ -378,7 +391,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                 </div>
  
                 <div className="d-flex justify-content-between align-items-center ">
-                    <h5 className="h-3">Style</h5>
+                    <h5 className="h-5 mb-3">Style</h5>
                     <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
                 </div>
                 <div className="d-flex justify-content-start style-popup">
@@ -393,13 +406,13 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                   }
                 </div>
 
-                <div className="pop-up-done d-flex justify-content-end align-items-center">
-                <button onClick={handlesubmit} className="button dark-button br-10 px-3 py-1 d-flex justify-content-between align-items-center">DONE</button>
-              </div>
+                {/* <div className="pop-up-done d-flex justify-content-end align-items-center">
+              </div> */}
+
             </div>
         </div>
         </>
-      )
+       )
     }
         
     </div>

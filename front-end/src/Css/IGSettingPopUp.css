@@ -2,19 +2,59 @@
   width: 700px;
   min-height: 0px;
   /* max-height: 600px;  */
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .pop-up-close{
-  background-color: rgb(238, 236, 236);
+  background-color: rgb(0, 0, 0);
+  color: #fff;
+  border: 1px solid #fff;
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
+  height: 28px !important;
+  width: 28px !important;
   cursor: pointer;
 }
 
+.done-click{
+  margin: 5px 5px;
+    font-size: var(--primary-font-size-1366);
+    height: 30px;
+    padding: 0;
+    width: fit-content;
+    padding: 2px 23px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.done-btn{
+  color: black;
+
+  background-color: #dddddd;
+  border-radius: 10px;
+}
+
+.done-btn:hover{
+  color: #fff;
+  border: solid 2px #fff;
+  background-color: #000;
+  border: 1px solid #fff;
+}
+
 .pop-up-title{
-  border-bottom: solid 1px black;
+  /* border-bottom: solid 1px rgb(255, 255, 255); */
+  background-color: black;
+  color: #fff;
+  border-radius: 20px 20px 0px 0px;
+  padding: 18px 20px 10px 20px;
+  height: 85px;
+  
+}
+
+.pop-up-title .ig-desc{
+  font-size: 14px;
 }
 
 .pop-up-headings{
@@ -24,52 +64,136 @@
   justify-content: start;
 }
 
-.pop-up-model-content{
+.pop-up-model-content {
   width: 195px;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.486);
-  border-radius: 5px;
-  padding: 5px 10px;
+  height: 90px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
-.pop-up-model-content.active{
-  outline: solid 2px rgba(0, 0, 0, 0.5);
+.pop-up-model-content.active {
+  border-color: #A8A29E;         /* Stone-400 */
+  background-color: #F5F5F4;     /* Stone-100 */
+}
+.model-label-box {
+  background: linear-gradient(135deg, #D6D3D1, #78716C); /* warm neutrals */
 }
 
-.quality-box{
+.model-label-box {
+  height: 20px;
+  width: 20px;
+  background: linear-gradient(155.04deg, #FAB815 15.88%, #FA8916 98.9%);
+  border-radius: 8px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.model-label-inner-box {
+  height: 10px;
+  width: 10px;
+  background: #ffffff;
+  border-radius: 3px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.unclickable {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.not-disable {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+
+.quality-box {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100px;
-  height: 50px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
+  height: 45px;
   margin-left: 10px;
+  border: 1px solid #e5e7eb; /* Tailwind slate-200 */
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
-  background-color: #f8f8f8;
+  background-color: #f9fafb; /* very soft background */
+  color: #374151; /* slate-700 */
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.quality-box.active{
-  border: solid 2px rgba(0, 0, 0, 0.5);
+.quality-box:hover {
+  background-color: #f3f4f6; /* slate-100 */
 }
 
-.aspect-ratio-box {
+.quality-box.active {
+  background-color: #E5E7EB; /* gray-200 */
+  border-color: #9CA3AF;     /* gray-400 */
+  color: #111827;            /* gray-900 */
+  font-weight: 600;
+}
+
+
+.quality-box.unclickable {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.quality-scroll-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
   display: flex;
+}
+
+
+.aspect-ratio-card {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  margin-left: 10px;
-  font-size: 14px;
-  font-weight: bold;
+  min-width: 105px;
+  min-height: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
   cursor: pointer;
-  background-color: #f8f8f8;
+  transition: all 0.2s ease;
 }
 
-.aspect-ratio-box.active{
-  border: solid 2px rgba(0, 0, 0, 0.5);
+.aspect-ratio-card.selected {
+  border: 2px solid #A8A29E;
+}
+
+.aspect-visual {
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  /* background: linear-gradient(103.24deg, #52A8EA 3.44%, #1AB6AD 108.22%); */
+  margin-bottom: 8px;
+}
+
+.aspect-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Disabled state */
+.aspect-ratio-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* .pop-up-done-button{
@@ -123,21 +247,52 @@
 }
 
 
-.see-more-button{
-  color: white;
-  font-size: 12px;
-  background-color: black;
-  border: none;
-  padding: 5px 10px;
-  height: fit-content;
+.see-more-button {
+  color: #111827; /* Almost black text */
+  font-size: 13px;
+  background-color: #F3F4F6; /* gray-100 */
+  border: 1px solid #D1D5DB; /* gray-300 */
+  padding: 6px 14px;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+.see-more-button:hover {
+  background-color: #E5E7EB; /* gray-200 */
+  color: #000;
+}
+
 
 .pop-up-style-container {
   height: 100%;
-  overflow-y: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;     /* IE and Edge */
+  scrollbar-width: none;        /* Firefox */
 }
+
+/* For Chrome, Safari, Edge (WebKit-based) */
+.pop-up-style-container::-webkit-scrollbar {
+  display: none;
+}
+
+
+.pop-up-style-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pop-up-style-container::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 3px;
+}
+
+/* Prevent layout shift due to scrollbar */
+html {
+  overflow-y: scroll;
+}
+
 /* .pop-up-done{
   position: absolute;
   width: 90%;
@@ -146,6 +301,8 @@
   border: 1px solid grey;
   border-radius: 10px;
 } */
+
+
 
 @media (min-width: 450px) and  (max-width: 768px){
 
@@ -166,6 +323,7 @@
 
   
 }
+/* today changed */
 
 @media (max-width: 450px){
   .settings-pop-up{
@@ -180,15 +338,22 @@
   
 }
 
+/* today changed */
+
 @media (min-width: 769px) and  (max-width: 1380px){
   .settings-pop-up{
-    max-height: 520px; 
+    max-height: 900px;  
   }
+  
 }
 
 @media (min-width: 1381px) and (max-width: 2000px){
   .settings-pop-up{
-    max-height: 640px; 
+    max-height: 900px; 
+  }
+  .pop-up-model-content{
+    height: 100px;
+    
   }
 }
 
