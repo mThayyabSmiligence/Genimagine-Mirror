@@ -320,7 +320,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
         <div className="pop-up-title d-flex justify-content-between align-items-center">
             <div>
               <h4 className="h-6">Image Generation Settings</h4>
-              <p className="ig-desc text-start">Configure yourcreative vision</p>
+              <p className="ig-desc text-start">Configure your creative vision</p>
             </div>
             <div className="d-flex align-items-center gap-3 mb-1">
               <button onClick={handlesubmit} className="done-click done-btn br-10 px-3 py-1 d-flex justify-content-between align-items-center">DONE</button>
