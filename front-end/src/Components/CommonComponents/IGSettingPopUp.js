@@ -309,7 +309,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
       seeMore ?(
       <div className="pop-up-style-container ">
          <div className="pop-up-title d-flex justify-content-between align-items-center">
-                <h4 className="h-2">Style</h4>
+                <h4 className="h-3">Style</h4>
                 <CloseOutlinedIcon className="material-symbols-outlined pop-up-close d-flex align-items-center justify-content-center" onClick={() => setSeeMore(false)} id="style-pop-up-close-button">close</CloseOutlinedIcon>
         </div>
         <StylePopUp tempTrackStyle= {tempTrackStyle} setTempTrackStyle={setTempTrackStyle} setSeeMore={setSeeMore} />
