@@ -8,25 +8,11 @@
     transition: transform 0.2s ease-in-out; 
 }
 
-.go-to-topup-link{
-  padding: 5px 15px;
-    background-color: rgb(8, 8, 8);
-    color: #fff;
-    border: none;
-    box-shadow:0 2px 8px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    transition: transform 0.2s ease-in-out; 
-}
-
 .create-btn-link:hover, .go-to-topup-link:hover {
     transform: translateY(-1px)
 }
 
-.go-to-topup-link span{
-  font-size: 16px;
-}
-
-.plan-wrapper{
+.style-wrapper{
      border: 1px solid #ddd;             
     border-radius: 8px;                 
     padding: 20px;                      
@@ -34,18 +20,18 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
 }
 
-.plan-heading-title{
+.style-heading-title{
     color: #697a8d;
     font-size: 20px;
 }
 
-.plans-table-title span{
+.style-table-title span{
     color: #697a8d;
     font-size: 13px;
     font-weight: bold;
 }
 
-.status-btn.active , .default-btn.isDefault{
+.status-btn.active {
     padding: 5px 8px;
     font-size: 13px;
     font-weight: 600;
@@ -65,7 +51,7 @@
     cursor: text; 
 }
 
-.status-btn.Inactive , .default-btn.isNotDefault{
+.status-btn.Inactive{
     padding: 5px 8px;
     font-size: 13px;
     font-weight: 600;
@@ -80,7 +66,7 @@
     cursor: text;
   }
 
-  .edit-btn{
+.edit-btn{
     padding: 5px 15px;
     font-size: 13px;
     font-weight: 600;
@@ -89,41 +75,13 @@
     background-color: rgb(72, 145, 167);
     color: #fff;
     transition: transform 0.2s ease-in-out;
-  }
-  
-  .edit-btn:hover{
+}
+
+.edit-btn:hover{
     transform: translateY(-1px)
-  }
-  
-  .view-details-btn{
-    padding: 5px 15px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    transition: transform 0.2s ease-in-out;
-    background-color: #166e9d;
-  }
-  
-  .view-details-btn:hover{
-   transform: translateY(-1px)
- }
+}
 
-  .clickable-row {
-    transition: background-color 0.2s ease-in-out;
-  }
-
-  .clickable-row:hover {
-    background-color: #f0f0f0; 
-    cursor: pointer;
-  }
-
-  .clickable-row:active {
-    background-color: #e0e0e0;
-  }
-
-  .delete-btn {
+.delete-btn {
   background-color: #e53935;
   padding: 5px 15px;
   font-size: 13px;
@@ -144,5 +102,4 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
-
 

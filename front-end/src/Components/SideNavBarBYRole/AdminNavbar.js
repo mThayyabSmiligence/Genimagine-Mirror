@@ -50,6 +50,14 @@ export default function AdminNavbar() {
                         </div>
                     </Link>
 
+                    <Link to={"/admin/style-management" } className='link'  id='/admin/style-management-link'>
+                        <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/style-management"&&'active'}`}>
+
+                            {/* <AddCircleOutlineOutlinedIcon/> */}
+                            <div to={"/admin/style-management" } className='link nav-options ms-1'>Style-Management</div>
+                        </div>
+                    </Link>
+
                     <Link to={"/admin/plans-management" } className='link'  id='/admin/plans-management-link'>
                         <div className={`nav-list-item  d-flex align-items-center ${path=="/admin/plans-management"&&'active'}`}>
 

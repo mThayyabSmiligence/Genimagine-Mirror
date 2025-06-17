@@ -58,7 +58,7 @@ import ModeratorManagement from './Pages/Admin/ModeratorManagement';
 import CreateModeratorForm from './Pages/Admin/CreateModeratorForm';
 import ModeratorDetail from './Pages/Admin/ModeratorDetail';
 import ModeratorProfilePage from './Pages/Moderator/ModeratorProfilePage';
-
+import StyleManagement from './Pages/Admin/StyleManagement';
 
 function App() {
   const { setRefreshCreditBalance } = useContext(RefreshDataContext);
@@ -180,6 +180,7 @@ function App() {
                 <Route path='top-up-management' element={<TopUpManagement/>}></Route>
                 <Route path='top-up-management/create-plan' element={<CreateTopUpForm/>}></Route>
                 <Route path="/admin/topup/edit/:planId" element={<CreateTopUpForm isEditMode={true} />} />
+                <Route path='style-management' element={<StyleManagement/>}></Route>
                 <Route path='*' element={<Navigate to={'/dashboard'}></Navigate>}></Route>
             </Route>
 

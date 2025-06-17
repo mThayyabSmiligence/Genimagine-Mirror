@@ -16,7 +16,7 @@ import { axiosAdmin, axiosPrivate } from '../../API\'s/axios';
 
 export default function AdminPlansListTable({plans}) {
     const navigate = useNavigate();
-     const [plansList, setPlansList] = useState(plans);
+    const [plansList, setPlansList] = useState(plans);
 
      
         useEffect(() => {

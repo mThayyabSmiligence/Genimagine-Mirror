@@ -3,6 +3,7 @@ const { getAllModelsController, getModelController, configureModelSettingsContro
 const { getAllPlansController, getPlanByIdController, createPlanController, updatePlanController, deletePlanController } = require('../controller/PlanController');
 const { getAllTopUpController, getTopUpByIdController, createTopUpController, updateTopUpController, deleteTopUpController } = require('../controller/TopUpController');
 const { getAllModeratorsController, createModeratorController, updateModeratorController, getModeratorDetailController, deleteModeratorController } = require('../controller/createModeratorController');
+const { getAllStylesController, createStyleController, updateStyleController, deleteStyleController, getStyleByIdController } = require('../controller/StyleController');
 
 const router = express.Router();
 
@@ -36,5 +37,12 @@ router.route('/get-moderator-detail/:user_id').get(getModeratorDetailController)
 router.route('/create-moderator').post(createModeratorController);
 router.route('/update-moderator/:user_id').post(updateModeratorController)
 router.route('/delete-moderator/:user_id').post(deleteModeratorController)
+
+// style 
+router.route('/admin/styles').post(getAllStylesController);
+router.route('/get-style/:style_id').post(getStyleByIdController);
+router.route('/create-styles').post(createStyleController);
+router.route('/update-styles/:style_id').post(updateStyleController);
+router.route('/delete-styles/:style_id').post(deleteStyleController);
 
 module.exports = router;

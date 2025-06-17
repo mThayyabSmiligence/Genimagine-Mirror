@@ -359,6 +359,11 @@ exports.getAllStylesController = async (req, res) => {
     return res.status(result.status).json(result);
 };
 
+exports.getStyleNameById = async (styleId) => {
+  const [rows] = await db.execute("SELECT name FROM styles WHERE id = ?", [styleId]);
+  return rows.length > 0 ? rows[0].style_name : null;
+};
+
 exports.getImageSettingsController = async (req, res) => {
     const result = await getImageSettingsService();
     return res.status(result.status).json(result)
