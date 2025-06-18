@@ -39,7 +39,7 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
       };
 
       const endpoint = isEditMode
-        ? `/update-styles/${editStyleData.id}`
+        ? `/update-style/${editStyleData.id}`
         : '/create-style';
 
       const res = await axiosAdmin.post(endpoint, payload);
@@ -59,7 +59,7 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="style-form-modal">
+      <div className="style-form-modal" onClick={(e) => e.stopPropagation()} >
         <h2 className='style-form-title'>{isEditMode ? 'Edit Style' : 'Create New Style'}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -98,7 +98,7 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
         </div>
 
 
-          <div className="modal-actions justify-content-between mt-5">
+          <div className="modal-actions mt-3">
             <button className='cancel-btn' type="button" onClick={onClose} disabled={submitting}>
               Cancel
             </button>

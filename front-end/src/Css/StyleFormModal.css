@@ -61,18 +61,18 @@
 
 .cancel-btn{
     padding: 5px 15px;
-    background-color: rgb(8, 8, 8);
-    color: #fff;
-    border: none;
+    background-color: #d5d5d5;
+    color: rgb(8, 8, 8);
+    border: 1px solid #D1D5DB;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
 }
 
 .submit-btn{
     padding: 5px 15px;
-    background-color: rgb(8, 8, 8);
-    color: #fff;
-    border: none;
+    background-color: #d5d5d5;
+    color: rgb(8, 8, 8);
+    border: 1px solid #D1D5DB;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
 }

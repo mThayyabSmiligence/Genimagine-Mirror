@@ -24,7 +24,7 @@ exports.getStyleByIdService = async (styleId) => {
 };
 
 
-exports.createStyleService = async ({ name, image_path, is_active = 1 }) => {
+exports.createStyleService = async ({ name, image_path, is_active }) => {
   try {
     await db.execute(`INSERT INTO styles (name, image_path, is_active) VALUES (?, ?, ?)`, [name, image_path, is_active]);
     return { status: 201, success: true, message: "Style created successfully" };
@@ -46,8 +46,31 @@ exports.updateStyleService = async (styleId, { name, image_path, is_active }) =>
 
 exports.deleteStyleService = async (styleId) => {
   try {
-    await db.execute(`DELETE FROM styles WHERE id = ?`, [styleId]);
+    const [check] = await db.query(
+      `SELECT is_deleted FROM styles WHERE id = ?`,
+      [styleId]
+    );
+
+    if (!check.length) {
+      return {
+        status: 404,
+        success: false,
+        message: "Style not found",
+      };
+    }
+
+    if (check[0].is_deleted === 1) {
+      return {
+        status: 400,
+        success: false,
+        message: "Style is already deleted",
+      };
+    }
+
+    await db.execute(`UPDATE styles SET is_deleted = 1, is_active = 0 WHERE id = ?`, [styleId]);
+
     return { status: 200, success: true, message: "Style deleted successfully" };
+
   } catch (error) {
     console.error("deleteStyleService error:", error);
     return { status: 500, success: false, message: "Failed to delete style" };

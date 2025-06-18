@@ -32,10 +32,13 @@ function AdminStyleListTable({styleList, onEditStyle, refreshStyles }) {
         // }
  
         const handleDelete = async (styleId) => {
+
+          
+
           if (!window.confirm("Are you sure you want to delete this style?")) return;
 
           try {
-            const response = await axiosAdmin.post(`/delete-styles/${styleId}`);
+            const response = await axiosAdmin.post(`/delete-style/${styleId}`);
              if (response.data.success) {
                 setStyleImageList(prev =>
                   prev.map(style =>
@@ -65,9 +68,10 @@ function AdminStyleListTable({styleList, onEditStyle, refreshStyles }) {
         </TableHead>
         <TableBody>
           {StyleImageList.map((row) => (
-            <TableRow  key={row.id} 
+            <TableRow  key={row.id}   
                 // className="clickable-row"
                 // onClick={() => handleViewDetails(row.package_id)}
+                className={row.is_deleted === 1 ? 'disabled-row' : ''}
             >
               <TableCell component="th" scope="row">
                 {row.id}

@@ -41,8 +41,8 @@ router.route('/delete-moderator/:user_id').post(deleteModeratorController)
 // style 
 router.route('/admin/styles').post(getAllStylesController);
 router.route('/get-style/:style_id').post(getStyleByIdController);
-router.route('/create-styles').post(createStyleController);
-router.route('/update-styles/:style_id').post(updateStyleController);
-router.route('/delete-styles/:style_id').post(deleteStyleController);
+router.route('/create-style').post(createStyleController);
+router.route('/update-style/:style_id').post(updateStyleController);
+router.route('/delete-style/:style_id').post(deleteStyleController);
 
 module.exports = router;
