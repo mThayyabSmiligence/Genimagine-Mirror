@@ -361,7 +361,7 @@ exports.getAllStylesController = async (req, res) => {
 
 exports.getStyleNameById = async (styleId) => {
   const [rows] = await db.execute("SELECT name FROM styles WHERE id = ?", [styleId]);
-  return rows.length > 0 ? rows[0].style_name : null;
+  return rows.length > 0 ? rows[0].name : null;
 };
 
 exports.getImageSettingsController = async (req, res) => {

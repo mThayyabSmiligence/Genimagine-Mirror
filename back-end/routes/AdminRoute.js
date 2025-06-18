@@ -1,4 +1,7 @@
 const express = require('express');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 const { getAllModelsController, getModelController, configureModelSettingsController, createModelController, deleteModelController, updateModelController, getQualityLevelAspectRatioForSelect } = require('../controller/IGSettingController');
 const { getAllPlansController, getPlanByIdController, createPlanController, updatePlanController, deletePlanController } = require('../controller/PlanController');
 const { getAllTopUpController, getTopUpByIdController, createTopUpController, updateTopUpController, deleteTopUpController } = require('../controller/TopUpController');
@@ -41,8 +44,10 @@ router.route('/delete-moderator/:user_id').post(deleteModeratorController)
 // style 
 router.route('/admin/styles').post(getAllStylesController);
 router.route('/get-style/:style_id').post(getStyleByIdController);
-router.route('/create-style').post(createStyleController);
-router.route('/update-style/:style_id').post(updateStyleController);
+// router.route('/create-style').post(createStyleController);
+// router.route('/update-style/:style_id').post(updateStyleController);
+router.route('/create-style').post(upload.single('styleImage'), createStyleController);
+router.route('/update-style/:style_id').post(upload.single('styleImage'), updateStyleController);
 router.route('/delete-style/:style_id').post(deleteStyleController);
 
 module.exports = router;

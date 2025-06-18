@@ -71,7 +71,7 @@ function AdminStyleListTable({styleList, onEditStyle, refreshStyles }) {
             <TableRow  key={row.id}   
                 // className="clickable-row"
                 // onClick={() => handleViewDetails(row.package_id)}
-                className={row.is_deleted === 1 ? 'disabled-row' : ''}
+                className={row?.is_deleted == 1 ? 'disabled-row' : 'active-row'}
             >
               <TableCell component="th" scope="row">
                 {row.id}

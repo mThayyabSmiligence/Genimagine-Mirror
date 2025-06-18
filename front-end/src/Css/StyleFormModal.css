@@ -39,7 +39,7 @@
   gap: 10px;
 }
 
-.style-name-text, .image-path-text, .status-text{
+.style-name-text, .image-path-text, .image-upload-text, .status-text{
     font-size: 16px;
     font-weight: 550;
     color: #697a8d;
@@ -81,3 +81,10 @@
     content: " *";
     color: rgb(255, 29, 29);
   }
+
+  .style-preview-img {
+  width: 100px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}

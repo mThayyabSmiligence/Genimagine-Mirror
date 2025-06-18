@@ -55,11 +55,13 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log("style :",style)
 
     let updatedPrompt = prompt;
+    let styleName = null;  // Declare early so it's available below
+
     if (style && style != 0) {
-        const styleName = await getStyleNameById(style);
-        if (styleName) {
+    styleName = await getStyleNameById(style);
+    if (styleName) {
         updatedPrompt += ` in style of ${styleName}`;
-        }
+    }
     }
 
     // encrypt
@@ -111,8 +113,9 @@ exports.userGenerateImageController=async(req,res,next)=>{
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
-            style:style==0?"none":styleList[style-1].style_name
+            style: style == 0 ? "none" : styleName || "none"
         }
+       
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
 
@@ -209,7 +212,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
-            style:style==0?"none":styleList[style-1].style_name
+            style: style == 0 ? "none" : styleName || "none"
         }
 
         const insertImage = await StoreImageInTabel(generated_image_data)

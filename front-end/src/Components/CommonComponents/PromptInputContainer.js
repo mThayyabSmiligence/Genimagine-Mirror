@@ -286,7 +286,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   return (
     <>
     
-    <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 mb-2'   >
+    <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 '   >
       {
         showIGSetting&&<IGSettingPopUp closePopup={() => setShowIGSetting(false)} modelsList={modelsList} setModelsList={setModelsList} aspectRatioList={aspectRatioList} setAspectRatioList={setAspectRatioList} qualityLevelsList={qualityLevelsList} setQualityLevelsList={setQualityLevelsList} fetchData={fetchData} />
       }
@@ -327,11 +327,13 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                 <div className='setting-tags p-secondary' title='aspect ratio'>
                   Aspect Ratio : {loggedIn?selectSetting.aspectRatio:"1:1"}
                 </div>
-                <div className='setting-tags p-secondary' title='aspect ratio'>
+                <div className='setting-tags p-secondary' title='quality'>
                   quality : {loggedIn?selectSetting.qualityResolution :"720p"}
                 </div>
-                <div className='setting-tags p-secondary' title='Style'>
-                  Style : {loggedIn?styleList[selectSetting.style-1]?.style_name||"none":"none"}
+                <div className='setting-tags p-secondary' title='aspect ratio'>
+                  Style : {loggedIn? (styleList.find((s) => s.id === selectSetting.style)?.style_name || "none")
+                      : "none"
+                  }
                 </div>
               </>
             )}
