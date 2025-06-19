@@ -19,6 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeletePopUp from "../../Components/CommonComponents/DeletePopUp";
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
+import TuneIcon from '@mui/icons-material/Tune';
 import ReportPopUp from "../../Components/CommonComponents/ReportPopUp";
 
 function ExploreImageDetail() {
@@ -29,6 +30,7 @@ function ExploreImageDetail() {
     const [userData,setUserData]=useState({})
     const [styleList, setStyleList] = useState([]);
     const hasViewed = useRef(false);
+    const [viewCount, setViewCount] = useState(0); 
     const [isUserLiked,setIsUserLiked]=useState(false)
     const {loggedIn}= useContext(AuthContext);
     const {refreshImageSettings,setRefreshImageSettings} = useContext(RefreshDataContext)
@@ -49,12 +51,24 @@ function ExploreImageDetail() {
         }, [published_id]);
 
         useEffect(() => {
-            if (!hasViewed.current ) {
-            showview();
-            hasViewed.current = true; // Set flag to true after first call
+        if (imageData?.views_count != null && !hasViewed.current) {
+            setViewCount(imageData.views_count); 
+            showViewCount();
+            hasViewed.current = true;
+        }
+        }, [imageData]); 
+
+        const showViewCount = async () => {
+        try {
+            const response = await axiosNoAUth.post(`explore/${published_id}/view`);
+            if (response.data.success) {
+            console.log("View count incremented on backend");
+            setViewCount(prev => prev + 1); // Always increase UI count
             }
-            console.log(imageData);
-        }, []);
+        } catch (error) {
+            console.error("Error updating view count", error);
+        }
+        };
 
          useEffect(()=>{
             if(imageData.isUserLiked===1){
@@ -212,20 +226,32 @@ function ExploreImageDetail() {
             }
       } 
 
-      const showview = async() => {
+    //   const showview = async() => {
       
-          try{
-            const response = await axiosNoAUth.post(`explore/${published_id}/view`)
-            console.log(response)
-            if(response.data.success){
-              imageData.views_count++
-              console.log("View count updated successfully")
-              console.log(response.data)
+    //       try{
+    //         const response = await axiosNoAUth.post(`explore/${published_id}/view`)
+    //         console.log(response)
+    //         if(response.data.success){
+    //           imageData.views_count++
+    //           console.log("View count updated successfully")
+    //           console.log(response.data)
+    //         }
+    //       }catch(error){
+    //         console.log(error)
+    //     }
+    //     }
+
+        const showview = async () => {
+        try {
+            const response = await axiosNoAUth.post(`explore/${published_id}/view`);
+            if (response.data.success) {
+            console.log("View count updated successfully");
+            setViewCount(prev => prev + 1); // Use state update
             }
-          }catch(error){
-            console.log(error)
+        } catch (error) {
+            console.log("Error updating view:", error);
         }
-        }
+        };
 
         const handleShare = (image) => {
             if (image.image_url) {
@@ -340,7 +366,7 @@ function ExploreImageDetail() {
                     {/* prompt conatiner */}
                     <div className='image-prompt text-start p-2 '>
                         <div className="image-prompt-header d-flex justify-content-between align-items-center">
-                            <h5 className=' prompt-header'>Prompt :</h5>
+                            <h6 className=' prompt-header h-5'>Prompt :</h6>
                             <button onClick={() => handleCopy(imageData)} className="prompt-copy-button">Use This Prompt</button>
                         </div>
                         <div className='explore-prompt-setting-container flex-1'>
@@ -351,19 +377,19 @@ function ExploreImageDetail() {
                             </div>
                         </div>  
                     </div>
-                    <div className="image-setting-tag-container d-flex  justify-content-around align-items-center p-2 "> 
+                    <div className="image-setting-tag-container p-2"> 
                         {/* <Slider className="ig-slick" {...settings}> */}
                             <div className="image-settings-tag d-flex justify-content-between align-items-center">
                                 <p className="m-0 p-primary">model: {imageData.model}</p>
                             </div>
-                            <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2">
+                            <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2" title="aspect ratio">
                                 <AspectRatioIcon className="icon"/><p className="m-0 p-primary"><span>: {imageData.aspect_ratio_label}</span></p>
                             </div>
-                            {/* <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                                <AspectRatioIcon className="icon"/>
-                                <p className="m-0 p-primary">:{imageData.quality_resolution}</p>
-                            </div> */}
-                            <div className="image-settings-tag style-tag-container d-flex justify-content-between align-items-center">
+                            <div className="image-settings-tag d-flex justify-content-between align-items-center" title="quality">
+                                <TuneIcon className="icon"/>
+                                <p className="m-0 p-primary">: {imageData.quality_resolution}</p>
+                            </div>
+                            <div className="image-settings-tag style-tag-container d-flex justify-content-between align-items-center" title="style">
                                 <BrushIcon className="icon"/>
                                     <p className="m-0 p-primary d-flex align-items-center">: {imageData.style||"none"}</p>    
                             </div>  
@@ -413,6 +439,9 @@ function ExploreImageDetail() {
                         </div> */}
                           
                         <div className='caption-text-container p-2'> 
+                            <div className="caption-header-container">
+                                <h6 className="h-6 text-start caption-header">Caption :</h6>
+                            </div>
                             <div className='caption-text-inner-container text-start'>
                                 <p className='m-0 test-start'>{imageData.caption}</p>
                             </div>
@@ -429,7 +458,7 @@ function ExploreImageDetail() {
                             }
                         </div>
                         <div className='user-view-container'>
-                            <button className='button-wh light-button-wh user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{imageData.views_count}</p></button>
+                            <button className='button-wh light-button-wh user-view-button d-flex align-items-center px-3'><VisibilityIcon /><p className="ms-2 m-0 ">{viewCount}</p></button>
                         </div>
                         <div className='share-image-container'>
                             <button onClick={() => setShowCopyOption(!showCopyOption)} className='button-wh light-button-wh share-image-button d-flex align-items-center px-3'>

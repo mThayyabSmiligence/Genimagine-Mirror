@@ -354,7 +354,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
             <div className="pop-up-content d-flex flex-column text-start mt-2 p-3"> 
               
                 <h5 className="pop-up-model h-5 mb-3">Model</h5>
-                <div className="model-list d-flex flex-wrap">
+                <div className="model-list">
                   {modelsList.map((model) => (
                     <div
                       key={model.id}
@@ -374,7 +374,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
 
 
                <h5 className="h-5 mb-3">Aspect Ratio</h5>
-                <div className="d-flex justify-content-start flex-wrap gap-3 mb-2">
+                <div className="aspect-scroll-container">
                   {aspectRatioList.length > 0 &&
                     aspectRatioList.map((shape) => (
                       <div
@@ -396,8 +396,8 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                     ))}
                 </div>
 
-                <h5 className="h-5 mb-3">Quality</h5>
-                <div className="d-flex justify-content-start flex-wrap">
+                <h5 className="h-5 mb-3 mt-3">Quality</h5>
+                <div className="quality-scroll-container">
                     {qualityLevelsList.map((quality) => (
                         <div
                             key={quality.id}
@@ -409,8 +409,8 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                     ))}
                 </div>
  
-                <div className="d-flex justify-content-between align-items-center ">
-                    <h5 className="h-5 mb-3">Style</h5>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h5 className="h-5 m-0">Style</h5>
                     <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
                 </div>
                 <div className="d-flex justify-content-start style-popup">

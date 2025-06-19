@@ -156,6 +156,23 @@
   display: flex;
 }
 
+.aspect-scroll-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar in different browsers */
+.aspect-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.aspect-scroll-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
 
 .aspect-ratio-card {
   display: flex;
@@ -303,7 +320,38 @@ html {
   border-radius: 10px;
 } */
 
+.model-list{
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+}
 
+.model-list::-webkit-scrollbar {
+  display: none;
+}
+.model-list {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.quality-scroll-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar in different browsers */
+.quality-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.quality-scroll-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
 
 @media (min-width: 450px) and  (max-width: 768px){
 
