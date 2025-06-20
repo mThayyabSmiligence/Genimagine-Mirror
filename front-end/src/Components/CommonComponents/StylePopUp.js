@@ -21,9 +21,9 @@ function StylePopUp({tempTrackStyle, setTempTrackStyle, setSeeMore, styleList}) 
             {styleList.length > 0 ? (
                 
                 styleList.map((style, index) =>(
-                    <div className={`style-card ${style.id==tempTrackStyle&&"active"} ${!loggedIn&&"unclickable"}`} key={index}>
+                    <div className={`style-card mt-md-2 ${style.id==tempTrackStyle&&"active"} ${!loggedIn&&"unclickable"}`} key={index}>
                       <img  src={style.style_image} onClick={() => handleStyleClick(style.id)} alt="style" />
-                      <h3 onClick={() => handleStyleClick(style.id)} className='style-name-heading'>{style.style_name}</h3>
+                      <h3 onClick={() => handleStyleClick(style.id)} className='style-name-heading mt-md-1'>{style.style_name}</h3>
                     </div>
                   )
                 )

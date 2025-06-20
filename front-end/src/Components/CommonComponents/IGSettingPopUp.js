@@ -419,7 +419,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                       index < 3 &&
                       <div key={index} className={`ms-md-1 style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
                         <img src={style.style_image} onClick={() => setTempTrackStyle(style.id)} alt="style" />
-                        <h3 onClick={() => setTempTrackStyle(style.id)} className='style-name-heading'>{style.style_name}</h3>
+                        <h3 onClick={() => setTempTrackStyle(style.id)} className='style-name-heading text-center'>{style.style_name}</h3>
                       </div>
                     ))
                   }
