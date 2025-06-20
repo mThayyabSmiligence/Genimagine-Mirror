@@ -363,7 +363,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                         model.id === tempTrackModel ? 'active' : ''
                       } ${!loggedIn && model.id !== 1 ? 'unclickable' : 'not-disable'}`}
                     >
-                      <div className="model-label-box">
+                      <div className={`model-label-box model-color-${model.name}`}>
                         <div className="model-label-inner-box" />
                       </div>
                       <h5 className="h-4 mb-1">{model.name}</h5>

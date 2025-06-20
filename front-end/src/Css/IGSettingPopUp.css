@@ -87,10 +87,26 @@
 .model-label-box {
   height: 20px;
   width: 20px;
-  background: linear-gradient(155.04deg, #FAB815 15.88%, #FA8916 98.9%);
+  /* background: linear-gradient(155.04deg, #FAB815 15.88%, #FA8916 98.9%); */
   border-radius: 8px;
   position: relative;
   margin-bottom: 4px;
+}
+
+.model-color-lightning {
+  background: linear-gradient(155deg, #FAB815 15.88%, #FA8916 98.9%);
+}
+
+.model-color-base {
+  background: linear-gradient(155.04deg, #7192F9 15.88%, #9E60F8 98.9%);
+}
+
+.model-color-dreamshaper {
+  background: linear-gradient(155.04deg, #B153EB 15.88%, #E34AA5 98.9%);
+}
+
+.model-color-stablity {
+  background: linear-gradient(155.04deg, #4d1c6c 15.88%, #aa638e 98.9%);
 }
 
 .model-label-inner-box {
