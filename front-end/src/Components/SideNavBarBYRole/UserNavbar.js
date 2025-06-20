@@ -408,7 +408,7 @@ export default function UserNavbar() {
 
             {
                 showDeletePopUp &&
-                <DeletePopUp handelDelete={handelDeleteChat} showDeletePopUp={showDeletePopUp} onHide={()=>setShowDeletePopUp(false)} message={"are you sure you want deleted this chat?"}/>  // This is where you call your delete function and pass the chatId to it.
+                <DeletePopUp handelDelete={handelDeleteChat} showDeletePopUp={showDeletePopUp} onHide={()=>setShowDeletePopUp(false)} message={"Are you sure you want deleted this chat?"}/>  // This is where you call your delete function and pass the chatId to it.
             }
         </>
     )
