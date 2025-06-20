@@ -232,25 +232,35 @@
     border: 2px solid rgb(207, 207, 207);
   }
 
-  .explore-image-detail-container .image-settings-tag{
-    min-width: 60px
-  }
+  .explore-image-detail-container {
+  width: 460px; /* Fixed or max-width container */
+  overflow: hidden; /* prevents outer overflow */
+}
 
-  .explore-image-detail-container .image-setting-tag-container{
+.image-setting-tag-container {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
-  }
+  padding: 10px;
+  white-space: nowrap; /* Prevents wrapping */
+}
 
-  .explore-image-detail-container .image-setting-tag-container::-webkit-scrollbar {
+/* Hide scrollbars */
+.image-setting-tag-container::-webkit-scrollbar {
   display: none;
-  }
-  .explore-image-detail-container .image-setting-tag-container {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
-  }
+}
+.image-setting-tag-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* Prevent child items from shrinking */
+.image-setting-tag-container .image-settings-tag {
+  flex-shrink: 0;
+  min-width: max-content;
+}
 
   .caption-header{
     width: 100%;

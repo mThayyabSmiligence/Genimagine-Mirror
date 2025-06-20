@@ -359,7 +359,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                     <div
                       key={model.id}
                       onClick={() => setTempTrackModel(model.id)}
-                      className={`pop-up-model-content ms-3 d-flex flex-column justify-content-between align-items-start mb-3 ${
+                      className={`pop-up-model-content ms-md-1 d-flex flex-column justify-content-between align-items-start mb-3 ${
                         model.id === tempTrackModel ? 'active' : ''
                       } ${!loggedIn && model.id !== 1 ? 'unclickable' : 'not-disable'}`}
                     >
@@ -380,7 +380,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                       <div
                         key={shape.id}
                         onClick={() => setTempSelectedAspectRatio(shape.aspect_ratio_id)}
-                        className={`aspect-ratio-card ${
+                        className={`ms-md-1 aspect-ratio-card ${
                           shape.aspect_ratio_id === tempSelectedAspectRatio ? "selected" : ""
                         } ${!loggedIn && shape.aspect_ratio_id !== 2 ? "disabled" : ""}`}
                       >
@@ -417,7 +417,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                   {
                     styleList.map((style, index) => (
                       index < 3 &&
-                      <div key={index} className={`style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
+                      <div key={index} className={`ms-md-1 style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
                         <img src={style.style_image} onClick={() => setTempTrackStyle(style.id)} alt="style" />
                         <h3 onClick={() => setTempTrackStyle(style.id)} className='style-name-heading'>{style.style_name}</h3>
                       </div>

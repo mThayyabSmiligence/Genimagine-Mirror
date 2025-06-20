@@ -213,13 +213,6 @@
   pointer-events: none;
 }
 
-/* .pop-up-done-button{
-  color: white;
-  background-color: black;
-  border: none;
-  padding: 5px 10px;
-} */
-
 .pop-up-model-content.disable , .aspect-ratio-box.disable{
   
   pointer-events: none;
@@ -311,15 +304,6 @@ html {
   overflow-y: scroll;
 }
 
-/* .pop-up-done{
-  position: absolute;
-  width: 90%;
-  bottom: 0;
-  background-color: white;
-  border: 1px solid grey;
-  border-radius: 10px;
-} */
-
 .model-list{
   display: flex;
   gap: 20px;
@@ -356,18 +340,19 @@ html {
 @media (min-width: 450px) and  (max-width: 768px){
 
   .settings-pop-up {
+    max-height: 900px;
     width: 90%;
   }
   .pop-up-content .model-list{
     align-items: center;
-    justify-content: center;
   }
   .pop-up-model-content{
-    width: fit-content;
-    
+    /* width: fit-content; */
+    width: 195px;
+    height: 110px !important;
   }
   .settings-pop-up{
-    max-height: 520px; 
+    /* max-height: 520px;  */
   }
 
   
@@ -387,23 +372,40 @@ html {
   
 }
 
+/* @media (min-width: 769px) and (max-width: 2000px) {
+  .settings-pop-up {
+    max-height: 900px;
+  }
+  .pop-up-model-content {
+    height: 100px;
+  }
+} */
+
+
 /* today changed */
 
 @media (min-width: 769px) and  (max-width: 1380px){
   .settings-pop-up{
     max-height: 900px;  
+
   }
   
 }
 
+
 @media (min-width: 1381px) and (max-width: 2000px){
   .settings-pop-up{
     max-height: 900px; 
+    
   }
   .pop-up-model-content{
     height: 100px;
     
   }
+
+  .h-4 {
+    font-size: var(--fourth-heading-font-size-1366);
+}
 }
 
 

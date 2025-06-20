@@ -38,10 +38,24 @@
 }
 @media (min-width: 769px) and  (max-width: 1380px){
     .style-preview-card img{
-        height: 90px;
+        height: 100px;
+        width: 148px;
+    
     }
     .style-preview-card{
-        width: 90px;
+        /* width: 90px; */
+         width: 150px;
+         gap: 2px;
+        /* margin-left: 10px; */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .style-name-heading{
+        font-size: 12px;
+        width: 150px;
+        display: flex;
+        justify-content: center;
     }
 }
 
