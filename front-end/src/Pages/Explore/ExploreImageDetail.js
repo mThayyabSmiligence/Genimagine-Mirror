@@ -380,14 +380,14 @@ function ExploreImageDetail() {
                     <div className="image-setting-tag-container p-2"> 
                         {/* <Slider className="ig-slick" {...settings}> */}
                             <div className="image-settings-tag d-flex justify-content-between align-items-center">
-                                <p className="m-0 p-primary">model: {imageData.model}</p>
+                                <p className="m-0 p-primary">model : {imageData.model}</p>
                             </div>
                             <div className="image-settings-tag d-flex justify-content-between align-items-center gap-2" title="aspect ratio">
                                 <AspectRatioIcon className="icon"/><p className="m-0 p-primary"><span>: {imageData.aspect_ratio_label}</span></p>
                             </div>
                             <div className="image-settings-tag d-flex justify-content-between align-items-center" title="quality">
                                 <TuneIcon className="icon"/>
-                                <p className="m-0 p-primary">: {imageData.quality_resolution}</p>
+                                <p className="m-0 p-primary">: {imageData.quality_resolution || "none" }</p>
                             </div>
                             <div className="image-settings-tag style-tag-container d-flex justify-content-between align-items-center" title="style">
                                 <BrushIcon className="icon"/>
