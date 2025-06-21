@@ -73,3 +73,16 @@
     width: 10px;
     height: 10px;
 }
+
+.required-label::after {
+    content: " *";
+    color: rgb(255, 29, 29);
+}
+
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  align-items: start;
+}
+

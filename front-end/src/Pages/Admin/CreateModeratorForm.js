@@ -16,13 +16,18 @@ function CreateModeratorForm({ isEditMode = false }) {
     const navigate = useNavigate();
     const { userId } = useParams();
 
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [error, setError] = useState(null);
+
     const [username, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [DOB, setDOB] = useState(null);
     const [isVerified, setIsVerified] = useState(true);
 
+    const [usernameFocus, setUsernameFocus] = useState(false)
 
+    const [usernameValidity, setUsernameValidity] = useState(false)
     const [emailValidity, setEmailValidity] = useState(false)
     const [passwordValidity, setPasswordValidity] = useState(false)
     const [emailTouched, setEmailTouched] = useState(false);
@@ -36,6 +41,9 @@ function CreateModeratorForm({ isEditMode = false }) {
         }
     }, [isEditMode, userId]);
 
+    useEffect(()=>{
+        setUsernameValidity(USER_REGEX.test(username));
+    },[username])
 
     const fetchModeratorDetails = async () => {
         try {
@@ -61,11 +69,26 @@ function CreateModeratorForm({ isEditMode = false }) {
             setPasswordValidity(PWD_REGEX.test(password));
     }, [password])
     
-        useEffect(()=>{
-            setEmailValidity(EMAIL_REGEX.test(email));
-        },[email])
+    useEffect(()=>{
+        setEmailValidity(EMAIL_REGEX.test(email));
+    },[email])
 
     const handleSubmit = async() => {
+    setError(false)
+
+        if (!USER_REGEX.test(username)) {
+            if (username.length < 4) {
+                setError("Username must be at least 4 characters long.");
+            } else if (username.length > 24) {
+                setError("Username must not exceed 24 characters.");
+            } else if (!/^[A-Za-z]/.test(username)) {
+                setError("Username must start with a letter.");
+            } else {
+                setError("Username can only contain letters, numbers, hyphens, and underscores.");
+            }
+            return;
+        }
+    
     if (!DOB) {
         setDobError(true);
         return;
@@ -81,7 +104,7 @@ function CreateModeratorForm({ isEditMode = false }) {
         dob: formattedDOB,
         is_verified: isVerified 
     };
-
+    
     console.log("Submitting form with:", formData);
 
     try {
@@ -90,10 +113,13 @@ function CreateModeratorForm({ isEditMode = false }) {
         : await axiosAdmin.post('/create-moderator', formData);
 
         if (response.status === 200 || response.status === 201) {
+        setError(false) 
         navigate("/admin/moderator-management");
         }
-    } catch (err) {
-        console.error("Error saving moderator", err);
+    } catch (error) {
+        console.error("Error saving moderator", error);
+        setError(error.message);
+        setErrorMessage(error?.response?.data?.message||error.message||"Error creating moderator")
     }
 };
     
@@ -110,7 +136,14 @@ function CreateModeratorForm({ isEditMode = false }) {
                     
                     <div className="mb-3">
                         <label htmlFor="user-name" className="form-label user-name-text required-label">User Name</label>
-                        <input value={username} onChange={(e) => setUserName(e.target.value)} type="text" className="form-control user-name-box" placeholder="Enter User Name" aria-label="user name" id="user-name" required/>
+                        <input value={username} onChange={(e) => setUserName(e.target.value)}  onFocus={() => setUsernameFocus(true)} type="text" className="form-control user-name-box" placeholder="Enter User Name" aria-label="user name" id="user-name" required/>
+                        <p id="uidnote" className={usernameFocus && username && !usernameValidity ? "instructions" : "offscreen"}>
+                            
+
+                            4 to 24 characters.<br />
+                            Must begin with a letter.<br />
+                            Letters, numbers, underscores, hyphens allowed.
+                        </p>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label email-text required-label">

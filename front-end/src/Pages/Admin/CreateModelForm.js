@@ -33,6 +33,9 @@ export default function CreateModelForm({ isEditMode = false }) {
   const { modelId } = useParams(); // Get model ID from URL
   const [modelData, setModelData] = useState(null);
 
+  const [formErrors, setFormErrors] = useState({});
+
+
   useEffect(() => {
     if (isEditMode && modelId) {
       axiosAdmin.get(`models/${modelId}`)
@@ -106,7 +109,6 @@ export default function CreateModelForm({ isEditMode = false }) {
     getSelectOptions();
   },[])
 
-  
   const getSelectOptions = async() => {
     try{
       const response = await axiosAdmin.get("/model/select-options")
@@ -132,9 +134,45 @@ export default function CreateModelForm({ isEditMode = false }) {
     }
   }
 
-  
+  const isEmptyOrWhitespace = (str) => {
+  return !str || str.trim() === '';
+};
+
+
+  const validateForm = () => {
+  const errors = {};
+
+  if (isEmptyOrWhitespace(modelName)) {
+    errors.modelName = "*Model name is required and cannot be empty.";
+  }
+
+  if (isEmptyOrWhitespace(description)) {
+    errors.description = "*Description is required and cannot be empty.";
+  }
+
+  if (modelUrl && isEmptyOrWhitespace(modelUrl)) {
+    errors.modelUrl = "*Model URL cannot be only spaces.";
+  }
+
+  if (!selectedModelType || isEmptyOrWhitespace(selectedModelType.value)) {
+    errors.modelType = "*Model type is required.";
+  }
+
+  if (!selectedQualities.length) {
+    errors.qualities = "*At least one quality must be selected.";
+  }
+
+  if (!selectedAspectRatios.length) {
+    errors.aspectRatios = "*At least one aspect ratio must be selected.";
+  }
+
+  setFormErrors(errors);
+  return Object.keys(errors).length === 0;
+};
 
     const handleSubmit = async () => {
+      if (!validateForm()) return;
+
       const payload = {
         name: modelName,
         description,  
@@ -232,11 +270,24 @@ export default function CreateModelForm({ isEditMode = false }) {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label name-text required-label">Model Name</label>
-                  <input value={modelName} onChange={(e) => setModelName(e.target.value)} type="text" className="form-control name-box" placeholder="Name" aria-label="Model name" id="name" required/>
+                  <input value={modelName} 
+                  onChange={(e) => {setModelName(e.target.value)
+                    if (formErrors.modelName && !isEmptyOrWhitespace(e.target.value)) {
+                      setFormErrors(prev => ({ ...prev, modelName: undefined }));
+                    }}} 
+                    type="text" className="form-control name-box" placeholder="Name" aria-label="Model name" id="name" required/>
+                   {formErrors.modelName && <p className="error-text">{formErrors.modelName}</p>}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="description" className="form-label description-text required-label">Description</label>
-                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" required/>
+                  <textarea value={description} 
+                  onChange={(e) => {setDescription(e.target.value)
+                    if (formErrors.description && !isEmptyOrWhitespace(e.target.value)) {
+                      setFormErrors(prev => ({ ...prev, description: undefined }));
+                    }
+                  }}
+                  className="form-control description-box" placeholder="Description" aria-label="Model description" id="description" required/>
+                    {formErrors.description && <p className="error-text">{formErrors.description}</p>}
                 </div>
 
                 <div className="mb-3">
@@ -245,16 +296,27 @@ export default function CreateModelForm({ isEditMode = false }) {
                     id="modelType"
                     options={modelTypeOptions}
                     value={selectedModelType}
-                    onChange={(selectedOption) => setSelectedModelType(selectedOption)}
+                    onChange={(selectedOption) => {setSelectedModelType(selectedOption)
+                      if (formErrors.modelType && selectedOption?.value) {
+                        setFormErrors(prev => ({ ...prev, modelType: undefined }));
+                      }
+                    }}
                     placeholder="Select model type"
                     className="model-type-select text-start"
                     required
                   />
+                  {formErrors.modelType && <p className="error-text">{formErrors.modelType}</p>}
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="url" className="form-label url-text required-label">Model URL</label>
-                  <input value={modelUrl} onChange={(e) => setModelUrl(e.target.value)} type="text" className="form-control url-box" placeholder="Enter URL" aria-label="URL" id="url" required/>
+                  <input value={modelUrl} onChange={(e) => {setModelUrl(e.target.value)
+                    if (formErrors.modelUrl && !isEmptyOrWhitespace(e.target.value)) {
+                      setFormErrors(prev => ({ ...prev, modelUrl: undefined }));
+                    }
+                  }} 
+                  type="text" className="form-control url-box" placeholder="Enter URL" aria-label="URL" id="url" required/>
+                  {formErrors.modelUrl && <p className="error-text">{formErrors.modelUrl}</p>}
                 </div>
     
                 <div className='default-switch-btn d-flex justify-content-between align-items-center mb-3'>
@@ -284,7 +346,12 @@ export default function CreateModelForm({ isEditMode = false }) {
                 <div className="mb-3">
                     <label htmlFor="qualitySelect" className="form-label required-label quality-text">Select Quality</label>
                     <Select
-                        onChange={handleQualityChange}
+                         onChange={(selected) => {
+                          handleQualityChange(selected);
+                          if (formErrors.qualities && selected.length > 0) {
+                            setFormErrors(prev => ({ ...prev, qualities: undefined }));
+                          }
+                        }}
                         id="qualitySelect"
                         closeMenuOnSelect={false}
                         components={makeAnimated()}
@@ -295,6 +362,7 @@ export default function CreateModelForm({ isEditMode = false }) {
                         classNamePrefix="select-quality"
                         required
                     />
+                    {formErrors.qualities && <p className="error-text">{formErrors.qualities}</p>}
                 </div>
                 {selectedQualities.map((q) => (
                   <div className="d-flex align-items-center mb-2" key={q.value}>
@@ -319,7 +387,12 @@ export default function CreateModelForm({ isEditMode = false }) {
                 <div className="mb-3">
                     <label htmlFor="aspectratioSelect" className="form-label required-label aspect-ratio-text">Select Aspect Ratio</label>
                     <Select
-                        onChange={handleAspectRatioChange}
+                        onChange={(selected) => {
+                            handleAspectRatioChange(selected);
+                            if (formErrors.aspectRatios && selected.length > 0) {
+                              setFormErrors(prev => ({ ...prev, aspectRatios: undefined }));
+                            }
+                          }}
                         id="aspectratioSelect"
                         closeMenuOnSelect={false}
                         components={makeAnimated()}
@@ -330,6 +403,7 @@ export default function CreateModelForm({ isEditMode = false }) {
                         classNamePrefix="select-aspect-ratio"
                         required
                     />
+                    {formErrors.aspectRatios && <p className="error-text">{formErrors.aspectRatios}</p>}
                 </div>
                 
                 {selectedAspectRatios.map((r) => (

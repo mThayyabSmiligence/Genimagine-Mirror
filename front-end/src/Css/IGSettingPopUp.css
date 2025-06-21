@@ -106,7 +106,9 @@
 }
 
 .model-color-stablity {
-  background: linear-gradient(155.04deg, #4d1c6c 15.88%, #aa638e 98.9%);
+  /* background: linear-gradient(155.04deg, #4d1c6c 15.88%, #aa638e 98.9%); */
+    background: linear-gradient(155.04deg, #2265d1 15.88%, #52b2db 98.9%);
+
 }
 
 .model-label-inner-box {
@@ -320,21 +322,29 @@ html {
   overflow-y: scroll;
 }
 
-.model-list{
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-}
+  .model-list {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    flex-wrap: nowrap;          
+    padding-bottom: 10px;      
+  }
 
-.model-list::-webkit-scrollbar {
-  display: none;
-}
-.model-list {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
-}
+  .model-list::-webkit-scrollbar {
+    display: none;
+  }
+  .model-list {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;     
+  }
+
+  .pop-up-model-content {
+    min-width: 220px;           
+    flex-shrink: 0;         
+  }
+
 
 .quality-scroll-container {
   display: flex;
@@ -353,7 +363,7 @@ html {
   scrollbar-width: none;     /* Firefox */
 }
 
-@media (min-width: 450px) and  (max-width: 768px){
+@media (min-width: 450px) and  (max-width: 769px){
 
   .settings-pop-up {
     max-height: 900px;
@@ -370,6 +380,10 @@ html {
   .settings-pop-up{
     /* max-height: 520px;  */
   }
+  .pop-up-model-content {
+    flex: 0 0 30%; /* each card takes 80% of viewport width */
+    min-width: 120px;
+  }
 
   
 }
@@ -385,6 +399,7 @@ html {
     width: fit-content;
     
   }
+  
   
 }
 
@@ -405,6 +420,15 @@ html {
     max-height: 900px;  
 
   }
+  .pop-up-model-content {
+    flex: 0 0 30%; /* each card takes 80% of viewport width */
+    min-width: 200px;
+  }
+
+  .h-4 {
+    font-size: var(--fourth-heading-font-size-1366);
+  }
+
   
 }
 
@@ -418,10 +442,41 @@ html {
     height: 100px;
     
   }
+   .pop-up-model-content {
+    flex: 0 0 30%; /* each card takes 80% of viewport width */
+    min-width: 150px;
+  }
 
   .h-4 {
     font-size: var(--fourth-heading-font-size-1366);
-}
+  }
 }
 
 
+.count-badge {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.count-badge.blue {
+  background-color: #e7f1ff;
+  color: #1479ff;
+}
+
+.count-badge.green {
+  background-color: #e9f9ef;
+  color: #3cb878;
+}
+
+.count-badge.purple {
+  background-color: #f2e9ff;
+  color: #a855f7;
+}
+
+.count-badge.yellow {
+  background-color: #fef4d7;
+  color: #eab308;
+}

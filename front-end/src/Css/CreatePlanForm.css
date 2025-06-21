@@ -41,3 +41,10 @@
     box-shadow:0 2px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
 }
+
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  text-align: start;
+}

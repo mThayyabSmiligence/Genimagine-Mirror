@@ -6,6 +6,14 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  text-align: start;
+}
+
+
 /* .model-create-form {
     width: 100%;
     max-width: 75%;

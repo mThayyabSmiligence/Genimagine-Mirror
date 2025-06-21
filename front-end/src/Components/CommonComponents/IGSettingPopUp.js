@@ -353,7 +353,11 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
             }
             <div className="pop-up-content d-flex flex-column text-start mt-2 p-3"> 
               
-                <h5 className="pop-up-model h-5 mb-3">Model</h5>
+                {/* <h5 className="pop-up-model setting-title h-5 mb-3">Model</h5> */}
+                <div className="d-flex align-items-center gap-2 mb-3">
+                  <h5 className="pop-up-model setting-title h-5 m-0">Model</h5>
+                  <span className="count-badge blue">{modelsList.length} available</span>
+                </div>
                 <div className="model-list">
                   {modelsList.map((model) => (
                     <div
@@ -373,7 +377,11 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                 </div>
 
 
-               <h5 className="h-5 mb-3">Aspect Ratio</h5>
+               {/* <h5 className="h-5 mb-3">Aspect Ratio</h5> */}
+               <div className="d-flex align-items-center gap-2 mb-3">
+                <h5 className="h-5 m-0">Aspect Ratio</h5>
+                <span className="count-badge green">{aspectRatioList.length} {aspectRatioList?.length == 1 ? "ratio" : "ratios"}</span>
+              </div>
                 <div className="aspect-scroll-container">
                   {aspectRatioList.length > 0 &&
                     aspectRatioList.map((shape) => (
@@ -396,7 +404,11 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                     ))}
                 </div>
 
-                <h5 className="h-5 mb-3 mt-3">Quality</h5>
+                {/* <h5 className="h-5 mb-3 mt-3">Quality</h5> */}
+                <div className="d-flex align-items-center gap-2 mt-3 mb-3">
+                  <h5 className="h-5 m-0">Quality</h5>
+                  <span className="count-badge purple">{qualityLevelsList?.length} {qualityLevelsList?.length === 1 ? "option" : "options"}</span>
+                </div>
                 <div className="quality-scroll-container">
                     {qualityLevelsList.map((quality) => (
                         <div
@@ -410,7 +422,10 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                 </div>
  
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="h-5 m-0">Style</h5>
+                     <div className="d-flex align-items-center gap-2">
+                      <h5 className="h-5 m-0">Style</h5>
+                      <span className="count-badge yellow">{styleList.length} {styleList?.length == 1 ? "style" : "styles"}</span>
+                    </div>
                     <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
                 </div>
                 <div className="d-flex justify-content-start style-popup">

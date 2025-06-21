@@ -11,6 +11,7 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
   const [previewUrl, setPreviewUrl] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (isEditMode) {
@@ -35,13 +36,30 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
     }
   };
 
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!name.trim()) {
+      newErrors.name = 'Style name is required.';
+    }
+
+    if (!fileName.trim()) {
+      newErrors.fileName = 'Image file name is required.';
+    } else if (!/\.(png|jpg|jpeg|webp)$/i.test(fileName)) {
+      newErrors.fileName = 'File name must end with .png, .jpg, .jpeg or .webp';
+    }
+
+    if (!imageFile && !isEditMode) {
+      newErrors.imageFile = 'Style image is required.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!name || !fileName || (!imageFile && !isEditMode)) {
-      alert('Please fill in all required fields.');
-      return;
-    }
+    if (!validateFields()) return;
 
     setSubmitting(true);
 
@@ -84,10 +102,14 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value)
+                if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+              }}
               required
               disabled={submitting}
             />
+            {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
 
           <div className="form-group">
@@ -97,10 +119,14 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
             <input
               type="text"
               value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
+              onChange={(e) => {
+                setFileName(e.target.value)
+                if (errors.fileName) setErrors(prev => ({ ...prev, fileName: undefined }));
+              }}
               required
               disabled={submitting}
             />
+            {errors.fileName && <p className="error-text">{errors.fileName}</p>}
           </div>
 
           <div className="form-group">
@@ -110,9 +136,13 @@ function StyleFormModal({ onClose, refreshStyles, editStyleData }) {
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                handleFileChange(e);
+                if (errors.imageFile) setErrors(prev => ({ ...prev, imageFile: undefined }));
+              }}
               disabled={submitting}
             />
+            {errors.imageFile && <p className="error-text">{errors.imageFile}</p>}
             {previewUrl && (
               <img
                 src={previewUrl}

@@ -9,6 +9,7 @@ export default  function CreateTopUpForm({ isEditMode = false}) {
   const navigate =useNavigate();
   const { planId } = useParams(); 
   const [isHovering, setIsHovering] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
     credits: '',
     cost: '',
@@ -38,8 +39,35 @@ useEffect(() => {
   }
 }, [isEditMode, planId]);
 
+const isEmptyOrWhitespace = (str) => {
+  return !str || str.trim() === '';
+};
+
+const validateForm = () => {
+  const errors = {};
+
+  if (!formData.credits || isNaN(parseInt(formData.credits)) || parseInt(formData.credits) <= 0) {
+    errors.credits = "*Valid credit amount is required.";
+  }
+
+  if (!formData.cost || isNaN(parseFloat(formData.cost)) || parseFloat(formData.cost) <= 0) {
+    errors.cost = "*Valid cost amount is required.";
+  }
+
+  if (isEmptyOrWhitespace(formData.currency)) {
+    errors.currency = "*Currency is required.";
+  }
+
+  setFormErrors(errors);
+  return Object.keys(errors).length === 0;
+};
+
+
  const handleSubmit = async (e) => {
   e.preventDefault();
+
+  if (!validateForm()) return;
+
   try {
     const response = isEditMode
     ? await axiosAdmin.post(`/edit/top-up/${planId}`, formData)
@@ -80,7 +108,7 @@ useEffect(() => {
         <form onSubmit={handleSubmit}>
           {/* Credits Input */}
           <div className="mb-4">
-            <label htmlFor="credits" className="form-label credit-input-text">
+            <label htmlFor="credits" className="form-label credit-input-text required-label">
               <i className="bi bi-coin me-2 text-primary"></i>
               Credits Amount
             </label>
@@ -90,14 +118,20 @@ useEffect(() => {
               id="credits"
               placeholder="Enter credits amount"
               value={formData.credits}
-              onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, credits: e.target.value });
+                if (formErrors.credits && parseInt(e.target.value) > 0) {
+                  setFormErrors(prev => ({ ...prev, credits: undefined }));
+                }
+              }}
               required
             />
+            {formErrors.credits && <p className="error-text">{formErrors.credits}</p>}
           </div>
 
           {/* Cost Input */}
           <div className="mb-4">
-            <label htmlFor="cost" className="form-label cost-input-text">
+            <label htmlFor="cost" className="form-label cost-input-text required-label">
               <i className="bi bi-currency-dollar me-2 text-success"></i>
               Cost
             </label>
@@ -108,21 +142,32 @@ useEffect(() => {
               id="cost"
               placeholder="Enter cost amount"
               value={formData.cost}
-              onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, cost: e.target.value });
+                if (formErrors.cost && parseFloat(e.target.value) > 0) {
+                  setFormErrors(prev => ({ ...prev, cost: undefined }));
+                }
+              }}
               required
             />
+             {formErrors.cost && <p className="error-text">{formErrors.cost}</p>}
           </div>
 
           {/* Currency Select */}
           <div className="mb-4">
-            <label htmlFor="currency" className="form-label currency-select-text">
+            <label htmlFor="currency" className="form-label currency-select-text required-label">
               Currency
             </label>
             <select
               className="form-select currency-input"
               id="currency"
               value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, currency: e.target.value });
+                if (formErrors.currency && e.target.value.trim()) {
+                  setFormErrors(prev => ({ ...prev, currency: undefined }));
+                }
+              }}
               required
             >
               <option value="">Select currency</option>
@@ -132,6 +177,7 @@ useEffect(() => {
                 </option>
               ))}
             </select>
+            {formErrors.currency && <p className="error-text">{formErrors.currency}</p>}
           </div>
 
           {/* Active/Inactive Switch */}
