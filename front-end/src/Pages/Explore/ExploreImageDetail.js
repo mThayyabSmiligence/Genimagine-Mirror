@@ -478,7 +478,7 @@ function ExploreImageDetail() {
                             }                          
                         </div>
                         {
-                            loggedIn?
+                            isUsersImage?
                             <div>
                             <button onClick={() =>setShowDeletePopUp(true)} className='button-wh light-button-wh delete-button d-flex align-items-center  br-100 p-1'><DeleteOutlineOutlinedIcon ></DeleteOutlineOutlinedIcon></button>
                             <DeletePopUp

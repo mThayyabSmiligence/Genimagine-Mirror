@@ -62,20 +62,20 @@ function Row({row}) {
     }
   };
 
-  const handleEscalationSubmit = async(feedbackId, escalationNote) => {
-    try {
-      const response = await axiosModerator.post(`escalate/${feedbackId}`, {
-        escalation_note: escalationNote,
-      });
-      if (response.data.success) {
-        setStatus('in_progress');
-        setShowEscalationPopup(false);
-        console.log('Escalation submitted:', response.data);
-      }
-    } catch (err) {
-      console.error('Error escalating feedback:', err);
-    }
-  };
+  // const handleEscalationSubmit = async(feedbackId, escalationNote) => {
+  //   try {
+  //     const response = await axiosModerator.post(`escalate/${feedbackId}`, {
+  //       escalation_note: escalationNote,
+  //     });
+  //     if (response.data.success) {
+  //       setStatus('in_progress');
+  //       setShowEscalationPopup(false);
+  //       console.log('Escalation submitted:', response.data);
+  //     }
+  //   } catch (err) {
+  //     console.error('Error escalating feedback:', err);
+  //   }
+  // };
 
   const categoryStatusMap = {
     feature_request: ["pending", "in_progress", "reviewed"],
@@ -135,9 +135,9 @@ function Row({row}) {
         <TableCell align="center">
             <button title='respond to feedback' onClick={() => setShowResponsePopup(true)} className='feedback-response-btn'>Response</button>
         </TableCell>
-        <TableCell align="center">
+        {/* <TableCell align="center">
             <button title='notice to admin' onClick={() => setShowEscalationPopup(true)} className='notice-feedback-btn'>notify</button>
-        </TableCell>
+        </TableCell> */}
         <TableCell align='center'>
           <IconButton
             aria-label="expand row"
@@ -198,14 +198,14 @@ function Row({row}) {
         />
       )}
 
-      {showEscalationPopup && (
+      {/* {showEscalationPopup && (
         <EscalationPopUp
           onHide={() => setShowEscalationPopup(false)}
           show={showEscalationPopup}
           feedbackId={row.feedback_id}
           handleEscalationSubmit={handleEscalationSubmit}
         />
-      )}
+      )} */}
     </React.Fragment>
   );
 }
@@ -227,7 +227,7 @@ export default function CollapsibleTable({feedbacks}) {
             <TableCell className='fw-bold' align='center'>Category</TableCell>
             <TableCell className='fw-bold' align='center'>Status</TableCell>
             <TableCell className='fw-bold' align='center'>Response</TableCell>
-            <TableCell className='fw-bold' align='center'>Notify to admin</TableCell>
+            {/* <TableCell className='fw-bold' align='center'>Notify to admin</TableCell> */}
             <TableCell className='fw-bold' align='center'>ViewDetails</TableCell>
           </TableRow>
         </TableHead>
