@@ -3,6 +3,7 @@ import '../../Css/IGSettingPopUp.css'
 import '../../Css/StylePopUp.css'
 import RefreshDataContext from "../../Context/RefreshDataProvider";
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AuthContext from "../../Context/AuthProvider";
 import StylePopUp from "./StylePopUp";
 import styleImage1 from '../../images/style/textured-oil-painting.png'
@@ -426,7 +427,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                       <h5 className="h-5 m-0">Style</h5>
                       <span className="count-badge yellow">{styleList.length} {styleList?.length == 1 ? "style" : "styles"}</span>
                     </div>
-                    <button onClick={() => setSeeMore(true)} className="see-more-button">See More...</button>
+                    <button onClick={() => setSeeMore(true)} className="see-more-button">See More<span className=""><ChevronRightIcon className="right-arrow-icon"/></span></button>
                 </div>
                 <div className="d-flex justify-content-start style-popup">
                   {

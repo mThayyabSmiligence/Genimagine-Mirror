@@ -293,6 +293,15 @@
   color: #000;
 }
 
+.right-arrow-icon{
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  width: 16px;
+  height: 16px;
+  /* margin-left: 2px; */
+  fill: #111827;
+}
+
 
 .pop-up-style-container {
   height: 100%;
