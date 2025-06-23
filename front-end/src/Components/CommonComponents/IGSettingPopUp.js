@@ -427,7 +427,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                       <h5 className="h-5 m-0">Style</h5>
                       <span className="count-badge yellow">{styleList.length} {styleList?.length == 1 ? "style" : "styles"}</span>
                     </div>
-                    <button onClick={() => setSeeMore(true)} className="see-more-button">See More<span className=""><ChevronRightIcon className="right-arrow-icon"/></span></button>
+                    <button onClick={() => setSeeMore(true)} className="see-more-button">See More<span><ChevronRightIcon className="right-arrow-icon"/></span></button>
                 </div>
                 <div className="d-flex justify-content-start style-popup">
                   {
