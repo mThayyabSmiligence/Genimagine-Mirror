@@ -291,12 +291,16 @@ function CreditPurchasePage({ onToggle, defaultValue = 'plan' }) {
                                 Plan
                             </div>
                            
-                            <div
-                                className={`toggle-option ${!isPlan ? 'active' : ''}`}
-                                onClick={() => handleToggle(false)}
-                            >
-                                Top Up
-                            </div>
+                           {
+                                loggedIn && (
+                                    <div
+                                        className={`toggle-option ${!isPlan ? 'active' : ''}`}
+                                        onClick={() => handleToggle(false)}
+                                    >
+                                        Top Up
+                                    </div>
+                                )
+                           }
                            
                         </div>
                     </div>

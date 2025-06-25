@@ -30,6 +30,15 @@
   align-items: center;
 }
 
+.plan-option{
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  width: 10px;
+  height: 60px;
+  border-radius: 999px;
+}
+
 .toggle-switch {
   display: flex;
   align-items: center;
