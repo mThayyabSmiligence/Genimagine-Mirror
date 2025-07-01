@@ -65,6 +65,11 @@
     padding: 3px  10px;
   }
 
+  .toggle-continue-context{
+    margin-bottom: 100px;
+    
+  }
+
 @media (max-width: 768px) {
     .prompt-outer-container{
         width: 90%;

@@ -15,6 +15,7 @@ const jwtRouter= require("./routes/JWTRoute");
 const NoAuthRouter= require("./routes/NoAuthRoute")
 const AdminRouter = require("./routes/AdminRoute");
 const ModeratorRouter = require('./routes/ModeratorRoute');
+// const TestOpenAIRouter = require('./routes/TestOpenAIRoute');
 
 const crypto = require('crypto'); 
 const verifyToken= require('./middle_ware/VerifyToken');
@@ -55,6 +56,7 @@ app.use('/api/v1', generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthRouter)
+// app.use('/api/v1', TestOpenAIRouter)
 
 // admin routes
 

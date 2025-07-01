@@ -350,9 +350,9 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
         <div className="pop-up-body ">
             {
             !loggedIn&&  
-            <p className="text-danger">Login to access image setting</p>
+            <p className="text-danger m-0">Login to access image setting</p>
             }
-            <div className="pop-up-content d-flex flex-column text-start mt-2 p-3"> 
+            <div className={`pop-up-content d-flex flex-column text-start ${!loggedIn ? "mt-0 pt-2 px-3" : "mt-2 p-3"}`}> 
               
                 {/* <h5 className="pop-up-model setting-title h-5 mb-3">Model</h5> */}
                 <div className="d-flex align-items-center gap-2 mb-3">

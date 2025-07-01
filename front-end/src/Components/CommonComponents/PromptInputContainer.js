@@ -72,7 +72,7 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 //         { id: 40, style_name: "Vibrant Pop Art Illustration",  }
 //     ]
 
-export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength}) {
+export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength,useContextPrompt,setUseContextPrompt,hasPreviousPrompts}) {
 
   const [styleList, setStyleList] = useState([]);
   const [showIGSetting,setShowIGSetting]=useState(false)
@@ -285,7 +285,20 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
 
   return (
     <>
-    
+
+    {hasPreviousPrompts && (
+      <div className="toggle-continue-context text-start">
+        <label className='d-flex align-items-center gap-1'>
+          <input
+            type="checkbox"
+            checked={useContextPrompt}
+            onChange={() => setUseContextPrompt(prev => !prev)}
+          />
+          Continue from previous prompts
+        </label>
+      </div>
+    )}
+
     <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 '   >
       {
         showIGSetting&&<IGSettingPopUp closePopup={() => setShowIGSetting(false)} modelsList={modelsList} setModelsList={setModelsList} aspectRatioList={aspectRatioList} setAspectRatioList={setAspectRatioList} qualityLevelsList={qualityLevelsList} setQualityLevelsList={setQualityLevelsList} fetchData={fetchData} />

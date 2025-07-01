@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck, generateContextPrompt } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -17,7 +17,7 @@ const { getStyleNameById } = require('./UsersController');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
-    const {prompt,model,chat_id,aspect_ratio,quality,style} =req.body;
+    const {prompt,model,chat_id,aspect_ratio,quality,style,use_context} =req.body;
     console.log(aspect_ratio)
     console.log("body",req.body)
     console.log("prompt :"+prompt+"model :"+model)
@@ -54,8 +54,10 @@ exports.userGenerateImageController=async(req,res,next)=>{
     console.log(role)
     console.log("style :",style)
 
-    let updatedPrompt = prompt;
+    let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);;
     let styleName = null;  // Declare early so it's available below
+
+    const full_Prompt = updatedPrompt;
 
     if (style && style != 0) {
     styleName = await getStyleNameById(style);
@@ -67,6 +69,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
     // encrypt
     const encryptedPrompt = encrypt(prompt);
     console.log("Encrypted Prompt: ", encryptedPrompt)
+    const encryptedFullPrompt = encrypt(full_Prompt);
+    console.log("Encrypted Full Prompt:", encryptedFullPrompt)
         
     if(model==1 || model==null){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)
@@ -107,6 +111,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const generated_image_data={
             user_id:id,
             prompt:encryptedPrompt,
+            full_prompt: encryptedFullPrompt,
             model:model!=null?model:1,
             chat_id:chatId, 
             image_url:"storage is not defined",
@@ -139,6 +144,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             image_url: imageUpload.imageUrl,
             model:1,
             prompt:prompt,
+            full_Prompt: updatedPrompt,
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`
@@ -206,6 +212,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const generated_image_data={
             user_id:id,
             prompt:encryptedPrompt,
+            full_prompt: encryptedFullPrompt,
             model:model!=null?model:1,
             chat_id:chatId,
             image_url:"storage is not defined",
@@ -239,6 +246,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             image_url: imageUpload.imageUrl,
             model:1,
             prompt:prompt,
+            full_Prompt: updatedPrompt,
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,

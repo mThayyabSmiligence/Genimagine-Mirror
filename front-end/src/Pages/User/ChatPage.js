@@ -23,6 +23,9 @@
 
       const [showOptionsId,setShowOptionsId] =useState(null)
 
+      const [useContextPrompt, setUseContextPrompt] = useState(true);
+      const [hasPreviousPrompts, setHasPreviousPrompts] = useState(false);
+
 
       const {chatId}= useParams()
 
@@ -122,6 +125,14 @@
                 setChat((prevChats) => reset ? ChatResponse.data : [ ...ChatResponse.data,...prevChats]);
                 setHasMoreChats(!!ChatResponse.pagination.nextPage);
                 setCurrentPage(pageNumber + 1);
+
+                const hasPrompt = ChatResponse.data?.some(item => item?.prompt && item?.prompt.trim() !== "");
+                setHasPreviousPrompts(hasPrompt);
+
+                // Set default to true if there’s a previous prompt
+                if (hasPrompt) {
+                  setUseContextPrompt(true);
+                }
               }
 
           } catch (error) {
@@ -151,7 +162,8 @@
                     model:model,
                     aspect_ratio:aspectRatio,
                     quality:quality,
-                    style:style  
+                    style:style,
+                    use_context: useContextPrompt
               }
             ) 
             console.log(response.data)
@@ -235,7 +247,7 @@
               </div>
       
       
-              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading} promptLength={promptLength} setPromptLength={setPromptLength}></PromptInPutContainer>
+              <PromptInPutContainer generateImage={generateImage} promptText={promptText} setPromptText={setPromptText} loading={loading} promptLength={promptLength} setPromptLength={setPromptLength} useContextPrompt={useContextPrompt} setUseContextPrompt={setUseContextPrompt} hasPreviousPrompts={hasPreviousPrompts}></PromptInPutContainer>
               {
                 1&&
                 <SuggestionPrompts></SuggestionPrompts>
