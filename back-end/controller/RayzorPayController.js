@@ -126,8 +126,6 @@ exports.validatePaymentController=async(req,res)=>{
             return res.status(400).json({ message: 'transaction is not legit!' });
         }
 
-//  today implemented
-
         const purchaseLog = await getPurchaseLogDetails(receipt_id);        
         if (!purchaseLog) {
             return res.status(404).json({ success: false, message: 'Purchase log not found' });

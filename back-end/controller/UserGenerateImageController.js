@@ -18,9 +18,6 @@ const { getStyleNameById } = require('./UsersController');
 
 exports.userGenerateImageController=async(req,res,next)=>{
     const {prompt,model,chat_id,aspect_ratio,quality,style,use_context} =req.body;
-    console.log(aspect_ratio)
-    console.log("body",req.body)
-    console.log("prompt :"+prompt+"model :"+model)
 
     // const flagged =await promptModerationCheck(prompt)
     // if(flagged){
@@ -29,7 +26,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
     // }
 
     const w_h = await handelAspectRatio(quality,aspect_ratio)
-    console.log("w_h 1232",w_h)
 
     // getting jwt token from cookies
         let cookies =null
@@ -49,11 +45,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
     
     const {id,username,role}= decodeToken
 
-    console.log(id)
-    console.log(username) 
-    console.log(role)
-    console.log("style :",style)
-
     let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);;
     let styleName = null;  // Declare early so it's available below
 
@@ -68,9 +59,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     // encrypt
     const encryptedPrompt = encrypt(prompt);
-    console.log("Encrypted Prompt: ", encryptedPrompt)
     const encryptedFullPrompt = encrypt(full_Prompt);
-    console.log("Encrypted Full Prompt:", encryptedFullPrompt)
         
     if(model==1 || model==null){
         const canUserGenerateForFree= await canUserGenerateFree(decodeToken.id)

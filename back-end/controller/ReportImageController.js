@@ -83,12 +83,9 @@ exports.banReportedImageUserController = async (req, res) => {
 
   exports.deleteReportedImageController = async (req, res) => {
     
-    console.log("image_id")
     const { report_id } = req.params;
     const { image_id, published_id, image_path, reason } = req.body;
     const userId = req.user?.id;
-    console.log("image_id")
-
 
     if (!image_id || !published_id || !image_path) {
       return res.status(400).json({

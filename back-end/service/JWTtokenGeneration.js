@@ -25,7 +25,6 @@ const refreshTokens = [];
 exports.generateRefreshToken = async (user) => {
     const secretKey = process.env.JWT_REFRESH_SECRET_KEY ||   'refresh-secret-key';
     console.log("checking refrsh token secret key")
-        console.log(secretKey)
     const payload = {
         id: user.user_id,
         username: user.username,

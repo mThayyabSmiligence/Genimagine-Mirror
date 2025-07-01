@@ -56,8 +56,6 @@ exports.createPlanService = async (package_name,credits,description,cost,currenc
             };
         }
 
-        console.log("all plan", allPlans)
-
         const [result] = await db.execute(`
         INSERT INTO credit_purchase_packages 
         (package_id, package_name, credits, description, cost, currency, allow_renewal, is_active, parent_package_id, validity_days, is_latest)

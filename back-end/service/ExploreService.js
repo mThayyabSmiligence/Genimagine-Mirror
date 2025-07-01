@@ -227,8 +227,6 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
             const reportDetails = reportImageRows[0].report_details
             const userReport = reportDetails.find(detail => detail.user_id == user_id);
 
-            console.log("User report:", userReport);
-
             rows[0].isUserReported = !!userReport;
         }
 
@@ -240,10 +238,8 @@ exports.getExploreImageByIdService=async(explore_id,user_id)=>{
             }
         }
 
-        console.log("rows1",rows)
         const prompt = decrypt(rows[0].prompt)
         rows[0].prompt = prompt
-        console.log("rows2",rows)
         return {
             status:200,
             message:"image found successfully",

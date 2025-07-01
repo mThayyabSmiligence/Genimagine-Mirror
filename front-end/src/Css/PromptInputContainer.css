@@ -80,12 +80,13 @@
 .toggle-continue-context label {
   cursor: pointer;
   user-select: none;
+  font-weight: 500;
 }
 
 .toggle-continue-context input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #2563eb;
+  /* width: 16px; */
+  height: 16px;
+  accent-color: #343435;
   cursor: pointer;
 }
 

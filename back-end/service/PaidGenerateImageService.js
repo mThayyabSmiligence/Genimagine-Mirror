@@ -15,7 +15,6 @@ const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
 exports.paidGenerateImageService= async(inputs,model_url)=>{
     
         try{
-          console.log("inputs is coming",inputs)
             const response = await axios.post(
                 `https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/${model_url}`,
                 inputs,

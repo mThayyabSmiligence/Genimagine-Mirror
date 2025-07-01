@@ -390,7 +390,6 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
 
     const packageDetails = await this.getPackageDetails(package_id);
 
-    console.log("package details", packageDetails)                                          // 4
     let validityDays = packageDetails?.validity_days || 30;
 
     //  const [activePlans] = await db.execute(
@@ -405,10 +404,8 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
     );
 
     let startDate = `NOW()`;
-    console.log("1 start date", startDate)                                                       // 5
     // let expiryDate = `DATE_ADD(NOW(), INTERVAL ${validityDays} Minute)`;                        // changed date to minutues for testing
     let expiryDate = `DATE_FORMAT(DATE_ADD(NOW(), INTERVAL ? DAY), '%Y-%m-%d 23:59:59')`;          
-    console.log("1 expiry date", expiryDate)                                                     // 6
     let startParams = [];
     let expiryParams = [validityDays];
 
@@ -448,8 +445,6 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
 
     }
 
-    console.log("all insert for user_plan_credits", user_id, package_id, packageType, creditsToAdd, startDate, expiryDate, isActive, validityDays)
-
     await db.execute(
         `INSERT INTO user_plan_credits 
             (user_id, package_id, package_type, received_credits, credits_remaining, start_date, expiry_date, is_active, validity_days)
@@ -467,7 +462,6 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
         ]
     );    
     const totalCredits = await getTotalActiveCredits(user_id);
-    console.log("Total credits after processing", totalCredits)                                    // 7
 
     return {
         status: 200,
@@ -483,10 +477,6 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
         const userId = purchaseLog.user_id;
         const creditsToAdd = purchaseLog.credits_received;
 
-        console.log("planId from purchase log", planId)                                             // 8
-        console.log("userId from purchase log", userId)                                              // 9
-        console.log("credits to add from purchase log", creditsToAdd)                               // 10
-
         const [activeBasePlan] = await db.execute(`SELECT package_id, expiry_date FROM user_plan_credits WHERE user_id = ? AND is_active = 1 AND expiry_date > NOW() LIMIT 1`, 
             [userId]
         )
@@ -500,9 +490,6 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
         const basePlanExpiry = activeBasePlan[0].expiry_date;
         const basePlanPackageId = activeBasePlan[0].package_id;
 
-        console.log("base plan expiry", basePlanExpiry)                                        // 11 
-        console.log("user plan package id", basePlanPackageId)                                 // 12
-
         await db.query(
             `INSERT INTO user_topups 
             (user_id, plan_id, base_plan_package_id, received_credits ,credits_remaining, is_active, start_date, expiry_date) 
@@ -511,7 +498,6 @@ exports.handleTopupPayment = async (purchaseLog, payment, razorpay_payment_id, r
         );
 
        const totalCredits = await getTotalActiveCredits(userId);
-          console.log("Total credits after processing", totalCredits)                              // 13
 
         return {
             status: 200,

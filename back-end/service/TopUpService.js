@@ -99,7 +99,6 @@ exports.updateTopUpService = async (planId, credits,cost,currency,is_active) => 
 }
 
 exports.deleteTopUpService = async (id) => {
-    console.log("del;ete", id)
      try{
         const [rows] = await db.execute('DELETE FROM topup_credit_packages WHERE topup_package_id = ?', [id]);
         if(rows.length == 0){

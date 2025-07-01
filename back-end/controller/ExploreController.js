@@ -24,7 +24,6 @@ exports.publishToExploreController=async(req,res)=>{
             message:"unauthorized"
         })
     }
-    console.log("image id:",image_id,"catption:",caption?caption:"",",token:",token,"user_id:",id)
     const response=await publishToExploreService(image_id,caption,token,id)
 
     console.log(response.status)
@@ -84,7 +83,6 @@ exports.getExploreImageByIdController=async (req,res)=>{
        
     
     const exploreImage= await getExploreImageByIdService(published_id,userId);
-    console.log("this is get explore image by id api",exploreImage)
     
     return res.status(exploreImage.status).json(exploreImage);
 
