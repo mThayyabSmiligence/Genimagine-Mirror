@@ -29,7 +29,6 @@ const verifyRefreshToken = (req, res, next)=> {
         console.log(verified)  
         console.log(refreshToken)
         next();
-        console.log("nothing")
     } catch (err) {
         res.status(401).json({ message: 'Invalid refresh jdij token.' });
     }

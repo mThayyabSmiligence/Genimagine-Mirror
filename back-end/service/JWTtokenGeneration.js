@@ -51,7 +51,6 @@ exports.generateTokenWithRefreshToken = async (refreshToken) => {
         console.log("regenerating token with refresh token")
         console.log(user)
         const accessToken = this.generateToken({ user_id: user.id, username: user.username ,role:user.role});
-        console.log("checking")
         
         
         return accessToken;

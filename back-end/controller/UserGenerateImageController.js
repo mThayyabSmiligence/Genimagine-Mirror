@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck, generateContextPrompt } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck, generateContextPrompt, generateCrossChatKeywordPrompt, extractPromptReference } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -45,7 +45,21 @@ exports.userGenerateImageController=async(req,res,next)=>{
     
     const {id,username,role}= decodeToken
 
-    let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);;
+    // let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);
+
+    let updatedPrompt;
+
+    const referenceKeywords = await extractPromptReference(prompt);
+
+    if (referenceKeywords && referenceKeywords.length > 0) {
+    console.log("Mistral detected reference keywords:", referenceKeywords);
+
+    updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
+    } else {
+
+    updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
+    }
+
     let styleName = null;  // Declare early so it's available below
 
     const full_Prompt = updatedPrompt;
@@ -113,7 +127,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
 
-        //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token
+        //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token 
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
 
@@ -131,7 +145,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             user_id: id,
             chat_id:chatId,
             image_url: imageUpload.imageUrl,
-            model:1,
+            model:model!=null?model:1,
             prompt:prompt,
             full_Prompt: updatedPrompt,
             aspect_ratio:aspect_ratio,
@@ -233,7 +247,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             user_id: id,
             chat_id:chatId,
             image_url: imageUpload.imageUrl,
-            model:1,
+            model:model!=null?model:1,
             prompt:prompt,
             full_Prompt: updatedPrompt,
             aspect_ratio:aspect_ratio,
