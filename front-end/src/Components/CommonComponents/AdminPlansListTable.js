@@ -14,42 +14,16 @@ import { axiosAdmin, axiosPrivate } from '../../API\'s/axios';
 
 
 
-export default function AdminPlansListTable({plans}) {
+export default function AdminPlansListTable({plans, onDelete}) {
     const navigate = useNavigate();
-    const [plansList, setPlansList] = useState(plans);
 
-     
-        useEffect(() => {
-            setPlansList(plans);
-        },[plans])
+    const handleEdit = (packageID) => {
+        navigate(`/admin/plan/edit/${packageID}`);
+    };
 
-         const handleEdit = (packageID) => {
-            navigate(`/admin/plan/edit/${packageID}`);
-        };
-
-        const  handleViewDetails = (packageID) => {
-            navigate(`/admin/plan-detail/${packageID}`)
-        }
- 
-        const handleDelete = async (packageId) => {
-          if (!window.confirm("Are you sure you want to delete this plan?")) return;
-
-          try {
-            const response = await axiosAdmin.post(`/delete-plan/${packageId}`);
-             if (response.data.success) {
-                setPlansList(prev =>
-                  prev.map(plan =>
-                    plan.package_id === packageId
-                      ? { ...plan, is_deleted: 1, is_active: 0 }
-                      : plan
-                  )
-                );
-              }
-          } catch (error) {
-            console.error("Delete failed:", error);
-            alert("An error occurred while deleting the plan.");
-          }
-        };
+    const  handleViewDetails = (packageID) => {
+        navigate(`/admin/plan-detail/${packageID}`)
+    }
         
   return (
     <TableContainer component={Paper}>
@@ -59,6 +33,7 @@ export default function AdminPlansListTable({plans}) {
             <TableCell className='plans-table-title' align='start'><span>ID</span></TableCell>
             <TableCell className='plans-table-title' align='center'><span>PACKAGE NAME</span></TableCell>
             <TableCell className='plans-table-title' align='center'><span>CREDITS</span></TableCell>
+            <TableCell className='plans-table-title' align='center'><span>PARENT PACKAGE ID</span></TableCell>
             <TableCell className='plans-table-title' align='center'><span>VALIDITY</span></TableCell>
             <TableCell className='plans-table-title' align='center'><span>STATUS</span></TableCell>
             <TableCell className='plans-table-title' align='center'><span>ACTION</span></TableCell>
@@ -75,19 +50,20 @@ export default function AdminPlansListTable({plans}) {
               </TableCell>
               <TableCell align="center">{row.package_name}</TableCell>
               <TableCell align="center">{row.credits}</TableCell>
+              <TableCell align="center">{row.parent_package_id}</TableCell>
               <TableCell align="center">{row.validity_days}</TableCell>
               <TableCell align="center"> <button title={row?.is_active ? 'Active' : 'In Active'} className={`status-btn ${row?.is_active ? 'active' : 'Inactive'}`}>{row.is_active ? 'Active' : 'In Active'}</button></TableCell>
               <TableCell align="center"> 
-                <button className="edit-btn reviewd-btn" disabled= {row.is_deleted === 1} onClick={(e) => {
+                <button className="edit-btn reviewd-btn" disabled= {row?.is_deleted === 1} onClick={(e) => {
                   e.stopPropagation(); 
                   handleEdit(row.package_id)
                 }}>
                     Edit
                 </button>
                 {/* <button className="view-details-btn ms-2" onClick={() => handleViewDetails(row.package_id)}>View</button> */}
-                <button className="delete-btn ms-2" disabled= {row.is_deleted === 1} onClick={(e) => {
+                <button className="delete-btn ms-2" disabled= {row?.is_deleted === 1} onClick={(e) => {
                     e.stopPropagation(); // prevent triggering row click
-                    handleDelete(row.package_id);
+                    onDelete(row.package_id);
                   }}>
                    {row.is_deleted === 1 ? 'Deleted' : 'Delete'}
                 </button>

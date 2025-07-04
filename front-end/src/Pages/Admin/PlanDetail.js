@@ -72,7 +72,7 @@ export default function PlanDetail() {
 
           <div className="row gy-3 text-start">
             <div className="col-12 d-flex justify-content-start">
-              <span className="text-muted plan-id-data-text">ID</span>
+              <span className="text-muted package-id-data-text">ID</span>
               <span className='plan-data-value'>{planDetail.package_id}</span>
             </div>
 
@@ -84,6 +84,11 @@ export default function PlanDetail() {
             <div className="col-12 d-flex justify-content-start">
               <span className="text-muted credits-data-text">Credits</span>
               <span className='plan-data-value'>{planDetail.credits}</span>
+            </div>
+
+            <div className="col-12 d-flex justify-content-start">
+              <span className="text-muted parent-package-id-data-text">Parent Package ID</span>
+              <span className='plan-data-value'>{planDetail.parent_package_id}</span>
             </div>
 
             <div className="col-12 d-flex justify-content-start">

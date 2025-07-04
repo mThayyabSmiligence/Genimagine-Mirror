@@ -21,6 +21,29 @@ function PlansManagement() {
     }
   }
 
+   const handleDeletePlan = async (packageId) => {
+    if (!window.confirm("Are you sure you want to delete this plan?")) return;
+
+    try {
+      const response = await axiosAdmin.post(`/delete-plan/${packageId}`);
+      if (response.data.success) {
+        console.log("Delete successful:", response.data)
+        // update plans instantly in parent
+        setPlans((prev) =>
+          prev.map((plan) =>
+            plan.package_id === packageId
+              ? { ...plan, is_deleted: 1, is_active: 0 }
+              : plan
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("An error occurred while deleting the plan.");
+    }
+  };
+
+
   return (
     <div className='plan-list-container p-4 mx-4'>
   
@@ -32,6 +55,7 @@ function PlansManagement() {
         <h1 className='plan-heading-title text-start mb-3'>Plans List</h1>
           <AdminPlansListTable
             plans = {plans}
+            onDelete={handleDeletePlan}
           />
       </div>
     </div>

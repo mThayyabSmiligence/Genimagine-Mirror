@@ -20,7 +20,7 @@
     font-size: 20px;
 }
 
-.plan-id-data-text, .package-name-data-text, .credits-data-text, .validity-data-text , .description-data-text, .cost-data-text, .currency-data-text, .status-data-text, .allow-renewal-data-text, .allow-topup-data-text, .created-at-data-text, .updated-at-data-text{
+.package-id-data-text, .parent-package-id-data-text, .package-name-data-text, .credits-data-text, .validity-data-text , .description-data-text, .cost-data-text, .currency-data-text, .status-data-text, .allow-renewal-data-text, .allow-topup-data-text, .created-at-data-text, .updated-at-data-text{
     width: 40%;
     color: #636363;
 }

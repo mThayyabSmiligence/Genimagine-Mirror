@@ -59,8 +59,8 @@ export default function CreatePlanForm({ isEditMode = false }) {
         setDescription(planData.description || '');
         setCredits(planData.credits || '');
         setCost(planData.cost || '');
-        setIsRenewal(planData.allow_renewal || false);
-        setIsActive(planData.is_active || true);
+        setIsRenewal(planData.allow_renewal);
+        setIsActive(planData.is_active);
         setSelectedCurrency(currencyOptions.find(opt => opt.value === planData.currency) || null);
         setSelectedValidity(validityOptions.find(opt => opt.value === planData.validity_days) || null);
       }

@@ -2,7 +2,7 @@ const db = require('../config/connectDatabase');
 
 exports.getAllPlansService = async () => {
     try{
-        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages WHERE is_latest = 1 AND is_deleted = 0 ORDER BY created_at ASC');
+        const [rows] = await db.execute('SELECT * FROM credit_purchase_packages ORDER BY parent_package_id ASC, created_at ASC');
         return {
             status: 200,
             message: "plans fetched successfully",
@@ -209,6 +209,7 @@ exports.deletePlanService = async (id) => {
 
     if (existingRows.length === 0) {
       return {
+        success: false,
         status: 404,
         message: "Plan not found or already deleted"
       };
@@ -224,6 +225,7 @@ exports.deletePlanService = async (id) => {
     );
 
     return {
+      success: true,
       status: 200,
       message: "Plan soft-deleted successfully"
     };
