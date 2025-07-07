@@ -93,7 +93,7 @@ function ProfileDropDown() {
         {      
             userData?.role == "admin" &&
             // <Link to="" className="dropdown-item" onClick={handleNavigation}>Admin Panel</Link>
-            <Link></Link>
+            <Link to="/admin/profile-page" className="dropdown-item">Profile</Link>
         }
         {
             userData?.role == "moderator" &&

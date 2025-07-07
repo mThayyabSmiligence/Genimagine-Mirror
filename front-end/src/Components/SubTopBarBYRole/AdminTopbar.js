@@ -6,7 +6,7 @@ import ProfileDropDown from '../CommonComponents/ProfileDropDown';
 export default function AdminTopbar() {
   const { showDropdown, setShowDropdown, dropdownRef } = useContext(DropdownContext);
     return (
-      <div className="moderator-profile-dropdown" ref={dropdownRef}>
+      <div className="admin-profile-dropdown" ref={dropdownRef}>
           <button className='profile-button dark-button me-3 ' onClick={() => setShowDropdown(!showDropdown)}>
               <PersonOutlineOutlinedIcon/>
           </button>         

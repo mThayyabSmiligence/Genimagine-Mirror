@@ -7,6 +7,7 @@ const { getAllPlansController, getPlanByIdController, createPlanController, upda
 const { getAllTopUpController, getTopUpByIdController, createTopUpController, updateTopUpController, deleteTopUpController } = require('../controller/TopUpController');
 const { getAllModeratorsController, createModeratorController, updateModeratorController, getModeratorDetailController, deleteModeratorController } = require('../controller/createModeratorController');
 const { getAllStylesController, createStyleController, updateStyleController, deleteStyleController, getStyleByIdController } = require('../controller/StyleController');
+const { getAdminDetailController } = require('../controller/AdminController');
 
 const router = express.Router();
 
@@ -49,5 +50,8 @@ router.route('/get-style/:style_id').post(getStyleByIdController);
 router.route('/create-style').post(upload.single('styleImage'), createStyleController);
 router.route('/update-style/:style_id').post(upload.single('styleImage'), updateStyleController);
 router.route('/delete-style/:style_id').post(deleteStyleController);
+
+// admin detail
+router.route('/get-admin-detail').post(getAdminDetailController);
 
 module.exports = router;
