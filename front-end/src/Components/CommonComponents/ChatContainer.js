@@ -165,21 +165,27 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
         }
        // Prevent default behavior
 
-        try {
-          const response = await axios(data.image_url);
-          if (!response.ok) {
-              throw new Error("Failed to fetch the image");
-          }
-  
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", `${data.prompt + data.image_id}.png`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url); // Clean up
+      try {
+        const response = await fetch(data.image_url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include' // if you need to send cookies
+        });
+        if (!response.ok) {
+        throw new Error("Failed to fetch the image");
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${data.prompt + data.image_id}.png`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url); // Clean up
       } catch (error) { 
           console.error("Error downloading the image:", error);
       }
