@@ -166,6 +166,11 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
        // Prevent default behavior
 
       try {
+        //  const response = await axios(data.image_url);
+        //   if (!response.ok) {
+        //       throw new Error("Failed to fetch the image");
+        //   }
+
         const response = await fetch(data.image_url, {
           method: 'GET',
           headers: {

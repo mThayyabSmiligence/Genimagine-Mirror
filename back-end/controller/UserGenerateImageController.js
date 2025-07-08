@@ -168,7 +168,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(model_data.status).json({ message: model_data.message });
             return;
         }
-    // yesterday  change 
 
         const enoughCredits =await checkCreditBalance(id,model_data.cp_required)
 
@@ -179,7 +178,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
             return
         }
     
-        // today change 20/5/2025
         // const image=await paidGenerateImageService(inputs,model_data.model_url)
 
         let image;
