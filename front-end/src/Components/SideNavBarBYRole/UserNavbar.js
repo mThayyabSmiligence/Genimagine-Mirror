@@ -310,11 +310,11 @@ export default function UserNavbar() {
                                                     ):(
                                                         Object.entries(chats).map(([year,months])=>(
                                                             <div key={year}>
-                                                            <h6>{year}</h6>
+                                                            <h6 className='chat-group-sub-heading text-start ms-5'>{year}</h6>
                                                             {
                                                                 Object.entries(months).map(([month,monthChats])=>(
                                                                 <div key={month}>
-                                                                    <h6>{month}</h6>
+                                                                    <h6 className='chat-group-sub-heading'>{month}</h6>
                                                                     {
                                                                     monthChats.map((chat,index)=>(
                                                                             <div className={`d-flex align-items-center nav-list-item my-1 ${chat.chat_id==currentChatId&&"active"} ${chat.chat_id==chatButtonTracking&&"selected"}`}>

@@ -186,7 +186,22 @@
           }
         };
         const handelDeleteFromState =  (id)=>{
-          setChat(prevItems => prevItems.filter((item) => item.image_id!== id));
+          setChat(prevItems => {
+          const updatedItems = prevItems.filter(item => item.image_id !== id);
+
+          // Re-check if any prompts remain
+          const hasPrompt = updatedItems.some(
+            item => item?.prompt && item?.prompt.trim() !== ""
+          );
+          setHasPreviousPrompts(hasPrompt);
+
+          // Optionally disable toggle when no prompts left
+          if (!hasPrompt) {
+            setUseContextPrompt(false);
+          }
+
+          return updatedItems;
+        });
         }
 
 

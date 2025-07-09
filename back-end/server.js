@@ -91,8 +91,7 @@ app.get( "/get-token", ( req, res ) => {
 app.post('/post-token', (req, res) => {
     const cookies = cookie.parse(req.headers.cookie||"")
     const token = cookies.token
-    console.log(token)
-    console.log(typeof(token))
+    console.log("token ",token);
 })
 
 app.listen(process.env.PORT,() => {

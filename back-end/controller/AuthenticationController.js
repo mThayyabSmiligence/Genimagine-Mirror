@@ -26,7 +26,6 @@ exports.userRegister = async(req, res, next) => {
     const today = new Date();
     const dobDate=new Date(dob)
     const age = today.getFullYear() - dobDate.getFullYear() - ((today.getMonth() < dobDate.getMonth() || (today.getMonth() === dobDate.getMonth() && today.getDate() < dobDate.getDate()))? 1 : 0);
-    console.log(age);
     try{
         
 
@@ -113,7 +112,6 @@ exports.userRegister = async(req, res, next) => {
 
 exports.verifyUser=async(req,res)=>{
     const {verification_token} = req.params
-    console.log(verification_token)
 
     const response = await verifyUserWithVerificationToken(verification_token)
     if(response.status === 404){
@@ -148,7 +146,6 @@ exports.userLogin = async (req, res, next) => {
         const response =null
 
         const test_email=email.split("@")[1]
-        console.log("Test Email", test_email)
         if(test_email=="genimagin.test" && oldUser.length==0){
             const generated_email=await generateTestEmailService(email,password)
             if(generated_email==null){
@@ -328,7 +325,7 @@ exports.emailOtpRequest = async(req, res, next) => {
     try{
         const query = "SELECT * FROM users WHERE email = ?"
         const [rows] = await db.execute(query, [email])
-        console.log(rows)
+        
         userdata=rows
 
         
@@ -437,7 +434,6 @@ exports.verifyEmailOtp = async(req, res, next) => {
             } 
                 const queryUser = "SELECT * from users WHERE email = ?"
                 const [userRows] = await db.execute(queryUser, [email])
-                console.log(userRows)
                 
 
                 const totalCredits = await getTotalActiveCredits(userRows[0].user_id);

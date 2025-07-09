@@ -104,6 +104,10 @@ color: rgb(78, 78, 78);
 .chat-group-heading{
     color: rgb(161, 161, 161);
 }
+.chat-group-sub-heading{
+    color: rgb(162, 161, 161);
+}
+
 
 @media (max-width: 766px) {
     .side-nav {
