@@ -212,7 +212,7 @@ export default function UserNavbar() {
     return (
         <>
             <div className='nav-logo-section'>                   
-                <Link to={'/admin/dashboard'}>
+                <Link to={'/'}>
                     <img src={logo} className="big-logo" alt='Genimagine logo'/>
                 </Link>                        
             </div>
