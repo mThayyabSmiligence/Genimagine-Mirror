@@ -152,7 +152,7 @@ exports.resetOtherModelsDefaultService = async () => {
     }
   };
 
-exports.createModelService = async (name, description, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
+exports.createModelService = async (name, description, model_type, model_url, resConfigJSON, aspectConfigJSON, is_active, is_default) => {
     try {
       if (is_default === 1 || "true") {
         await this.resetOtherModelsDefaultService(); 
@@ -160,13 +160,20 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
       
       const query = `
       INSERT INTO models 
-      (name, description, cloudflare_model_url, is_active, is_default, resolution_config, aspect_ratio_config) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      (name, description, model_type, cloudflare_model_url, hf_model_url, is_active, is_default, resolution_config, aspect_ratio_config) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      const isStability = model_type === "stability";
+      const cloudflareURL = isStability ? null : model_url;
+      const hfURL = isStability ? model_url : null;
+
       
       await db.execute(query, [
         name,
         description,
-        model_url,
+        model_type,
+        cloudflareURL,
+        hfURL,
         is_active,
         is_default,
         resConfigJSON,
@@ -186,10 +193,14 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
         if (is_default === 1 || "true") {
             await this.resetOtherModelsDefaultService(); 
         }
-      
+
+      const isStability = model_type === "stability";
+      const cloudflareURL = isStability ? null : model_url;
+      const hfURL = isStability ? model_url : null;
+        
       const query = `
         UPDATE models 
-        SET name = ?, description = ?, model_type = ?, cloudflare_model_url = ?, 
+        SET name = ?, description = ?, model_type = ?, cloudflare_model_url = ?, hf_model_url = ?,
             is_active = ?, is_default = ?, resolution_config = ?, aspect_ratio_config = ?, updated_at = NOW()
         WHERE id = ?`;
 
@@ -198,7 +209,8 @@ exports.createModelService = async (name, description, model_url, resConfigJSON,
           name,
           description,
           model_type,
-          model_url,
+          cloudflareURL, 
+          hfURL,
           is_active,
           is_default,
           resConfigJSON,

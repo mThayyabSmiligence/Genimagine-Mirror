@@ -14,6 +14,7 @@ const { encrypt } = require('../service/EncrypDecrypt');
 const { decrypt } = require('../service/EncrypDecrypt');
 const { generateImageWithStability } = require('../service/generateSDImage');
 const { getStyleNameById } = require('./UsersController');
+const { generateImageWithHuggingFace } = require('../service/GenerateImageWithHuggingFace');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
@@ -183,10 +184,16 @@ exports.userGenerateImageController=async(req,res,next)=>{
         let image;
 
         if (model_data.model_type === "stability") {
-            // image = await generateSDImage(inputs); // Stability AI
-            image = await generateImageWithStability(inputs); 
+            console.log('model_data got', model_data)
+            if (model_data.hf_model_url ) {
+                image = await generateImageWithHuggingFace(inputs, model_data.hf_model_url);
+            } else {
+                console.log("paid stablity")
+                image = await generateImageWithStability(inputs); // Stability AI paid
+            }
         } else {
-            image = await paidGenerateImageService(inputs, model_data.model_url); // Cloudflare
+            console.log("cloudflare")
+            image = await paidGenerateImageService(inputs, model_data.cloudflare_model_url); // Cloudflare
         }
 
         if(!image){

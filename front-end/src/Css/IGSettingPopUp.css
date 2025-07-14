@@ -108,8 +108,17 @@
 .model-color-stablity {
   /* background: linear-gradient(155.04deg, #4d1c6c 15.88%, #aa638e 98.9%); */
     background: linear-gradient(155.04deg, #2265d1 15.88%, #52b2db 98.9%);
-
 }
+
+.model-color-FLUX-dev {
+  background: linear-gradient(155.04deg, #6d28d9 15.88%, #3b82f6 98.9%);
+}
+
+.model-color-FLUX-schnell {
+  background: linear-gradient(155.04deg, #22c55e 15.88%, #10b981 98.9%);
+}
+
+
 
 .model-label-inner-box {
   height: 10px;

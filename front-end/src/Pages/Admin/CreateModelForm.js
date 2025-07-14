@@ -35,6 +35,7 @@ export default function CreateModelForm({ isEditMode = false }) {
 
   const [formErrors, setFormErrors] = useState({});
 
+  const isModelUrlDisabled = !selectedModelType;
 
   useEffect(() => {
     if (isEditMode && modelId) {
@@ -56,7 +57,7 @@ export default function CreateModelForm({ isEditMode = false }) {
 
       setModelName(modelData.name);
       setDescription(modelData.description);
-      setModelUrl(modelData.cloudflare_model_url);
+      // setModelUrl(modelData.cloudflare_model_url);
       setIsActive(modelData.is_active);
       setIsDefault(modelData.is_default);
       // setSelectedQualities(modelData.resolution_config);
@@ -66,6 +67,13 @@ export default function CreateModelForm({ isEditMode = false }) {
       if (matchedModelType) {
         setSelectedModelType(matchedModelType);
       }
+
+      if (modelData.model_type === "stability") {
+        setModelUrl(modelData.hf_model_url || "");
+      } else {
+        setModelUrl(modelData.cloudflare_model_url || "");
+      }
+
 
       const qualities = (modelData.resolution_config || []).map((q) => ({
         label: q.name,
@@ -143,15 +151,22 @@ export default function CreateModelForm({ isEditMode = false }) {
   const errors = {};
 
   if (isEmptyOrWhitespace(modelName)) {
-    errors.modelName = "*Model name is required and cannot be empty.";
+    errors.modelName = "*Model name is required and cannot be empty.";                                                                                                                                                                                                                                                                                                                                                       
   }
 
   if (isEmptyOrWhitespace(description)) {
     errors.description = "*Description is required and cannot be empty.";
   }
 
-  if (modelUrl && isEmptyOrWhitespace(modelUrl)) {
-    errors.modelUrl = "*Model URL cannot be only spaces.";
+  // if (modelUrl && isEmptyOrWhitespace(modelUrl)) {
+  //   errors.modelUrl = "*Model URL cannot be only spaces.";
+  // }
+
+  if (
+    selectedModelType?.value === "cloudflare" &&
+    isEmptyOrWhitespace(modelUrl)
+  ) {
+    errors.modelUrl = "Model URL is required for Cloudflare.";
   }
 
   if (!selectedModelType || isEmptyOrWhitespace(selectedModelType.value)) {
@@ -309,13 +324,24 @@ export default function CreateModelForm({ isEditMode = false }) {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="url" className="form-label url-text required-label">Model URL</label>
+                  <label htmlFor="url" className="form-label url-text">
+                    Model URL {selectedModelType?.value === "cloudflare" && <span className="required-label"></span>}
+                  </label>
                   <input value={modelUrl} onChange={(e) => {setModelUrl(e.target.value)
                     if (formErrors.modelUrl && !isEmptyOrWhitespace(e.target.value)) {
-                      setFormErrors(prev => ({ ...prev, modelUrl: undefined }));
+                      setFormErrors(prev => ({ ...prev, modelUrl: undefined }));  
                     }
                   }} 
-                  type="text" className="form-control url-box" placeholder="Enter URL" aria-label="URL" id="url" required/>
+                  type="text" 
+                  className="form-control url-box" 
+                  placeholder={
+                      !selectedModelType
+                        ? "Select model type first"
+                        : "Enter URL (optional for Stability)"
+                    } 
+                  aria-label="URL" 
+                  id="url" 
+                  disabled={isModelUrlDisabled}/>
                   {formErrors.modelUrl && <p className="error-text">{formErrors.modelUrl}</p>}
                 </div>
     
