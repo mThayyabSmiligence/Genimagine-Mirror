@@ -144,8 +144,6 @@ exports.getChatsData=async(req,res,next)=>{
     const {chatId}=req.params;
     const {page} = req.query;
 
-    console.log("chat_id",chatId);
-    console.log("page",page);
 
     let cookies =null
     let token =null 
