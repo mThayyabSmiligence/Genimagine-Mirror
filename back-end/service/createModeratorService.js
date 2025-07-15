@@ -13,7 +13,6 @@ exports.createModeratorService = async ( username, email, password, dob, isVerif
         const today = new Date();
         const dobDate=new Date(dob)
         const age = today.getFullYear() - dobDate.getFullYear() - ((today.getMonth() < dobDate.getMonth() || (today.getMonth() === dobDate.getMonth() && today.getDate() < dobDate.getDate()))? 1 : 0);
-        console.log(age);
         
         if (!password) {
            return { status: 400, success: false, message: 'Password is required' };

@@ -180,22 +180,27 @@ exports.userGenerateImageController=async(req,res,next)=>{
         // const image=await paidGenerateImageService(inputs,model_data.model_url)
 
         let image;
+        let modelSource;
 
         if (model_data.model_type === "stability") {
             if (model_data.hf_model_url ) {
+                console.log("hugging face inference")
+                modelSource = `Hugging Face (${model_data.hf_model_url})`;
                 image = await generateImageWithHuggingFace(inputs, model_data.hf_model_url);
             } else {
-                console.log("paid stablity")
+                console.log("stablity ai")
+                modelSource = "Stability AI";
                 image = await generateImageWithStability(inputs); // Stability AI paid
             }
         } else {
-            console.log("cloudflare")
+            console.log("cloudflare inference")
+            modelSource = `Cloudflare (${model_data.cloudflare_model_url})`;
             image = await paidGenerateImageService(inputs, model_data.cloudflare_model_url); // Cloudflare
         }
 
         if(!image){
             res.status(429).json({
-                message:"somthing went worng with paid image generation"
+                message: `somthing went worng with paid image generation: no image was returned from ${modelSource}. Please try again later or check your model configuration.`
             })
             return
         }

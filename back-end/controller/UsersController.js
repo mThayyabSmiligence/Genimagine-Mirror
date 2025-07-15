@@ -97,7 +97,6 @@ exports.deleteImageController = async(req,res)=>{
 
     const response = await deleteImageService(id,image_id,token)
 
-    console.log('token: ' + token)
     res.status(response.status).json({
         message:response.message,
         success:response.success,

@@ -79,31 +79,25 @@ app.post('/files/storage-server/publish-to-explore', verifyToken, async (req, re
   try {
       const { userId, imagePath} = req.body;
 
-      console.log(1)
       if (!userId || !imagePath) {
           return res.status(400).json({ message: "User ID and image path are required" });
       }
-      console.log(2)
       // Get the image file name from the path
       const imageFileName = path.basename(imagePath);
       const explorePath = `./uploads/explore/${userId}`;
 
-      console.log(3)
       // Ensure explore folder exists
       fs.mkdirSync(explorePath, { recursive: true });
 
-      console.log(4)
       // Copy image from chat/library to explore
       const newImagePath = path.join(explorePath, imageFileName);
       fs.copyFileSync(imagePath, newImagePath);
 
-      console.log(5)
       // Generate public image URL
       const imageUrl = `${STORAGE_SERVER_BASE_URL}/explore/image/${userId}/${imageFileName}`;
 
      
 
-      console.log(6)
       res.status(200).json({
           status:200,  
           success: true,

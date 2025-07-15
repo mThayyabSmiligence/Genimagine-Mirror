@@ -34,6 +34,7 @@ exports.paidGenerateImageService= async(inputs,model_url)=>{
             return imageBuffer
         }catch(error){
             console.log("error generating images:" +error)
+            console.error("cloudflare generation error:", error?.response?.data.toString() || error.message);
             return false;
         }
 }

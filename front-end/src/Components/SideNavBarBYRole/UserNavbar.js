@@ -156,12 +156,8 @@ export default function UserNavbar() {
 
     const renameChatList = async () => {
         try {// Prevent empty names
-            console.log(newChatName,currentChatName)
-            console.log(1)
             if (newChatName.trim()=="") return;
-            console.log(2)
             if(currentChatName == newChatName) return; 
-            console.log(3)
             const response = await axiosPrivate.post("/edit-chat-name", {
                 chatId: editingChatId,
                 chatName: newChatName,

@@ -18,11 +18,9 @@ const checkUserStatus = async(req, res, next) => {
             return res.status(403).json({ success: false, message: "User is deleted" });
         }
 
-        console.log(is_deleted,"3")
         if (userStatus === "banned") {
             return res.status(403).json({ success: false, message: "User is banned" });
         }
-        console.log("4")
 
         if (userStatus === "suspended") {
             const [suspension] = await db.execute(

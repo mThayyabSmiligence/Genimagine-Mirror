@@ -11,7 +11,7 @@ exports.guestGenerateImageController = async(req, res, next) => {
          height:480
     }
     const canGenerate=await GuestUserHandler(client_ip);
-            console.log(canGenerate)
+           
             if(canGenerate){
                 const isGenerated=await freeGenerateImage(input)
                 if(isGenerated){

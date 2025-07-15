@@ -23,7 +23,7 @@ exports.generateImageWithHuggingFace = async (inputs, modelURL) => {
     const imageBuffer =  Buffer.from(response.data, "base64");
     return imageBuffer;
   } catch (error) {
-    console.error("Hugging Face generation error:", error?.response?.data || error.message);
+    console.error("Hugging Face generation error:", error?.response?.data.toString() || error.message);
     return false;
   }
 };

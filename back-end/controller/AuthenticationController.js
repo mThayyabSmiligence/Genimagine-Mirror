@@ -39,7 +39,6 @@ exports.userRegister = async(req, res, next) => {
                     VALUES (?,?,?,?,?,?,?)`;
         const [rows] = await db.execute(query, [username, hashedPassword, age, email, role, 0,dob]) 
 
-        console.log(rows);
         const user_id = rows.insertId
        
 
@@ -285,7 +284,7 @@ exports.userLogout= async (req,res,next)=>{
         const refresh_token= cookies.refresh_token
 
         const decoded_refresh_token = jwt.decode(refresh_token)
-        console.log(decoded_refresh_token)
+        
         const query ="DELETE FROM refresh_token where user_id=?"
 
         const row =await db.execute(query,[decoded_refresh_token.id])
@@ -492,15 +491,12 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
     try {
         const token = req.headers['authorization']?.split("Bearer ")[1] || req.body.token;
 
-        console.log("Received Token:", token); // Debugging
-
+        
         if (!token) {
             return res.status(400).json({ success: false, message: "Token is missing!" });
         }
 
         const decodedToken = await admin.auth().verifyIdToken(token);   
-        console.log("decoded token")
-        console.log(decodedToken)         //decodes the generated id from firebase on frontend
         const userid = decodedToken.uid;
         const useremail = decodedToken.email;
 
@@ -514,7 +510,6 @@ exports.VerifyGoogleSignInToken = async(req, res, next) => {
                 const insertQuery = "INSERT INTO users (email,username,age,password_hash,register_type,is_verified) VALUES (?,?,?,?,CAST(? AS CHAR),1)";
 
                 const [response] = await db.execute(insertQuery, [useremail,decodedToken.name,0," ","google-sign-in"]);
-                console.log(response);
 
                 const user={
                     user_id: response.insertId,
@@ -687,7 +682,6 @@ exports.forgotPassword=async(req,res)=>{
             }) 
             
         }
-        console.log(rows)
     }catch(err){
         console.error("error in checking validity of token with database", err)
 
@@ -716,7 +710,6 @@ exports.forgotPassword=async(req,res)=>{
         const [rows] = await db.execute(query,[email,resetTokenHash])
 
         console.log("reset token hash is stored in table")
-        console.log(rows)
     }catch(err){
         console.error("error in storing reset token hash to table", err)
 
@@ -790,7 +783,6 @@ exports.resetPassword=async(req,res)=>{
                 message:"the reset passoword link is expired"
             })
         }
-        console.log(rows)
         email=rows[0].email
     }catch(err){
         console.error("error in checking validity of token with database", err)

@@ -26,8 +26,7 @@ const verifyRefreshToken = (req, res, next)=> {
     try {
         const verified = jwt.verify(refreshToken, secretKey);
         req.user = verified; 
-        console.log(verified)  
-        console.log(refreshToken)
+        
         next();
     } catch (err) {
         res.status(401).json({ message: 'Invalid refresh jdij token.' });

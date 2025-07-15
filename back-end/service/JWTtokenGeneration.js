@@ -9,7 +9,6 @@ exports.generateToken = (user) => {
         role: user.role,
     };
 
-    console.log()
     const secretKey = process.env.JWT_SECRET_KEY || '80676218f9466f7e32dd5e6ba01a9bddb29d624d45e67269362a49a66c1b38e7e2387893f17ae2374f4740c490fc0fc6a449510da9ebdc3906f9236192ab2bf4'
     const options = {
         expiresIn:'1h',
@@ -24,14 +23,13 @@ exports.generateToken = (user) => {
 const refreshTokens = []; 
 exports.generateRefreshToken = async (user) => {
     const secretKey = process.env.JWT_REFRESH_SECRET_KEY ||   'refresh-secret-key';
-    console.log("checking refrsh token secret key")
+    console.log("checking refresh token secret key")
     const payload = {
         id: user.user_id,
         username: user.username,
         role: user.role,
     };
     const refreshToken = jwt.sign(payload, secretKey, { expiresIn: '7d' });
-    console.log("refresh token"+refreshToken) // Valid for 7 days
     const row = addRefreshToken(user,refreshToken)
     return refreshToken; 
 
@@ -49,7 +47,6 @@ exports.generateTokenWithRefreshToken = async (refreshToken) => {
         
 
         console.log("regenerating token with refresh token")
-        console.log(user)
         const accessToken = this.generateToken({ user_id: user.id, username: user.username ,role:user.role});
         
         
@@ -69,9 +66,6 @@ const addRefreshToken= async(user, refreshToken)=> {
     try {
         const query = `INSERT INTO refresh_token (user_id, refresh_token,expires_at) VALUES (?, ?, ?)`;
         // const query = "SELECT * from users WHERE user_id =?";
-
-        console.log('Query:', query);
-        console.log('Parameters:', [user.user_id, refreshToken, expires_at]);
 
         const [rows] = await db.execute(query, [user.user_id, refreshToken,formattedExpiresAt]);
         // const [rows] = await db.execute(query,[30]);

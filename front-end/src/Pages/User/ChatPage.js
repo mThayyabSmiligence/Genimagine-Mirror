@@ -180,7 +180,7 @@
           } catch (error) { 
             console.error('Error generating image:', error);
             setError(true);
-            setErrorMessage(error?.response?.data?.message||error.message||"error generating image");
+            setErrorMessage("Something went wrong with paid generation"||"Error generating image");
           } finally {
             setLoading(false);
           }
