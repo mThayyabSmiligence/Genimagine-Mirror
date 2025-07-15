@@ -136,8 +136,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(500).json(imageUpload)
             return
         }
-
-        console.log(imageUpload);
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)
 
@@ -184,7 +182,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
         let image;
 
         if (model_data.model_type === "stability") {
-            console.log('model_data got', model_data)
             if (model_data.hf_model_url ) {
                 image = await generateImageWithHuggingFace(inputs, model_data.hf_model_url);
             } else {
@@ -239,8 +236,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
             res.status(500).json(imageUpload)
             return
         }
-
-        console.log(imageUpload)
         
         
         const s_p_u=await StoreIMagePathandUrl(image_id,imageUpload.imagePath,imageUpload.imageUrl)

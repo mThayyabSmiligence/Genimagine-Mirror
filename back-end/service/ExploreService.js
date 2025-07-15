@@ -418,10 +418,10 @@ exports.UnlikeExploreImageService=async(published_id,user)=>{
         const query="DELETE FROM explorelikes WHERE user_id =? AND published_id =?"
         const [rows] = await db.execute(query,[user,published_id])
         if(rows.affectedRows===0){
-            console.log("user didn't ullike the image")
+            console.log("user didn't unlike the image")
             return {
                 status:404,
-                message:"user didn't ullike the image",
+                message:"user didn't unlike the image",
                 success:false
             }
         }

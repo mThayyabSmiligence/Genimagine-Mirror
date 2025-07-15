@@ -16,7 +16,6 @@ exports.getCreditPackagedataService=async(package_id)=>{
     try {
         const query = "SELECT * FROM credit_purchase_packages WHERE package_id=?"
         const [rows] = await db.execute(query,[package_id])
-        console.log("credit package data ",rows)
         return rows[0]
     } catch (error) {
         console.error("error fetching credit package data",error)
@@ -28,7 +27,6 @@ exports.getCreditTopUpService = async() => {
     try{
         const query = "SELECT * FROM topup_credit_packages WHERE is_active = 1 order by topup_package_id ASC"
         const [rows] = await db.execute(query)
-        console.log("top up list", rows)
         return {
             status: 200,
             message: "retrieved top up list successfully",

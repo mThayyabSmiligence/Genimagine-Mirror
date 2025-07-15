@@ -436,7 +436,6 @@ exports.handleNewPackageFlow = async (purchaseLog, payment, razorpay_payment_id,
         }
 
         if (packageType === 'renew') {
-            console.log("type is renew", packageType)
             await db.execute(
                 `UPDATE user_plan_credits SET last_renewal_date = ? WHERE id = ?`,
                 [currentPlan.expiry_date, currentPlan.id]

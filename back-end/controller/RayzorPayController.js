@@ -111,8 +111,8 @@ exports.validatePaymentController=async(req,res)=>{
         const storePayment= await savePaymentLog(payment)
 
         const order_detail = await instance.orders.fetchPayments(razorpay_order_id)
-        console.log(razorpay_payment_id)
-        console.log(razorpay_order_id)
+        // console.log(razorpay_payment_id)
+        // console.log(razorpay_order_id)
 
         if(payment.status!=='captured'){
             return res.status(400).json({ message: 'order is not paid!' });
@@ -133,18 +133,14 @@ exports.validatePaymentController=async(req,res)=>{
 
         const packageType = purchaseLog.package_type || 'new';
 
-    // Branch the logic
-        console.log("top up package flow 0", packageType)                                      // 0
+    // Branch the logic                                 
 
         let response;
 
         if (packageType === 'topup') {
-        console.log("top up package flow 1", packageType)                                  // 1
         response = await handleTopupPayment(purchaseLog, payment ,razorpay_payment_id ,razorpay_order_id, packageType);
-        console.log("top up response", response)                                                // 2
         }else {
         response = await handleNewPackageFlow(purchaseLog, payment, razorpay_payment_id ,razorpay_order_id, packageType);
-        console.log("new package response", response)                                           // 3
         } 
 
         const updateResponse =await updatePaymentStatus(razorpay_payment_id,payment.method,payment.status,razorpay_order_id)
