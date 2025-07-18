@@ -166,8 +166,6 @@ function ExploreImageDetail() {
     const handleCopy = (image) => {
         const style = styleList.find((style) => imageData?.style == style.style_name)
 
-        console.log(style)
-
         localStorage.setItem("image_settings", JSON.stringify(
           {
             aspectRatio: image.aspect_ratio_label,
@@ -176,12 +174,10 @@ function ExploreImageDetail() {
             modelname: image.model_name,
             quality: image.quality,
             qualityResolution: image.quality_resolution,
-            style:  imageData.style=="none"||style===undefined?0:style.id
+            style: imageData.style=="none"||style===undefined?0:style.id
           }
         ))
         setRefreshImageSettings(!refreshImageSettings)
-        console.log(imageData.style=="none")
-        console.log(imageData.style) 
         console.log(isNaN(style))
         
         console.log("style id",imageData.style=="none"||style===undefined?0:style.id)
