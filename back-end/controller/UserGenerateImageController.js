@@ -154,6 +154,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         return
     }else{
+        // user with credits
+        
         const inputs={
             prompt:updatedPrompt,
             negative_prompt:"skull",
@@ -204,8 +206,6 @@ exports.userGenerateImageController=async(req,res,next)=>{
             })
             return
         }
-
-    // yesterday  change
 
         const remaining = await deductCredit(id,model_data.cp_required) ;
 
