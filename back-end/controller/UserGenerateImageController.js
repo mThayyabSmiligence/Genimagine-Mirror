@@ -6,7 +6,7 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken');
 const dotenv =require('dotenv')
 const path =require('path');
-const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck, generateContextPrompt, generateCrossChatKeywordPrompt, extractPromptReference } = require('../service/UserService');
+const { canUserGenerateFree, increaseFreeGenerationCountForUser, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, handelAspectRatio, getCreditByUserId, updateChatUpdatedAt, promptModerationCheck, generateContextPrompt, generateCrossChatKeywordPrompt, extractPromptReference, generateSmartContextPrompt } = require('../service/UserService');
 const { freeGenerateImageService, freeGenerateImage } = require('../service/FreeGenerateImageService');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { uploadImageToServer } = require('../service/UploadToServerService');
@@ -15,6 +15,7 @@ const { decrypt } = require('../service/EncrypDecrypt');
 const { generateImageWithStability } = require('../service/generateSDImage');
 const { getStyleNameById } = require('./UsersController');
 const { generateImageWithHuggingFace } = require('../service/GenerateImageWithHuggingFace');
+const { getPromptEmbedding, findMostSimilarPrompt, storeEmbeddingInWeaviate } = require('../service/EmbeddingService');
 
 
 exports.userGenerateImageController=async(req,res,next)=>{
@@ -60,6 +61,11 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
     }
+
+    // let updatedPrompt = await generateSmartContextPrompt(id, chat_id, prompt);
+    //     console.log('embedding test 7',updatedPrompt)
+
+
 
     let styleName = null;  // Declare early so it's available below
 
@@ -127,6 +133,14 @@ exports.userGenerateImageController=async(req,res,next)=>{
        
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
+
+        await storeEmbeddingInWeaviate({
+            id: image_id.toString(),
+            user_id: id,
+            chat_id: chatId,
+            prompt,
+            full_prompt: full_Prompt,
+        });
 
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token 
 
