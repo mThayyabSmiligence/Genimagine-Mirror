@@ -49,21 +49,21 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
     // let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);
 
-    let updatedPrompt;
+    // let updatedPrompt;
 
-    const referenceKeywords = await extractPromptReference(prompt);
+    // const referenceKeywords = await extractPromptReference(prompt);
 
-    if (referenceKeywords && referenceKeywords.length > 0) {
-    console.log("Mistral detected reference keywords:", referenceKeywords);
+    // if (referenceKeywords && referenceKeywords.length > 0) {
+    // console.log("Mistral detected reference keywords:", referenceKeywords);
 
-    updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
-    } else {
+    // updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
+    // } else {
 
-    updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
-    }
+    // updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
+    // }
 
-    // let updatedPrompt = await generateSmartContextPrompt(id, chat_id, prompt);
-    //     console.log('embedding test 7',updatedPrompt)
+    let updatedPrompt = await generateSmartContextPrompt(id, chat_id, prompt);
+        console.log('embedding test 7',updatedPrompt)
 
 
 
