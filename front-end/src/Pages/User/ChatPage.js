@@ -137,7 +137,8 @@
 
           } catch (error) {
               console.error('Error fetching chat data:', error);
-              setError('Failed to fetch chat data. Please try again later.');
+              setError(true);
+              setErrorMessage('Failed to fetch chat data. Please try again later.')
           }
       }
       
@@ -257,7 +258,7 @@
                 }
                 {
               error&&
-              <div className='alert alert-danger w-100'>{errorMessage}</div>
+              <div className='alert alert-danger w-100 mt-4'>{errorMessage}</div>
             }
               </div>
       

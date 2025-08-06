@@ -71,13 +71,20 @@ exports.deleteChatFromServer=async(userId,chatId)=>{
       Bucket: process.env.AWS_BUCKET,
       Prefix: `chat/${userId}/${chatId}/`
     })
-
+    console.log('list command', listCommand)
     const data = await s3.send(listCommand)
+    console.log('data of contents', data)
     if(!data.Contents||data.Contents.length === 0){
+      // return {
+      //   status:404,
+      //   success:false,
+      //   message:"chat folder is empty"
+      // }
+       console.log("No files to delete in S3 — continuing.");
       return {
-        status:404,
-        success:false,
-        message:"chat folder is empty"
+        status:200,
+        success:true,
+        message:"chat folder is empty, nothing to delete"
       }
     }
 
