@@ -4,8 +4,12 @@ import IGSettingPopUp from './IGSettingPopUp'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import AuthContext from '../../Context/AuthProvider';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
+import ScheduleGenerationPopUp from './ScheduleGenerationPopUp';
+import { useNavigate } from 'react-router-dom';
+import { Slide, toast } from 'react-toastify';
 // const aspectRatioList = [
 //   {
 //     id: 1,
@@ -73,6 +77,7 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 //     ]
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength,useContextPrompt,setUseContextPrompt,hasPreviousPrompts}) {
+  const navigate = useNavigate();
 
   const [styleList, setStyleList] = useState([]);
   const [showIGSetting,setShowIGSetting]=useState(false)
@@ -85,6 +90,16 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const [getModelById, setGetModelById] = useState(null);
   const [aspectRatioList, setAspectRatioList] = useState([]);
   const [qualityLevelsList, setQualityLevelsList] = useState([]);
+
+  // sechedule prompt generation
+  const [showSchedulePopUp , setShowSchedulePopUp] = useState(false)
+  const [scheduleFrequency, setScheduleFrequency] = useState('daily');
+  const [scheduleTime, setScheduleTime] = useState('09:00');
+  const [imagesPerRun, setImagesPerRun] = useState(1);
+  const [isRecurring, setIsRecurring] = useState(true);
+  const [scheduleRunAt, setScheduleRunAt] = useState('');
+
+  
 
 
   useEffect(() => {
@@ -282,6 +297,48 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       console.log(promptLength)
     },[promptText])
     
+   const handleSchedule = async () => {
+      if (!promptText || promptText.trim() === "") {
+        toast.error("Prompt is required to schedule the task!");
+        return;
+      }
+
+      if (imagesPerRun !== 1) {
+        toast.error("Only 1 image per run is allowed.");
+        return;
+      }
+
+      const model = selectSetting?.modelname ;
+      const aspect_ratio = selectSetting?.aspectRatio ;
+      const quality = selectSetting?.qualityResolution ;
+      const style = selectSetting?.style || null; 
+
+      const payload = {
+        prompt: promptText,
+        model,
+        aspect_ratio,
+        quality,
+        style,          
+        is_recurring: isRecurring,
+        frequency: isRecurring ? scheduleFrequency : null,
+        time: isRecurring ? scheduleTime : null,
+        run_at: isRecurring ? null : scheduleRunAt,
+        images_per_run: 1,
+      };
+
+      try {
+        // await axiosPrivate.post("/schedule-image-generation", payload);
+        console.log("scheduling task: ", payload)
+
+        toast.success("Prompt successfully scheduled!");
+        setShowSchedulePopUp(false);
+        // navigate('/u/scheduled');
+      } catch (err) {
+        console.error("Scheduling error:", err);
+        toast.error("Failed to schedule prompt.");
+      }
+    };
+
 
   return (
     <>
@@ -348,6 +405,30 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                       : "none"
                   }
                 </div>
+                {
+                  loggedIn&&
+                  <>
+                  <button onClick={()=>setShowSchedulePopUp(true)} className='p-secondary schedule-tag-btn' title='schedule automated generation'>
+                    <span className='text-muted'><AccessTimeRoundedIcon></AccessTimeRoundedIcon></span>
+                  </button>
+
+                   {showSchedulePopUp && (
+                      <ScheduleGenerationPopUp onHide={() => setShowSchedulePopUp(false)} 
+                        scheduleFrequency={scheduleFrequency}
+                        setScheduleFrequency={setScheduleFrequency}
+                        scheduleTime={scheduleTime}
+                        setScheduleTime={setScheduleTime}
+                        imagesPerRun={imagesPerRun}
+                        setImagesPerRun={setImagesPerRun}
+                        isRecurring={isRecurring}
+                        setIsRecurring={setIsRecurring}
+                        scheduleRunAt={scheduleRunAt}
+                        setScheduleRunAt={setScheduleRunAt}
+                        handleSchedule={handleSchedule}
+                      />
+                    )}
+                  </>
+                }
               </>
             )}
           </div>

@@ -1,7 +1,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService, getResizedHeightWidth, getModelByIdService} = require('../service/UserService');
+const { getChatsByUserId, getImagesByChatId, addtoLibraryService, getLibraryImagesService, deleteFromLibraryService, deleteImageService, editUserService, getUserDataService, passwordChangeService, editChatNameService, deleteChatService, banUserService, unbanUserService, unsuspendUserService, suspendUserService, warnUser, deleteUserService, getUserNameService, getUserByIdService, getAllModelsService, getAllAspectRatiosService, getAllQualityLevelsService, getAllStylesService, getImageSettingsService, getResizedHeightWidth, getModelByIdService, scheduleImageGenerationService, deleteScheduledTaskService, updateScheduledTaskStatusService, getUserScheduledTasksService} = require('../service/UserService');
 const { deleteChatFromServer } = require('../service/UploadToServerService');
 const { generateImageWithStability } = require('../service/generateSDImage');
 // get all users api - api/v1/users/list
@@ -396,4 +396,31 @@ exports.getResizedHeightWidthController = async(req, res) => {
       error: error.message,
     });
   }
+};
+
+exports.scheduleImageGenerationController = async(req, res) => {
+    const { prompt, model, aspect_ratio, quality, resolution, style,is_recurring, frequency, time, run_at,images_per_run} = req.body
+    const userId = req.user.id;
+
+    const result = await scheduleImageGenerationService(prompt, model, aspect_ratio, quality, resolution, style,is_recurring, frequency, time, run_at,images_per_run, userId)
+    return res.status(result.status).json(result)
+}
+
+exports.getUserScheduledTasksController = async (req, res) => {
+    const userId = req.user.id; // assumes auth middleware
+    const tasks = await getUserScheduledTasksService(userId);
+    res.status(tasks.status).json(tasks);
+ 
+}
+exports.updateScheduledTaskStatusController = async (req, res) => {
+    const scheduleId = req.params.id;
+    const updated = await updateScheduledTaskStatusService(scheduleId);
+    res.status(updated.status).json(updated);
+  
+};
+
+exports.deleteScheduledTaskController = async (req, res) => {
+    const scheduleId = req.params.id;
+    const result = await deleteScheduledTaskService(scheduleId);
+    res.status(result.status).json(result);
 };

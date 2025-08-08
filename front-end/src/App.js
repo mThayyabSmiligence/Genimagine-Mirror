@@ -60,6 +60,7 @@ import ModeratorDetail from './Pages/Admin/ModeratorDetail';
 import ModeratorProfilePage from './Pages/Moderator/ModeratorProfilePage';
 import StyleManagement from './Pages/Admin/StyleManagement';
 import AdminProfilePage from './Pages/Admin/AdminProfilePage';
+import Scheduled from './Pages/User/Scheduled';
 
 function App() {
   const { setRefreshCreditBalance } = useContext(RefreshDataContext);
@@ -158,6 +159,7 @@ function App() {
                   <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
                   <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
+                  <Route path='scheduled' element={<Scheduled></Scheduled>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 

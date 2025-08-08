@@ -27,6 +27,7 @@ const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 // cron jobs schedulers
 require('./scheduler/suspensionChecker');
 require('./scheduler/PlanValidityChecker'); 
+require('./scheduler/scheduleImageGeneration');
 
 
 

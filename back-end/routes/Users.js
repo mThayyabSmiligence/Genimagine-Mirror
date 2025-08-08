@@ -1,5 +1,5 @@
 const express = require('express')
-const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, generateImageWithStabilityController} = require('../controller/UsersController');
+const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChatsList, getChatsData, addToLibraryController, getLibraryImagesController, deleteFromLibraryController, deleteImageController, editUserController, getCurrentUserDataController, passwordChangeController, editChatNameController, deleteChatController, getAllAspectRatiosController, getAllModelsController, getAllQualityLevelsController, getAllStylesController, getImageSettingsController, generateImageWithStabilityController, scheduleImageGenerationController, getUserScheduledTasksController, toggleScheduledTaskStatusController, deleteScheduledTaskController, updateScheduledTaskStatusController} = require('../controller/UsersController');
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController, getCreditTopUpController, getUserPurchasedTopUp, getTotalActiveCreditsController } = require('../controller/CreditController');
@@ -58,5 +58,10 @@ router.route("/generatebySD").post( generateImageWithStabilityController )      
 
 router.route('/get-active-topUp').get(getCreditTopUpController)
 router.route('/user/active-topups').get(getUserPurchasedTopUp)
+
+router.route('/schedule-image-generation').post(scheduleImageGenerationController)
+router.route('/get-scheduled-tasks').get( getUserScheduledTasksController);
+router.route('/update-schedule/:id').post( updateScheduledTaskStatusController);
+router.route('/delete-schedule/:id').post( deleteScheduledTaskController);
 
 module.exports = router;
