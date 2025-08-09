@@ -1,4 +1,3 @@
-/* Modal background blur */
 .bgblur-container {
   position: fixed;
   top: 0;
@@ -10,7 +9,6 @@
   z-index: 1040;
 }
 
-/* Modal container */
 .popup-container {
   max-width: 460px;
   width: 100%;
@@ -21,7 +19,6 @@
   overflow: hidden;
 }
 
-/* Modal content */
 .modal-content {
   background-color: #1c1c1c;
   color: #eee;
@@ -30,39 +27,55 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
-/* Heading style */
 .modal-content h5 {
   font-weight: 600;
   font-size: 1.25rem;
   color: #effbfd;
 }
 
-/* Form labels */
-.form-label {
+/* Group container */
+.sg-group {
+  margin-bottom: 1rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1.25rem !important;
+}
+
+.p-4 {
+  padding: 1.5rem !important;
+}
+
+.text-start {
+  text-align: left !important;
+}
+
+/* Labels */
+.sg-label {
   color: #98d9d9 !important;
   font-size: 14px !important;
   font-weight: 500 !important;
 }
 
-/* Form controls */
-.form-control,
-.form-select {
+/* Inputs & Selects */
+.sg-input,
+.sg-select {
   background-color: #292929;
   border: 1px solid #2f6161;
   border-radius: 8px;
   color: #eee;
   padding: 8px 12px;
   font-size: 0.9rem;
+  width: 100%;
   transition: border-color 0.3s ease;
 }
 
-.form-control::placeholder {
-  color: #657d7d;
-  opacity: 1;
-}
-
-.form-control:focus,
-.form-select:focus {
+.sg-input:focus,
+.sg-select:focus {
   border-color: #3fc1c9;
   outline: none;
   box-shadow: none;
@@ -70,95 +83,74 @@
   color: #e0f7f7;
 }
 
-/* Switch toggle */
-/* .custom-toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background-color: #2b2b2b;
-  border: 1px solid #3a3a3a;
-  border-radius: 10px;
-  margin-bottom: 20px;
+.sg-input[readonly] {
+  color: #8c8c8d;
+  transition: color 0.3s ease;
 }
 
-.custom-toggle-label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  margin: 0;
+.sg-input[readonly]:focus {
+  color: #b2b2b3;
 }
 
-.custom-toggle-icon {
-  color: #3fc1c9;
-  margin-right: 8px;
-  font-size: 1rem;
+/* Extra utility */
+.d-flex {
+  display: flex !important;
+}
+.justify-content-between {
+  justify-content: space-between !important;
+}
+.justify-content-end {
+  justify-content: flex-end !important;
+}
+.gap-2 {
+  gap: 0.5rem !important;
 }
 
-.custom-toggle-switch {
-  display: flex;
-  align-items: center;
+.read-only-text{
+  font-size: small;
+  color: grey;
 }
 
-.custom-checkbox {
-  appearance: none;
-  width: 46px;
-  height: 23px;
-  background-color: #292929;
-  border: 1px solid #2f6161;
-  border-radius: 12px;
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+/* Prompt textarea */
+.prompt-textarea {
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
 }
 
-.custom-checkbox::before {
-  content: "";
-  position: absolute;
-  top: 1px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
+.prompt-textarea.scrollable {
+  overflow-y: auto;
 }
 
-.custom-checkbox:checked {
-  background-color: #3fc1c9;
-  border-color: #3fc1c9;
+.prompt-textarea::-webkit-scrollbar {
+  width: 8px;
 }
 
-.custom-checkbox:checked::before {
-  transform: translateX(22px);
+.prompt-textarea::-webkit-scrollbar-track {
+  background: #3b3a3a;
+  border-radius: 4px;
+  margin: 1px 0px;
 }
 
-.custom-checkbox:focus {
-  outline: none;
-  box-shadow: none;
-} */
-
-
-/* .form-check-input {
-  background-color: #292929;
-  border-color: #2f6161;
-  width: 45px;
-  height: 22px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  border-radius: 12px;
-  position: relative;
+.prompt-textarea::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
 }
 
-.form-check-input:checked {
-  background-color: #3fc1c9;
-  border-color: #3fc1c9;
+.prompt-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 
-.form-check-input:focus {
-  box-shadow: none;
-} */
+.no-prompt {
+  color: #888;
+  font-style: italic;
+}
+
+/* Required asterisk */
+.required-label::after {
+    content: " *";
+    color: rgb(255, 29, 29);
+}
 
 /* Buttons */
 .btn-secondary {
@@ -188,114 +180,3 @@
 .btn-success:hover {
   background-color: #44dad0;
 }
-
-/* Utility classes */
-.mb-3 {
-  margin-bottom: 1rem !important;
-}
-
-.mb-4 {
-  margin-bottom: 1.25rem !important;
-}
-
-.p-4 {
-  padding: 1.5rem !important;
-}
-
-.text-start {
-  text-align: left !important;
-}
-
-.d-flex {
-  display: flex !important;
-}
-
-.justify-content-end {
-  justify-content: flex-end !important;
-}
-
-.gap-2 {
-  gap: 0.5rem !important;
-}
-
-.form-control[readonly] {
-  /* background-color: #f8f9fa;  */
-  color: #8c8c8d; 
-  transition: color 0.3s ease;
-}
-
-.form-control[readonly]:focus {
-  /* background-color: #f8f9fa;  */
-  color: #b2b2b3; 
-}
-
-.read-only-text{
-  font-size: small;
-  color: grey;
-}
-
-/* .prompt-textarea {
-  height: auto; 
-  resize: none; 
-  overflow-y: auto; 
-  white-space: pre-wrap; 
-}
-
-.prompt-textarea::-webkit-scrollbar {
-  width: 8px;
-}
-
-.prompt-textarea::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-  border-radius: 4px;
-}
-
-.prompt-textarea::-webkit-scrollbar-thumb {
-  background-color: #888; 
-  border-radius: 4px;
-}
-
-.prompt-textarea::-webkit-scrollbar-thumb:hover {
-  background-color: #555; 
-} */
-
-.prompt-textarea {
-  resize: none;
-  overflow: hidden; /* hidden by default */
-  white-space: pre-wrap;
-}
-
-.prompt-textarea.scrollable {
-  overflow-y: auto; /* scroll only when limit reached */
-}
-
-/* Custom Scrollbar */
-.prompt-textarea::-webkit-scrollbar {
-  width: 8px;
-}
-
-.prompt-textarea::-webkit-scrollbar-track {
-  background: #3b3a3a;
-  border-radius: 4px;
-  margin: 1px 0px;
-}
-
-.prompt-textarea::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 4px;
-}
-
-.prompt-textarea::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
-}
-
-.no-prompt {
-  color: #888;
-  font-style: italic;
-}
-
-.required-label::after {
-    content: " *";
-    color: rgb(255, 29, 29);
-  }
-

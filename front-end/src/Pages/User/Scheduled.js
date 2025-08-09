@@ -1,25 +1,27 @@
-// src/pages/scheduled.js
-
 import React, { useEffect, useState } from 'react';
 import { axiosPrivate } from '../../API\'s/axios';
+import '../../Css/Scheduled.css'; // Make sure this is present
 
-const ScheduledTasksPage = () => {
+// Helper for formatting times like "14:30" to "2:30 PM"
+function formatTime12h(timeStr) {
+  if (!timeStr) return '-';
+  const [hour, minute] = timeStr.split(':');
+  const date = new Date();
+  date.setHours(hour, minute, 0, 0);
+  return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+const Scheduled = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user’s scheduled tasks on load
   useEffect(() => {
     fetchScheduledTasks();
   }, []);
 
   const fetchScheduledTasks = async () => {
     try {
-      const res = await axiosPrivate.get('/get-scheduled-tasks', {
-        // headers: {
-        //   Authorization: `Bearer ${localStorage.getItem('token')}` // if needed
-        // }
-      });
-      console.log("Tasks fetched:", res.data);
+      const res = await axiosPrivate.get('/get-scheduled-tasks');
       setTasks(res.data.rows || []);
     } catch (err) {
       console.error('Error fetching scheduled tasks:', err);
@@ -31,60 +33,93 @@ const ScheduledTasksPage = () => {
   const toggleTaskStatus = async (scheduleId) => {
     try {
       await axiosPrivate.post(`/update-schedule/${scheduleId}`);
-      fetchScheduledTasks();
+
+      // Update state instantly without fetching again
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.schedule_id === scheduleId
+            ? { ...task, is_active: task.is_active ? 0 : 1 } // toggle locally
+            : task
+        )
+      );
     } catch (err) {
       console.error('Error updating task status:', err);
     }
   };
 
   const deleteTask = async (scheduleId) => {
+    
+    const confirmed = window.confirm("Are you sure you want to delete this scheduled task?");
+    if (!confirmed) return;
+
     try {
       await axiosPrivate.post(`/delete-schedule/${scheduleId}`);
-      fetchScheduledTasks();
+
+      setTasks(prevTasks =>
+        prevTasks.filter(task => task.schedule_id !== scheduleId)
+      );
     } catch (err) {
       console.error('Error deleting task:', err);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4">Your Scheduled Image Generations</h2>
-
+    <div className="scheduled-container">
+      <h2 className="scheduled-title">Your Scheduled Image Generations</h2>
       {loading ? (
-        <div className="alert alert-info">Loading scheduled tasks...</div>
+        <div className="scheduled-message scheduled-message--info">
+          Loading scheduled tasks...
+        </div>
       ) : tasks.length === 0 ? (
-        <div className="alert alert-secondary">No scheduled tasks found.</div>
+        <div className="scheduled-message scheduled-message--secondary">
+          No scheduled tasks found.
+        </div>
       ) : (
-        <div className="row">
+        <div className="scheduled-taskgrid">
           {tasks.map(task => (
-            <div className="col-md-6 mb-4" key={task.schedule_id}>
-              <div className="card h-100">
-                <div className="card-body">
-                  <h5 className="card-title">{task.prompt}</h5>
-                  <p className="card-text">
-                    {task.is_recurring
-                      ? `Repeats: ${task.frequency} at ${task.time}`
-                      : `One-time: ${new Date(task.run_at).toLocaleString()}`}
-                  </p>
-                  <p className="card-text text-muted">
-                    Model: {task.model.name || '-'} | Style: {task.style.name || '-'} | Quality: {task.quality.name || '-'} | Ratio: {task.aspect_ratio.name || '-'}
-                  </p>
-                  <p className="card-text">Images per run: {task.images_per_run}</p>
+            <div className="scheduled-card" key={task.schedule_id}>
+              <div className="scheduled-cardbody">
+                <div className="scheduled-prompt">{task.prompt}</div>
+                <div className="scheduled-details">
+                  {task.is_recurring
+                    ? <span className="scheduled-badge">
+                        Repeats: {task.frequency} at {formatTime12h(task.time)}
+                      </span>
+                    : <span className="scheduled-badge scheduled-badge--one">
+                        One-time: {new Date(task.run_at).toLocaleString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour12: true
+                        })}
+                      </span>
+                  }
                 </div>
-                <div className="card-footer d-flex justify-content-between">
-                  <button
-                    className={`btn ${task.is_active ? 'btn-warning' : 'btn-success'}`}
-                    onClick={() => toggleTaskStatus(task.schedule_id)}
-                  >
-                    {task.is_active ? 'Pause' : 'Resume'}
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => deleteTask(task.schedule_id)}
-                  >
-                    Delete
-                  </button>
+                <div className="scheduled-meta">
+                  <span>Model: {task.model?.name || '-'}</span>
+                  <span>Style: {task.style?.name || '-'}</span>
+                  <span>Quality: {task.quality?.name || '-'}</span>
+                  <span>Ratio: {task.aspect_ratio?.name || '-'}</span>
                 </div>
+                <div className="scheduled-images">
+                  Images per run: <strong>{task.images_per_run}</strong>
+                </div>
+              </div>
+              <div className="scheduled-actions">
+                <button
+                  className={`scheduled-btn ${task.is_active ? 'scheduled-btn--pause' : 'scheduled-btn--resume'}`}
+                  onClick={() => toggleTaskStatus(task.schedule_id)}
+                >
+                  {task.is_active ? 'Pause' : 'Resume'}
+                </button>
+                <button
+                  className="scheduled-btn scheduled-btn--delete"
+                  onClick={() => deleteTask(task.schedule_id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
@@ -94,4 +129,4 @@ const ScheduledTasksPage = () => {
   );
 };
 
-export default ScheduledTasksPage;
+export default Scheduled;

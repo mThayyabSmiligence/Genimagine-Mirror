@@ -336,7 +336,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       };
 
       try {
-        // await axiosPrivate.post("/schedule-image-generation", payload);
+        await axiosPrivate.post("/schedule-image-generation", payload);
         console.log("scheduling task: ", payload)
 
         toast.success("Prompt successfully scheduled!");

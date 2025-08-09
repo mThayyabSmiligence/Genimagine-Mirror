@@ -1,0 +1,170 @@
+.scheduled-container {
+  max-width: 980px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #F2F7FB;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(24,40,44,0.07);
+  min-height: 65vh;
+}
+
+.scheduled-title {
+  margin-bottom: 2rem;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #294c60;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.scheduled-message {
+  padding: 18px 26px;
+  border-radius: 10px;
+  font-size: 1.08rem;
+  margin: 50px auto;
+  max-width: 480px;
+  text-align: center;
+}
+
+.scheduled-message--info {
+  background: #e5f5e1;
+  color: #164e25;
+  border-left: 4px solid #3fc1c9;
+}
+
+.scheduled-message--secondary {
+  background: #dde1ea;
+  color: #5b556f;
+  border-left: 4px solid #ffd116;
+}
+
+.scheduled-taskgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px 18px;
+}
+
+.scheduled-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 23px rgba(31,87,155,0.10);
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  transition: box-shadow 0.18s;
+  overflow: hidden;
+}
+
+.scheduled-card:hover {
+  box-shadow: 0 8px 24px rgba(49, 131, 173, 0.15);
+}
+
+.scheduled-cardbody {
+  flex: 1 1 auto;
+  padding: 1.4rem 1.4rem 0.8rem 1.4rem;
+}
+
+.scheduled-prompt {
+  font-size: 1.17rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #18404b;
+  word-break: break-word;
+}
+
+.scheduled-details {
+  margin: 6px 0 12px 0;
+  font-size: 1rem;
+}
+
+.scheduled-badge {
+  display: inline-block;
+  background: #3fc1c9;
+  color: #fff;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  padding: 4px 12px;
+  margin-bottom: 2px;
+}
+
+.scheduled-badge--one {
+  background: #ffd116;
+  color: #384663;
+}
+
+.scheduled-meta {
+  font-size: 0.95rem;
+  color: #596680;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.scheduled-images {
+  font-size: 0.95rem;
+  color: #34565a;
+  margin-bottom: 4px;
+}
+
+.scheduled-actions {
+  display: flex;
+  gap: 10px;
+  padding: 1rem 1.4rem 1.2rem 1.4rem;
+  border-top: 1px solid #e8ecf4;
+  background: #f7fcfe;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.scheduled-btn {
+  font-size: 0.98rem;
+  padding: 8px 23px;
+  border-radius: 7px;
+  border: none;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(60,113,159,0.07);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.17s;
+}
+
+.scheduled-btn--pause {
+  background: #ffd116;
+  color: #134046;
+}
+
+.scheduled-btn--resume {
+  background: #3fc1c9;
+  color: #fff;
+}
+
+.scheduled-btn--delete {
+  background: #e65151;
+  color: #fff;
+}
+
+.scheduled-btn:hover {
+  filter: brightness(1.06) drop-shadow(0 2px 12px #3fc1c92a);
+}
+
+@media (max-width: 700px) {
+  .scheduled-taskgrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .scheduled-container {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .scheduled-title {
+    font-size: 1.1rem;
+  }
+  .scheduled-taskgrid {
+    gap: 12px;
+  }
+  .scheduled-cardbody, .scheduled-actions {
+    padding: 1rem 0.7rem 1rem 0.7rem;
+  }
+}
