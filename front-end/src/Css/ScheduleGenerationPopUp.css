@@ -218,3 +218,84 @@
   gap: 0.5rem !important;
 }
 
+.form-control[readonly] {
+  /* background-color: #f8f9fa;  */
+  color: #8c8c8d; 
+  transition: color 0.3s ease;
+}
+
+.form-control[readonly]:focus {
+  /* background-color: #f8f9fa;  */
+  color: #b2b2b3; 
+}
+
+.read-only-text{
+  font-size: small;
+  color: grey;
+}
+
+/* .prompt-textarea {
+  height: auto; 
+  resize: none; 
+  overflow-y: auto; 
+  white-space: pre-wrap; 
+}
+
+.prompt-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.prompt-textarea::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 4px;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb {
+  background-color: #888; 
+  border-radius: 4px;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: #555; 
+} */
+
+.prompt-textarea {
+  resize: none;
+  overflow: hidden; /* hidden by default */
+  white-space: pre-wrap;
+}
+
+.prompt-textarea.scrollable {
+  overflow-y: auto; /* scroll only when limit reached */
+}
+
+/* Custom Scrollbar */
+.prompt-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.prompt-textarea::-webkit-scrollbar-track {
+  background: #3b3a3a;
+  border-radius: 4px;
+  margin: 1px 0px;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.no-prompt {
+  color: #888;
+  font-style: italic;
+}
+
+.required-label::after {
+    content: " *";
+    color: rgb(255, 29, 29);
+  }
+

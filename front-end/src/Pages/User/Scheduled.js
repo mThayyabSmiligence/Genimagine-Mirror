@@ -1,7 +1,6 @@
 // src/pages/scheduled.js
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { axiosPrivate } from '../../API\'s/axios';
 
 const ScheduledTasksPage = () => {
@@ -16,9 +15,9 @@ const ScheduledTasksPage = () => {
   const fetchScheduledTasks = async () => {
     try {
       const res = await axiosPrivate.get('/get-scheduled-tasks', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}` // if needed
-        }
+        // headers: {
+        //   Authorization: `Bearer ${localStorage.getItem('token')}` // if needed
+        // }
       });
       console.log("Tasks fetched:", res.data);
       setTasks(res.data.rows || []);
@@ -68,7 +67,7 @@ const ScheduledTasksPage = () => {
                       : `One-time: ${new Date(task.run_at).toLocaleString()}`}
                   </p>
                   <p className="card-text text-muted">
-                    Style: {task.style || '-'} | Quality: {task.quality || '-'} | Ratio: {task.aspect_ratio || '-'}
+                    Model: {task.model.name || '-'} | Style: {task.style.name || '-'} | Quality: {task.quality.name || '-'} | Ratio: {task.aspect_ratio.name || '-'}
                   </p>
                   <p className="card-text">Images per run: {task.images_per_run}</p>
                 </div>

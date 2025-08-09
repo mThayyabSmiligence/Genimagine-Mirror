@@ -83,15 +83,20 @@ console.log("checking schedule generation4")
   const allSchedules = [...recurringSchedules, ...oneTimeSchedules];
 
   for (const schedule of allSchedules) {
+
+    const model = JSON.parse(schedule.model);
+    const aspect_ratio = JSON.parse(schedule.aspect_ratio);
+    const quality = JSON.parse(schedule.quality);
+    const style = JSON.parse(schedule.style);
+
     for (let i = 0; i < schedule.images_per_run; i++) {
       await generateImage({
         user_id: schedule.user_id,
         prompt: schedule.prompt,
-        model: schedule.model,
-        aspect_ratio: schedule.aspect_ratio,
-        quality: schedule.quality,
-        style: schedule.style,
-        resolution: schedule.resolution,
+        model: model.id,
+        aspect_ratio: aspect_ratio.id,
+        quality: quality.id,
+        style: style.id,
         chat_id: null,
         use_context: false
       });

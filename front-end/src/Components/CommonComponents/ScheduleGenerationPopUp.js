@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../Css/ScheduleGenerationPopUp.css'
+import { useRef, useEffect, useState } from "react";
 
 export default function ScheduleGenerationPopUp({
   onHide,
@@ -13,16 +14,101 @@ export default function ScheduleGenerationPopUp({
   isRecurring,
   setIsRecurring,
   scheduleRunAt,
-  setScheduleRunAt
+  setScheduleRunAt,
+  selectSetting,
+  promptText
 }) {
+
+  const textareaRef = useRef(null);
+  const [textareaHeight, setTextareaHeight] = useState("auto");
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // reset before measuring
+      const newHeight = textareaRef.current.scrollHeight;
+      setTextareaHeight(newHeight > 100 ? "100px" : `${newHeight}px`);
+    }
+  }, [promptText]);
+
 
   return (
     <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-modal="true">
       <div onClick={onHide} className="modal-backdrop fade show bgblur-container"></div>
 
-      <div className="modal-dialog modal-dialog-centered popup-container" role="document">
+      <div className="modal-dialog modal-dialog-centered popup-container mt-5" role="document">
         <div className="modal-content p-4">
           <h5 className="mb-3 text-start">Schedule Automated Generation</h5>
+
+          <div className="form-group mb-3">
+            <label className="form-label">Prompt
+              <span className="read-only-text ms-1">(Read only)</span>
+            </label>
+            <textarea
+              ref={textareaRef}
+              className={`form-control prompt-textarea 
+                ${textareaHeight === "100px" ? "scrollable" : ""}
+                ${!promptText ? "no-prompt" : ""}
+              `}
+              style={{ height: textareaHeight }}
+              value={
+                promptText?.trim()
+                  ? promptText
+                  : "NO PROMPT ENTERED, Please enter prompt"
+              }
+              readOnly
+            />
+          </div>
+
+          <div className="form-group mb-3">
+            <label className="form-label">Model
+              <span className="read-only-text ms-1">(Read only)</span>
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              min="1"
+              value={selectSetting.modelname}
+              readOnly
+            />
+          </div>
+
+           <div className="d-flex justify-content-between mb-3">
+            <div style={{flex: '1 1 48%'}}>
+              <label className="form-label">Aspect Ratio
+                <span className="read-only-text ms-1">(Read only)</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                value={selectSetting.aspectRatio}
+                readOnly
+              />
+            </div>
+
+            <div style={{flex: '1 1 48%'}}>
+              <label className="form-label">Quality
+                 <span className="read-only-text ms-1">(Read only)</span>
+              </label>
+              <input
+                type="text"
+                min="1"
+                className="form-control"
+                value={selectSetting.qualityResolution}
+                readOnly
+              />
+            </div>
+          </div>
+
+          {/* <div className="form-group mb-3">
+            <label className="form-label">Style</label>
+            <input
+              type="text"
+              className="form-control"
+              min="1"
+              value={selectSetting.qualityResolution}
+              readOnly
+            />
+          </div> */}
 
           <div className="form-group mb-3">
             <label className="form-label">Schedule Type</label>
@@ -37,8 +123,8 @@ export default function ScheduleGenerationPopUp({
           </div>
 
           {isRecurring && (
-              <>
-                <div className="form-group mb-3">
+              <div className="d-flex justify-content-between mb-3">
+                <div style={{ flex: '1 1 48%' }}>
                   <label className="form-label">Frequency</label>
                   <select
                     className="form-select"
@@ -51,8 +137,8 @@ export default function ScheduleGenerationPopUp({
                   </select>
                 </div>
 
-                <div className="form-group mb-3">
-                  <label className="form-label">Time</label>
+                <div style={{ flex: '1 1 48%' }}>
+                  <label className="form-label required-label">Time</label>
                   <input
                     type="time"
                     className="form-control"
@@ -60,12 +146,12 @@ export default function ScheduleGenerationPopUp({
                     onChange={e => setScheduleTime(e.target.value)}
                   />
                 </div>
-              </>
+              </div>
             )}
 
             {!isRecurring && (
               <div className="form-group mb-3">
-                <label className="form-label">Run At (Date & Time)</label>
+                <label className="form-label required-label">Run At (Date & Time)</label>
                 <input
                   type="datetime-local"
                   className="form-control"
@@ -155,7 +241,7 @@ export default function ScheduleGenerationPopUp({
               className="btn btn-success"
               onClick={() => {
                 handleSchedule();
-                onHide();
+                // onHide();
               }}
             >
               Schedule

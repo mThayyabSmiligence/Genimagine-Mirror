@@ -94,7 +94,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   // sechedule prompt generation
   const [showSchedulePopUp , setShowSchedulePopUp] = useState(false)
   const [scheduleFrequency, setScheduleFrequency] = useState('daily');
-  const [scheduleTime, setScheduleTime] = useState('09:00');
+  const [scheduleTime, setScheduleTime] = useState('');
   const [imagesPerRun, setImagesPerRun] = useState(1);
   const [isRecurring, setIsRecurring] = useState(true);
   const [scheduleRunAt, setScheduleRunAt] = useState('');
@@ -308,17 +308,26 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         return;
       }
 
-      const model = selectSetting?.modelname ;
-      const aspect_ratio = selectSetting?.aspectRatio ;
-      const quality = selectSetting?.qualityResolution ;
-      const style = selectSetting?.style || null; 
+      if (isRecurring) {
+        if (!scheduleTime) {
+          toast.error("Time should be scheduled for recurring tasks!");
+          return;
+        }
+      } else {
+        if (!scheduleRunAt) {
+          toast.error("Run At should be scheduled for one-time tasks!");
+          return;
+        }
+      }
+
+      const setting = JSON.parse(localStorage.getItem('image_settings'));
 
       const payload = {
         prompt: promptText,
-        model,
-        aspect_ratio,
-        quality,
-        style,          
+        model: { id: setting.model, name: setting.modelname },
+        aspect_ratio: { id: setting.aspectRatioid, name: setting.aspectRatio },
+        quality: { id: setting.quality, name: setting.qualityResolution },
+        style: { id: setting.style, name: styleList.find((s) => s.id === selectSetting.style)?.style_name },
         is_recurring: isRecurring,
         frequency: isRecurring ? scheduleFrequency : null,
         time: isRecurring ? scheduleTime : null,
@@ -425,6 +434,8 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                         scheduleRunAt={scheduleRunAt}
                         setScheduleRunAt={setScheduleRunAt}
                         handleSchedule={handleSchedule}
+                        selectSetting = {selectSetting}
+                        promptText = {promptText}
                       />
                     )}
                   </>

@@ -399,10 +399,9 @@ exports.getResizedHeightWidthController = async(req, res) => {
 };
 
 exports.scheduleImageGenerationController = async(req, res) => {
-    const { prompt, model, aspect_ratio, quality, resolution, style,is_recurring, frequency, time, run_at,images_per_run} = req.body
+    const { prompt, model, aspect_ratio, quality, style,is_recurring, frequency, time, run_at,images_per_run} = req.body
     const userId = req.user.id;
-
-    const result = await scheduleImageGenerationService(prompt, model, aspect_ratio, quality, resolution, style,is_recurring, frequency, time, run_at,images_per_run, userId)
+    const result = await scheduleImageGenerationService(prompt, model, aspect_ratio, quality,style,is_recurring, frequency, time, run_at,images_per_run, userId)
     return res.status(result.status).json(result)
 }
 
