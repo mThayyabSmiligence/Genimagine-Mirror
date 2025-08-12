@@ -24,15 +24,23 @@ const verifyAdminToken = require('./middle_ware/verifyAdminToken');
 const verifyModeratorToken = require('./middle_ware/verifyModeratorToken');
 const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 
-// cron jobs schedulers
-require('./scheduler/suspensionChecker');
-require('./scheduler/PlanValidityChecker'); 
-require('./scheduler/scheduleImageGeneration');
-
-
 
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
+
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        credentials: true
+    }
+});
+
+// Make io available globally (for cron jobs & routes)
+global.io = io;
 
 // middleware's
 app.use((req, res, next) => {
@@ -68,6 +76,25 @@ app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);
 app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // api's --end
+
+
+io.on('connection', (socket) => {
+    console.log(' User connected:', socket.id);
+
+    socket.on('joinUserRoom', (userId) => {
+        socket.join(`user_${userId}`);
+        console.log(`🔔 User ${userId} joined room user_${userId}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+
+// cron jobs schedulers
+require('./scheduler/suspensionChecker');
+require('./scheduler/PlanValidityChecker'); 
+require('./scheduler/scheduleImageGeneration');
 
 
 // http only cookie test

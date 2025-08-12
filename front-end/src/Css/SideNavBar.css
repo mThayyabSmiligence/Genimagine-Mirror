@@ -108,6 +108,10 @@ color: rgb(78, 78, 78);
     color: rgb(162, 161, 161);
 }
 
+.scheduleded-container{
+    /* cursor: pointer; */
+}
+
 
 @media (max-width: 766px) {
     .side-nav {

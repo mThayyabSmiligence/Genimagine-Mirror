@@ -294,6 +294,11 @@ export default function UserNavbar() {
                                                         >
                                                             {truncateString(chat.chat_name || chat.chat_id)}
                                                         </Link>
+                                                        <div className='scheduleded-container d-flex align-items-center' title='scheduleded generation'>
+                                                            {chat.is_scheduled === 1 && (
+                                                                <AccessTimeRoundedIcon style={{ fontSize: 16, marginLeft: 3 }} />
+                                                            )}
+                                                        </div>
                                                         <button
                                                             ref={optionsRef}
                                                             onClick={() => {

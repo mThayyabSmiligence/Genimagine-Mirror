@@ -45,6 +45,7 @@
 }
 
 .scheduled-card {
+  position: relative;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 23px rgba(31,87,155,0.10);
@@ -62,6 +63,35 @@
 .scheduled-cardbody {
   flex: 1 1 auto;
   padding: 1.4rem 1.4rem 0.8rem 1.4rem;
+}
+
+.status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  user-select: none;
+  pointer-events: none;
+}
+
+.status-badge.pending {
+  background-color: #e7f1ff;
+  color: #1479ff;
+}
+
+.status-badge.completed {
+  background-color: #e9f9ef;
+  color: #3cb878;
+}
+
+.scheduled-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: grey;
 }
 
 .scheduled-prompt {

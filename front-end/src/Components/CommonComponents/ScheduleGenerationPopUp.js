@@ -15,7 +15,8 @@ export default function ScheduleGenerationPopUp({
   scheduleRunAt,
   setScheduleRunAt,
   selectSetting,
-  promptText
+  promptText,
+  styleList
 }) {
 
   const textareaRef = useRef(null);
@@ -71,7 +72,7 @@ export default function ScheduleGenerationPopUp({
             />
           </div>
 
-           <div className="d-flex justify-content-between mb-3">
+          <div className="d-flex justify-content-between mb-3">
             <div style={{flex: '1 1 48%'}}>
               <label className="sg-label d-flex mb-1">Aspect Ratio
                 <span className="read-only-text ms-1">(Read only)</span>
@@ -97,6 +98,19 @@ export default function ScheduleGenerationPopUp({
               />
             </div>
           </div>
+
+          {/* <div className="sg-group mb-3">
+            <label className="sg-label d-flex mb-1">Style
+              <span className="read-only-text ms-1">(Read only)</span>
+            </label>
+            <input
+              type="text"
+              className="sg-input"
+              min="1"
+              value={styleList?.find((s) => s.id === selectSetting.style)?.style_name }
+              readOnly
+            />
+          </div> */}
 
           <div className="sg-group mb-3">
             <label className="sg-label d-flex mb-1">Schedule Type</label>

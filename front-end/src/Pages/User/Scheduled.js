@@ -78,8 +78,14 @@ const Scheduled = () => {
         <div className="scheduled-taskgrid">
           {tasks.map(task => (
             <div className="scheduled-card" key={task.schedule_id}>
-              <div className="scheduled-cardbody">
-                <div className="scheduled-prompt">{task.prompt}</div>
+              <div className={`status-badge ${task.status === 'completed' ? 'completed' : 'pending'}`}>
+                {task.status === 'completed' ? 'Completed' : 'Pending'}
+              </div>
+              <div className="scheduled-cardbody mt-4">
+                <div className='d-flex justify-content-center'>
+                  <p className='scheduled-prompt-label fs-semibold m-0'><strong>Prompt :</strong></p>
+                  <p className="scheduled-prompt m-0 ms-1">{task.prompt}</p>
+                </div>
                 <div className="scheduled-details">
                   {task.is_recurring
                     ? <span className="scheduled-badge">
@@ -111,6 +117,7 @@ const Scheduled = () => {
                 <button
                   className={`scheduled-btn ${task.is_active ? 'scheduled-btn--pause' : 'scheduled-btn--resume'}`}
                   onClick={() => toggleTaskStatus(task.schedule_id)}
+                  disabled={task.status === 'completed'}
                 >
                   {task.is_active ? 'Pause' : 'Resume'}
                 </button>

@@ -340,7 +340,10 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         console.log("scheduling task: ", payload)
 
         toast.success("Prompt successfully scheduled!");
+        setScheduleTime("");
+        setScheduleRunAt("");
         setShowSchedulePopUp(false);
+        setPromptText("")
         // navigate('/u/scheduled');
       } catch (err) {
         console.error("Scheduling error:", err);
@@ -436,6 +439,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                         handleSchedule={handleSchedule}
                         selectSetting = {selectSetting}
                         promptText = {promptText}
+                        styleList = {styleList}
                       />
                     )}
                   </>
