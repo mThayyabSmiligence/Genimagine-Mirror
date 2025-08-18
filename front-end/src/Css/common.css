@@ -47,6 +47,7 @@
     background-color: black;
     border: solid 1px black;
     color: white;
+    transition: all 0.3s ease-in-out;
 }
 .success-button-wh{
     background-color: rgb(69, 143, 79);
@@ -57,6 +58,10 @@
 .dark-button:hover{
     background-color: white;
     color: black;
+}
+
+.purple-button{
+    
 }
 
 .p-input {
@@ -83,25 +88,6 @@
     background: rgb(238, 238, 238);
 }
 
-.w-90{
-    width: 90%;
-}
-
-.w-80{
-    width: 80%;
-}
-
-.w-70{
-    width: 70%;
-}
-
-.w-20{
-    width: 20%;
-}
-
-.w-10{
-    width: 10%;
-}
 
 
 
@@ -547,3 +533,44 @@ input[type="number"] {
     border-color: #ffe0b2;
 }
 
+/* width starts */
+.w-90{
+    width: 90%;
+}
+
+.w-80{
+    width: 80%;
+}
+
+.w-70{
+    width: 70%;
+}
+
+.w-20{
+    width: 20%;
+}
+
+.w-10{
+    width: 10%;
+}
+
+/* width ends */
+
+/* margin starts */
+
+/* margin ends */
+
+/* image-to-prompt starts */
+
+/* image-to-prompt ends */
+
+/* button starts */
+.black-button{
+    background-color: transparent;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+/* button ends */

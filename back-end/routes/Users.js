@@ -9,6 +9,7 @@ const { RayzorPayOrderController, validatePaymentController, handelFailedPayment
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
+const { getImageToPromptConversationHistoryController } = require('../controller/ImagetoPromptController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -58,5 +59,6 @@ router.route("/generatebySD").post( generateImageWithStabilityController )      
 
 router.route('/get-active-topUp').get(getCreditTopUpController)
 router.route('/user/active-topups').get(getUserPurchasedTopUp)
+router.route('/image-to-prompt').get(getImageToPromptConversationHistoryController);
 
 module.exports = router;

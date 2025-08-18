@@ -65,6 +65,7 @@ export default function Login() {
       };
 
     const handleSubmit=async(e)=>{
+        sessionStorage.removeItem("GuestImageToPromptHistory")
         if(!isOtpLogin){
             await handlePasswordLogin(e)
             return

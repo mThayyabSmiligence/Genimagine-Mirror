@@ -43,7 +43,7 @@ function ExplorePage() {
                 setCurrentPage(pageNumber + 1);
             }
         } catch (error) {
-            console.error("Error fetching explore images", error);
+            console.error("Error fetching explore images", error);  
             setHasMoreImages(false)
         } finally {
             setLoading(false);

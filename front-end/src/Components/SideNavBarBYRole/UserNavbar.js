@@ -14,6 +14,7 @@ import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 
 const groupChatsByDate=(chats)=> {
     const today = new Date();
@@ -230,6 +231,12 @@ export default function UserNavbar() {
                             <div className={`nav-list-item d-flex align-items-center ${path=="/credit-purchase"&&'active'}`}>
                                 <ShoppingCartOutlinedIcon/>
                                 <div to={"/credit-purchase" } className='link nav-options ms-1'>Buy Credits</div>
+                            </div>
+                        </Link>
+                        <Link to={"/image-to-prompt" } className='link mb-1' >
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/image-to-prompt"&&'active'}`}>
+                                <ImageOutlinedIcon/>
+                                <div to={"/credit-purchase" } className='link nav-options ms-1'>Image to Prompt</div>
                             </div>
                         </Link>
 

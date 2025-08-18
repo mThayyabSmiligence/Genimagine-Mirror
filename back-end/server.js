@@ -23,6 +23,7 @@ const verifyRefreshToken = require('./middle_ware/VerifyRefreshToken');
 const verifyAdminToken = require('./middle_ware/verifyAdminToken');
 const verifyModeratorToken = require('./middle_ware/verifyModeratorToken');
 const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
+const NoAuthMiddleWare = require('./middle_ware/NoAuthMiddleWare');
 
 // cron jobs schedulers
 require('./scheduler/suspensionChecker');
@@ -55,7 +56,7 @@ app.use('/api/v1/user',verifyToken,checkUserStatus,usersRouter);
 app.use('/api/v1', generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 
-app.use('/api/v1/no-auth',NoAuthRouter)
+app.use('/api/v1/no-auth',NoAuthMiddleWare,NoAuthRouter)
 // app.use('/api/v1', TestOpenAIRouter)
 
 // admin routes

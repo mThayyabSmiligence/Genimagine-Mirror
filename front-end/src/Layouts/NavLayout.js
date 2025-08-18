@@ -8,7 +8,7 @@ export default function NavLayout({setShowNavBar,showNavBar,width}) {
     <div className='nav-layout'>
         <SideNavBar showNavBar={showNavBar} setShowNavBar={setShowNavBar} width={width}></SideNavBar>
         <SubTopbar setShowNavBar={setShowNavBar} showNavBar={showNavBar} width={width}></SubTopbar>
-        <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${width<766?width:showNavBar?width-250:width}px` }}>
+        <div className={`content-section ${!showNavBar?"big":"short"}  d-flex flex-column` } style={{ width:`${width<766?width:showNavBar?width-265:width -15}px` }}>
 
         <Outlet></Outlet>
         </div>

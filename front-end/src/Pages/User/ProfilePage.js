@@ -43,9 +43,7 @@ function ProfilePage() {
 
     const getfirstLibraryData=async()=>{
         try{
-
             const response = await axiosPrivate.get('/get-library-images')
-      
             setLibraryImages(response.data.data)
             sessionStorage.setItem('libraryImages', JSON.stringify(response.data.data))
             console.log(response.data)

@@ -14,7 +14,7 @@ const s3 = new S3Client({
   });
   
 
-exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token,req) => {
+exports.uploadImageToServer = async (image, userId, chatId, imageId, type) => {
     if (!image) {
         return res.status(400).send('No file uploaded.');
     }
@@ -23,7 +23,13 @@ exports.uploadImageToServer = async (image, userId, chatId, imageId, type, token
     const imageBuffer = Buffer.from(image)
     
     const fileName = `${imageId}${extname}`;
-    const folderPath = `${type}/${userId}/${chatId}`;
+
+    let folderPath;
+    if(chatId){
+      folderPath = `${type}/${userId}/${chatId}`;
+    }else{
+      folderPath = `${type}/${userId}`
+    }
     const filePath = `${folderPath}/${fileName}`; 
 
       try {
