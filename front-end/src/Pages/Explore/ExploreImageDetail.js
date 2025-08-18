@@ -22,6 +22,17 @@ import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import TuneIcon from '@mui/icons-material/Tune';
 import ReportPopUp from "../../Components/CommonComponents/ReportPopUp";
 
+    const predefinedStyles = [
+        { id: 43, style_name: "Realistic" },
+        { id: 44, style_name: "Cinematic"},
+        { id: 45, style_name: "Anime" },
+        { id: 46, style_name: "Digital Painting"},
+        { id: 47, style_name: "Watercolor"},
+        { id: 48, style_name: "Cyberpunk"},
+        { id: 49, style_name: "Fantasy" },
+        { id: 50, style_name: "Sketch" }
+    ];
+
 function ExploreImageDetail() {
     const location = useLocation()
     const { published_id } = useParams(); 

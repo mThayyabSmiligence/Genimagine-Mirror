@@ -33,6 +33,17 @@ import { Slide, toast } from 'react-toastify';
 //   },
 // ]
 
+  const predefinedStyles = [
+    { id: 43, style_name: "Realistic" },
+    { id: 44, style_name: "Cinematic"},
+    { id: 45, style_name: "Anime" },
+    { id: 46, style_name: "Digital Painting"},
+    { id: 47, style_name: "Watercolor"},
+    { id: 48, style_name: "Cyberpunk"},
+    { id: 49, style_name: "Fantasy" },
+    { id: 50, style_name: "Sketch" }
+  ];
+
 //  const styleList = [
 //         { id: 1, style_name: "Textured Oil Painting", },
 //         { id: 2, style_name: "Chalk and Charcoal", },
@@ -75,6 +86,7 @@ import { Slide, toast } from 'react-toastify';
 //         { id: 39, style_name: "Vaporwave Aesthetic",  },
 //         { id: 40, style_name: "Vibrant Pop Art Illustration",  }
 //     ]
+ 
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength,useContextPrompt,setUseContextPrompt,hasPreviousPrompts}) {
   const navigate = useNavigate();
@@ -412,9 +424,15 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                 <div className='setting-tags p-secondary' title='quality'>
                   quality : {loggedIn?selectSetting.qualityResolution :"720p"}
                 </div>
-                <div className='setting-tags p-secondary' title='aspect ratio'>
+                {/* <div className='setting-tags p-secondary' title='aspect ratio'>
                   Style : {loggedIn? (styleList.find((s) => s.id === selectSetting.style)?.style_name || "none")
                       : "none"
+                  }
+                </div> */}
+                <div className='setting-tags p-secondary' title='style'>
+                  Style : {loggedIn 
+                    ? ([...styleList, ...predefinedStyles].find((s) => s.id === selectSetting.style)?.style_name || "none")
+                    : "none"
                   }
                 </div>
                 {

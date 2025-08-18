@@ -15,7 +15,7 @@ const { decrypt } = require('../service/EncrypDecrypt');
 const { generateImageWithStability } = require('../service/generateSDImage');
 const { getStyleNameById } = require('./UsersController');
 const { generateImageWithHuggingFace } = require('../service/GenerateImageWithHuggingFace');
-
+const predefinedStyles = require("../utils/predefinedStyles"); 
 
 exports.userGenerateImageController=async(req,res,next)=>{
     const {prompt,model,chat_id,aspect_ratio,quality,style,use_context} =req.body;
@@ -62,15 +62,31 @@ exports.userGenerateImageController=async(req,res,next)=>{
     }
 
     let styleName = null;  // Declare early so it's available below
+    let styleDescription = "";
 
     const full_Prompt = updatedPrompt;
 
-    if (style && style != 0) {
-    styleName = await getStyleNameById(style);
-    if (styleName) {
-        updatedPrompt += ` in style of ${styleName}`;
+    if (style) {
+        const predefined = predefinedStyles.find(s => s.id === parseInt(style));
+        if (predefined) {
+            styleName = predefined.name;
+            styleDescription = predefined.description;
+            updatedPrompt += `, ${styleDescription}`;
+        } else {
+            styleName = await getStyleNameById(style);
+            if (styleName) {
+                updatedPrompt += ` in style of ${styleName}`;
+                styleDescription = styleName; // or leave empty if you want
+            }
+        }
     }
-    }
+
+    // if (style && style != 0) {
+    // styleName = await getStyleNameById(style);
+    // if (styleName) {
+    //     updatedPrompt += ` in style of ${styleName}`;
+    // }
+    // }
 
     // encrypt
     const encryptedPrompt = encrypt(prompt);
@@ -160,7 +176,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
                 aspect_ratio: aspect_ratio,
                 quality: quality,
                 resolution: `${w_h.width}*${w_h.height}`,
-                style: style == 0 ? "none" : styleName || "none"
+                style: style == 0 ? "none" : styleDescription || "none"
             };
 
             const insertImage = await StoreImageInTabel(generated_image_data);
@@ -236,7 +252,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
-            style: style == 0 ? "none" : styleName || "none"
+            style: style == 0 ? "none" : styleDescription || "none"
         }
        
         const insertImage = await StoreImageInTabel(generated_image_data)
