@@ -286,7 +286,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   return (
     <>
 
-    {hasPreviousPrompts && (
+    {/* {hasPreviousPrompts && (
       <div className="toggle-continue-context text-start">
         <label className='d-flex align-items-center gap-1'>
           <input
@@ -297,7 +297,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
           Continue from previous prompts
         </label>
       </div>
-    )}
+    )} */}
 
     <div className='prompt-outer-container light-grey-bg br-10 d-flex flex-column align-items-end p-2 '   >
       {

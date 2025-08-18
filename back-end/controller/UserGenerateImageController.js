@@ -21,12 +21,6 @@ const { getPromptEmbedding, findMostSimilarPrompt, storeEmbeddingInWeaviate } = 
 exports.userGenerateImageController=async(req,res,next)=>{
     const {prompt,model,chat_id,aspect_ratio,quality,style,use_context} =req.body;
 
-    // const flagged =await promptModerationCheck(prompt)
-    // if(flagged){
-    //     res.status(403).json({message: "This prompt has been flagged for moderation"})
-    //     return
-    // }
-
     const w_h = await handelAspectRatio(quality,aspect_ratio)
 
     // getting jwt token from cookies
@@ -47,25 +41,8 @@ exports.userGenerateImageController=async(req,res,next)=>{
     
     const {id,username,role}= decodeToken
 
-    // let updatedPrompt = await generateContextPrompt(id,chat_id, prompt, use_context);
-
-    // let updatedPrompt;
-
-    // const referenceKeywords = await extractPromptReference(prompt);
-
-    // if (referenceKeywords && referenceKeywords.length > 0) {
-    // console.log("Mistral detected reference keywords:", referenceKeywords);
-
-    // updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
-    // } else {
-
-    // updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
-    // }
-
     let updatedPrompt = await generateSmartContextPrompt(id, chat_id, prompt);
         console.log('embedding test 7',updatedPrompt)
-
-
 
     let styleName = null;  // Declare early so it's available below
 
@@ -134,6 +111,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId
 
+        const embedding = await getPromptEmbedding(prompt);
         await storeEmbeddingInWeaviate({
             id: image_id.toString(),
             user_id: id,
@@ -248,6 +226,16 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId;
+
+        const embedding = await getPromptEmbedding(prompt);
+        await storeEmbeddingInWeaviate(
+            image_id.toString(),
+            id,
+            prompt,
+            full_Prompt,
+            chatId,
+            embedding
+        );
 
         const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
 
