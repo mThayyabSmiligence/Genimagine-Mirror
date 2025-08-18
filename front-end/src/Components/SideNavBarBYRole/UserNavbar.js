@@ -15,6 +15,7 @@ import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
+import socket from '../../utils/socket'
 
 const groupChatsByDate=(chats)=> {
     const today = new Date();
@@ -90,6 +91,19 @@ export default function UserNavbar() {
     const focusRef = useRef(null);
 
     const [height, setHeight] = useState(window.innerHeight);
+
+
+      useEffect(() => {
+        socket.on("scheduledUpdate", (data) => {
+            if (data?.newChat) {
+            setChatList((prev) => [data.newChat, ...prev]); // Prepend new chat
+            }
+        });
+
+        return () => socket.off("scheduledUpdate");
+        }, []);
+
+
 
     useEffect(()=>{
         setGroupedChat(groupChatsByDate(chatList));
@@ -296,7 +310,7 @@ export default function UserNavbar() {
                                                         </Link>
                                                         <div className='scheduleded-container d-flex align-items-center' title='scheduleded generation'>
                                                             {chat.is_scheduled === 1 && (
-                                                                <AccessTimeRoundedIcon style={{ fontSize: 16, marginLeft: 3 }} />
+                                                                <AccessTimeRoundedIcon style={{ fontSize: 16 }} />
                                                             )}
                                                         </div>
                                                         <button

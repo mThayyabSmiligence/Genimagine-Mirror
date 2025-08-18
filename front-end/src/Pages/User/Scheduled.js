@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { axiosPrivate } from '../../API\'s/axios';
 import '../../Css/Scheduled.css'; // Make sure this is present
+import socket from '../../utils/socket';
 
 // Helper for formatting times like "14:30" to "2:30 PM"
 function formatTime12h(timeStr) {
@@ -14,6 +15,24 @@ function formatTime12h(timeStr) {
 const Scheduled = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // console.log("Received scheduledUpdate:", data);
+    console.log("upate card for scheduled")
+    socket.on("scheduledUpdate", (data) => {
+      if (data?.scheduleId) {
+        setTasks((prev) =>
+          prev.map((task) =>
+            task.id === data.scheduleId ? { ...task, status: "completed" } : task
+          )
+        );
+      }
+    });
+
+    return () => socket.off("scheduledUpdate");
+  }, []);
+
+
 
   useEffect(() => {
     fetchScheduledTasks();

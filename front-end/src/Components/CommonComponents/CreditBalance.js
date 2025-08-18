@@ -4,33 +4,51 @@ import "../../Css/SubTopBar.css"
 import { Link } from 'react-router-dom'
 import AddIcon from '@mui/icons-material/Add';
 import socket from '../../utils/socket';
+import { useId } from 'react';
+import { axiosPrivate } from '../../API\'s/axios';
 
 export default function CreditBalance() {
     const [creditBalance,setCreditBalance]=useState(0)
-    const { refreshCreditBalance} = useContext(RefreshDataContext)
+    const { refreshCreditBalance, setRefreshCreditBalance} = useContext(RefreshDataContext)
 
-    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-    const userId = userData.user_id;
+    // const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    // const userId = userData.user_id;
+    
 
-    useEffect(()=>{
-        setCreditBalance(localStorage.getItem('credit_balance')
-        )
-    },[refreshCreditBalance])
+    // useEffect(()=>{
+    //     setCreditBalance(localStorage.getItem('credit_balance')
+    //     )
+    // },[refreshCreditBalance])
 
     useEffect(() => {
-        if (!socket || !userId) return;
+    console.log("succes in web socket")
+    socket.on("scheduledUpdate", (data) => {
+        if (data?.newCredits !== undefined) {
+        setCreditBalance(data.newCredits);
+        localStorage.setItem('credit_balance', data.newCredits);
+        }
+    });
 
-        socket.emit("joinUserRoom", userId);
+    return () => socket.off("scheduledUpdate");
+    }, []);
 
-        socket.on("creditsUpdated", (data) => {
-            setCreditBalance(data.credits_remaining);
-            localStorage.setItem('credit_balance', data.credits_remaining); // optional: keep storage updated
-        });
 
-        return () => {
-            socket.off("creditsUpdated");
+
+    useEffect(() => {
+        const fetchCredits = async () => {
+            try {
+                const response = await axiosPrivate.get('/user-data');
+                const credits = response.data.data.credits || 0;
+                setCreditBalance(credits);
+                localStorage.setItem('credit_balance', credits);
+            } catch (error) {
+                console.error("Error getting user data", error);
+            }
         };
-    }, [userId]);
+
+        fetchCredits();
+    }, [refreshCreditBalance]);
+   
 
   return (
     <div className='credit-balance-container d-flex align-items-center ' title='credit points' >

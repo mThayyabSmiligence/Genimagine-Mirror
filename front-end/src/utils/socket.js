@@ -1,9 +1,18 @@
+// utils/socket.js
 import { io } from "socket.io-client";
 
-// connect to your backend Socket.IO server
-const socket = io("http://localhost:5000", {
-  withCredentials: true, // so cookies/auth can work
-  transports: ["websocket"], // faster connection
+const socket = io("http://localhost:3001", {
+  withCredentials: true,
+  transports: ["websocket"],
+});
+
+socket.on("connect", () => {
+  console.log("Socket connected:", socket.id);
+  const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+  if (userData?.user_id) {
+    socket.emit("joinUserRoom", userData.user_id);
+    console.log(`Joined room user_${userData.user_id}`);
+  }
 });
 
 export default socket;

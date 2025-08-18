@@ -110,6 +110,10 @@ cron.schedule('* * * * *', async () => {
   //       OR (frequency = 'monthly' AND DAY(NOW()) = DAY(created_at))
   //     )
   // `);
+
+
+
+
   const [recurringSchedules] = await db.execute(`
     SELECT * 
     FROM scheduled_image_prompts
@@ -139,7 +143,7 @@ cron.schedule('* * * * *', async () => {
       AND is_active = 1
       AND is_deleted = 0
       AND run_at <= NOW()
-      AND run_at > NOW() - INTERVAL 1 MINUTE
+      AND run_at > NOW() - INTERVAL 2 MINUTE
   `);
 
   console.log(
@@ -171,6 +175,7 @@ cron.schedule('* * * * *', async () => {
 
     for (let i = 0; i < schedule.images_per_run; i++) {
       await generateImageForScheduledGeneration({
+        schedule_id: schedule.schedule_id,
         user_id: schedule.user_id,
         prompt: schedule.prompt,
         model: model.id,

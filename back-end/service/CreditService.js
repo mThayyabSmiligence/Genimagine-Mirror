@@ -241,6 +241,12 @@ exports.getTotalActiveCredits = async (userId) => {
     const planCredits = Number(planCreditsResult[0].total_plan_credits) || 0;
     const topupCredits = Number(topupCreditsResult[0].total_topup_credits) || 0;
 
-    return planCredits + topupCredits;
-    
+    const totalCredits = planCredits + topupCredits;
+
+    await db.execute(
+        `UPDATE users SET credits = ? WHERE user_id = ?`,
+        [totalCredits, userId]
+    );
+
+    return totalCredits;
 };

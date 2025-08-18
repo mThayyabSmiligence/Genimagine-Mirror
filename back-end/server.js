@@ -35,6 +35,7 @@ const { Server } = require('socket.io');
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
         credentials: true
     }
 });
@@ -65,11 +66,6 @@ app.use('/api/v1', generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthRouter)
-// app.use('/api/v1', TestOpenAIRouter)
-
-// admin routes
-
-// app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // moderator routes
 app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);
@@ -83,9 +79,9 @@ io.on('connection', (socket) => {
 
     socket.on('joinUserRoom', (userId) => {
         socket.join(`user_${userId}`);
-        console.log(`🔔 User ${userId} joined room user_${userId}`);
+        console.log("Socket rooms after join:", socket.rooms);
     });
-
+    
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });
@@ -122,7 +118,7 @@ app.post('/post-token', (req, res) => {
     console.log("token ",token);
 })
 
-app.listen(process.env.PORT,() => {
+server.listen(process.env.PORT,() => {
 
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
 
