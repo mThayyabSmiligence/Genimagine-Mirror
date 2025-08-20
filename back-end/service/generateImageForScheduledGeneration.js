@@ -8,6 +8,7 @@ const { generateImageWithStability } = require("./generateSDImage");
 const { paidGenerateImageService } = require("./PaidGenerateImageService");
 const { uploadImageToServer } = require("./UploadToServerService");
 const { handelAspectRatio, handelModel, checkCreditBalance, deductCredit, createChat, StoreImageInTabel, StoreIMagePathandUrl, updateChatUpdatedAt } = require("./UserService");
+const predefinedStyles = require("../utils/predefinedStyles"); 
 
 async function generateImageForScheduledGeneration({
     schedule_id,
@@ -30,11 +31,26 @@ try {
     // Append style if selected
     let updatedPrompt = prompt;
     let styleName = null;
-    if (style && style != 0) {
-      styleName = await getStyleNameById(style);
-      if (styleName) {
-        updatedPrompt += ` in style of ${styleName}`;
-      }
+    let styleDescription = "";
+    // if (style && style != 0) {
+    //   styleName = await getStyleNameById(style);
+    //   if (styleName) {
+    //     updatedPrompt += ` in style of ${styleName}`;
+    //   }
+    // }
+    if (style) {
+        const predefined = predefinedStyles.find(s => s.id === parseInt(style));
+        if (predefined) {
+            styleName = predefined.name;
+            styleDescription = predefined.description;
+            updatedPrompt += `, ${styleDescription}`;
+        } else {
+            styleName = await getStyleNameById(style);
+            if (styleName) {
+                updatedPrompt += ` in style of ${styleName}`;
+                styleDescription = styleName; // or leave empty if you want
+            }
+        }
     }
 
     // Encrypt prompts
@@ -112,7 +128,7 @@ try {
       aspect_ratio,
       quality,
       resolution: `${w_h.width}*${w_h.height}`,
-      style: style == 0 ? "none" : styleName || "none",
+      style: style == 0 ? "none" : styleName || "none"
     };
 
     const insertImage = await StoreImageInTabel(generated_image_data);

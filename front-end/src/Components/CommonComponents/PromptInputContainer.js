@@ -34,14 +34,14 @@ import { Slide, toast } from 'react-toastify';
 // ]
 
   const predefinedStyles = [
-    { id: 43, style_name: "Realistic" },
-    { id: 44, style_name: "Cinematic"},
-    { id: 45, style_name: "Anime" },
-    { id: 46, style_name: "Digital Painting"},
-    { id: 47, style_name: "Watercolor"},
-    { id: 48, style_name: "Cyberpunk"},
-    { id: 49, style_name: "Fantasy" },
-    { id: 50, style_name: "Sketch" }
+    { id: 44, style_name: "Realistic" },
+    { id: 45, style_name: "Cinematic"},
+    { id: 46, style_name: "Anime" },
+    { id: 47, style_name: "Digital Painting"},
+    { id: 48, style_name: "Watercolor"},
+    { id: 49, style_name: "Cyberpunk"},
+    { id: 50, style_name: "Fantasy" },
+    { id: 51, style_name: "Sketch" }
   ];
 
 //  const styleList = [
@@ -308,7 +308,12 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       setPromptLength(promptText.trim().length)
       console.log(promptLength)
     },[promptText])
-    
+
+    const getStyleName = (styleId) => {
+      const allStyles = [...styleList, ...predefinedStyles]; // merge both sources
+      return allStyles.find((s) => s.id === styleId)?.style_name || "none";
+    };
+
    const handleSchedule = async () => {
       if (!promptText || promptText.trim() === "") {
         toast.error("Prompt is required to schedule the task!");
@@ -339,7 +344,8 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
         model: { id: setting.model, name: setting.modelname },
         aspect_ratio: { id: setting.aspectRatioid, name: setting.aspectRatio },
         quality: { id: setting.quality, name: setting.qualityResolution },
-        style: { id: setting.style, name: styleList.find((s) => s.id === selectSetting.style)?.style_name },
+        // style: { id: setting.style, name: styleList.find((s) => s.id === selectSetting.style)?.style_name },
+        style: { id: setting.style, name: getStyleName(setting.style) },
         is_recurring: isRecurring,
         frequency: isRecurring ? scheduleFrequency : null,
         time: isRecurring ? scheduleTime : null,
@@ -430,10 +436,7 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                   }
                 </div> */}
                 <div className='setting-tags p-secondary' title='style'>
-                  Style : {loggedIn 
-                    ? ([...styleList, ...predefinedStyles].find((s) => s.id === selectSetting.style)?.style_name || "none")
-                    : "none"
-                  }
+                  Style : {loggedIn ? getStyleName(selectSetting.style) : "none"}
                 </div>
                 {
                   loggedIn&&

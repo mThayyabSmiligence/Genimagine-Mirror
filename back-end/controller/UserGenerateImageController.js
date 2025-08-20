@@ -176,7 +176,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
                 aspect_ratio: aspect_ratio,
                 quality: quality,
                 resolution: `${w_h.width}*${w_h.height}`,
-                style: style == 0 ? "none" : styleDescription || "none"
+                style: style == 0 ? "none" : styleName || "none"
             };
 
             const insertImage = await StoreImageInTabel(generated_image_data);
@@ -252,7 +252,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
             aspect_ratio:aspect_ratio,
             quality:quality,
             resolution:`${w_h.width}*${w_h.height}`,
-            style: style == 0 ? "none" : styleDescription || "none"
+            style: style == 0 ? "none" : styleName || "none"
         }
        
         const insertImage = await StoreImageInTabel(generated_image_data)

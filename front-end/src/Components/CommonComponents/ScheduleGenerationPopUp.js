@@ -30,18 +30,17 @@ export default function ScheduleGenerationPopUp({
     }
   }, [promptText]);
 
-
   return (
-    <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-modal="true">
-      <div onClick={onHide} className="modal-backdrop fade show bgblur-container"></div>
+    <div className="popup-modal" role="dialog" aria-modal="true">
+      <div onClick={onHide} className="popup-backdrop bgblur-container"></div>
 
-      <div className="modal-dialog modal-dialog-centered popup-container mt-5" role="document">
-        <div className="modal-content p-4">
-          <h5 className="mb-3 text-start">Schedule Automated Generation</h5>
+      <div className="popup-container">
+        <div className="popup-modal-content popup-padding">
+          <h5 className="popup-title">Schedule Automated Generation</h5>
 
           <div className="sg-group mb-3">
-            <label className="sg-label d-flex mb-1">Prompt
-              <span className="read-only-text ms-1">(Read only)</span>
+            <label className="sg-label label-flex text-start mb-2">Prompt
+              <span className="read-only-text label-margin">(Read only)</span>
             </label>
             <textarea
               ref={textareaRef}
@@ -60,22 +59,21 @@ export default function ScheduleGenerationPopUp({
           </div>
 
           <div className="sg-group mb-3">
-            <label className="sg-label d-flex mb-1">Model
-              <span className="read-only-text ms-1">(Read only)</span>
+            <label className="sg-label label-flex text-start mb-2">Model
+              <span className="read-only-text label-margin">(Read only)</span>
             </label>
             <input
               type="text"
               className="sg-input"
-              min="1"
               value={selectSetting.modelname}
               readOnly
             />
           </div>
 
-          <div className="d-flex justify-content-between mb-3">
-            <div style={{flex: '1 1 48%'}}>
-              <label className="sg-label d-flex mb-1">Aspect Ratio
-                <span className="read-only-text ms-1">(Read only)</span>
+          <div className="flex-row space-between sg-group mb-3">
+            <div className="flex-item">
+              <label className="sg-label label-flex text-start mb-2">Aspect Ratio
+                <span className="read-only-text label-margin">(Read only)</span>
               </label>
               <input
                 type="text"
@@ -85,13 +83,12 @@ export default function ScheduleGenerationPopUp({
               />
             </div>
 
-            <div style={{flex: '1 1 48%'}}>
-              <label className="sg-label d-flex mb-1">Quality
-                 <span className="read-only-text ms-1">(Read only)</span>
+            <div className="flex-item">
+              <label className="sg-label label-flex text-start mb-2">Quality
+                <span className="read-only-text label-margin">(Read only)</span>
               </label>
               <input
                 type="text"
-                min="1"
                 className="sg-input"
                 value={selectSetting.qualityResolution}
                 readOnly
@@ -99,21 +96,8 @@ export default function ScheduleGenerationPopUp({
             </div>
           </div>
 
-          {/* <div className="sg-group mb-3">
-            <label className="sg-label d-flex mb-1">Style
-              <span className="read-only-text ms-1">(Read only)</span>
-            </label>
-            <input
-              type="text"
-              className="sg-input"
-              min="1"
-              value={styleList?.find((s) => s.id === selectSetting.style)?.style_name }
-              readOnly
-            />
-          </div> */}
-
           <div className="sg-group mb-3">
-            <label className="sg-label d-flex mb-1">Schedule Type</label>
+            <label className="sg-label label-flex text-start mb-2">Schedule Type</label>
             <select
               className="sg-select"
               value={isRecurring ? 'recurring' : 'one-time'}
@@ -125,70 +109,63 @@ export default function ScheduleGenerationPopUp({
           </div>
 
           {isRecurring && (
-              <div className="d-flex justify-content-between mb-3">
-                <div style={{ flex: '1 1 48%' }}>
-                  <label className="sg-label d-flex mb-1">Frequency</label>
-                  <select
-                    className="sg-select"
-                    value={scheduleFrequency}
-                    onChange={e => setScheduleFrequency(e.target.value)}
-                  >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-
-                <div style={{ flex: '1 1 48%' }}>
-                  <label className="sg-label required-label d-flex mb-1">Time</label>
-                  <input
-                    type="time"
-                    className="sg-input"
-                    value={scheduleTime}
-                    onChange={e => setScheduleTime(e.target.value)}
-                  />
-                </div>
+            <div className="flex-row space-between sg-group mb-3">
+              <div className="flex-item">
+                <label className="sg-label label-flex text-start mb-2">Frequency</label>
+                <select
+                  className="sg-select"
+                  value={scheduleFrequency}
+                  onChange={e => setScheduleFrequency(e.target.value)}
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
               </div>
-            )}
 
-            {!isRecurring && (
-              <div className="sg-group mb-3">
-                <label className="sg-label required-label d-flex mb-1">Run At (Date & Time)</label>
+              <div className="flex-item">
+                <label className="sg-label required-label label-flex text-start mb-2">Time</label>
                 <input
-                  type="datetime-local"
+                  type="time"
                   className="sg-input"
-                  value={scheduleRunAt}
-                  onChange={e => setScheduleRunAt(e.target.value)}
+                  value={scheduleTime}
+                  onChange={e => setScheduleTime(e.target.value)}
                 />
               </div>
-            )}
+            </div>
+          )}
+
+          {!isRecurring && (
+            <div className="sg-group mb-3">
+              <label className="sg-label required-label label-flex text-start mb-2">Run At (Date & Time)</label>
+              <input
+                type="datetime-local"
+                className="sg-input"
+                value={scheduleRunAt}
+                onChange={e => setScheduleRunAt(e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="sg-group mb-3">
-            <label className="sg-label d-flex mb-1">Images Per Run</label>
+            <label className="sg-label label-flex text-start mb-2">Images Per Run</label>
             <input
               type="number"
               className="sg-input"
               min="1"
               value={imagesPerRun}
-              // onChange={e => setImagesPerRun(Number(e.target.value))}
               onChange={e => {
                 const val = Number(e.target.value);
-                if (val >= 1) {
-                  setImagesPerRun(val);
-                } else {
-                  setImagesPerRun(1);
-                }
+                setImagesPerRun(val >= 1 ? val : 1);
               }}
             />
           </div>
 
-          <div className="d-flex justify-content-end gap-2">
-            <button className="btn-secondary" onClick={onHide}>Cancel</button>
+          <div className="flex-row row-end gap-small">
+            <button className="btn-cancel" onClick={onHide}>Cancel</button>
             <button
-              className="btn-success"
-              onClick={() => {
-                handleSchedule();
-              }}
+              className="btn-submit"
+              onClick={handleSchedule}
             >
               Schedule
             </button>

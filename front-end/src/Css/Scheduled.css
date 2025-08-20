@@ -1,129 +1,129 @@
-.scheduled-container {
-  max-width: 980px;
+.schedule-container {
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: #F2F7FB;
+  background: #f4f8fc;
   border-radius: 16px;
-  box-shadow: 0 0 30px rgba(24,40,44,0.07);
+  box-shadow: 0 0 30px rgba(24, 40, 44, 0.07);
   min-height: 65vh;
 }
 
-.scheduled-title {
+.schedule-title {
   margin-bottom: 2rem;
   font-size: 2.1rem;
   font-weight: 700;
-  color: #294c60;
-  letter-spacing: 1px;
+  color: #1e3a4c;
   text-align: center;
 }
 
-.scheduled-message {
-  padding: 18px 26px;
+.schedule-message {
+  padding: 16px 20px;
   border-radius: 10px;
-  font-size: 1.08rem;
-  margin: 50px auto;
-  max-width: 480px;
+  font-size: 1rem;
+  margin: 40px auto;
+  max-width: 500px;
   text-align: center;
 }
 
-.scheduled-message--info {
+.schedule-message--info {
   background: #e5f5e1;
   color: #164e25;
   border-left: 4px solid #3fc1c9;
 }
 
-.scheduled-message--secondary {
-  background: #dde1ea;
+.schedule-message--secondary {
+  background: #f4f4f8;
   color: #5b556f;
   border-left: 4px solid #ffd116;
 }
 
-.scheduled-taskgrid {
+.schedule-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px 18px;
+  gap: 28px 20px;
 }
 
-.scheduled-card {
+.schedule-card {
   position: relative;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 23px rgba(31,87,155,0.10);
+  box-shadow: 0 4px 23px rgba(31, 87, 155, 0.08);
   display: flex;
   flex-direction: column;
-  min-height: 260px;
-  transition: box-shadow 0.18s;
+  transition: box-shadow 0.2s;
   overflow: hidden;
 }
 
-.scheduled-card:hover {
-  box-shadow: 0 8px 24px rgba(49, 131, 173, 0.15);
+.schedule-card:hover {
+  box-shadow: 0 8px 26px rgba(49, 131, 173, 0.15);
 }
 
-.scheduled-cardbody {
-  flex: 1 1 auto;
-  padding: 1.4rem 1.4rem 0.8rem 1.4rem;
+.schedule-card-body {
+  flex: 1;
+  padding: 1.3rem 1.4rem;
 }
 
 .status-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px 10px;
+  top: 10px;
+  right: 10px;
+  padding: 4px 12px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: white;
+  color: #fff;
   user-select: none;
-  pointer-events: none;
 }
 
 .status-badge.pending {
-  background-color: #e7f1ff;
+  background-color: #1479ff21;
   color: #1479ff;
 }
 
 .status-badge.completed {
   background-color: #e9f9ef;
-  color: #3cb878;
+  color: #34a853;
 }
 
-.scheduled-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: grey;
-}
-
-.scheduled-prompt {
-  font-size: 1.17rem;
-  font-weight: 600;
+.schedule-prompt-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
   margin-bottom: 10px;
+}
+
+.schedule-prompt-label {
+  font-weight: 600;
+  color: #234a50;
+}
+
+.schedule-prompt {
+  font-size: 1rem;
+  font-weight: 500;
   color: #18404b;
   word-break: break-word;
 }
 
-.scheduled-details {
-  margin: 6px 0 12px 0;
-  font-size: 1rem;
+.schedule-details {
+  margin: 8px 0 12px;
 }
 
-.scheduled-badge {
+.schedule-badge {
   display: inline-block;
   background: #3fc1c9;
   color: #fff;
   border-radius: 16px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   padding: 4px 12px;
-  margin-bottom: 2px;
 }
 
-.scheduled-badge--one {
+.schedule-badge--one {
   background: #ffd116;
-  color: #384663;
+  color: #333;
 }
 
-.scheduled-meta {
-  font-size: 0.95rem;
+.schedule-meta {
+  font-size: 0.9rem;
   color: #596680;
   margin-bottom: 8px;
   display: flex;
@@ -131,70 +131,70 @@
   flex-wrap: wrap;
 }
 
-.scheduled-images {
+.schedule-images {
   font-size: 0.95rem;
   color: #34565a;
-  margin-bottom: 4px;
 }
 
-.scheduled-actions {
+.schedule-actions {
   display: flex;
-  gap: 10px;
-  padding: 1rem 1.4rem 1.2rem 1.4rem;
-  border-top: 1px solid #e8ecf4;
-  background: #f7fcfe;
-  align-items: center;
   justify-content: flex-end;
+  gap: 10px;
+  padding: 1rem 1.4rem;
+  border-top: 1px solid #e8ecf4;
+  background: #f9fcfe;
 }
 
-.scheduled-btn {
-  font-size: 0.98rem;
-  padding: 8px 23px;
-  border-radius: 7px;
+.schedule-btn {
+  font-size: 0.95rem;
+  padding: 8px 20px;
+  border-radius: 6px;
   border: none;
   font-weight: 500;
-  box-shadow: 0 2px 8px rgba(60,113,159,0.07);
   cursor: pointer;
-  transition: background-color 0.2s, color 0.17s;
+  transition: background-color 0.2s, filter 0.2s;
 }
 
-.scheduled-btn--pause {
+.schedule-btn--pause {
   background: #ffd116;
-  color: #134046;
+  color: #1c3c42;
 }
 
-.scheduled-btn--resume {
+.schedule-btn--resume {
   background: #3fc1c9;
   color: #fff;
 }
 
-.scheduled-btn--delete {
+.schedule-btn--delete {
   background: #e65151;
   color: #fff;
 }
 
-.scheduled-btn:hover {
-  filter: brightness(1.06) drop-shadow(0 2px 12px #3fc1c92a);
+.schedule-btn:hover {
+  filter: brightness(1.07);
+}
+
+.schedule-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 700px) {
-  .scheduled-taskgrid {
+  .schedule-container {
+    padding: 1rem;
+  }
+  .schedule-grid {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-  .scheduled-container {
-    padding: 0.5rem;
   }
 }
 
 @media (max-width: 430px) {
-  .scheduled-title {
-    font-size: 1.1rem;
+  .schedule-title {
+    font-size: 1.4rem;
   }
-  .scheduled-taskgrid {
-    gap: 12px;
-  }
-  .scheduled-cardbody, .scheduled-actions {
-    padding: 1rem 0.7rem 1rem 0.7rem;
+  .schedule-card-body,
+  .schedule-actions {
+    padding: 0.9rem;
   }
 }
