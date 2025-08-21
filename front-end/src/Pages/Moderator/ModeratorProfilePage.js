@@ -1,71 +1,133 @@
-import React, { useEffect, useRef } from 'react'
-import '../../Css/ModeratorProfilePage.css'
-import { useState } from 'react';
-import { axiosModerator } from '../../API\'s/axios';
+import React, { useEffect, useRef, useState } from 'react';
+import '../../Css/ModeratorProfilePage.css';
 import { useNavigate } from 'react-router-dom';
+import { axiosModerator } from '../../API\'s/axios';
 
 function ModeratorProfilePage() {
-    const navigate = useNavigate();
-    const [moderatorDetail, setModeratorDetail] = useState(null);
-    const fileInputRef = useRef(null);
-    const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
+  const [moderatorDetail, setModeratorDetail] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState({
+    file: null,
+    preview: null,
+    name: '',
+    size: 0
+  });
+  const [dragActive, setDragActive] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        getModeratorDetail();
-    },[])
+  useEffect(() => {
+    getModeratorDetail();
+  }, []);
 
-   const getModeratorDetail = async () => {
-    try {
-      const response = await axiosModerator.post(`/get-moderator-detail`);
-      console.log(response.data.rows);
-      setModeratorDetail(response.data.rows);
+  const getModeratorDetail = async () => {
+  try {
+    const response = await axiosModerator.post(`/get-moderator-detail`);
+    console.log(response.data.rows);
+    let details = response.data.rows;
+
+    const storedImage = localStorage.getItem("moderatorProfileImage");
+    if (storedImage) {
+      details.profile_image = storedImage;
+    }
+
+    setModeratorDetail(details);
+
+      if (details.profile_image) {
+        setUploadedImage({
+          file: null,
+          preview: details.profile_image,
+          name: "profile.png",
+          size: 0
+        });
+      }
     } catch (error) {
       console.error("Error fetching moderator detail", error);
     }
   };
 
-  const handelResetPassword = async() =>{
-    navigate('/moderator/change-password')
-  }
 
-   const handleUploadClick = () => {
-    fileInputRef.current.click(); // triggers hidden input
+  const handelResetPassword = () => {
+    navigate('/moderator/change-password');
   };
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  // --- Drag & Drop ---
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
 
-    if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type) || file.size > 800000) {
-      alert("Invalid file. Only JPG, PNG, GIF under 800KB are allowed.");
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  // --- File Validation + Preview ---
+  const handleFile = (file) => {
+    if (!file.type.startsWith('image/')) {
+      alert("Only images are allowed.");
+      return;
+    }
+    if (file.size > 800000) {
+      alert("Max size allowed is 800KB.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("profile_image", file);
-
-    try {
-      setUploading(true);
-      const res = await axiosModerator.post('/upload-profile-image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setUploadedImage({
+        file: file,
+        preview: e.target.result,
+        name: file.name,
+        size: file.size
       });
+    };
+    reader.readAsDataURL(file);
+  };
 
-      alert("Upload successful!");
-      getModeratorDetail(); // Refresh profile
+  const removeImage = () => {
+    setUploadedImage({ file: null, preview: null, name: '', size: 0 });
+    localStorage.removeItem("moderatorProfileImage"); 
+  };
+
+  const replaceImage = () => {
+    fileInputRef.current.click();
+  };
+
+  // --- Upload to backend ---
+  const handleUpdateProfile = async () => {
+  if (!uploadedImage.preview) {
+    alert("Please select an image before updating profile.");
+    return;
+  }
+
+  try {
+      setUploading(true);
+      localStorage.setItem("moderatorProfileImage", uploadedImage.preview);
+      alert("Profile updated successfully!");
     } catch (err) {
       console.error(err);
-      alert("Upload failed.");
+      alert("Saving to local storage failed.");
     } finally {
       setUploading(false);
     }
-  };
-
-
-  const getInitial = (name) => {
-    return name ? name.charAt(0).toUpperCase() : 'M';
-  };
+};
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -80,37 +142,70 @@ function ModeratorProfilePage() {
   if (!moderatorDetail) {
     return <div className='p-5 text-center'>Loading profile...</div>;
   }
+
   return (
-    <div className='modrator-profile-page-container p-4 mx-4'>
+    <div className='moderator-profile-page-container mx-4'>
       <div className='profile-wrapper p-4 rounded shadow bg-white'>
         <h1 className='plan-heading-title text-start mb-3'>Profile Details</h1>
 
-        <div className='d-flex align-items-center mb-4'>
-          <div className='profile-image-wrapper me-3'>
-            <div
-              className='profile-initial custum-profile-bg text-white rounded-circle d-flex align-items-center justify-content-center'
-            >
-              {getInitial(moderatorDetail.username)}
+        {/* --- Upload Area --- */}
+        <div
+          className={`upload-area ${dragActive ? 'drag-active' : ''} ${uploadedImage.preview ? 'has-image' : ''}`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          onClick={!uploadedImage.preview ? () => fileInputRef.current.click() : undefined}
+        >
+          {!uploadedImage.preview ? (
+            <>
+              <div className="upload-icon">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M21 15L16 10L5 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+              </div>
+              <h3 className="upload-title">Upload Profile Photo</h3>
+              <p className="upload-description">Drag & drop or click to browse</p>
+              <p className="upload-format">Allowed: JPG, PNG, GIF (max 800KB)</p>
+            </>
+          ) : (
+            <div className="image-preview-container">
+              <div className="image-actions">
+                <button className="action-btn replace-btn" onClick={replaceImage} type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+                <button className="action-btn remove-btn me-3" onClick={removeImage} type="button">
+                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div className="uploaded-image">
+                <img src={uploadedImage.preview} alt={uploadedImage.name} />
+              </div>
+              <div className="image-details">
+                <p className="image-name">{uploadedImage.name}</p>
+                <p className="image-size">{(uploadedImage.size / 1024).toFixed(1)} KB</p>
+              </div>
             </div>
-          </div>
-           <div>
-            <button className='custom-btn d-flex ms-2' onClick={handleUploadClick} disabled={uploading}>
-              {uploading ? 'Uploading...' : 'Upload new photo'}
-            </button>
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/png, image/jpeg, image/gif'
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-            <p className='text-muted text-start mt-3 ms-2 profile-note'>
-              Allowed formats are JPG, GIF, or PNG, with a maximum size of 800 KB.
-            </p>
-          </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
         </div>
 
-        <div className="row">
+        {/* --- Profile details --- */}
+        <div className="row mt-4">
           <div className="col-md-6 mb-3">
             <label className="profile-username-text d-flex mb-1">USER NAME</label>
             <input type="text" className="form-control" value={moderatorDetail.username} disabled />
@@ -132,14 +227,15 @@ function ModeratorProfilePage() {
           </div>
         </div>
 
+        {/* --- Buttons --- */}
         <div className='d-flex justify-content-between mt-4 responsive-btn-group'>
-          <div className='back-btn-wrapper'>
-            <button onClick={() => navigate('/moderator/user-management')} className='btn btn-secondary'>
-              ← Back
-            </button>
-          </div>
+          <button onClick={() => navigate('/moderator/user-management')} className='btn btn-secondary'>
+            ← Back
+          </button>
           <div className='d-flex gap-2 action-profile-btn'>
-            <button className='custom-btn update-btn-wrapper'>Update Profile</button>
+            <button className='custom-btn update-btn-wrapper' onClick={handleUpdateProfile} disabled={uploading}>
+              {uploading ? "Updating..." : "Update Profile"}
+            </button>
             <button onClick={handelResetPassword} className='custom-btn reset-password-btn-wrapper'>
               Reset Password
             </button>
@@ -149,4 +245,5 @@ function ModeratorProfilePage() {
     </div>
   );
 }
-export default ModeratorProfilePage
+
+export default ModeratorProfilePage;
