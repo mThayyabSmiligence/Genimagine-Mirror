@@ -1,3 +1,17 @@
+/* Add this parent wrapper for the popup */
+.ig-popup-overlay {
+  position: fixed;
+  inset: 0;         /* covers the whole viewport */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.28); /* optional dim background */
+  overflow-y: auto; /* enables vertical scrolling when popup is too tall */
+}
+
+
+
 .settings-pop-up {
   width: 700px;
   min-height: 0px;
@@ -378,6 +392,26 @@ html {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+.settings-pop-up {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none;      
+  -ms-overflow-style: none;   
+}
+
+.settings-pop-up::-webkit-scrollbar {
+  display: none;              
+}
+
+@media (max-width: 769px) {
+  .settings-pop-up {
+    width: 98vw;
+    max-width: 98vw;
+    max-height: 98vh;
+  }
+}
+
 
 @media (min-width: 450px) and  (max-width: 769px){
 

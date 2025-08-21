@@ -16,7 +16,7 @@
   z-index: 1030;
 }
 
-.popup-container {
+/* .popup-container {
   max-width: 460px;
   width: 100%;
   margin: 2rem auto;
@@ -24,7 +24,7 @@
   z-index: 1050;
   border-radius: 12px;
   overflow: hidden;
-}
+} */
 
 .popup-modal-content {
   background-color: #1c1c1c;
@@ -184,4 +184,15 @@
 }
 .btn-submit:hover {
   background-color: #44dad0;
+}
+
+.popup-container {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.popup-container::-webkit-scrollbar {
+  display: none;
 }
