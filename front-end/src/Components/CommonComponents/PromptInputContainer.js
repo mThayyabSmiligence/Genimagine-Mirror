@@ -4,8 +4,12 @@ import IGSettingPopUp from './IGSettingPopUp'
 import RefreshDataContext from '../../Context/RefreshDataProvider'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import AuthContext from '../../Context/AuthProvider';
 import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
+import ScheduleGenerationPopUp from './ScheduleGenerationPopUp';
+import { useNavigate } from 'react-router-dom';
+import { Slide, toast } from 'react-toastify';
 // const aspectRatioList = [
 //   {
 //     id: 1,
@@ -28,6 +32,17 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 //     height: 80 
 //   },
 // ]
+
+  const predefinedStyles = [
+    { id: 44, style_name: "Realistic" },
+    { id: 45, style_name: "Cinematic"},
+    { id: 46, style_name: "Anime" },
+    { id: 47, style_name: "Digital Painting"},
+    { id: 48, style_name: "Watercolor"},
+    { id: 49, style_name: "Cyberpunk"},
+    { id: 50, style_name: "Fantasy" },
+    { id: 51, style_name: "Sketch" }
+  ];
 
 //  const styleList = [
 //         { id: 1, style_name: "Textured Oil Painting", },
@@ -71,8 +86,10 @@ import { axiosNoAUth, axiosPrivate } from '../../API\'s/axios';
 //         { id: 39, style_name: "Vaporwave Aesthetic",  },
 //         { id: 40, style_name: "Vibrant Pop Art Illustration",  }
 //     ]
+ 
 
 export default function PromptInPutContainer({promptText,setPromptText,generateImage,loading,promptLength,setPromptLength,useContextPrompt,setUseContextPrompt,hasPreviousPrompts}) {
+  const navigate = useNavigate();
 
   const [styleList, setStyleList] = useState([]);
   const [showIGSetting,setShowIGSetting]=useState(false)
@@ -85,6 +102,16 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
   const [getModelById, setGetModelById] = useState(null);
   const [aspectRatioList, setAspectRatioList] = useState([]);
   const [qualityLevelsList, setQualityLevelsList] = useState([]);
+
+  // sechedule prompt generation
+  const [showSchedulePopUp , setShowSchedulePopUp] = useState(false)
+  const [scheduleFrequency, setScheduleFrequency] = useState('daily');
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [imagesPerRun, setImagesPerRun] = useState(1);
+  const [isRecurring, setIsRecurring] = useState(true);
+  const [scheduleRunAt, setScheduleRunAt] = useState('');
+
+  
 
 
   useEffect(() => {
@@ -281,7 +308,67 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
       setPromptLength(promptText.trim().length)
       console.log(promptLength)
     },[promptText])
-    
+
+    const getStyleName = (styleId) => {
+      const allStyles = [...styleList, ...predefinedStyles]; // merge both sources
+      return allStyles.find((s) => s.id === styleId)?.style_name || "none";
+    };
+
+   const handleSchedule = async () => {
+      if (!promptText || promptText.trim() === "") {
+        toast.error("Prompt is required to schedule the task!");
+        return;
+      }
+
+      if (imagesPerRun !== 1) {
+        toast.error("Only 1 image per run is allowed.");
+        return;
+      }
+
+      if (isRecurring) {
+        if (!scheduleTime) {
+          toast.error("Time should be scheduled for recurring tasks!");
+          return;
+        }
+      } else {
+        if (!scheduleRunAt) {
+          toast.error("Run At should be scheduled for one-time tasks!");
+          return;
+        }
+      }
+
+      const setting = JSON.parse(localStorage.getItem('image_settings'));
+
+      const payload = {
+        prompt: promptText,
+        model: { id: setting.model, name: setting.modelname },
+        aspect_ratio: { id: setting.aspectRatioid, name: setting.aspectRatio },
+        quality: { id: setting.quality, name: setting.qualityResolution },
+        // style: { id: setting.style, name: styleList.find((s) => s.id === selectSetting.style)?.style_name },
+        style: { id: setting.style, name: getStyleName(setting.style) },
+        is_recurring: isRecurring,
+        frequency: isRecurring ? scheduleFrequency : null,
+        time: isRecurring ? scheduleTime : null,
+        run_at: isRecurring ? null : scheduleRunAt,
+        images_per_run: 1,
+      };
+
+      try {
+        await axiosPrivate.post("/schedule-image-generation", payload);
+        console.log("scheduling task: ", payload)
+
+        toast.success("Prompt successfully scheduled!");
+        setScheduleTime("");
+        setScheduleRunAt("");
+        setShowSchedulePopUp(false);
+        setPromptText("")
+        // navigate('/u/scheduled');
+      } catch (err) {
+        console.error("Scheduling error:", err);
+        toast.error("Failed to schedule prompt.");
+      }
+    };
+
 
   return (
     <>
@@ -343,11 +430,41 @@ export default function PromptInPutContainer({promptText,setPromptText,generateI
                 <div className='setting-tags p-secondary' title='quality'>
                   quality : {loggedIn?selectSetting.qualityResolution :"720p"}
                 </div>
-                <div className='setting-tags p-secondary' title='aspect ratio'>
+                {/* <div className='setting-tags p-secondary' title='aspect ratio'>
                   Style : {loggedIn? (styleList.find((s) => s.id === selectSetting.style)?.style_name || "none")
                       : "none"
                   }
+                </div> */}
+                <div className='setting-tags p-secondary' title='style'>
+                  Style : {loggedIn ? getStyleName(selectSetting.style) : "none"}
                 </div>
+                {
+                  loggedIn&&
+                  <>
+                  <button onClick={()=>setShowSchedulePopUp(true)} className='p-secondary schedule-tag-btn' title='schedule automated generation'>
+                    <span className='text-muted'><AccessTimeRoundedIcon></AccessTimeRoundedIcon></span>
+                  </button>
+
+                   {showSchedulePopUp && (
+                      <ScheduleGenerationPopUp onHide={() => setShowSchedulePopUp(false)} 
+                        scheduleFrequency={scheduleFrequency}
+                        setScheduleFrequency={setScheduleFrequency}
+                        scheduleTime={scheduleTime}
+                        setScheduleTime={setScheduleTime}
+                        imagesPerRun={imagesPerRun}
+                        setImagesPerRun={setImagesPerRun}
+                        isRecurring={isRecurring}
+                        setIsRecurring={setIsRecurring}
+                        scheduleRunAt={scheduleRunAt}
+                        setScheduleRunAt={setScheduleRunAt}
+                        handleSchedule={handleSchedule}
+                        selectSetting = {selectSetting}
+                        promptText = {promptText}
+                        styleList = {styleList}
+                      />
+                    )}
+                  </>
+                }
               </>
             )}
           </div>

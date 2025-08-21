@@ -46,6 +46,7 @@ import styleImage37 from '../../images/style/ultra-realistic-HDR-style.png';
 import styleImage38 from '../../images/style/urban-street-art-style.png';
 import styleImage39 from '../../images/style/vaporwave-aesthetic.png';
 import styleImage40 from '../../images/style/vibrant-pop-art-illustration.png';
+import styleImage50 from '../../images/style/sketch.png'
 import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 
 
@@ -95,6 +96,18 @@ import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 
 
 function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, setAspectRatioList, qualityLevelsList,setQualityLevelsList, fetchData}) {
+
+  const predefinedStyles = [
+    { id: 44, style_name: "Realistic", style_image: styleImage8 },
+    { id: 45, style_name: "Cinematic", style_image: styleImage2},
+    { id: 46, style_name: "Anime", style_image: styleImage3 },
+    { id: 47, style_name: "Digital Painting", style_image: styleImage4 },
+    { id: 48, style_name: "Watercolor", style_image: styleImage5 },
+    { id: 49, style_name: "Cyberpunk", style_image: styleImage6},
+    { id: 50, style_name: "Fantasy", style_image: styleImage7 },
+    { id: 51, style_name: "Sketch", style_image: styleImage50 }
+  ];
+
 
   const [styleList,setStyleList]=useState( [
     // { id: 1, style_name: "Textured Oil Painting", style_image: styleImage1 },
@@ -148,13 +161,19 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
   const [tempTrackStyle, setTempTrackStyle] = useState(null);
   const [tempSelectedQuality, setTempSelectedQuality] = useState(null);
   const [seeMore, setSeeMore] = useState(false);
-  
 
   useEffect(() => {
-    fetchAllStyles().then((styles) => {
-      setStyleList(styles);
+    fetchAllStyles().then((dbStyles) => {
+      setStyleList([...dbStyles, ...predefinedStyles]);
     });
   }, []);
+
+
+  // useEffect(() => {
+  //   fetchAllStyles().then((styles) => {
+  //     setStyleList(styles);
+  //   });
+  // }, []);
 
   const fetchAllStyles = async () => {
     try {
@@ -433,8 +452,8 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
                   {
                     styleList.map((style, index) => (
                       index < 3 &&
-                      <div key={index} className={`ms-md-1 style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
-                        <img src={style.style_image} onClick={() => setTempTrackStyle(style.id)} alt="style" />
+                      <div key={style.id} className={`ms-md-1 style-preview-card ${style.id == tempTrackStyle && "active"} p-1 ${!loggedIn&&"unclickable"}`} >
+                        <img src={style.style_image} onClick={() => setTempTrackStyle(style.id)} alt={style.style_name} />
                         <h3 onClick={() => setTempTrackStyle(style.id)} className='style-name-heading text-center'>{style.style_name}</h3>
                       </div>
                     ))

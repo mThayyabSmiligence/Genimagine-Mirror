@@ -15,6 +15,9 @@ import ChildCareOutlinedIcon from '@mui/icons-material/ChildCareOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
+import socket from '../../utils/socket'
+
 
 const groupChatsByDate=(chats)=> {
     const today = new Date();
@@ -23,6 +26,8 @@ const groupChatsByDate=(chats)=> {
 
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay());
+    // const day = today.getDay() || 7; // treat Sunday as 7
+    // startOfWeek.setDate(today.getDate() - day + 1); // go to Monday
 
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
@@ -88,6 +93,19 @@ export default function UserNavbar() {
     const focusRef = useRef(null);
 
     const [height, setHeight] = useState(window.innerHeight);
+
+
+      useEffect(() => {
+        socket.on("scheduledUpdate", (data) => {
+            if (data?.newChat) {
+            setChatList((prev) => [data.newChat, ...prev]); // Prepend new chat
+            }
+        });
+
+        return () => socket.off("scheduledUpdate");
+        }, []);
+
+
 
     useEffect(()=>{
         setGroupedChat(groupChatsByDate(chatList));
@@ -240,7 +258,7 @@ export default function UserNavbar() {
                             </div>
                         </Link>
 
-                        <Link to={"/image-generation" } className='link'  id='new-chat-link'>
+                        <Link to={"/image-generation" } className='link mb-1'  id='new-chat-link'>
                             <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
 
                                 <AddCircleOutlineOutlinedIcon/>
@@ -248,135 +266,170 @@ export default function UserNavbar() {
                             </div>
                         </Link>
 
+                        {
+                        loggedIn&&
+                        <Link to={"/u/scheduled" } className='link'  id='scheduled-link'>
+                            <div className={`nav-list-item  d-flex align-items-center ${path=="/u/scheduled"&&'active'}`}>
+
+                                <AccessTimeRoundedIcon/>
+                                <div to={"/u/scheduled" } className='link nav-options ms-1'>Scheduled</div>
+                            </div>
+                        </Link>
+                        }
+
                     </div>
                     <div className=' sub-mid-section '>
                         { loggedIn&&                    
                             <div className='w-80 mt-2'>
 
-                                    <h4 className='h-4 w-100 text-start'>Chat History</h4>
+                                    <h4 className='h-4 w-100 text-start mb-3'>Chat History</h4>
 
-                                    {  chatList.length>0? 
-                                        Object.entries(groupedChat).map(([group,chats],index)=>(
-                                            <div key={index} className='d-flex flex-column align-items-center mb-3'>
+                                   {chatList.length > 0 ? (
+                                        Object.entries(groupedChat).map(([group, chats], index) => {
+                                            if (Array.isArray(chats)) {
+                                            if (chats.length === 0) return null;
+
+                                            return (
+                                                <div key={index} className='d-flex flex-column align-items-center mb-3'>
                                                 <h6 className='chat-group-heading p-secondary w-100 text-start'>{group}</h6>
-                                                {
-                                                    Array.isArray(chats)?(
-                                                        chats.length>0?(
-                                                            chats.map((chat,index)=>(
-                                                                    <div className={`d-flex align-items-center nav-list-item my-1 ${chat.chat_id==currentChatId&&"active"} ${chat.chat_id==chatButtonTracking&&"selected"}`}>
-                                                                        {chat.chat_id==editingChatId ?
-                                                                        <input  
-                                                                            ref={focusRef}  
-                                                                            value={newChatName} 
-                                                                            onChange={(e) => setNewChatName(e.target.value)} 
-                                                                            onBlur={()=>renameChatList()}
-                                                                            onKeyDown={(e) => {
-                                                                                if (e.key === "Enter") {
-                                                                                e.preventDefault(); // Prevent new line
-                                                                                renameChatList()  // Call your submit function
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                    :
-                                                                        <>
-                                                                        <Link title={chat.chat_name} to={`/u/c/${chat.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(chat.chat_name?chat.chat_name:chat.chat_id)}</Link>
-
-                                                                            <button ref={optionsRef} onClick={() => {
-                                                                                
-                                                                                setShowOptions(!showOptions)
-                                                                                setChatButtonTracking(chat.chat_id);
-                                                                                console.log(2)
-                                                                                
-                                                                            }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
-                                                                            { showOptions && (chat.chat_id==chatButtonTracking) &&  
-                                                                            <div ref={optionsRef}  className='nav-list-item-dropdown' >
-                                                                                <ChatOptionDropDown 
-                                                                                    handleRename={
-                                                                                        () => callRenameChatList(chat.chat_id,chat.chat_name)
-                                                                                        } 
-                                                                                    handleDelete={
-                                                                                        ()=>{
-                                                                                            setDeleteChatId(chat.chat_id);
-                                                                                            setShowDeletePopUp(true)
-                                                                                        }
-                                                                                    } />
-                                                                            </div>
-                                                                            }
-                                                                        </>
-                                                                        }
-                                                                    </div>
-
-                                                            ))
-                                                        ):(
-                                                            <p className='w-100  text-start p-primary no-data'>No Data</p>
-                                                        )
-                                                    ):(
-                                                        Object.entries(chats).map(([year,months])=>(
-                                                            <div key={year}>
-                                                            <h6 className='chat-group-sub-heading text-start ms-5'>{year}</h6>
-                                                            {
-                                                                Object.entries(months).map(([month,monthChats])=>(
-                                                                <div key={month}>
-                                                                    <h6 className='chat-group-sub-heading'>{month}</h6>
-                                                                    {
-                                                                    monthChats.map((chat,index)=>(
-                                                                            <div className={`d-flex align-items-center nav-list-item my-1 ${chat.chat_id==currentChatId&&"active"} ${chat.chat_id==chatButtonTracking&&"selected"}`}>
-                                                                                {chat.chat_id==editingChatId ?
-                                                                                <input  
-                                                                                    ref={focusRef}  
-                                                                                    value={newChatName} 
-                                                                                    onChange={(e) => setNewChatName(e.target.value)} 
-                                                                                    onBlur={()=>renameChatList()}
-                                                                                    onKeyDown={(e) => {
-                                                                                        if (e.key === "Enter") {
-                                                                                        e.preventDefault(); // Prevent new line
-                                                                                        renameChatList()  // Call your submit function
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                            :
-                                                                                <>
-                                                                                <Link title={chat.chat_name} to={`/u/c/${chat.chat_id}`} className={`link flex-1 w-80 of-h p-1`} key={index} >{truncateString(chat.chat_name?chat.chat_name:chat.chat_id)}</Link>
-
-                                                                                    <button ref={optionsRef} onClick={() => {
-                                                                                        
-                                                                                        setShowOptions(!showOptions)
-                                                                                        setChatButtonTracking(chat.chat_id);
-                                                                                        console.log(2)
-                                                                                        
-                                                                                    }} className='button p-0del more-options d-flex justify-content-center align-items-center p-0'><span class="material-symbols-outlined">more_vert</span></button>
-                                                                                    { showOptions && (chat.chat_id==chatButtonTracking) &&  
-                                                                                    <div ref={optionsRef}  className='nav-list-item-dropdown' >
-                                                                                        <ChatOptionDropDown 
-                                                                                            handleRename={
-                                                                                                () => callRenameChatList(chat.chat_id,chat.chat_name)
-                                                                                                } 
-                                                                                            handleDelete={
-                                                                                                ()=>{
-                                                                                                    setDeleteChatId(chat.chat_id);
-                                                                                                    setShowDeletePopUp(true)
-                                                                                                }
-                                                                                            } />
-                                                                                    </div>
-                                                                                    }
-                                                                                </>
-                                                                                }
-                                                                            </div>
-
-                                                                    ))
-                                                                    }
-                                                                </div>
-                                                                ))
+                                                {chats.map((chat, index) => (
+                                                    <div className={`d-flex align-items-center nav-list-item my-1 ${chat.chat_id == currentChatId && "active"} ${chat.chat_id == chatButtonTracking && "selected"}`} key={chat.chat_id}>
+                                                    {chat.chat_id == editingChatId ? (
+                                                        <input
+                                                        ref={focusRef}
+                                                        value={newChatName}
+                                                        onChange={(e) => setNewChatName(e.target.value)}
+                                                        onBlur={() => renameChatList()}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                            renameChatList();
                                                             }
+                                                        }}
+                                                        />
+                                                    ) : (
+                                                        <>
+                                                        <Link
+                                                            title={chat.chat_name}
+                                                            to={`/u/c/${chat.chat_id}`}
+                                                            className="link flex-1 w-80 of-h p-1"
+                                                        >
+                                                            {truncateString(chat.chat_name || chat.chat_id)}
+                                                        </Link>
+                                                        <div className='scheduleded-container d-flex align-items-center' title='scheduleded generation'>
+                                                            {chat.is_scheduled === 1 && (
+                                                                <AccessTimeRoundedIcon style={{ fontSize: 16 }} />
+                                                            )}
+                                                        </div>
+                                                        <button
+                                                            ref={optionsRef}
+                                                            onClick={() => {
+                                                            setShowOptions(!showOptions);
+                                                            setChatButtonTracking(chat.chat_id);
+                                                            }}
+                                                            className="button p-0del more-options d-flex justify-content-center align-items-center p-0"
+                                                        >
+                                                            <span className="material-symbols-outlined">more_vert</span>
+                                                        </button>
+                                                        {showOptions && chat.chat_id == chatButtonTracking && (
+                                                            <div ref={optionsRef} className="nav-list-item-dropdown">
+                                                            <ChatOptionDropDown
+                                                                handleRename={() => callRenameChatList(chat.chat_id, chat.chat_name)}
+                                                                handleDelete={() => {
+                                                                setDeleteChatId(chat.chat_id);
+                                                                setShowDeletePopUp(true);
+                                                                }}
+                                                            />
                                                             </div>
-                                                        ))
-                                                    )
-                                                }
-                                            </div>
-                                        )):(
-                                            <h6 className='p-primary'>No Data</h6>
-                                        )
-                                    }
+                                                        )}
+                                                        </>
+                                                    )}
+                                                    </div>
+                                                ))}
+                                                </div>
+                                            );
+                                            } else {
+                                            const yearEntries = Object.entries(chats).filter(([_, months]) =>
+                                                Object.values(months).some((monthChats) => monthChats.length > 0)
+                                            );
+
+                                            if (yearEntries.length === 0) return null;
+
+                                            return (
+                                                <div key={index} className='d-flex flex-column align-items-center mb-3'>
+                                                <h6 className='chat-group-heading p-secondary w-100 text-start'>{group}</h6>
+                                                {yearEntries.map(([year, months]) => {
+                                                    const validMonths = Object.entries(months).filter(([_, chats]) => chats.length > 0);
+
+                                                    if (validMonths.length === 0) return null;
+
+                                                    return (
+                                                    <div key={year}>
+                                                        <h6 className='chat-group-sub-heading text-start ms-5'>{year}</h6>
+                                                        {validMonths.map(([month, monthChats]) => (
+                                                        <div key={month}>
+                                                            <h6 className='chat-group-sub-heading'>{month}</h6>
+                                                            {monthChats.map((chat, index) => (
+                                                            <div className={`d-flex align-items-center nav-list-item my-1 ${chat.chat_id == currentChatId && "active"} ${chat.chat_id == chatButtonTracking && "selected"}`} key={chat.chat_id}>
+                                                                {chat.chat_id == editingChatId ? (
+                                                                <input
+                                                                    ref={focusRef}
+                                                                    value={newChatName}
+                                                                    onChange={(e) => setNewChatName(e.target.value)}
+                                                                    onBlur={() => renameChatList()}
+                                                                    onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault();
+                                                                        renameChatList();
+                                                                    }
+                                                                    }}
+                                                                />
+                                                                ) : (
+                                                                <>
+                                                                    <Link
+                                                                    title={chat.chat_name}
+                                                                    to={`/u/c/${chat.chat_id}`}
+                                                                    className="link flex-1 w-80 of-h p-1"
+                                                                    >
+                                                                    {truncateString(chat.chat_name || chat.chat_id)}
+                                                                    </Link>
+                                                                    <button
+                                                                    ref={optionsRef}
+                                                                    onClick={() => {
+                                                                        setShowOptions(!showOptions);
+                                                                        setChatButtonTracking(chat.chat_id);
+                                                                    }}
+                                                                    className="button p-0del more-options d-flex justify-content-center align-items-center p-0"
+                                                                    >
+                                                                    <span className="material-symbols-outlined">more_vert</span>
+                                                                    </button>
+                                                                    {showOptions && chat.chat_id == chatButtonTracking && (
+                                                                    <div ref={optionsRef} className="nav-list-item-dropdown">
+                                                                        <ChatOptionDropDown
+                                                                        handleRename={() => callRenameChatList(chat.chat_id, chat.chat_name)}
+                                                                        handleDelete={() => {
+                                                                            setDeleteChatId(chat.chat_id);
+                                                                            setShowDeletePopUp(true);
+                                                                        }}
+                                                                        />
+                                                                    </div>
+                                                                    )}
+                                                                </>
+                                                                )}
+                                                            </div>
+                                                            ))}
+                                                        </div>
+                                                        ))}
+                                                    </div>
+                                                    );
+                                                })}
+                                                </div>
+                                            );
+                                            }
+                                        })
+                                        ) : (
+                                            <h6 className="p-primary">No Data</h6>
+                                    )}
 
                                     {/* <ChatList chats={chatList}/> */}
                                     

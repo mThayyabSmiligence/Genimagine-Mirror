@@ -25,14 +25,24 @@ const verifyModeratorToken = require('./middle_ware/verifyModeratorToken');
 const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 const NoAuthMiddleWare = require('./middle_ware/NoAuthMiddleWare');
 
-// cron jobs schedulers
-require('./scheduler/suspensionChecker');
-require('./scheduler/PlanValidityChecker'); 
-
-
 
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
+
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+// Make io available globally (for cron jobs & routes)
+global.io = io;
 
 // middleware's
 app.use((req, res, next) => {
@@ -57,17 +67,32 @@ app.use('/api/v1', generateImageRouter);
 app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthMiddleWare,NoAuthRouter)
-// app.use('/api/v1', TestOpenAIRouter)
 
-// admin routes
-
-// app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // moderator routes
 app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);
 app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 
 // api's --end
+
+
+io.on('connection', (socket) => {
+    console.log(' User connected:', socket.id);
+
+    socket.on('joinUserRoom', (userId) => {
+        socket.join(`user_${userId}`);
+        console.log("Socket rooms after join:", socket.rooms);
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+
+// cron jobs schedulers
+require('./scheduler/suspensionChecker');
+require('./scheduler/PlanValidityChecker'); 
+require('./scheduler/scheduleImageGeneration');
 
 
 // http only cookie test
@@ -95,7 +120,7 @@ app.post('/post-token', (req, res) => {
     console.log("token ",token);
 })
 
-app.listen(process.env.PORT,() => {
+server.listen(process.env.PORT,() => {
 
     console.log(`server listening to port ${process.env.PORT} in ${process.env.NODE_ENV}`)
 

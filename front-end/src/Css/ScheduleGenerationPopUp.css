@@ -1,0 +1,187 @@
+/* Modal overlay */
+.popup-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1040;
+}
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(25, 25, 25, 0.5);
+  backdrop-filter: blur(1px);
+  z-index: 1030;
+}
+
+.popup-container {
+  max-width: 460px;
+  width: 100%;
+  margin: 2rem auto;
+  position: relative;
+  z-index: 1050;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.popup-modal-content {
+  background-color: #1c1c1c;
+  color: #eee;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.popup-padding {
+  padding: 1.5rem;
+}
+
+.popup-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #effbfd;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+/* Utility replacements */
+.flex-row {
+  display: flex;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.row-end {
+  justify-content: flex-end;
+}
+
+.gap-small {
+  gap: 0.5rem;
+}
+
+.flex-item {
+  flex: 1 1 48%;
+}
+
+.label-flex {
+  display: flex;
+  align-items: center;
+}
+
+.label-margin {
+  margin-left: 4px;
+  font-size: small;
+  color: grey;
+}
+
+/* Group container */
+/* .sg-group {
+  margin-bottom: 3px;
+} */
+
+/* Labels */
+.sg-label {
+  color: #98d9d9;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* Inputs & Selects */
+.sg-input,
+.sg-select {
+  background-color: #292929;
+  border: 1px solid #2f6161;
+  border-radius: 8px;
+  color: #eee;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.sg-input:focus,
+.sg-select:focus {
+  border-color: #3fc1c9;
+  outline: none;
+  background-color: #323232;
+  color: #e0f7f7;
+}
+
+.sg-input[readonly] {
+  color: #8c8c8d;
+}
+
+.sg-input[readonly]:focus {
+  color: #b2b2b3;
+}
+
+/* Prompt textarea */
+.prompt-textarea {
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+.prompt-textarea.scrollable {
+  overflow-y: auto;
+}
+
+.prompt-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+.prompt-textarea::-webkit-scrollbar-track {
+  background: #3b3a3a;
+  border-radius: 4px;
+  margin: 1px 0;
+}
+.prompt-textarea::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+.prompt-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.no-prompt {
+  color: #888;
+  font-style: italic;
+}
+
+/* Required asterisk */
+.required-label::after {
+  content: " *";
+  color: rgb(255, 29, 29);
+}
+
+/* Buttons */
+.btn-cancel {
+  background-color: #4e6059;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  color: #d6d6d6;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+.btn-cancel:hover {
+  background-color: #6a7f7a;
+}
+
+.btn-submit {
+  background-color: #3fc1c9;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  color: #121111;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+.btn-submit:hover {
+  background-color: #44dad0;
+}
