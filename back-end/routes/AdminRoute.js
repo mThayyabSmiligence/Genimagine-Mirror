@@ -11,7 +11,7 @@ const { getAdminDetailController } = require('../controller/AdminController');
 
 const router = express.Router();
 
-// Public routes
+// Public routess
 router.get('/models', getAllModelsController);
 router.get('/models/:modelId', getModelController);
 router.post('/models/:id/configure', configureModelSettingsController);

@@ -260,7 +260,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
 
         //image,userId,chatId,imageId,isChat,isExplore,isLibrary,token 
 
-        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat')
 
         if(!imageUpload.success){
             res.status(500).json(imageUpload)
@@ -365,7 +365,7 @@ exports.userGenerateImageController=async(req,res,next)=>{
         const insertImage = await StoreImageInTabel(generated_image_data)
         const image_id= insertImage.insertId;
 
-        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat',token,req)
+        const imageUpload = await uploadImageToServer(image,id.toString(),chatId.toString(),image_id.toString(),'chat')
 
         if(!imageUpload.success){
             res.status(500).json(imageUpload)

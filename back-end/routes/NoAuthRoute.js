@@ -5,6 +5,7 @@ const { getUserDataByIdController, getUserNameByIdController, getAllModelsContro
 const { checkdimension, checkmodel } = require('../controller/CheckController');
 const { getAspectRatioShape, getResizedAspectRatio, getResizedHeightWidth } = require('../service/UserService');
 const { getModelById } = require('../service/IGSettingService');
+const { imageToPromptController, upload } = require('../controller/ImagetoPromptController');
 const router = express.Router();
 
 router.route('/get-packages').get(getCreditPackagesController);
@@ -34,5 +35,5 @@ router.route("/resize-aspect-ratio-shape").post(getResizedHeightWidthController)
 router.route('/dimension_check').get(checkdimension)
 router.route('/model_check').get(checkmodel)
 
-
+router.route('/image-to-prompt').post(upload, imageToPromptController);
 module.exports = router;

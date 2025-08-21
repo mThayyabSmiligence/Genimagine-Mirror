@@ -60,7 +60,10 @@ import ModeratorDetail from './Pages/Admin/ModeratorDetail';
 import ModeratorProfilePage from './Pages/Moderator/ModeratorProfilePage';
 import StyleManagement from './Pages/Admin/StyleManagement';
 import AdminProfilePage from './Pages/Admin/AdminProfilePage';
+import ImageToPrompt from './Pages/Common/ImageToPrompt';
+import { Toaster } from 'react-hot-toast';
 import Scheduled from './Pages/User/Scheduled';
+
 
 function App() {
   const { setRefreshCreditBalance } = useContext(RefreshDataContext);
@@ -146,6 +149,7 @@ function App() {
 
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
+                <Route path="image-to-prompt" element={<ImageToPrompt></ImageToPrompt>}></Route>
                 <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
                 <Route path="explore/image/:published_id" element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                 <Route path='credit-shop'></Route>
@@ -213,7 +217,16 @@ function App() {
               element={<Navigate to="/"/>}
             ></Route>
           </Routes>
-
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
     </div>
   );
 }

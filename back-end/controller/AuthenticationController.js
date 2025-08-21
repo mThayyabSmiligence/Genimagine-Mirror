@@ -227,7 +227,7 @@ exports.userLogin = async (req, res, next) => {
 
         const token =generateToken(oldUser[0]) ;
         const refreshToken= await generateRefreshToken(oldUser[0])
-        
+            
 
         let options = {
             maxAge: 1000 * 60 * 60, // expire after 60 minutes

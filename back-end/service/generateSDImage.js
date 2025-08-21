@@ -126,7 +126,7 @@ import fetch from 'node-fetch';
 
 
 export const generateImageWithStability = async (inputs, res) => {
-  const engineId = 'stable-diffusion-v1-6';
+  const engineId = 'stable-diffusion-xl-1024-v1-0';
   const apiHost = process.env.API_HOST ?? 'https://api.stability.ai';
   const apiKey = process.env.STABILITY_API_KEY;
 
@@ -186,13 +186,15 @@ export const generateImageWithStability = async (inputs, res) => {
   const base64 = base64WithPrefix.split(',')[1];
   
   const imageBuffer = Buffer.from(base64, 'base64');
-  
-  res.writeHead(200, {
-      'Content-Type': 'image/png',
-      'Content-Length': imageBuffer.length,
-    });
 
-    res.end(imageBuffer);
+  return imageBuffer
+  
+  // res.writeHead(200, {
+  //     'Content-Type': 'image/png',
+  //     'Content-Length': imageBuffer.length,
+  //   });
+
+  //   res.end(imageBuffer);
 };
 
 

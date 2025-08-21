@@ -6,7 +6,7 @@ const RoleAuthContext = createContext();
 
 export default function RoleAuthProvider({children}) {
     const location = useLocation()
-    const path = location.pathname;
+    const path = location.pathname; 
     const navigate = useNavigate();
     console.log("path", path)
     const [userData, setUserData] = useState("");

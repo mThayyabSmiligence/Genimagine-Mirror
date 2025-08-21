@@ -27,7 +27,7 @@
   min-height: 100vh;
   background-color: white;
   transition: margin-left 0.3s ease-in-out;
-  
+  margin-right: 10px;
 }
 .content-section.big,.sub-top-bar.big{
   margin-left:0px ;
