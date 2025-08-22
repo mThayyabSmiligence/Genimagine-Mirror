@@ -46,7 +46,14 @@ import styleImage37 from '../../images/style/ultra-realistic-HDR-style.png';
 import styleImage38 from '../../images/style/urban-street-art-style.png';
 import styleImage39 from '../../images/style/vaporwave-aesthetic.png';
 import styleImage40 from '../../images/style/vibrant-pop-art-illustration.png';
-import styleImage50 from '../../images/style/sketch.png'
+import styleImage44 from '../../images/style/Realistic.png';
+import styleImage45 from '../../images/style/Cinematic.png';
+import styleImage46 from '../../images/style/Anime2.png';
+import styleImage47 from '../../images/style/digital-painting.png';
+import styleImage48 from '../../images/style/Watercolor.png';
+import styleImage49 from '../../images/style/Cyberpunk.png';
+import styleImage50 from '../../images/style/Fantasy.png';
+import styleImage51 from '../../images/style/sketch.png'
 import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 
 
@@ -98,14 +105,14 @@ import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, setAspectRatioList, qualityLevelsList,setQualityLevelsList, fetchData}) {
 
   const predefinedStyles = [
-    { id: 44, style_name: "Realistic", style_image: styleImage8 },
-    { id: 45, style_name: "Cinematic", style_image: styleImage2},
-    { id: 46, style_name: "Anime", style_image: styleImage3 },
-    { id: 47, style_name: "Digital Painting", style_image: styleImage4 },
-    { id: 48, style_name: "Watercolor", style_image: styleImage5 },
-    { id: 49, style_name: "Cyberpunk", style_image: styleImage6},
-    { id: 50, style_name: "Fantasy", style_image: styleImage7 },
-    { id: 51, style_name: "Sketch", style_image: styleImage50 }
+    { id: 44, style_name: "Realistic", style_image: styleImage44 },
+    { id: 45, style_name: "Cinematic", style_image: styleImage45},
+    { id: 46, style_name: "Anime", style_image: styleImage46 },
+    { id: 47, style_name: "Digital Painting", style_image: styleImage47 },
+    { id: 48, style_name: "Watercolor", style_image: styleImage48 },
+    { id: 49, style_name: "Cyberpunk", style_image: styleImage49},
+    { id: 50, style_name: "Fantasy", style_image: styleImage50 },
+    { id: 51, style_name: "Sketch", style_image: styleImage51 }
   ];
 
 

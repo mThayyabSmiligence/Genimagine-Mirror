@@ -173,10 +173,6 @@ export default function ChatContainer({data,handelDeleteFromState,showOptionsId,
 
         const response = await fetch(data.image_url, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include' // if you need to send cookies
         });
         if (!response.ok) {
         throw new Error("Failed to fetch the image");
