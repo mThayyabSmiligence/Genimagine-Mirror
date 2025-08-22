@@ -344,7 +344,7 @@ function IGSettingPopUp({closePopup,modelsList, setModelsList, aspectRatioList, 
   return  (
 
    <div className="ig-popup-overlay" onClick={closePopup} >
-    <div className="settings-pop-up pop-up-container white-bg mt-4"> 
+    <div className="settings-pop-up pop-up-container white-bg mt-4" onClick={(e) => e.stopPropagation()}> 
     {
       seeMore ?(
       <div className="pop-up-style-container ">
