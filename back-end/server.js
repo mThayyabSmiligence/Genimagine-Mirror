@@ -8,6 +8,7 @@ const cookie = require("cookie")
 
 const cookieParser = require('cookie-parser')
 const db = require('./config/connectDatabase')
+const fileUpload = require('express-fileupload');
 const usersRouter = require('./routes/Users')
 const generateImageRouter = require('./routes/GenerateImage') 
 const AuthenticationRoutes = require('./routes/AuthenticationRoute')
@@ -58,6 +59,13 @@ app.use( cors(corsOptions) );
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(fileUpload({
+  createParentPath: true, // auto create folders
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+}));
+
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+app.use('/outputs', express.static(path.join(__dirname, 'public', 'outputs')));
 
 // middleware's
 

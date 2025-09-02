@@ -179,7 +179,7 @@
             setResortChatList(response.data.chat_id)
     
           } catch (error) { 
-            console.error('Error generating image:', error);
+            console.error('Error generating image:', error.message);
             setError(true);
             setErrorMessage("Something went wrong with paid generation"||"Error generating image");
           } finally {

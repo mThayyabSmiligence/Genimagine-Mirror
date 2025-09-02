@@ -10,6 +10,9 @@ const { submitFeedbackController } = require('../controller/UserFeedbackControll
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
 const { getImageToPromptConversationHistoryController } = require('../controller/ImagetoPromptController');
+const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware } = require('../controller/CharacterController');
+const { generateSceneController, getScenesController, generateLayeredSceneController } = require('../controller/SceneController');
+const { createStoryController, getUserStoriesController, getStoryByIdController } = require('../controller/StoryController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -66,4 +69,25 @@ router.route('/get-scheduled-tasks').get( getUserScheduledTasksController);
 router.route('/update-schedule/:id').post( updateScheduledTaskStatusController);
 router.route('/delete-schedule/:id').post( deleteScheduledTaskController);
 
+
+// // character route:
+// router.post("/create", createCharacterController);
+// router.post("/:characterId/expression", addExpressionController);
+// router.post("/:characterId/pose", addPoseController);
+// router.get("/list", getCharactersController);
+// router.post('/characters/upload', uploadMiddleware, uploadReferenceController);
+router.post('/characters/upload', uploadReferenceController);
+router.post('/characters',  createCharacterController);
+router.get('/characters',  getUserCharactersController);
+
+// scene route:
+// router.post("/generate", generateSceneController);
+// router.get("/list", getScenesController);
+router.post('/scenes/generate-layered', generateLayeredSceneController);
+
+// story route:
+router.post('/create-story', createStoryController);
+router.get('/get-all-story', getUserStoriesController);
+router.get('/get-story/:id', getStoryByIdController);
+    
 module.exports = router;
