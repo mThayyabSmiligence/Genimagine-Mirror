@@ -20,7 +20,7 @@ const imageToPromptController = async (req, res) => {
     try {
 
         console.log("running imageToPromptController");
-        // Check if a file was uploaded
+        // Check if a file was uploaded 
         if (!req.file) {
             co
             return res.status(400).json({ error: 'No image provided' });

@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors')
@@ -29,6 +30,8 @@ const NoAuthMiddleWare = require('./middle_ware/NoAuthMiddleWare');
 
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 const http = require('http');
 const server = http.createServer(app);
@@ -41,6 +44,7 @@ const io = new Server(server, {
         credentials: true
     }
 });
+
 
 // Make io available globally (for cron jobs & routes)
 global.io = io;
@@ -59,10 +63,10 @@ app.use( cors(corsOptions) );
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(fileUpload({
-  createParentPath: true, // auto create folders
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-}));
+// app.use(fileUpload({
+//   createParentPath: true, // auto create folders
+//   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+// }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use('/outputs', express.static(path.join(__dirname, 'public', 'outputs')));
@@ -72,7 +76,7 @@ app.use('/outputs', express.static(path.join(__dirname, 'public', 'outputs')));
 // api's --start
 app.use('/api/v1/user',verifyToken,checkUserStatus,usersRouter);
 app.use('/api/v1', generateImageRouter);
-app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
+app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)   
 app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthMiddleWare,NoAuthRouter)
 
@@ -142,3 +146,4 @@ server.listen(process.env.PORT,() => {
 
 // console.log('Generated Secret Key:', secretKey);
 });
+
