@@ -9,7 +9,7 @@ const { RayzorPayOrderController, validatePaymentController, handelFailedPayment
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
-const { getImageToPromptConversationHistoryController } = require('../controller/ImagetoPromptController');
+const { getImageToPromptConversationHistoryController, upload } = require('../controller/ImagetoPromptController');
 const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware } = require('../controller/CharacterController');
 const { generateSceneController, getScenesController, generateLayeredSceneController } = require('../controller/SceneController');
 const { createStoryController, getUserStoriesController, getStoryByIdController } = require('../controller/StoryController');
@@ -76,7 +76,7 @@ router.route('/delete-schedule/:id').post( deleteScheduledTaskController);
 // router.post("/:characterId/pose", addPoseController);
 // router.get("/list", getCharactersController);
 // router.post('/characters/upload', uploadMiddleware, uploadReferenceController);
-router.post('/characters/upload', uploadReferenceController);
+router.post('/characters/upload',upload, uploadReferenceController);
 router.post('/characters',  createCharacterController);
 router.get('/characters',  getUserCharactersController);
 

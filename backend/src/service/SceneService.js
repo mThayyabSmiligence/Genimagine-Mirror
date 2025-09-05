@@ -165,6 +165,7 @@ exports.generateCharacterLayer = async ({
     // backgroundPrompt: null, 
     extra: "full body, isolated subject, plain background, studio lighting, centered"
   });
+  console.log("promp :",prompt)
 
   const buffer = await imageToImageService(
     { prompt, width, height, strength: 0.4, guidance: 8.0, num_steps: 20},

@@ -37,21 +37,24 @@ const path = require('path');
 
 exports.uploadReferenceController = async (req, res) => {
   try {
-    // Check if files exist
-    if (!req.files || !req.files.referenceImage) {
+    // Check if file exists (multer stores single file in req.file)
+    if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    const file = req.files.referenceImage; // express-fileupload stores in req.files
+    console.log(req.file);
+
+    const file = req.file; // multer stores in req.file
     const userId = req.user.id;
     const destFolder = path.join(__dirname, '..', 'public', 'uploads', 'characters', String(userId));
     await fs.promises.mkdir(destFolder, { recursive: true });
 
-    const filename = `${Date.now()}_${file.name}`;
+    // Use file.originalname instead of file.name
+    const filename = `${Date.now()}_${file.originalname}`;
     const filePath = path.join(destFolder, filename);
 
-    // Move the file to desired location
-    await file.mv(filePath);
+    // Write buffer to file (since using memoryStorage)
+    await fs.promises.writeFile(filePath, file.buffer);
 
     const appUrl = process.env.APP_URL || 'http://localhost:3001';
     const url = `${appUrl}/uploads/characters/${userId}/${filename}`;
