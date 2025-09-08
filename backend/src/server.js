@@ -26,6 +26,7 @@ const verifyAdminToken = require('./middle_ware/verifyAdminToken');
 const verifyModeratorToken = require('./middle_ware/verifyModeratorToken');
 const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 const NoAuthMiddleWare = require('./middle_ware/NoAuthMiddleWare');
+const { sequelize } = require("./models")    
 
 
 
@@ -45,6 +46,13 @@ const io = new Server(server, {
     }
 });
 
+sequelize.authenticate()
+  .then(() => console.log("✅ Sequelize connected"))
+  .catch(err => console.error("❌ Sequelize error: ", err));
+
+sequelize.sync({ alter: false })  
+  .then(() => console.log("✅ Sequelize models are synced"))
+  .catch(err => console.error("❌ Sequelize sync error: ", err));
 
 // Make io available globally (for cron jobs & routes)
 global.io = io;
