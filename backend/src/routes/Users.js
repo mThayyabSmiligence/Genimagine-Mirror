@@ -10,9 +10,9 @@ const { submitFeedbackController } = require('../controller/UserFeedbackControll
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
 const { getImageToPromptConversationHistoryController, upload } = require('../controller/ImagetoPromptController');
-const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware } = require('../controller/CharacterController');
+const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware, generateCharacterController, getCharactersByStoryController } = require('../controller/CharacterController');
 const { generateSceneController, getScenesController, generateLayeredSceneController } = require('../controller/SceneController');
-const { createStoryController, getUserStoriesController, getStoryByIdController } = require('../controller/StoryController');
+const { createStoryController, getUserStoriesController, getStoryByIdController, updateStoryController, deleteStoryController } = require('../controller/StoryController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -89,5 +89,11 @@ router.post('/scenes/generate-layered', generateLayeredSceneController);
 router.post('/create-story', createStoryController);
 router.get('/get-all-story', getUserStoriesController);
 router.get('/get-story/:id', getStoryByIdController);
+router.post('/update-story/:id', updateStoryController);
+router.post('/delete-story/:id', deleteStoryController);
+
+
+router.get('/generate-characters', getCharactersByStoryController)
+router.post('/generate-character-image', generateCharacterController)
     
 module.exports = router;

@@ -1,3 +1,15 @@
+exports.getCharactersByStoryController = async (req, res) => {
+  const { storyId } = req.params;
+  const characters = await getCharactersByStoryService(req.user.id, storyId);
+  return res.status(characters.status).json(characters);
+};
+
+exports.generateCharacterController = async (req, res) => {
+  const { story_id ,name ,description  } = req.body;
+  const characters = await generateCharacterService(req.user.id, story_id, name, description);
+  return res.status(characters.status).json(characters);
+}
+
 // const { createCharacterService, addExpressionService, addPoseService, getCharactersService } = require("../service/CharacterService");
 
 // exports.createCharacterController = async (req, res) => {
@@ -29,7 +41,7 @@
 
 // const multer = require('multer');
 // const upload = multer({ dest: 'tmp/uploads/' });
-const {  createCharacter, getUserCharacters } = require('../service/CharacterService');
+const {  createCharacter, getUserCharacters, generateCharacterService } = require('../service/CharacterService');
 const fs = require('fs');
 const path = require('path');
 
