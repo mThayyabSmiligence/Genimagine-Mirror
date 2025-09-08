@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../../Css/CreateStories.css';
 // Material UI Icons
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 
 function CreateStories() {
-   const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const navigate = useNavigate();
 
   const showToast = (message, type = 'success') => {
     // Simple toast implementation - you can replace with your preferred toast library
@@ -30,26 +31,32 @@ function CreateStories() {
   };
 
   const handleCreateStory = async () => {
-    if (!title.trim()) {
-      showToast("Please enter a story title", 'error');
-      return;
-    }
+    // if (!title.trim()) {
+    //   showToast("Please enter a story title", 'error');
+    //   return;
+    // }
     
-    if (!description.trim()) {
-      showToast("Please enter a story description", 'error');
-      return;
-    }
+    // if (!description.trim()) {
+    //   showToast("Please enter a story description", 'error');
+    //   return;
+    // }
 
-    setIsCreating(true);
+    // if (!selectedStyle.trim()) {
+    //   showToast("Please select a story style", 'error');
+    //   return;
+    // }
+
+    // setIsCreating(true);
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // await new Promise(resolve => setTimeout(resolve, 2000));
     
-    showToast("Story created successfully!");
-    setIsCreating(false);
+    // showToast("Story created successfully!");
+    // setIsCreating(false);
     
     // Redirect to story editor or characters page
     // navigate(`/stories/${newStoryId}/characters`);
+    navigate(`/u/stories/characters`);
   };
 
   return (
@@ -71,19 +78,19 @@ function CreateStories() {
 
       {/* Single Card with Two Column Layout */}
       <div className="form-card">
+        <div className="card-header d-flex flex-column">
+          <h2 className="card-title">
+            <AutoFixHighIcon className="icon-sm" />
+            Story Details
+          </h2>
+          <p className="card-description">
+            Provide the basic information and style for your story
+          </p>
+        </div>
+
         <div className="card-two-column">
           {/* Left Column - Form */}
           <div className="form-column">
-            <div className="card-header d-flex flex-column">
-              <h2 className="card-title">
-                <AutoFixHighIcon className="icon-sm" />
-                Story Details
-              </h2>
-              <p className="card-description">
-                Provide the basic information for your story
-              </p>
-            </div>
-            
             <div className="card-content">
               <div className="form-group">
                 <label htmlFor="title" className="form-label">Story Title</label>
@@ -134,45 +141,38 @@ function CreateStories() {
             </div>
           </div>
 
-          {/* Right Column - Preview */}
-          <div className="preview-column">
-            <div className="card-header  d-flex flex-column">
-              <h2 className="card-title">
-                <VisibilityOutlinedIcon className="icon-sm" />
-                Preview
-              </h2>
-              <p className="card-description">
-                See how your story will appear
-              </p>
-            </div>
-            
+          {/* Right Column - Style Selection */}
+          <div className="style-column">
             <div className="card-content">
-              {title || description ? (
-                <div className="preview-content">
-                  <div className="preview-story">
-                    <h3 className="preview-title">
-                      {title || "Your Story Title"}
-                    </h3>
-                    <p className="preview-description">
-                      {description || "Your story description will appear here..."}
-                    </p>
-                  </div>
-                  
-                  <div className="preview-stats">
-                    <div className="stat-card">
-                      <div className="stat-number">0</div>
-                      <div className="stat-label">Characters</div>
+              {selectedStyle ? (
+                <div className="style-selected">
+                  <div className="style-selected-content">
+                    <div className="style-selected-icon">
+                      <PaletteOutlinedIcon className="icon-lg" />
                     </div>
-                    <div className="stat-card">
-                      <div className="stat-number">0</div>
-                      <div className="stat-label">Scenes</div>
-                    </div>
+                    <h3 className="style-selected-title">Style Selected</h3>
+                    <p className="style-selected-text">"{selectedStyle}"</p>
+                    <button 
+                      onClick={() => setSelectedStyle("")}
+                      className="btn-outline btn-sm"
+                    >
+                      Change Style
+                    </button>
                   </div>
                 </div>
               ) : (
-                <div className="preview-empty">
-                  <AutoFixHighIcon className="empty-icon" />
-                  <p>Preview will appear here as you type</p>
+                <div className="style-empty">
+                  <div className="style-empty-content">
+                    <div className="style-empty-icon">
+                      <PaletteOutlinedIcon className="empty-icon" />
+                    </div>
+                    <h3 className="style-empty-title">Choose Your Style</h3>
+                    <p className="style-empty-text">
+                      What style would you like for your story? 
+                      (e.g., Fantasy, Mystery, Romance, Sci-Fi, etc.)
+                    </p>
+                   
+                  </div>
                 </div>
               )}
             </div>

@@ -65,6 +65,7 @@ import { Toaster } from 'react-hot-toast';
 import Scheduled from './Pages/User/Scheduled';
 import StoriesPage from './Pages/User/StoriesPage';
 import CreateStories from './Pages/User/CreateStories';
+import CreateCharacters from './Pages/User/CreateCharacters';
 
 
 function App() {
@@ -168,6 +169,8 @@ function App() {
                   <Route path='scheduled' element={<Scheduled></Scheduled>}></Route>
                   <Route path='stories' element={<StoriesPage></StoriesPage>}></Route>
                   <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
+                  <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
+                  <Route path='stories/characters' element={<CreateCharacters></CreateCharacters>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
