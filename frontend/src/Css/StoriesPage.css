@@ -1,0 +1,417 @@
+/* Stories.css */
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+.link-unstyled {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-unstyled:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Icon Size Classes for Material UI Icons */
+.icon-xs {
+  font-size: 12px !important;
+  width: 12px;
+  height: 12px;
+}
+
+.icon-sm {
+  font-size: 16px !important;
+  width: 16px;
+  height: 16px;
+}
+
+.icon-lg {
+  font-size: 32px !important;
+  width: 32px;
+  height: 32px;
+}
+
+.icon-xxl {
+  font-size: 64px !important;
+  width: 64px;
+  height: 64px;
+}
+
+/* Container */
+.stories-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header Styles */
+.stories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-content {
+  flex: 1;
+  min-width: 250px;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 1.125rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Grid Layout */
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Create Card Styles */
+.create-card {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  min-height: 280px;
+}
+
+.create-card:hover {
+  border-color: #667eea;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.create-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  height: 100%;
+}
+
+.create-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.create-card:hover .create-icon {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+}
+
+.create-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.create-subtitle {
+  font-size: 0.875rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Story Card Styles */
+.story-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e1;
+}
+
+.story-image {
+  height: 160px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.story-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.status-complete {
+  background: #48bb78;
+  color: white;
+}
+
+.status-default {
+  background: #718096;
+  color: white;
+}
+
+.story-header {
+  padding: 1rem 1rem 0.5rem;
+}
+
+.story-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.story-card:hover .story-title {
+  color: #667eea;
+}
+
+.story-description {
+  font-size: 0.875rem;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.story-body {
+  padding: 0.5rem 1rem 1rem;
+  margin-top: auto;
+}
+
+.story-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.story-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.story-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #a0aec0;
+}
+
+.story-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #f7fafc;
+  border-color: #cbd5e1;
+  transform: scale(1.05);
+}
+
+.action-danger {
+  color: #e53e3e;
+}
+
+.action-danger:hover {
+  background: #fed7d7;
+  border-color: #feb2b2;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.empty-icon {
+  color: #a0aec0;
+  margin: 0 auto 1.5rem;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-subtitle {
+  font-size: 1rem;
+  color: #718096;
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stories-container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .stories-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .stories-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .story-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .story-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .story-actions {
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stories-container {
+    padding: 0.5rem;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .create-card-content {
+    padding: 2rem 1rem;
+  }
+
+  .story-header,
+  .story-body {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom focus styles for accessibility */
+.btn-primary:focus,
+.action-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

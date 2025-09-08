@@ -63,6 +63,8 @@ import AdminProfilePage from './Pages/Admin/AdminProfilePage';
 import ImageToPrompt from './Pages/Common/ImageToPrompt';
 import { Toaster } from 'react-hot-toast';
 import Scheduled from './Pages/User/Scheduled';
+import StoriesPage from './Pages/User/StoriesPage';
+import CreateStories from './Pages/User/CreateStories';
 
 
 function App() {
@@ -164,6 +166,8 @@ function App() {
                   <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                   <Route path='scheduled' element={<Scheduled></Scheduled>}></Route>
+                  <Route path='stories' element={<StoriesPage></StoriesPage>}></Route>
+                  <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
