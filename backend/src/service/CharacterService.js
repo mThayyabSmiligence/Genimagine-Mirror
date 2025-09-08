@@ -1,4 +1,73 @@
 const db = require('../config/connectDatabase');
+const { userGenerateImageController } = require('../controller/UserGenerateImageController');
+const { Character, Story, Style } = require('../models');
+const { paidGenerateImageService } = require('./PaidGenerateImageService');
+
+
+exports.getCharactersByStoryService = async (user_id, story_id) => {
+  try{
+    const characters = Character.findAll({ where: { user_id, story_id } });
+    return { 
+      status: 200, 
+      success: true, 
+      characters , 
+      message: 'Characters fetched successfully' 
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+exports.generateCharacterService = async (user_id, story_id, name, description) => {
+  try{
+    console.log(1);
+    const story = await Story.findOne({ where: { id: story_id, user_id } });
+    if(!story) return { status: 404, success: false, message: 'Story not found' };
+    console.log(2);
+
+    const style_id = story.style_id;
+    console.log(3);
+
+    const style = await Style.findOne({ where: { id: style_id } });
+    if(!style) return { status: 404, success: false, message: 'Style not found' };
+    console.log(4);
+
+    const prompt = `Character: ${name}. 
+      Description: ${description}. 
+      Art style: ${style.name}. 
+      Generate a full-body portrait in ${style.name} style, clean background, high quality.`
+    console.log(5);
+
+    const inputs = {
+      prompt: prompt,
+      negative_prompt: "skull",
+      width: 704,
+      height: 1280,
+      style: style.name
+    };
+    console.log(6);
+
+    const model_url = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
+    const character = await paidGenerateImageService(inputs, model_url);
+    console.log(7);
+
+    if(!character) return { status: 500, success: false, message: 'Failed to generate character' };
+    console.log(8);
+
+    return { 
+      status: 201, 
+      success: true,
+      message: 'Character created successfully',
+      character
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+
 
 // exports.createCharacterService = async (user_id, name, reference_image_url, description) => {
 //   try {
