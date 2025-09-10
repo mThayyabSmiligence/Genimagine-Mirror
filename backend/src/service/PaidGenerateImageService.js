@@ -31,6 +31,7 @@ exports.paidGenerateImageService= async(inputs,model_url)=>{
             // const imageBuffer = Uint8Array.from(decodedString,(m)=>m.codePointAt(0))
             const imageBuffer= Buffer.from(response.data,'base64')
             
+            
             return imageBuffer
         }catch(error){
             console.log("error generating images:" +error)

@@ -32,6 +32,24 @@ const Character = sequelize.define("Character", {
       type: DataTypes.STRING(255),
       allowNull: true, 
     },
+    image_path: {
+      type: DataTypes.STRING(255),
+      allowNull: true, 
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "user_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    deleted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
 }, {
     tableName: "characters",
     timestamps: true, // ✅ Sequelize will add createdAt and updatedAt automatically

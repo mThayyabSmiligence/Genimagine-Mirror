@@ -2,14 +2,35 @@ const db = require('../config/connectDatabase');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { Character, Story, Style } = require('../models');
 const { paidGenerateImageService } = require('./PaidGenerateImageService');
+const { uploadImageToServer, deleteFromServer } = require('./UploadToServerService');
 
 
 exports.getCharactersByStoryService = async (user_id, story_id) => {
   try{
-    const characters = Character.findAll({ where: { user_id, story_id } });
+    console.log(user_id, story_id);
+    const characters = await Character.findAll({ where: { user_id, story_id , deleted_at: null} });
+    const count = characters.length;
     return { 
       status: 200, 
       success: true, 
+      count,
+      characters, 
+      message: 'Characters fetched successfully' 
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+exports.getCharactersByUserService = async (user_id) => {
+  try{
+    const characters = await Character.findAll({ where: { user_id , deleted_at: null} });
+    const count = characters.length;
+    return { 
+      status: 200, 
+      success: true, 
+      count,
       characters , 
       message: 'Characters fetched successfully' 
     };
@@ -19,41 +40,48 @@ exports.getCharactersByStoryService = async (user_id, story_id) => {
   }
 }
 
-exports.generateCharacterService = async (user_id, story_id, name, description) => {
+exports.generateCharacterService = async (user_id, story_id, name, description=null) => {
   try{
-    console.log(1);
+
+    //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
-    if(!story) return { status: 404, success: false, message: 'Story not found' };
-    console.log(2);
+    if(!story || story.user_id !== user_id) return { status: 404, success: false, message: 'Story not found' };
 
+    //get style details
     const style_id = story.style_id;
-    console.log(3);
-
     const style = await Style.findOne({ where: { id: style_id } });
-    if(!style) return { status: 404, success: false, message: 'Style not found' };
-    console.log(4);
+    if(!style ) return { status: 404, success: false, message: 'Style not found' };
 
+
+    //create character
+    const character = await Character.create({ user_id, story_id, name, description, user_id});
+
+
+    //generate character image
     const prompt = `Character: ${name}. 
       Description: ${description}. 
       Art style: ${style.name}. 
       Generate a full-body portrait in ${style.name} style, clean background, high quality.`
-    console.log(5);
 
     const inputs = {
       prompt: prompt,
       negative_prompt: "skull",
       width: 704,
-      height: 1280,
+      height: 704,
       style: style.name
     };
-    console.log(6);
 
     const model_url = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
-    const character = await paidGenerateImageService(inputs, model_url);
-    console.log(7);
+    const character_image = await paidGenerateImageService(inputs, model_url);
 
-    if(!character) return { status: 500, success: false, message: 'Failed to generate character' };
-    console.log(8);
+    if(!character_image) return { status: 500, success: false, message: 'Failed to generate character' };
+
+
+    //save character image
+    const upload = await uploadImageToServer(character_image,user_id,null,character.id,"character");
+    character.image_url = upload.imageUrl;
+    character.image_path = upload.imagePath;
+    await character.save();
 
     return { 
       status: 201, 
@@ -66,6 +94,159 @@ exports.generateCharacterService = async (user_id, story_id, name, description) 
     return { status: 500, success: false, message: 'Failed to fetch characters' };
   }
 }
+
+exports.regenerateCharacterService = async (user_id, character_id, name=null, description=null) => {
+  try{
+    const character = await Character.findOne({
+      where: { id: character_id, user_id },
+      include: [
+        {
+          model: Story,
+          as: "story",   // must match association alias
+          include: [
+            {
+              model: Style,
+              as: "style" // must match association alias
+            }
+          ]
+        }
+      ]
+    });
+
+    if(!character || character.user_id !== user_id) return { status: 404, success: false, message: 'Character not found' };
+    
+    //deleting the old character image
+    const deleteCharacterImage = await deleteFromServer(character.image_path,user_id,character.story_id,character.id);
+    if(!deleteCharacterImage.success) return { status: 500, success: false, message: 'Failed to delete character image' };
+
+    //update character details
+    if(name) character.name = name;
+    if(description) character.description = description;
+    character.image_url = null;
+    character.image_path = null;
+    await character.save();
+
+    //generate character image
+    const prompt = `Character: ${character.name}. 
+      Description: ${character.description}. 
+      Art style: ${character.story.style.name}. 
+      Generate a full-body portrait in ${character.story.style.name} style, clean background, high quality.`
+      
+    console.log(prompt);
+
+    const inputs = {
+      prompt: prompt,
+      negative_prompt: "skull",
+      width: 704,
+      height: 704,
+      style: character.story.style.name
+    };
+
+    const model_url = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
+    const character_image = await paidGenerateImageService(inputs, model_url);
+
+    if(!character_image) return { status: 500, success: false, message: 'Failed to generate character' };
+
+    //save character image
+    const upload = await uploadImageToServer(character_image,user_id,null,character.id,"character");
+    character.image_url = upload.imageUrl;
+    character.image_path = upload.imagePath;
+    await character.save();
+
+    return{
+      status: 200,
+      success: true,
+      message: 'Character regenerated successfully',
+      character
+    }
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+exports.softDeleteCharacterService = async (user_id, character_id) => {
+  try{
+    const character = await Character.findOne({ where: { id: character_id, user_id } });
+    if(!character || character.user_id !== user_id) return { status: 404, success: false, message: 'Character not found' };
+    character.deleted_at = new Date();
+    await character.save();
+    
+    return { 
+      status: 200, 
+      success: true,
+      message: 'Character deleted successfully'
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+exports.forceDeleteCharacterService = async (user_id, character_id) => {
+  try{
+    const character = await Character.findOne({ where: { id: character_id, user_id } });
+    if(!character || character.user_id !== user_id) return { status: 404, success: false, message: 'Character not found' };
+    await character.destroy();
+    
+    return { 
+      status: 200, 
+      success: true,
+      message: 'Character deleted successfully'
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+exports.restoreCharacterService = async (user_id, character_id) => {
+  try{
+    const character = await Character.findOne({ where: { id: character_id, user_id } });
+    if(!character || character.user_id !== user_id) return { status: 404, success: false, message: 'Character not found' };
+    character.deleted_at = null;
+    await character.save();
+    
+    return { 
+      status: 200, 
+      success: true,
+      message: 'Character restored successfully'
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
+// exports.saveCharacterService = async (user_id, character_image, story_id, name, description) => {
+//   try{
+//     console.log(4);
+//     if(!character_image) return { status: 404, success: false, message: 'Character not found' };
+//     const character = await Character.create({ user_id, story_id, name, description  });
+//     console.log(5);
+//     const upload = await uploadImageToServer(character_image,user_id,null,character.id,"character");
+//     console.log(6);
+
+//     console.log(upload);
+//     character.image_url = upload.imageUrl;
+//     character.image_path = upload.imagePath;
+
+//     console.log(7);
+
+//     await character.save();
+//     console.log(8);
+
+//     return { 
+//       status: 201, 
+//       success: true,
+//       message: 'Character created successfully',
+//       character
+//     };
+//   }catch(e){
+//     console.error(e);
+//     return { status: 500, success: false, message: 'Failed to fetch characters' };
+//   }
+// }
 
 
 

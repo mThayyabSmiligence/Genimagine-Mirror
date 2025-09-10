@@ -1,5 +1,8 @@
 const db = require('../config/connectDatabase');
+const { Sequelize } = require('sequelize');
 const Story = require('../models/Story');
+const Character = require('../models/Character');
+
 
 /**
  * Create a new story
@@ -27,24 +30,38 @@ exports.createStory = async ({ user_id, name, description, style_id}) => {
  * Get all stories of a user
  */
 exports.getUserStories = async (user_id) => {
-  try{
-    const stories = await Story.findAll({ where: { user_id } });
-    return{
+  try {
+    const stories = await Story.findAll({
+      where: { user_id },
+      attributes: {
+        include: [
+          [Sequelize.fn("COUNT", Sequelize.col("Characters.id")), "characterCount"]
+        ]
+      },
+      include: [
+        {
+          model: Character,
+          attributes: [] // don’t fetch character details, just use for counting
+        }
+      ],
+      group: ["Story.id"], // important so COUNT works per story
+    });
+
+    return {
       success: true,
       stories,
-      message: 'Stories fetched successfully',
-      status: 200
-    }
-  }catch(e){
+      message: "Stories fetched successfully",
+      status: 200,
+    };
+  } catch (e) {
     console.error(e);
-    return{
+    return {
       success: false,
-      message: 'Failed to fetch stories',
-      status: 500
-    }
+      message: "Failed to fetch stories",
+      status: 500,
+    };
   }
 };
-
 /**
  * Get a single story by ID for a user
  */

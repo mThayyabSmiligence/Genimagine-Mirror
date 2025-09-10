@@ -75,7 +75,7 @@ exports.freeGenerateImage = async(inputs) => {
         // const decodedString= atob(response.data.result.image)
         // const imageBuffer = Uint8Array.from(decodedString,(m)=>m.codePointAt(0))
        
-        return  Buffer.from(response.data)
+        return  Buffer.from(response.data,'base64')
     }catch(error){
         console.log("error generating images:" ,error)
         console.log(typeof(inputs.width),typeof(inputs.height));
