@@ -10,7 +10,7 @@ const { submitFeedbackController } = require('../controller/UserFeedbackControll
 const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
 const { getImageToPromptConversationHistoryController, upload } = require('../controller/ImagetoPromptController');
-const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware, generateCharacterController, getCharactersByStoryController } = require('../controller/CharacterController');
+const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware, generateCharacterController, getCharactersByStoryController, saveCharacterController, regenerateCharacterController, getCharactersByUserController, softDeleteCharacterController, forceDeleteCharacterController, restoreCharacterController } = require('../controller/CharacterController');
 const { generateSceneController, getScenesController, generateLayeredSceneController } = require('../controller/SceneController');
 const { createStoryController, getUserStoriesController, getStoryByIdController, updateStoryController, deleteStoryController } = require('../controller/StoryController');
 const router = express.Router();
@@ -92,8 +92,14 @@ router.get('/get-story/:id', getStoryByIdController);
 router.post('/update-story/:id', updateStoryController);
 router.post('/delete-story/:id', deleteStoryController);
 
-
-router.get('/generate-characters', getCharactersByStoryController)
+// character route:
+router.get('/get-story-characters', getCharactersByStoryController)
+router.get('/get-characters', getCharactersByUserController)
 router.post('/generate-character-image', generateCharacterController)
-    
+router.post('/regenerate-character', regenerateCharacterController);
+router.post('/delete-character', softDeleteCharacterController);
+router.post('/force-delete-character', forceDeleteCharacterController);
+router.post('/restore-character', restoreCharacterController);
+
+// router.post('/save-character', saveCharacterController);
 module.exports = router;

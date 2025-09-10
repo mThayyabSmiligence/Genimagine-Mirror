@@ -4,6 +4,7 @@ const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors')
+const bodyParser = require("body-parser");
 
 const cookie = require("cookie")
 
@@ -56,6 +57,10 @@ sequelize.sync({ alter: false })
 
 // Make io available globally (for cron jobs & routes)
 global.io = io;
+
+// Recommended: built-in parser
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // middleware's
 app.use((req, res, next) => {

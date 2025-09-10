@@ -2,8 +2,8 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 // models/Style.js
-module.exports = (sequelize, DataTypes) => {
-  const Style = sequelize.define("Style", {
+
+const Style = sequelize.define("Style", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -42,5 +42,5 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: "updated_at", // maps to your column
   });
 
-  return Style;
-};
+  module.exports = Style;
+

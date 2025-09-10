@@ -29,19 +29,19 @@ exports.userGenerateImageController=async(req,res,next)=>{
     const w_h = await handelAspectRatio(quality,aspect_ratio)
 
     // getting jwt token from cookies
-        let cookies =null
-        let token =null
-        let decodeToken=null
-        
-        try{
-            const cookies1 = cookie.parse(req.headers.cookie)
-            cookies=cookies1    
-            const token1 = cookies.token
-            token= token1
-            decodeToken= jwt.decode(token)
-        }catch(err){
-            console.log(err)
-        }
+    let cookies =null
+    let token =null
+    let decodeToken=null
+    
+    try{
+        const cookies1 = cookie.parse(req.headers.cookie)
+        cookies=cookies1    
+        const token1 = cookies.token
+        token= token1
+        decodeToken= jwt.decode(token)
+    }catch(err){
+        console.log(err)
+    }
 
     
     const {id,username,role}= decodeToken
@@ -53,12 +53,11 @@ exports.userGenerateImageController=async(req,res,next)=>{
     const referenceKeywords = await extractPromptReference(prompt);
 
     if (referenceKeywords && referenceKeywords.length > 0) {
-    console.log("Mistral detected reference keywords:", referenceKeywords);
+        console.log("Mistral detected reference keywords:", referenceKeywords);
 
-    updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
+        updatedPrompt = await generateCrossChatKeywordPrompt(id, referenceKeywords, prompt);
     } else {
-
-    updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
+        updatedPrompt = await generateContextPrompt(id, chat_id, prompt, use_context);
     }
 
     let styleName = null;  // Declare early so it's available below

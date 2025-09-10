@@ -1,14 +1,80 @@
 exports.getCharactersByStoryController = async (req, res) => {
-  const { storyId } = req.params;
-  const characters = await getCharactersByStoryService(req.user.id, storyId);
+  const { story_id } = req.body;
+  
+  //check if story_id is provided
+  if(!story_id) return res.status(400).json({ success: false, message: 'story_id required' });
+
+  const characters = await getCharactersByStoryService(req.user.id, story_id);
   return res.status(characters.status).json(characters);
 };
 
+exports.getCharactersByUserController = async (req, res) => {
+  const characters = await getCharactersByUserService(req.user.id);
+  return res.status(characters.status).json(characters);
+}
+
 exports.generateCharacterController = async (req, res) => {
   const { story_id ,name ,description  } = req.body;
+
+  //check if story_id is provided
+  if(!story_id) return res.status(400).json({ success: false, message: 'story_id required' });
+  //check if name is provided
+  if(!name) return res.status(400).json({ success: false, message: 'name required' });
+
   const characters = await generateCharacterService(req.user.id, story_id, name, description);
   return res.status(characters.status).json(characters);
 }
+
+exports.regenerateCharacterController = async (req, res) => {
+  const { character_id, name, description } = req.body;
+
+  if(!character_id) return res.status(400).json({ success: false, message: 'character_id required' });
+
+  const characters = await regenerateCharacterService(req.user.id, character_id , name, description);
+  return res.status(characters.status).json(characters);
+}
+
+
+exports.softDeleteCharacterController = async (req, res) => {
+  const { character_id } = req.body;
+
+  //check if character_id is provided
+  if(!character_id) return res.status(400).json({ success: false, message: 'character_id required' });
+
+  const characters = await softDeleteCharacterService(req.user.id, character_id);
+  return res.status(characters.status).json(characters);
+}
+
+exports.forceDeleteCharacterController = async (req, res) => {
+  const { character_id } = req.body;
+
+  //check if character_id is provided
+  if(!character_id) return res.status(400).json({ success: false, message: 'character_id required' });
+
+  const characters = await forceDeleteCharacterService(req.user.id, character_id);
+  return res.status(characters.status).json(characters);
+}
+
+exports.restoreCharacterController = async (req, res) => {
+  const { character_id } = req.body;
+
+  //check if character_id is provided
+  if(!character_id) return res.status(400).json({ success: false, message: 'character_id required' });
+
+  const characters = await restoreCharacterService(req.user.id, character_id);
+  return res.status(characters.status).json(characters);
+}
+
+// exports.saveCharacterController = async (req, res) => {
+//   console.log(1);
+//   console.log(2);
+
+//   const { story_id, name, description, character, image_string } = req.body;
+//   console.log(3);
+
+//   const characters = await saveCharacterService(req.user.id, image_string, story_id, name, description);
+//   return res.status(characters.status).json(characters);
+// }
 
 // const { createCharacterService, addExpressionService, addPoseService, getCharactersService } = require("../service/CharacterService");
 
@@ -41,7 +107,7 @@ exports.generateCharacterController = async (req, res) => {
 
 // const multer = require('multer');
 // const upload = multer({ dest: 'tmp/uploads/' });
-const {  createCharacter, getUserCharacters, generateCharacterService } = require('../service/CharacterService');
+const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService } = require('../service/CharacterService');
 const fs = require('fs');
 const path = require('path');
 

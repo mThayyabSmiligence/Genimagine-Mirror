@@ -118,3 +118,5 @@ exports.deleteChatFromServer=async(userId,chatId)=>{
     }
   }
 }
+
+exports.uploadChatImageToServer = async (image, userId, story, imageId , type) => {}
