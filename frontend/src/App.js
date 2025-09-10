@@ -169,8 +169,8 @@ function App() {
                   <Route path='scheduled' element={<Scheduled></Scheduled>}></Route>
                   <Route path='stories' element={<StoriesPage></StoriesPage>}></Route>
                   <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
-                  <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
-                  <Route path='stories/characters' element={<CreateCharacters></CreateCharacters>}></Route>
+                  <Route path='stories/:id/edit' element={<CreateStories></CreateStories>}></Route>
+                  <Route path='stories/:id/characters' element={<CreateCharacters></CreateCharacters>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
