@@ -16,6 +16,7 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
+import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import socket from '../../utils/socket'
 
 
@@ -257,17 +258,9 @@ export default function UserNavbar() {
                                 <div to={"/credit-purchase" } className='link nav-options ms-1'>Image to Prompt</div>
                             </div>
                         </Link>
-
-                        <Link to={"/image-generation" } className='link mb-1'  id='new-chat-link'>
-                            <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
-
-                                <AddCircleOutlineOutlinedIcon/>
-                                <div to={"/image-generation" } className='link nav-options ms-1'>{loggedIn?'New Chat':'Generate'}</div>
-                            </div>
-                        </Link>
-
                         {
                         loggedIn&&
+                        <>
                         <Link to={"/u/scheduled" } className='link'  id='scheduled-link'>
                             <div className={`nav-list-item  d-flex align-items-center ${path=="/u/scheduled"&&'active'}`}>
 
@@ -275,7 +268,23 @@ export default function UserNavbar() {
                                 <div to={"/u/scheduled" } className='link nav-options ms-1'>Scheduled</div>
                             </div>
                         </Link>
+
+                        <Link to={"/u/stories" } className='link'  id='stories-link'>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/u/stories"&&'active'}`}>
+
+                                <AutoStoriesRoundedIcon/>
+                                <div to={"/u/stories" } className='link nav-options ms-1'>Stories</div>
+                            </div>
+                        </Link>
+                        </>
                         }
+                        <Link to={"/image-generation" } className='link mb-1'  id='new-chat-link'>
+                            <div className={`nav-list-item  d-flex align-items-center ${path=="/image-generation"&&'active'}`}>
+
+                                <AddCircleOutlineOutlinedIcon/>
+                                <div to={"/image-generation" } className='link nav-options ms-1'>{loggedIn?'New Chat':'Generate'}</div>
+                            </div>
+                        </Link>
 
                     </div>
                     <div className=' sub-mid-section '>
