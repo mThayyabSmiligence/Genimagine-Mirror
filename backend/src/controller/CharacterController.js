@@ -1,5 +1,5 @@
 exports.getCharactersByStoryController = async (req, res) => {
-  const { story_id } = req.body;
+  const { story_id } = req.query;
   
   //check if story_id is provided
   if(!story_id) return res.status(400).json({ success: false, message: 'story_id required' });
