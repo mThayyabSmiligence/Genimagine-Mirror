@@ -183,6 +183,25 @@ exports.regenerateCharacterService = async (user_id, character_id, name = null, 
   }
 }
 
+exports.uploadCharacterImageService = async (user_id, image, name, description, story_id) => {
+  try{
+    const character = await Character.create({ user_id, story_id, name, description  });
+    const upload = await uploadImageToServer(image,user_id,null,character.id,"character");
+    character.image_url = upload.imageUrl;
+    character.image_path = upload.imagePath;
+    await character.save();
+    return { 
+      status: 201, 
+      success: true,
+      message: 'Character created successfully',
+      character
+    };
+  }catch(e){
+    console.error(e);
+    return { status: 500, success: false, message: 'Failed to fetch characters' };
+  }
+}
+
 exports.softDeleteCharacterService = async (user_id, character_id) => {
   try {
     const character = await Character.findOne({ where: { id: character_id, user_id } });
