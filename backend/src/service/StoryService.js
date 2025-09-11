@@ -35,12 +35,13 @@ exports.getUserStories = async (user_id) => {
       where: { user_id },
       attributes: {
         include: [
-          [Sequelize.fn("COUNT", Sequelize.col("Characters.id")), "characterCount"]
+          [Sequelize.fn("COUNT", Sequelize.col("characters.id")), "characterCount"]
         ]
       },
       include: [
         {
           model: Character,
+          as: "characters",
           attributes: [] // don’t fetch character details, just use for counting
         }
       ],
@@ -160,3 +161,4 @@ exports.getAllStories = async () => {
     }
   }
 };
+
