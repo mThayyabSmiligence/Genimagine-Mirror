@@ -34,6 +34,31 @@ exports.regenerateCharacterController = async (req, res) => {
   return res.status(characters.status).json(characters);
 }
 
+exports.uploadCharacterImageController = async (req, res) => {
+  const { image,name,description , story_id} = req.body;
+
+  
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "image required" });
+  }
+  if (!name) {
+    return res.status(400).json({ success: false, message: "name required" });
+  }
+
+  // File buffer is available at req.file.buffer
+  // You can save it directly to S3, Firebase, or disk depending on your storage setup
+  const imageBuffer = req.file.buffer;
+
+  const characters = await uploadCharacterImageService(
+    req.user.id,
+    imageBuffer,
+    name,
+    description,
+    story_id
+  );
+  return res.status(characters.status).json(characters);
+}
+
 
 exports.softDeleteCharacterController = async (req, res) => {
   const { character_id } = req.body;
@@ -107,7 +132,7 @@ exports.restoreCharacterController = async (req, res) => {
 
 // const multer = require('multer');
 // const upload = multer({ dest: 'tmp/uploads/' });
-const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService } = require('../service/CharacterService');
+const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService, uploadCharacterImageService } = require('../service/CharacterService');
 const fs = require('fs');
 const path = require('path');
 
