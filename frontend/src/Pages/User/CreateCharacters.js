@@ -271,9 +271,7 @@ function CreateCharacters() {
         const story_id = parseInt(id)
         console.log("story 2", story_id)
         
-        const response = await axiosPrivate.get('/get-story-characters',{
-          story_id
-        });
+        const response = await axiosPrivate.get(`/get-story-characters?story_id=${story_id}`);
         
         console.log('API Response:', response);
         console.log('Response Data:', response.data);
