@@ -33,8 +33,9 @@ function CreateCharacters() {
   const [anchorMenu, setAnchorMenu] = useState(false);
   const [showCharacterPreview, setShowCharacterPreview] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-  
-  
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCharacter, setEditingCharacter] = useState(null);
+
   // Updated upload state for drag and drop
   const [uploadedImage, setUploadedImage] = useState({
     file: null,
@@ -202,6 +203,75 @@ function CreateCharacters() {
     }
   };
 
+    const handleOpenRegenerateMode = (character) => {
+      // Set edit mode and pre-fill the form
+      setIsEditMode(true);
+      setEditingCharacter(character);
+      setNewCharacter({
+        name: character.name || "",
+        description: character.description || ""
+      });
+      setDialogMode("generate");
+      
+      // Close preview modal and open create dialog
+      setShowCharacterPreview(false);
+      setIsCreateDialogOpen(true);
+    };
+
+    const handleRegenerateCharacter = async () => {
+      if (!editingCharacter || !newCharacter.name.trim()) {
+        toast.error("Please enter a character name");
+        return;
+      }
+
+      setIsGenerating(true);
+      
+      try {
+        const response = await axiosPrivate.post("/regenerate-character", {
+          character_id: editingCharacter.id,
+          name: newCharacter.name,
+          description: newCharacter.description
+        });
+
+        if (response.data.success) {
+          // Store the updated character and switch to preview mode
+          setGeneratedCharacter(response.data.character);
+          setShowPreview(true);
+          setImageRefresh(prev => prev + 1);
+          
+          toast.success("Character regenerated successfully!");
+        } else {
+          toast.error(response.data.message || "Failed to regenerate character");
+        }
+      } catch (err) {
+        console.error('Error regenerating character:', err);
+        toast.error(err.response?.data?.message || "Failed to regenerate character. Please try again.");
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    const handleEditNext = () => {
+      // Update the character in the characters array
+      if (editingCharacter && generatedCharacter) {
+        setCharacters(prev => 
+          prev.map(char => 
+            char.id === editingCharacter.id 
+              ? { 
+                  ...char, 
+                  name: newCharacter.name,
+                  description: newCharacter.description,
+                  image_url: generatedCharacter.image_url 
+                }
+              : char
+          )
+        );
+      }
+      
+      // Close dialog and reset states
+      closeDialog();
+    };
+
   const handleUploadCharacter = async () => {
   if (!newCharacter.name.trim()) {
       toast.error("Please enter a character name", 'error');
@@ -339,6 +409,8 @@ function CreateCharacters() {
   const closeDialog = () => {
     setIsCreateDialogOpen(false);
     setShowPreview(false); 
+    setIsEditMode(false); // Add this
+    setEditingCharacter(null); // Add this
     setNewCharacter({ name: "", description: "" });
     setGeneratedCharacter(null); 
     setUploadedImage({
@@ -350,6 +422,7 @@ function CreateCharacters() {
     setDragActive(false);
     setImageRefresh(0);
   };
+
 
   const handleNext = () => {
     if (isNextEnabled) {
@@ -478,11 +551,14 @@ const closeCharacterPreview = () => {
             {/* --- Header --- */}
             <div className="dialog-header">
               <h2 className="dialog-title">
-                {showPreview ? "Character Preview" : "Create New Character"}
+                {showPreview ? 
+                  (isEditMode ? "Updated Character Preview" : "Character Preview") : 
+                  (isEditMode ? "Edit Character" : "Create New Character")
+                }
               </h2>
               <div className="header-actions">
-                {/* Only show mode switch when NOT in preview mode */}
-                {!showPreview && (
+                {/* Only show mode switch when NOT in preview mode and NOT in edit mode */}
+                {!showPreview && !isEditMode && (
                   <div className="mode-switch">
                     <div className="custom-select-wrapper">
                       <select
@@ -503,7 +579,10 @@ const closeCharacterPreview = () => {
                 </button>
               </div>
               <p className="dialog-description text-start">
-                {showPreview ? "Review your generated character" : "Design a unique character for your stories"}
+                {showPreview ? 
+                  "Review your updated character" : 
+                  (isEditMode ? "Edit your character details and regenerate the image" : "Design a unique character for your stories")
+                }
               </p>
             </div>
 
@@ -528,7 +607,7 @@ const closeCharacterPreview = () => {
                   </div>
                   
                   <div className="preview-actions">
-                    {dialogMode === "generate" && (
+                    {!isEditMode && dialogMode === "generate" && (
                       <button
                         onClick={handleRegenerateImage}
                         disabled={isRegenerating}
@@ -545,14 +624,34 @@ const closeCharacterPreview = () => {
                         )}
                       </button>
                     )}
+                    
+                    {isEditMode && (
+                      <button
+                        onClick={handleRegenerateCharacter}
+                        disabled={isGenerating}
+                        className="btn-outline btn-full"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="loading-spinner"></div> Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshIcon className="icon-sm" /> Regenerate Again
+                          </>
+                        )}
+                      </button>
+                    )}
+                    
                     <button
-                      onClick={handlePreviewNext}
+                      onClick={isEditMode ? handleEditNext : handlePreviewNext}
                       className="btn-primary btn-full"
                     >
                       Next
                       <EastRoundedIcon className="icon-sm" />
                     </button>
                   </div>
+
                 </div>
               ) : (
                 /* FORM SECTION - Original name/description fields */
@@ -582,6 +681,21 @@ const closeCharacterPreview = () => {
                       placeholder="Describe your character..."
                     />
                   </div>
+
+                  {/* Show current character image in edit mode */}
+                  {isEditMode && editingCharacter && !showPreview && (
+                    <div className="form-group">
+                      <label className="form-label">Current Character Image</label>
+                      <div className="current-character-preview">
+                        <img 
+                          src={`${editingCharacter.image_url}?t=${new Date().getTime()}`}
+                          alt={editingCharacter.name}
+                          className="current-character-image"
+                        />
+                      </div>
+                    </div>
+                  )}
+
 
                   {/* Mode Switch */}
                   {dialogMode === "generate" ? (
@@ -661,17 +775,21 @@ const closeCharacterPreview = () => {
                   {/* Actions */}
                   <div className="dialog-actions">
                     <button
-                      onClick={dialogMode === "upload" ? handleUploadCharacter : handleCreateCharacter}
+                      onClick={isEditMode ? handleRegenerateCharacter : (dialogMode === "upload" ? handleUploadCharacter : handleCreateCharacter)}
                       disabled={isGenerating || !newCharacter.name.trim() || (dialogMode === "upload" && !uploadedImage.file)}
                       className="btn-primary btn-full"
                     >
                       {isGenerating ? (
                         <>
-                          <div className="loading-spinner"></div> {dialogMode === "upload" ? "Uploading..." : "Generating..."}
+                          <div className="loading-spinner"></div> {isEditMode ? "Regenerating..." : (dialogMode === "upload" ? "Uploading..." : "Generating...")}
                         </>
                       ) : (
                         <>
-                          {dialogMode === "upload" ? (
+                          {isEditMode ? (
+                            <>
+                              <RefreshIcon className="icon-sm" /> Regenerate Character
+                            </>
+                          ) : dialogMode === "upload" ? (
                             <>
                               <UploadFileIcon className="icon-sm" /> Upload Character
                             </>
@@ -782,9 +900,18 @@ const closeCharacterPreview = () => {
         <div className="dialog-overlay" onClick={closeCharacterPreview}>
           <div className="character-preview-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="character-preview-header">
-              <button className="dialog-close" onClick={closeCharacterPreview}>
-                <CloseIcon className="icon-sm" />
-              </button>
+              <div className="character-preview-actions">
+                  <button 
+                    className="character-preview-btn regenerate-btn" 
+                    onClick={() => handleOpenRegenerateMode(selectedCharacter)}
+                    title="Regenerate character"
+                  >
+                    <RefreshIcon className="icon-sm" />
+                  </button>
+                  <button className="character-preview-btn close-btn" onClick={closeCharacterPreview}>
+                    <CloseIcon className="icon-sm" />
+                  </button>
+                </div>
             </div>
             
             <div className="character-preview-content">
