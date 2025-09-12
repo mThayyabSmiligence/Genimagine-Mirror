@@ -42,7 +42,11 @@ exports.getUserStories = async (user_id) => {
         {
           model: Character,
           as: "characters",
-          attributes: [] // don’t fetch character details, just use for counting
+          attributes: [], // don’t fetch character details, just use for counting
+          required: false, // so stories with 0 characters still appear
+          where: {
+            deleted_at: null
+          }
         }
       ],
       group: ["Story.id"], // important so COUNT works per story
