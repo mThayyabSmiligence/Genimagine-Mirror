@@ -36,6 +36,11 @@ const Character = sequelize.define("Character", {
       type: DataTypes.STRING(255),
       allowNull: true, 
     },
+    image_type: {
+      type: DataTypes.ENUM("uploaded", "generated"),
+      allowNull: false,
+      defaultValue: "generated",
+    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

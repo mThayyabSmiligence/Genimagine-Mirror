@@ -44,6 +44,9 @@ exports.uploadCharacterImageController = async (req, res) => {
   if (!name) {
     return res.status(400).json({ success: false, message: "name required" });
   }
+  if (!story_id) {
+    return res.status(400).json({ success: false, message: "story_id required" });
+  }
 
   // File buffer is available at req.file.buffer
   // You can save it directly to S3, Firebase, or disk depending on your storage setup
@@ -59,6 +62,37 @@ exports.uploadCharacterImageController = async (req, res) => {
   return res.status(characters.status).json(characters);
 }
 
+exports.reuploadCharacterImageController = async (req, res) => {
+  const {name,description , story_id, character_id} = req.body;
+
+  
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "image required" });
+  }
+  if (!name) {
+    return res.status(400).json({ success: false, message: "name required" });
+  }
+  if (!story_id) {
+    return res.status(400).json({ success: false, message: "story_id required" });
+  }
+  if (!character_id) {
+    return res.status(400).json({ success: false, message: "character_id required" });
+  }
+
+  // File buffer is available at req.file.buffer
+  // You can save it directly to S3, Firebase, or disk depending on your storage setup
+  const imageBuffer = req.file.buffer;
+
+  const characters = await reuploadCharacterImageService(
+    req.user.id,
+    imageBuffer,
+    name,
+    description,
+    story_id,
+    character_id
+  );
+  return res.status(characters.status).json(characters);
+}
 
 exports.softDeleteCharacterController = async (req, res) => {
   const { character_id } = req.body;
@@ -132,7 +166,7 @@ exports.restoreCharacterController = async (req, res) => {
 
 // const multer = require('multer');
 // const upload = multer({ dest: 'tmp/uploads/' });
-const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService, uploadCharacterImageService } = require('../service/CharacterService');
+const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService, uploadCharacterImageService, reuploadCharacterImageService } = require('../service/CharacterService');
 const fs = require('fs');
 const path = require('path');
 
