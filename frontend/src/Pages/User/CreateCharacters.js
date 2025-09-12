@@ -31,6 +31,9 @@ function CreateCharacters() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [dialogMode, setDialogMode] = useState("generate"); // "generate" | "upload"
   const [anchorMenu, setAnchorMenu] = useState(false);
+  const [showCharacterPreview, setShowCharacterPreview] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  
   
   // Updated upload state for drag and drop
   const [uploadedImage, setUploadedImage] = useState({
@@ -228,7 +231,8 @@ function CreateCharacters() {
         setGeneratedCharacter(response.data.character);
         setShowPreview(true);
         
-        toast.success("Character uploaded successfully!");
+        toast.success("Character created successfully!");
+        // navigate("/");
       } else {
         toast.error(response.data.message || "Failed to upload character");
       }
@@ -354,6 +358,17 @@ function CreateCharacters() {
     }
   };
 
+  const handleCharacterClick = (character) => {
+    setSelectedCharacter(character);
+    setShowCharacterPreview(true);
+  };
+
+const closeCharacterPreview = () => {
+  setShowCharacterPreview(false);
+  setSelectedCharacter(null);
+};
+
+
   return (
     <div className="characters-container mt-5">
       {/* Header */}
@@ -398,7 +413,12 @@ function CreateCharacters() {
 
         {/* Character Cards */}
         {Array.isArray(characters) && characters.length > 0 && characters.map((character) => (
-          <div key={character.id || character._id || Math.random()} className="character-card">
+          <div 
+            key={character.id || character._id || Math.random()} 
+            className="character-card"
+            onClick={() => handleCharacterClick(character)} // Add this
+            style={{ cursor: 'pointer' }} // Add this for better UX
+          >
             <div className="character-image">
               <div className="character-overlay"></div>
             </div>
@@ -415,14 +435,20 @@ function CreateCharacters() {
                 <button 
                   className="action-btn" 
                   title="Edit Character"
-                  onClick={() => console.log('Edit character:', character.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    console.log('Edit character:', character.id);
+                  }}
                 >
                   <EditOutlinedIcon className="icon-xs" />
                 </button>
                 <button 
                   className="action-btn action-danger" 
                   title="Delete Character"
-                  onClick={() => handleDeleteClick(character)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    handleDeleteClick(character);
+                  }}
                 >
                   <DeleteOutlineIcon className="icon-xs" />
                 </button>
@@ -502,21 +528,23 @@ function CreateCharacters() {
                   </div>
                   
                   <div className="preview-actions">
-                    <button
-                      onClick={handleRegenerateImage}
-                      disabled={isRegenerating}
-                      className="btn-outline btn-full"
-                    >
-                      {isRegenerating ? (
-                        <>
-                          <div className="loading-spinner"></div> Regenerating...
-                        </>
-                      ) : (
-                        <>
-                          <RefreshIcon className="icon-sm" /> Regenerate Image
-                        </>
-                      )}
-                    </button>
+                    {dialogMode === "generate" && (
+                      <button
+                        onClick={handleRegenerateImage}
+                        disabled={isRegenerating}
+                        className="btn-outline btn-full"
+                      >
+                        {isRegenerating ? (
+                          <>
+                            <div className="loading-spinner"></div> Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshIcon className="icon-sm" /> Regenerate Image
+                          </>
+                        )}
+                      </button>
+                    )}
                     <button
                       onClick={handlePreviewNext}
                       className="btn-primary btn-full"
@@ -579,7 +607,7 @@ function CreateCharacters() {
                             <p className="upload-description">Drag and drop your image here, or click to browse</p>
                             <p className="upload-format">Supported formats: PNG, JPEG, JPG, WEBP (Max 5MB)</p>
                             <button
-                              className="choose-image-btn"
+                              className="choose-character-image-btn"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onButtonClick();
@@ -639,7 +667,7 @@ function CreateCharacters() {
                     >
                       {isGenerating ? (
                         <>
-                          <div className="loading-spinner"></div> {dialogMode === "upload" ? "Uploading..." : "Creating..."}
+                          <div className="loading-spinner"></div> {dialogMode === "upload" ? "Uploading..." : "Generating..."}
                         </>
                       ) : (
                         <>
@@ -649,7 +677,7 @@ function CreateCharacters() {
                             </>
                           ) : (
                             <>
-                              <AutoFixHighIcon className="icon-sm" /> Create Character
+                              <AutoFixHighIcon className="icon-sm" /> Generate Character
                             </>
                           )}
                         </>
@@ -744,6 +772,35 @@ function CreateCharacters() {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCharacterPreview && selectedCharacter && (
+        <div className="dialog-overlay" onClick={closeCharacterPreview}>
+          <div className="character-preview-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="character-preview-header">
+              <button className="dialog-close" onClick={closeCharacterPreview}>
+                <CloseIcon className="icon-sm" />
+              </button>
+            </div>
+            
+            <div className="character-preview-content">
+              <div className="character-preview-image-container">
+                <img 
+                  src={selectedCharacter.image_url}
+                  alt={selectedCharacter.name}
+                  className="character-preview-full-image"
+                />
+              </div>
+              
+              <div className="character-preview-info">
+                <h3 className="character-preview-name">{selectedCharacter.name}</h3>
+                {selectedCharacter.description && (
+                  <p className="character-preview-desc">{selectedCharacter.description}</p>
+                )}
               </div>
             </div>
           </div>

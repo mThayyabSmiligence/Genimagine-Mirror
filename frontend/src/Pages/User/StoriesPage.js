@@ -221,7 +221,7 @@ function StoriesPage() {
               <div className="story-meta">
                 <div className="meta-item">
                   <PeopleOutlineIcon className="icon-xs" />
-                  <span>{story.characters || 0} characters</span>
+                  <span>{story.characterCount || 0} characters</span>
                 </div>
                 <div className="meta-item">
                   <AutoStoriesRoundedIcon className="icon-xs" />
