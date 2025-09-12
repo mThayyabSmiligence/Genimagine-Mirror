@@ -8,7 +8,7 @@ import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import RefreshIcon from '@mui/icons-material/Refresh'; 
+import LoopRoundedIcon from '@mui/icons-material/LoopRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -31,7 +31,12 @@ function CreateCharacters() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [dialogMode, setDialogMode] = useState("generate"); // "generate" | "upload"
   const [anchorMenu, setAnchorMenu] = useState(false);
-  
+  const [showCharacterPreview, setShowCharacterPreview] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCharacter, setEditingCharacter] = useState(null);
+  const [isNewCharacter, setIsNewCharacter] = useState(false); // NEW: Controls Next button visibility
+
   // Updated upload state for drag and drop
   const [uploadedImage, setUploadedImage] = useState({
     file: null,
@@ -49,13 +54,17 @@ function CreateCharacters() {
   // Check if Next button should be enabled
   const isNextEnabled = characters.length >= 1;
 
-  const [showPreview, setShowPreview] = useState(false);
   const [generatedCharacter, setGeneratedCharacter] = useState(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [imageRefresh, setImageRefresh] = useState(0);
   
   const { id } = useParams(); 
   const navigate = useNavigate(); 
+
+  // Debug: Watch for changes in characters array
+  useEffect(() => {
+    console.log('Characters array updated:', characters);
+  }, [characters]);
 
   // Drag and drop handlers
   const handleDrag = (e) => {
@@ -139,7 +148,7 @@ function CreateCharacters() {
 
   const handleCreateCharacter = async () => {
     if (!newCharacter.name.trim()) {
-      toast.error("Please enter a character name", 'error');
+      toast.error("Please enter a character name");
       return;
     }
 
@@ -153,9 +162,12 @@ function CreateCharacters() {
       });
 
       if (response.data.success) {
-        // Store the generated character and switch to preview mode
-        setGeneratedCharacter(response.data.character);
-        setShowPreview(true); // Show preview in same dialog
+        // Store the generated character with source tracking
+        setGeneratedCharacter({
+          ...response.data.character,
+          imageSource: 'generated'
+        });
+        setImageRefresh(prev => prev + 1);
         
         toast.success("Character created successfully!");
       } else {
@@ -182,11 +194,32 @@ function CreateCharacters() {
       });
 
       if (response.data.success) {
-        // Force image refresh by updating both character and refresh counter
-        setGeneratedCharacter(response.data.character);
+        // Update the character inline
+        const updatedCharacter = {
+          ...response.data.character,
+          imageSource: 'generated'
+        };
+        setGeneratedCharacter(updatedCharacter);
         setImageRefresh(prev => prev + 1);
         
-        console.log('New image URL:', response.data.character.image_url);
+        // If in edit mode, also update the characters array directly
+        if (isEditMode && editingCharacter) {
+          setCharacters(prev => 
+            prev.map(char => 
+              char.id === editingCharacter.id 
+                ? { 
+                    ...char, 
+                    name: newCharacter.name.trim(),
+                    description: newCharacter.description,
+                    image_url: updatedCharacter.image_url,
+                    imageSource: 'generated',
+                    updated_at: new Date().toISOString()
+                  }
+                : char
+            )
+          );
+        }
+        
         toast.success("Character image regenerated successfully!");
       } else {
         toast.error(response.data.message || "Failed to regenerate character image");
@@ -199,38 +232,200 @@ function CreateCharacters() {
     }
   };
 
-  const handleUploadCharacter = async () => {
-  if (!newCharacter.name.trim()) {
-      toast.error("Please enter a character name", 'error');
-      return;
-    }
+  // NEW: Edit handler that works like regenerate
+  const handleEditClick = (character) => {
+    // Set flags for editing existing character
+    setIsNewCharacter(false); // This is editing, not creating new
+    setIsEditMode(true);
+    setEditingCharacter(character);
+    setNewCharacter({
+      name: character.name || "",
+      description: character.description || ""
+    });
 
-    if (!uploadedImage.file) {
-      toast.error("Please upload an image", 'error');
+    // Check if character was uploaded or generated to set appropriate mode
+    const characterImageSource = character.imageSource || 'generated';
+    setDialogMode(characterImageSource === 'uploaded' ? 'upload' : 'generate');
+
+    if (characterImageSource === 'uploaded') {
+      // For uploaded characters, pre-populate the upload area with the current image
+      setUploadedImage({
+        file: null, // We don't have the original file
+        preview: character.image_url,
+        name: `${character.name}_current.jpg`,
+        size: 0 // We don't know the original size
+      });
+      setGeneratedCharacter(null); // Don't show inline image for upload mode
+    } else {
+      // For generated characters, show the current image inline
+      setGeneratedCharacter(character);
+      setUploadedImage({
+        file: null,
+        preview: null,
+        name: '',
+        size: 0
+      });
+    }
+    
+    // Open create dialog for editing
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleOpenRegenerateMode = (character) => {
+    // Set flags for editing existing character
+    setIsNewCharacter(false); // Important: this is NOT a new character
+    setIsEditMode(true);
+    setEditingCharacter(character);
+    setNewCharacter({
+      name: character.name || "",
+      description: character.description || ""
+    });
+
+    // Check if character was uploaded or generated to set appropriate mode
+    const characterImageSource = character.imageSource || 'generated';
+    setDialogMode(characterImageSource === 'uploaded' ? 'upload' : 'generate');
+
+    if (characterImageSource === 'uploaded') {
+      // For uploaded characters, pre-populate the upload area with the current image
+      setUploadedImage({
+        file: null, // We don't have the original file
+        preview: character.image_url,
+        name: `${character.name}_current.jpg`,
+        size: 0 // We don't know the original size
+      });
+      setGeneratedCharacter(null); // Don't show inline image for upload mode
+    } else {
+      // For generated characters, show the current image inline
+      setGeneratedCharacter(character);
+      setUploadedImage({
+        file: null,
+        preview: null,
+        name: '',
+        size: 0
+      });
+    }
+    
+    // Close preview modal and open create dialog
+    setShowCharacterPreview(false);
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleRegenerateCharacter = async () => {
+    if (!editingCharacter || !newCharacter.name.trim()) {
+      toast.error("Please enter a character name");
       return;
     }
 
     setIsGenerating(true);
     
     try {
-      const formData = new FormData();
-      formData.append('image', uploadedImage.file);
-      formData.append('name', newCharacter.name);
-      formData.append('description', newCharacter.description);
-      formData.append('story_id', parseInt(id));
-
-      const response = await axiosPrivate.post("/upload-character-image", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      // For both uploaded and generated characters, regenerate means generating new image from text
+      const response = await axiosPrivate.post("/regenerate-character", {
+        character_id: editingCharacter.id,
+        name: newCharacter.name.trim(),
+        description: newCharacter.description
       });
 
       if (response.data.success) {
-        // Store the uploaded character and switch to preview mode
-        setGeneratedCharacter(response.data.character);
-        setShowPreview(true);
+        if (dialogMode === 'upload') {
+          // For upload mode, update the uploaded image preview
+          setUploadedImage({
+            file: null,
+            preview: response.data.character.image_url,
+            name: `${newCharacter.name}_regenerated.jpg`,
+            size: 0
+          });
+        } else {
+          // For generate mode, update inline image
+          setGeneratedCharacter({
+            ...response.data.character,
+            name: newCharacter.name.trim(),
+            description: newCharacter.description,
+            imageSource: 'generated'
+          });
+        }
+        setImageRefresh(prev => prev + 1);
         
-        toast.success("Character uploaded successfully!");
+        // Update the characters array directly
+        setCharacters(prev => 
+          prev.map(char => 
+            char.id === editingCharacter.id 
+              ? { 
+                  ...char, 
+                  name: newCharacter.name.trim(),
+                  description: newCharacter.description,
+                  image_url: response.data.character.image_url,
+                  imageSource: dialogMode === 'upload' ? 'uploaded' : 'generated',
+                  updated_at: new Date().toISOString()
+                }
+              : char
+          )
+        );
+        
+        toast.success("Character regenerated successfully!");
       } else {
-        toast.error(response.data.message || "Failed to upload character");
+        toast.error(response.data.message || "Failed to regenerate character");
+      }
+    } catch (err) {
+      console.error('Error regenerating character:', err);
+      toast.error(err.response?.data?.message || "Failed to regenerate character. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleUploadCharacter = async () => {
+    if (!newCharacter.name.trim()) {
+      toast.error("Please enter a character name");
+      return;
+    }
+
+    if (!uploadedImage.file && !uploadedImage.preview) {
+      toast.error("Please upload an image");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      if (isEditMode) {
+        // For edit mode, we don't re-upload, we just update with current data
+        // The image was already regenerated if needed
+        const updatedCharacter = {
+          ...editingCharacter,
+          name: newCharacter.name.trim(),
+          description: newCharacter.description,
+          image_url: uploadedImage.preview, // Current image URL
+          imageSource: 'uploaded'
+        };
+        setGeneratedCharacter(updatedCharacter);
+        toast.success("Character updated successfully!");
+      } else {
+        // For new upload
+        const formData = new FormData();
+        formData.append('image', uploadedImage.file);
+        formData.append('name', newCharacter.name);
+        formData.append('description', newCharacter.description);
+        formData.append('story_id', parseInt(id));
+
+        const response = await axiosPrivate.post("/upload-character-image", formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if (response.data.success) {
+          // Add new character to the array immediately (original upload behavior)
+          const newCharacterWithSource = {
+            ...response.data.character,
+            imageSource: 'uploaded'
+          };
+          setCharacters(prev => [...prev, newCharacterWithSource]);
+          
+          toast.success("Character created successfully!");
+          closeDialog();
+          return; // Exit early for original upload behavior
+        } else {
+          toast.error(response.data.message || "Failed to upload character");
+        }
       }
     } catch (err) {
       console.error('Error uploading character:', err);
@@ -240,26 +435,40 @@ function CreateCharacters() {
     }
   };
 
-  const handlePreviewNext = () => {
-    // Add the character to the list
+  const handleNext = () => {
     if (generatedCharacter) {
-      setCharacters(prev => [...prev, generatedCharacter]);
+      if (isEditMode && editingCharacter) {
+        // Update existing character in the array with all the new data
+        setCharacters(prev => 
+          prev.map(char => 
+            char.id === editingCharacter.id 
+              ? { 
+                  ...char, 
+                  id: editingCharacter.id,
+                  name: newCharacter.name.trim(),
+                  description: newCharacter.description,
+                  image_url: generatedCharacter.image_url || uploadedImage.preview,
+                  imageSource: generatedCharacter.imageSource || char.imageSource,
+                  story_id: char.story_id,
+                  created_at: char.created_at,
+                  updated_at: new Date().toISOString()
+                }
+              : char
+          )
+        );
+        
+        toast.success("Character updated successfully!");
+        
+      } else {
+        // Add new character to the array
+        setCharacters(prev => [...prev, generatedCharacter]);
+        toast.success("Character created successfully!");
+        setTimeout(() => navigate("/"), 1000);
+      }
     }
     
-    // Close dialog and reset all states
-    setIsCreateDialogOpen(false);
-    setShowPreview(false);
-    setNewCharacter({ name: "", description: "" });
-    setGeneratedCharacter(null);
-    setUploadedImage({
-      file: null,
-      preview: null,
-      name: '',
-      size: 0
-    });
-    
-    // Navigate to home
-    navigate("/");
+    // Close dialog and reset states
+    closeDialog();
   };
 
   useEffect(() => {
@@ -269,18 +478,16 @@ function CreateCharacters() {
         setError(null);
 
         const story_id = parseInt(id)
-        console.log("story 2", story_id)
         
-        const response = await axiosPrivate.get('/get-story-characters',{
-          story_id
-        });
+        const response = await axiosPrivate.get(`/get-story-characters?story_id=${story_id}`);
         
-        console.log('API Response:', response);
-        console.log('Response Data:', response.data);
-        console.log('Characters Array:', response.data.characters);
-        console.log('Is Characters Array?', Array.isArray(response.data.characters));
+        // Add imageSource to existing characters if not present (backward compatibility)
+        const charactersWithSource = (response.data.characters || []).map(char => ({
+          ...char,
+          imageSource: char.imageSource || 'generated' // Default to generated for existing characters
+        }));
         
-        setCharacters(response.data.characters || []);
+        setCharacters(charactersWithSource);
         
       } catch (err) {
         console.error('Error fetching characters:', err);
@@ -292,7 +499,7 @@ function CreateCharacters() {
     };
 
     fetchCharacters();
-  }, []);
+  }, [id]);
 
   const handleDeleteClick = (character) => {
     setCharacterToDelete(character);
@@ -315,8 +522,6 @@ function CreateCharacters() {
     const character_id = characterToDelete.id; 
 
     try {
-      console.log("Sending:", { character_id });
-
       const response = await axiosPrivate.post(`/delete-character`, {
         character_id
       });
@@ -336,9 +541,11 @@ function CreateCharacters() {
 
   const closeDialog = () => {
     setIsCreateDialogOpen(false);
-    setShowPreview(false); 
+    setIsEditMode(false);
+    setIsNewCharacter(false); // Reset the flag
+    setEditingCharacter(null);
     setNewCharacter({ name: "", description: "" });
-    setGeneratedCharacter(null); 
+    setGeneratedCharacter(null);
     setUploadedImage({
       file: null,
       preview: null,
@@ -349,11 +556,20 @@ function CreateCharacters() {
     setImageRefresh(0);
   };
 
-  const handleNext = () => {
+  const handleNextBtn = () => {
     if (isNextEnabled) {
-      // Handle next action here
       toast.success("Proceeding to next step!");
     }
+  };
+
+  const handleCharacterClick = (character) => {
+    setSelectedCharacter(character);
+    setShowCharacterPreview(true);
+  };
+
+  const closeCharacterPreview = () => {
+    setShowCharacterPreview(false);
+    setSelectedCharacter(null);
   };
 
   return (
@@ -372,7 +588,7 @@ function CreateCharacters() {
         <button
           className="btn-primary next-btn"
           disabled={!isNextEnabled}
-          onClick={handleNext}
+          onClick={handleNextBtn}
           title={!isNextEnabled ? "Create at least one character to proceed" : "Proceed to next step"}
         >
           Next
@@ -382,10 +598,13 @@ function CreateCharacters() {
 
       {/* Characters Grid */}
       <div className="characters-grid">
-        {/* Create New Character Card */}
+        {/* Create New Character Card - UPDATED */}
         <div
           className="create-character-card"
-          onClick={() => setIsCreateDialogOpen(true)}
+          onClick={() => {
+            setIsNewCharacter(true); // Set flag for new character
+            setIsCreateDialogOpen(true);
+          }}
         >
           <div className="create-card-content">
             <div className="create-icon">
@@ -400,8 +619,24 @@ function CreateCharacters() {
 
         {/* Character Cards */}
         {Array.isArray(characters) && characters.length > 0 && characters.map((character) => (
-          <div key={character.id || character._id || Math.random()} className="character-card">
+          <div 
+            key={character.id || character._id || Math.random()} 
+            className="character-card"
+            onClick={() => handleCharacterClick(character)}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="character-image">
+              {character.image_url ? (
+                <img 
+                  src={`${character.image_url}?t=${new Date().getTime()}`} 
+                  alt={character.name}
+                  className="character-card-image"
+                />
+              ) : (
+                <div className="character-placeholder">
+                  <PersonOutlineIcon className="icon-lg" />
+                </div>
+              )}
               <div className="character-overlay"></div>
             </div>
             
@@ -414,17 +649,24 @@ function CreateCharacters() {
             
             <div className="character-footer">
               <div className="character-actions">
+                {/* UPDATED: Edit button with new handler */}
                 <button 
                   className="action-btn" 
                   title="Edit Character"
-                  onClick={() => console.log('Edit character:', character.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditClick(character); // Use the new handler
+                  }}
                 >
                   <EditOutlinedIcon className="icon-xs" />
                 </button>
                 <button 
                   className="action-btn action-danger" 
                   title="Delete Character"
-                  onClick={() => handleDeleteClick(character)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick(character);
+                  }}
                 >
                   <DeleteOutlineIcon className="icon-xs" />
                 </button>
@@ -454,11 +696,11 @@ function CreateCharacters() {
             {/* --- Header --- */}
             <div className="dialog-header">
               <h2 className="dialog-title">
-                {showPreview ? "Character Preview" : "Create New Character"}
+                {isEditMode ? "Edit Character" : "Create New Character"}
               </h2>
               <div className="header-actions">
-                {/* Only show mode switch when NOT in preview mode */}
-                {!showPreview && (
+                {/* Only show mode switch when NOT in edit mode */}
+                {!isEditMode && (
                   <div className="mode-switch">
                     <div className="custom-select-wrapper">
                       <select
@@ -479,196 +721,239 @@ function CreateCharacters() {
                 </button>
               </div>
               <p className="dialog-description text-start">
-                {showPreview ? "Review your generated character" : "Design a unique character for your stories"}
+                {isEditMode ? "Edit your character details and regenerate the image" : "Design a unique character for your stories"}
               </p>
             </div>
 
             {/* --- Body --- */}
             <div className="dialog-body">
-              {showPreview ? (
-                /* PREVIEW SECTION - Replaces form fields */
-                <div className="preview-section">
-                  <div className="character-preview">
-                    <div className="preview-image-wrapper">
-                      <img 
-                        src={`${generatedCharacter?.image_url}?refresh=${imageRefresh}&t=${new Date().getTime()}`}
-                        alt={generatedCharacter?.name}
-                        className="preview-character-image"
-                        key={`character-${generatedCharacter?.id}-${imageRefresh}`}
-                      />
-                    </div>
-                    <div className="preview-details">
-                      <h3 className="preview-character-name">{generatedCharacter?.name}</h3>
-                      <p className="preview-character-description">{generatedCharacter?.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="preview-actions">
-                    <button
-                      onClick={handleRegenerateImage}
-                      disabled={isRegenerating}
-                      className="btn-outline btn-full"
-                    >
-                      {isRegenerating ? (
-                        <>
-                          <div className="loading-spinner"></div> Regenerating...
-                        </>
-                      ) : (
-                        <>
-                          <RefreshIcon className="icon-sm" /> Regenerate Image
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={handlePreviewNext}
-                      className="btn-primary btn-full"
-                    >
-                      Next
-                      <EastRoundedIcon className="icon-sm" />
-                    </button>
+              {/* Character Name */}
+              <div className="form-group">
+                <label className="form-label">Character Name</label>
+                <input
+                  type="text"
+                  value={newCharacter.name}
+                  onChange={(e) =>
+                    setNewCharacter((p) => ({ ...p, name: e.target.value }))
+                  }
+                  className="form-input"
+                  placeholder="Enter character name..."
+                />
+              </div>
+
+              {/* Character Description */}
+              <div className="form-group">
+                <label className="form-label">Character Description</label>
+                <textarea
+                  value={newCharacter.description}
+                  onChange={(e) =>
+                    setNewCharacter((p) => ({ ...p, description: e.target.value }))
+                  }
+                  className="form-textarea"
+                  rows="4"
+                  placeholder="Describe your character..."
+                />
+              </div>
+
+              {/* Generated Character Image - Shows inline for generate mode only */}
+              {generatedCharacter && dialogMode === 'generate' && (
+                <div className="form-group">
+                  <label className="form-label">
+                    {isEditMode ? "Current Character Image" : "Generated Character Image"}
+                  </label>
+                  <div className="inline-character-preview">
+                    <img 
+                      src={`${generatedCharacter.image_url}?refresh=${imageRefresh}&t=${new Date().getTime()}`}
+                      alt={generatedCharacter.name}
+                      className="inline-character-image"
+                      key={`character-${generatedCharacter.id}-${imageRefresh}`}
+                    />
                   </div>
                 </div>
-              ) : (
-                /* FORM SECTION - Original name/description fields */
-                <>
-                  <div className="form-group">
-                    <label className="form-label">Character Name</label>
-                    <input
-                      type="text"
-                      value={newCharacter.name}
-                      onChange={(e) =>
-                        setNewCharacter((p) => ({ ...p, name: e.target.value }))
-                      }
-                      className="form-input"
-                      placeholder="Enter character name..."
-                    />
-                  </div>
+              )}
 
-                  <div className="form-group">
-                    <label className="form-label">Character Description</label>
-                    <textarea
-                      value={newCharacter.description}
-                      onChange={(e) =>
-                        setNewCharacter((p) => ({ ...p, description: e.target.value }))
-                      }
-                      className="form-textarea"
-                      rows="4"
-                      placeholder="Describe your character..."
-                    />
-                  </div>
-
-                  {/* Mode Switch */}
-                  {dialogMode === "generate" ? (
-                    <div className="generate-image-section">
-                      {/* No additional content needed for generate mode */}
-                    </div>
-                  ) : (
-                    <div className="upload-section">
-                      <div
-                        className={`character-upload-area ${dragActive ? 'drag-active' : ''} ${uploadedImage.file ? 'has-image' : ''}`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                        onClick={!uploadedImage.file ? onButtonClick : undefined}
-                      >
-                        {!uploadedImage.file ? (
-                          <>
-                            <div className="upload-character-icon">
-                              <UploadFileIcon className="icon-lg" />
-                            </div>
-                            <h3 className="upload-title">Upload Character Image</h3>
-                            <p className="upload-description">Drag and drop your image here, or click to browse</p>
-                            <p className="upload-format">Supported formats: PNG, JPEG, JPG, WEBP (Max 5MB)</p>
-                            <button
-                              className="choose-image-btn"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onButtonClick();
-                              }}
-                              type="button"
-                            >
-                              <ImageOutlinedIcon className="icon-sm" />
-                              Choose Image
-                            </button>
-                          </>
-                        ) : (
-                          <div className="image-preview-container">
-                            <div className="image-actions">
-                              <button
-                                className="action-btn replace-btn"
-                                onClick={replaceImage}
-                                title="Replace image"
-                                type="button"
-                              >
-                                <RefreshIcon className="icon-xs" />
-                              </button>
-                              <button
-                                className="action-btn remove-btn"
-                                onClick={removeImage}
-                                title="Remove image"
-                                type="button"
-                              >
-                                <CloseIcon className="icon-xs" />
-                              </button>
-                            </div>
-                            <div className="uploaded-image">
-                              <img src={uploadedImage.preview} alt={uploadedImage.name} />
-                            </div>
-                            <div className="image-details">
-                              <p className="image-name">{uploadedImage.name}</p>
-                              <p className="image-size">{formatFileSize(uploadedImage.size)}</p>
-                            </div>
-                          </div>
-                        )}
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          onChange={handleChange}
-                          accept="image/*"
-                          style={{ display: 'none' }}
-                        />
+              {/* Upload Section */}
+              {dialogMode === "upload" && (
+                <div className="upload-section">
+                  <div
+                    className={`character-upload-area ${dragActive ? 'drag-active' : ''} ${uploadedImage.file || uploadedImage.preview ? 'has-image' : ''}`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                    onClick={!uploadedImage.file && !uploadedImage.preview ? onButtonClick : undefined}
+                  >
+                    {!uploadedImage.file && !uploadedImage.preview ? (
+                      <>
+                        <div className="upload-character-icon">
+                          <UploadFileIcon className="icon-lg" />
+                        </div>
+                        <h3 className="upload-title">Upload Character Image</h3>
+                        <p className="upload-description">Drag and drop your image here, or click to browse</p>
+                        <p className="upload-format">Supported formats: PNG, JPEG, JPG, WEBP (Max 5MB)</p>
+                        <button
+                          className="choose-character-image-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onButtonClick();
+                          }}
+                          type="button"
+                        >
+                          <ImageOutlinedIcon className="icon-sm" />
+                          Choose Image
+                        </button>
+                      </>
+                    ) : (
+                      <div className="image-preview-container">
+                        <div className="image-actions">
+                          <button
+                            className="action-btn replace-btn"
+                            onClick={replaceImage}
+                            title="Replace image"
+                            type="button"
+                          >
+                            <LoopRoundedIcon className="icon-xs" />
+                          </button>
+                          <button
+                            className="action-btn remove-btn"
+                            onClick={removeImage}
+                            title="Remove image"
+                            type="button"
+                          >
+                            <CloseIcon className="icon-xs" />
+                          </button>
+                        </div>
+                        <div className="uploaded-image">
+                          <img src={uploadedImage.preview} alt={uploadedImage.name} />
+                        </div>
+                        <div className="image-details">
+                          <p className="image-name">{uploadedImage.name}</p>
+                          <p className="image-size">{formatFileSize(uploadedImage.size)}</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      onChange={handleChange}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                    />
+                  </div>
+                </div>
+              )}
 
-                  {/* Actions */}
-                  <div className="dialog-actions">
+              {/* UPDATED: Action Buttons with controlled Next button visibility */}
+              <div className="dialog-actions">
+                {/* Different flows for generate vs upload mode */}
+                {dialogMode === "generate" ? (
+                  // Generate mode logic
+                  !generatedCharacter ? (
                     <button
-                      onClick={dialogMode === "upload" ? handleUploadCharacter : handleCreateCharacter}
-                      disabled={isGenerating || !newCharacter.name.trim() || (dialogMode === "upload" && !uploadedImage.file)}
+                      onClick={isEditMode ? handleRegenerateCharacter : handleCreateCharacter}
+                      disabled={isGenerating || !newCharacter.name.trim()}
                       className="btn-primary btn-full"
                     >
                       {isGenerating ? (
                         <>
-                          <div className="loading-spinner"></div> {dialogMode === "upload" ? "Uploading..." : "Creating..."}
+                          <div className="loading-spinner"></div> 
+                          {isEditMode ? "Regenerating..." : "Generating..."}
                         </>
                       ) : (
                         <>
-                          {dialogMode === "upload" ? (
+                          {isEditMode ? (
                             <>
-                              <UploadFileIcon className="icon-sm" /> Upload Character
+                              <LoopRoundedIcon className="icon-sm" /> Regenerate Character
                             </>
                           ) : (
                             <>
-                              <AutoFixHighIcon className="icon-sm" /> Create Character
+                              <AutoFixHighIcon className="icon-sm" /> Generate Character
                             </>
                           )}
                         </>
                       )}
                     </button>
-                    <button onClick={closeDialog} className="btn-ghost btn-full">
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              )}
+                  ) : (
+                    <>
+                      <button
+                        onClick={isEditMode ? handleRegenerateCharacter : handleRegenerateImage}
+                        disabled={isRegenerating || isGenerating}
+                        className="btn-outline btn-full"
+                      >
+                        {(isRegenerating || isGenerating) ? (
+                          <>
+                            <div className="loading-spinner"></div> Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <LoopRoundedIcon className="icon-sm" /> Regenerate Image
+                          </>
+                        )}
+                      </button>
+                      
+                      {/* Only show Next button for new character creation */}
+                      {isNewCharacter && (
+                        <button
+                          onClick={handleNext}
+                          className="btn-primary btn-full"
+                        >
+                          Next
+                          <EastRoundedIcon className="icon-sm" />
+                        </button>
+                      )}
+                    </>
+                  )
+                ) : (
+                  // Upload mode logic
+                  <>
+                    {isNewCharacter ? (
+                      // New upload - original behavior
+                      <button
+                        onClick={handleUploadCharacter}
+                        disabled={isGenerating || !newCharacter.name.trim() || (!uploadedImage.file && !uploadedImage.preview)}
+                        className="btn-primary btn-full"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="loading-spinner"></div> Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <UploadFileIcon className="icon-sm" /> Upload Character
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      // Edit mode for uploaded character - only regenerate button, no next
+                      <button
+                        onClick={handleRegenerateCharacter}
+                        disabled={isGenerating || !newCharacter.name.trim()}
+                        className="btn-primary btn-full"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="loading-spinner"></div> Regenerating...
+                          </>
+                        ) : (
+                          <>
+                            <LoopRoundedIcon className="icon-sm" /> Regenerate Image
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </>
+                )}
+                
+                <button onClick={closeDialog} className="btn-ghost btn-full">
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Delete Modal - keeping existing code */}
+      {/* Delete Modal */}
       {showDeleteModal && (
         <div 
           className={`modal fade ${showDeleteModal ? 'show' : ''}`}
@@ -746,6 +1031,45 @@ function CreateCharacters() {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Character Preview Modal */}
+      {showCharacterPreview && selectedCharacter && (
+        <div className="dialog-overlay" onClick={closeCharacterPreview}>
+          <div className="character-preview-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="character-preview-header">
+              <div className="character-preview-actions">
+                <button 
+                  className="character-preview-btn regenerate-btn" 
+                  onClick={() => handleOpenRegenerateMode(selectedCharacter)}
+                  title="Regenerate character"
+                >
+                  <LoopRoundedIcon className="icon-sm" />
+                </button>
+                <button className="character-preview-btn close-btn" onClick={closeCharacterPreview}>
+                  <CloseIcon className="icon-sm" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="character-preview-content">
+              <div className="character-preview-image-container">
+                <img 
+                  src={selectedCharacter.image_url}
+                  alt={selectedCharacter.name}
+                  className="character-preview-full-image"
+                />
+              </div>
+              
+              <div className="character-preview-info">
+                <h3 className="character-preview-name">{selectedCharacter.name}</h3>
+                {selectedCharacter.description && (
+                  <p className="character-preview-desc">{selectedCharacter.description}</p>
+                )}
               </div>
             </div>
           </div>
