@@ -99,7 +99,7 @@ router.get('/get-characters', getCharactersByUserController)
 router.post('/generate-character-image', generateCharacterController)
 router.post('/regenerate-character', regenerateCharacterController);
 router.post('/upload-character-image', characterUpload, uploadCharacterImageController);
-router.post('/reuload-character-image', characterUpload, reuploadCharacterImageController);
+router.post('/reupload-character-image', characterUpload, reuploadCharacterImageController);
 router.post('/delete-character', softDeleteCharacterController);
 router.post('/force-delete-character', forceDeleteCharacterController);
 router.post('/restore-character', restoreCharacterController);
