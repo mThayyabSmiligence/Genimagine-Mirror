@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./Css/common.css"
 import './App.css';
+import 'boxicons/css/boxicons.min.css';
 import {BrowserRouter as Router , Routes,Route, Navigate} from "react-router-dom" 
 import { useContext, useEffect, useState } from 'react';
 import GuestContentPage from './Pages/Guest/GuestContentPage';

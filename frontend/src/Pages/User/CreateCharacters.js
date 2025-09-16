@@ -29,7 +29,7 @@ function CreateCharacters() {
     description: ""
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [dialogMode, setDialogMode] = useState("generate"); // "generate" | "upload"
+  const [dialogMode, setDialogMode] = useState(""); // "generate" | "upload"
   const [anchorMenu, setAnchorMenu] = useState(false);
   const [showCharacterPreview, setShowCharacterPreview] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -234,8 +234,7 @@ function CreateCharacters() {
 
   // NEW: Edit handler that works like regenerate
   const handleEditClick = (character) => {
-    // Set flags for editing existing character
-    setIsNewCharacter(false); // This is editing, not creating new
+    setIsNewCharacter(false);
     setIsEditMode(true);
     setEditingCharacter(character);
     setNewCharacter({
@@ -243,21 +242,19 @@ function CreateCharacters() {
       description: character.description || ""
     });
 
-    // Check if character was uploaded or generated to set appropriate mode
-    const characterImageSource = character.imageSource || 'generated';
+    const characterImageSource = character.image_type || 'generated';
     setDialogMode(characterImageSource === 'uploaded' ? 'upload' : 'generate');
 
     if (characterImageSource === 'uploaded') {
-      // For uploaded characters, pre-populate the upload area with the current image
+      // Reset upload state to require new file selection
       setUploadedImage({
-        file: null, // We don't have the original file
-        preview: character.image_url,
+        file: null, // Reset to null to require new file
+        preview: character.image_url, // Show current image
         name: `${character.name}_current.jpg`,
-        size: 0 // We don't know the original size
+        size: 0
       });
-      setGeneratedCharacter(null); // Don't show inline image for upload mode
+      setGeneratedCharacter(null);
     } else {
-      // For generated characters, show the current image inline
       setGeneratedCharacter(character);
       setUploadedImage({
         file: null,
@@ -267,7 +264,6 @@ function CreateCharacters() {
       });
     }
     
-    // Open create dialog for editing
     setIsCreateDialogOpen(true);
   };
 
@@ -282,7 +278,7 @@ function CreateCharacters() {
     });
 
     // Check if character was uploaded or generated to set appropriate mode
-    const characterImageSource = character.imageSource || 'generated';
+    const characterImageSource = character.image_type || 'generated';
     setDialogMode(characterImageSource === 'uploaded' ? 'upload' : 'generate');
 
     if (characterImageSource === 'uploaded') {
@@ -434,6 +430,68 @@ function CreateCharacters() {
       setIsGenerating(false);
     }
   };
+
+  const handleReuploadCharacter = async () => {
+    if (!editingCharacter || !newCharacter.name.trim()) {
+      toast.error("Please enter a character name");
+      return;
+    }
+
+    if (!uploadedImage.file) {
+      toast.error("Please select a new image to upload");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', uploadedImage.file);
+      formData.append('character_id', editingCharacter.id);
+      formData.append('story_id', parseInt(id));
+      formData.append('name', newCharacter.name.trim());
+
+      const response = await axiosPrivate.post("/reupload-character-image", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (response.data.success) {
+        // Update the uploaded image preview
+        setUploadedImage({
+          file: uploadedImage.file,
+          preview: response.data.character.image_url,
+          name: uploadedImage.name,
+          size: uploadedImage.size
+        });
+        
+        // Update the characters array directly
+        setCharacters(prev => 
+          prev.map(char => 
+            char.id === editingCharacter.id 
+              ? { 
+                  ...char, 
+                  name: newCharacter.name.trim(),
+                  description: newCharacter.description,
+                  image_url: response.data.character.image_url,
+                  imageSource: 'uploaded',
+                  updated_at: new Date().toISOString()
+                }
+              : char
+          )
+        );
+        
+        toast.success("Character image re-uploaded successfully!");
+      } else {
+        toast.error(response.data.message || "Failed to re-upload character image");
+      }
+    } catch (err) {
+      console.error('Error re-uploading character:', err);
+      toast.error(err.response?.data?.message || "Failed to re-upload character image. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
 
   const handleNext = () => {
     if (generatedCharacter) {
@@ -651,7 +709,7 @@ function CreateCharacters() {
               <div className="character-actions">
                 {/* UPDATED: Edit button with new handler */}
                 <button 
-                  className="action-btn" 
+                  className="character-preview-action-btn" 
                   title="Edit Character"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -661,7 +719,7 @@ function CreateCharacters() {
                   <EditOutlinedIcon className="icon-xs" />
                 </button>
                 <button 
-                  className="action-btn action-danger" 
+                  className="character-preview-action-btn action-danger" 
                   title="Delete Character"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -804,10 +862,10 @@ function CreateCharacters() {
                         </button>
                       </>
                     ) : (
-                      <div className="image-preview-container">
-                        <div className="image-actions">
+                      <div className="image-character-preview-container">
+                        <div className="image-preview-actions">
                           <button
-                            className="action-btn replace-btn"
+                            className="character-preview-action-btn replace-btn"
                             onClick={replaceImage}
                             title="Replace image"
                             type="button"
@@ -815,7 +873,7 @@ function CreateCharacters() {
                             <LoopRoundedIcon className="icon-xs" />
                           </button>
                           <button
-                            className="action-btn remove-btn"
+                            className="character-preview-action-btn remove-btn"
                             onClick={removeImage}
                             title="Remove image"
                             type="button"
@@ -823,7 +881,7 @@ function CreateCharacters() {
                             <CloseIcon className="icon-xs" />
                           </button>
                         </div>
-                        <div className="uploaded-image">
+                        <div className="uploaded-character-image">
                           <img src={uploadedImage.preview} alt={uploadedImage.name} />
                         </div>
                         <div className="image-details">
@@ -843,7 +901,7 @@ function CreateCharacters() {
                 </div>
               )}
 
-              {/* UPDATED: Action Buttons with controlled Next button visibility */}
+              {/* UPDATED: Action Buttons with Re upload functionality */}
               <div className="dialog-actions">
                 {/* Different flows for generate vs upload mode */}
                 {dialogMode === "generate" ? (
@@ -924,19 +982,19 @@ function CreateCharacters() {
                         )}
                       </button>
                     ) : (
-                      // Edit mode for uploaded character - only regenerate button, no next
+                      // UPDATED: Edit mode for uploaded character - Re upload button
                       <button
-                        onClick={handleRegenerateCharacter}
-                        disabled={isGenerating || !newCharacter.name.trim()}
+                        onClick={handleReuploadCharacter}
+                        disabled={isGenerating || !newCharacter.name.trim() || !uploadedImage.file}
                         className="btn-primary btn-full"
                       >
                         {isGenerating ? (
                           <>
-                            <div className="loading-spinner"></div> Regenerating...
+                            <div className="loading-spinner"></div> Saving...
                           </>
                         ) : (
                           <>
-                            <LoopRoundedIcon className="icon-sm" /> Regenerate Image
+                            <i class='bx bx-save'  ></i>  Save Character
                           </>
                         )}
                       </button>
@@ -948,6 +1006,7 @@ function CreateCharacters() {
                   Cancel
                 </button>
               </div>
+
             </div>
           </div>
         </div>
