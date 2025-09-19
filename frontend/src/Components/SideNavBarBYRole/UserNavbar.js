@@ -21,6 +21,8 @@ import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 // icons from Lucide 
 import { BookOpenText } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
+import { Compass } from 'lucide-react';
+
 
 import socket from '../../utils/socket'
 
@@ -247,7 +249,7 @@ export default function UserNavbar() {
                         <Link to={"/explore" } className='link mb-1'  id='explore-link'>
                             <div className={`nav-list-item d-flex align-items-center ${path=="/explore"&&'active'}`}>
 
-                                <ExploreOutlinedIcon/>
+                                <Compass/>
                                 <div to={"/explore" } className='link nav-options ms-1'>Explore</div>
                             </div>
                         </Link>
