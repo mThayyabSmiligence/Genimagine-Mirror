@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // Material UI Icons
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
@@ -21,6 +21,8 @@ function StoriesPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const navigate = useNavigate();
 
   // Fetch stories from API
   useEffect(() => {
@@ -128,6 +130,10 @@ function StoriesPage() {
     );
   }
 
+  const handleStoryScenes = (story) =>{
+    navigate(`/u/scenes/create/${story.id}`)
+  }
+
   // Error state
   if (error) {
     return (
@@ -205,14 +211,28 @@ function StoriesPage() {
 
         {/* Story Cards from API */}
         {stories.map((story) => (
-          <div key={story.id} className="story-card">
+          <div key={story.id} className="story-card" onClick={ ()=> handleStoryScenes(story)}>
             <div className="story-image">
-              <div className="story-overlay"></div>
+              {story.thumbnail ? (
+                <img 
+                  src={story.thumbnail} 
+                  alt={story.name || 'Story thumbnail'} 
+                  className="story-thumbnail"
+                  onError={(e) => {
+                    // Fallback to default overlay if image fails to load
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }}
+                />
+              ) : null}
+              <div 
+                className="story-overlay" 
+                style={{ display: story.thumbnail ? 'none' : 'block' }}
+              ></div>
             </div>
-            
             <div className="story-header">
-              <h3 className="story-title">{story.name || 'Untitled Story'}</h3>
-              <p className="story-description">
+              <h3 title='story title' className="story-title">{story.name || 'Untitled Story'}</h3>
+              <p title='story description' className="story-description">
                 {story.description || 'No description available'}
               </p>
             </div>
@@ -238,25 +258,28 @@ function StoriesPage() {
                 </div>
                 
                 <div className="story-actions">
-                   <Link to={`/u/stories/${story.id}/characters`} className="link-unstyled">
-                    <button className="action-btn" title="View characters">
+                   <Link to={`/u/stories/${story.id}/characters`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
+                    <button className="story-action-btn" title="View characters">
                        <PeopleOutlineIcon className="icon-xs" />
                     </button>
                   </Link>
-                  <Link to={`/u/stories/${story.id}`} className="link-unstyled">
-                    <button className="action-btn" title="View Story">
+                  <Link to={`/u/stories/${story.id}`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
+                    <button className="story-action-btn" title="View Story">
                       <VisibilityOutlinedIcon className="icon-xs" />
                     </button>
                   </Link>
-                  <Link to={`/u/stories/${story.id}/edit`} className="link-unstyled">
-                    <button className="action-btn" title="Edit Story">
+                  <Link to={`/u/stories/${story.id}/edit`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
+                    <button className="story-action-btn" title="Edit Story">
                       <EditOutlinedIcon className="icon-xs" />
                     </button>
                   </Link>
                   <button 
-                    className="action-btn action-danger" 
+                    className="story-action-btn action-danger" 
                     title="Delete Story"
-                    onClick={() => handleDeleteClick(story)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(story);
+                    }}
                   >
                     <DeleteOutlineIcon className="icon-xs" />
                   </button>

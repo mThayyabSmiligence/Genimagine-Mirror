@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./Css/common.css"
 import './App.css';
+import 'boxicons/css/boxicons.min.css';
 import {BrowserRouter as Router , Routes,Route, Navigate} from "react-router-dom" 
 import { useContext, useEffect, useState } from 'react';
 import GuestContentPage from './Pages/Guest/GuestContentPage';
@@ -66,6 +67,7 @@ import Scheduled from './Pages/User/Scheduled';
 import StoriesPage from './Pages/User/StoriesPage';
 import CreateStories from './Pages/User/CreateStories';
 import CreateCharacters from './Pages/User/CreateCharacters';
+import CreateScenes from './Pages/User/CreateScenes';
 
 
 function App() {
@@ -171,6 +173,7 @@ function App() {
                   <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/edit' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/characters' element={<CreateCharacters></CreateCharacters>}></Route>
+                  <Route path='scenes/create/:storyid' element={<CreateScenes></CreateScenes>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 

@@ -176,8 +176,8 @@
 }
 
 .replace-btn {
-  background-color: #8b5cf6;
-  color: white;
+  background-color: #8b5cf6 !important;
+  color: white !important;
 }
 
 .replace-btn:hover {
@@ -185,12 +185,12 @@
 }
 
 .remove-btn {
-  background-color: #ef4444;
-  color: white;
+  background-color: #ef4444 !important;
+  color: white !important;
 }
 
 .remove-btn:hover {
-  background-color: #dc2626;
+  background-color: #dc2626 !important;
 }
 
 .uploaded-image {
