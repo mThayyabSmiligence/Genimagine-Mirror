@@ -17,6 +17,11 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
+
+// icons from Lucide 
+import { BookOpenText } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+
 import socket from '../../utils/socket'
 
 
@@ -248,7 +253,7 @@ export default function UserNavbar() {
                         </Link>
                         <Link to={"/credit-purchase" } className='link mb-1' >
                             <div className={`nav-list-item d-flex align-items-center ${path=="/credit-purchase"&&'active'}`}>
-                                <ShoppingCartOutlinedIcon/>
+                                <ShoppingCart/>
                                 <div to={"/credit-purchase" } className='link nav-options ms-1'>Buy Credits</div>
                             </div>
                         </Link>
@@ -272,7 +277,7 @@ export default function UserNavbar() {
                         <Link to={"/u/stories" } className='link'  id='stories-link'>
                             <div className={`nav-list-item d-flex align-items-center ${path=="/u/stories"&&'active'}`}>
 
-                                <AutoStoriesRoundedIcon/>
+                                <BookOpenText/>
                                 <div to={"/u/stories" } className='link nav-options ms-1'>Stories</div>
                             </div>
                         </Link>
