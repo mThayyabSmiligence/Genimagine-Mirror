@@ -124,6 +124,13 @@ exports.restoreCharacterController = async (req, res) => {
   return res.status(characters.status).json(characters);
 }
 
+exports.characterCollageController = async (req, res) => {
+  const { character_ids} = req.body;
+
+  const characters = await characterCollageService(character_ids);
+  return res.status(characters.status).json(characters);
+}
+
 // exports.saveCharacterController = async (req, res) => {
 //   console.log(1);
 //   console.log(2);
@@ -169,6 +176,7 @@ exports.restoreCharacterController = async (req, res) => {
 const {  createCharacter, getUserCharacters, generateCharacterService, saveCharacterService, regenerateCharacterService, getCharactersByStoryService, getCharactersByUserService, softDeleteCharacterService, forceDeleteCharacterService, restoreCharacterService, uploadCharacterImageService, reuploadCharacterImageService } = require('../service/CharacterService');
 const fs = require('fs');
 const path = require('path');
+const { characterCollageService } = require('../service/CreditService');
 
 // exports.uploadMiddleware = upload.single('referenceImage');
 

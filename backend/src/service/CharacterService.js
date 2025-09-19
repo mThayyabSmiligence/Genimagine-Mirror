@@ -73,8 +73,8 @@ exports.generateCharacterService = async (user_id, story_id, name, description =
     const inputs = {
       prompt: full_description.description || prompt,
       negative_prompt: "skull",
-      width: 704,
-      height: 704,
+      width: 1024,
+      height: 1024,
       style: style.name
     };
 
@@ -295,7 +295,28 @@ exports.fullCharacterDescriptionGenerateService = async (description, style) => 
     const messages = [
       {
         "role": "system",
-        "content": "You are a character prompt refiner for an AI image generation system.\n\nYour task:\n- Take the user's raw character description.\n- Preserve ALL details explicitly mentioned by the user (do not change or ignore them).\n- Fill in missing details with reasonable defaults so the character looks consistent across multiple images.\n- Write the final description as one natural, detailed paragraph suitable for an AI image generation model.\n\nAttributes you should always include:\n1. Age range\n2. Gender\n3. Ethnicity / Skin tone\n4. Hair color, style, and length\n5. Eye color\n6. Body type / Build\n7. Outfit details\n8. Accessories (if any)\n9. Pose\n10. Background\n\nFormat:\n- Output only a single descriptive paragraph.\n- Do not use bullet points, JSON, or explanations."
+        "content": `You are a character prompt refiner for an AI image generation system.
+
+Your task:
+- Take the user's raw character description.
+- Preserve ALL details explicitly mentioned by the user (do not change or ignore them).
+- Fill in missing **identity details** with reasonable defaults so the character looks consistent across multiple images.
+- Exclude scene-dependent details like pose, facial expression, mood, or background. Those will be handled separately in the scene generation step.
+
+Attributes you should always include:
+1. Age range
+2. Gender
+3. Ethnicity / Skin tone
+4. Hair color, style, and length
+5. Eye color
+6. Body type / Build
+7. Outfit details
+8. Accessories (if any)
+
+Format:
+- Output only a single descriptive paragraph focused purely on the character's appearance.
+- Do not include background, setting, or pose unless the user explicitly specified it as part of the character's core look.
+- Do not use bullet points, JSON, or explanations.`
       },
       {
         "role": "user",
@@ -428,3 +449,12 @@ exports.getCharacterById = async (id, user_id) => {
   const [rows] = await db.execute('SELECT * FROM characters WHERE id = ? AND user_id = ?', [id, user_id]);
   return rows.length ? rows[0] : null;
 };
+
+// hey chat gpt i working on story creation flow, first let me tell you the flow 
+// ui flow:
+// 1. story creation - user goes to story page and clicks new story , a new pages opens where user can enter title , description and choose the style of image .
+// 2. character creation - after creating story then user to sent to character creation page , where user can create the charaters with name and description or can upload the character but still needs to fill the name and description 
+// 3. scene creation - after creating character then user sent to scene page , user can enter the what they want and which character are present and what they are doing in the scene. then the scene with thr character is created and action is created
+
+// back ground process:
+// 1. story creation - 

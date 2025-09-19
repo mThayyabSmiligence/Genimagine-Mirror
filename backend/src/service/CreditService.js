@@ -1,6 +1,10 @@
 const db = require('../config/connectDatabase');
+const axios = require('axios');
+require('dotenv').config();
+const sharp = require('sharp');
 
-const crypto = require('crypto') 
+const crypto = require('crypto'); 
+const { Character } = require('../models');
 
 exports.getCreditPackagesService=async()=>{
     try {
@@ -57,6 +61,93 @@ exports.getUserPurchasedTopUpService = async (userId) => {
         }
     }
 };
+
+
+
+exports.characterCollageService = async (character_ids) => {
+  try {
+    const characters = await Character.findAll({ where: { id: character_ids } });
+
+    // Fetch images as Buffers
+    let images = [];
+    for (const character of characters) {
+      const response = await axios.get(character.image_url, { responseType: "arraybuffer" });
+      images.push(Buffer.from(response.data));
+    }
+
+    // Resize all images to same size for clean collage
+    const size = 512; // adjust size as needed
+    const resized = await Promise.all(images.map(img => sharp(img).resize(size, size).toBuffer()));
+
+    // Decide layout based on number of images
+    let rows, cols;
+    if (resized.length === 2) {
+      rows = 1; cols = 2;  // side by side
+    } else if (resized.length === 3) {
+      rows = 1; cols = 3;  // 3 in a row
+    } else if (resized.length === 4) {
+      rows = 2; cols = 2;  // 2x2 grid
+    } else {
+      rows = 1; cols = resized.length; // fallback
+    }
+
+    const collageWidth = cols * size;
+    const collageHeight = rows * size;
+
+    // Create base canvas
+    let collage = sharp({
+      create: {
+        width: collageWidth,
+        height: collageHeight,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 }
+      }
+    });
+
+    // Place images on canvas
+    let composites = [];
+    for (let i = 0; i < resized.length; i++) {
+      let row = Math.floor(i / cols);
+      let col = i % cols;
+      composites.push({
+        input: resized[i],
+        top: row * size,
+        left: col * size
+      });
+    }
+
+    collage = collage.composite(composites);
+
+    // Export as buffer or save to file
+    const buffer = await collage.png().toBuffer();
+
+    return {
+      status: 200,
+      message: "Collage created successfully",
+      success: true,
+      collage: buffer.toString("base64") // you can return base64 or save to storage
+    };
+
+  } catch (err) {
+    console.error(err);
+    return {
+      status: 500,
+      message: "Error creating character collage",
+      success: false
+    };
+  }
+};
+
+exports.getImageByUrl=async(url)=>{
+    try {
+        const image = await axios.get(url, { responseType: "arraybuffer" })
+        const imageArray = Array.from(Buffer.from(image.data));
+        return imageArray
+    } catch (error) {
+        console.error("error fetching image",error)
+        return false;
+    }
+}
     // exports.buyCreditsPackageService=async(package_id,user_id ,action = 'new')=>{
     //     const credit_package_data = await this.getCreditPackagedataService(package_id)
 

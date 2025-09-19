@@ -1,5 +1,14 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+
+//structure outline
+//id: integer
+//name: string
+//description: string
+//user_id: integer
+//thumbnail: string
+//style_id: integer
+
 const Story = sequelize.define(
   "Story",
   {
