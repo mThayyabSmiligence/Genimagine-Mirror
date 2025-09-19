@@ -67,6 +67,7 @@ import Scheduled from './Pages/User/Scheduled';
 import StoriesPage from './Pages/User/StoriesPage';
 import CreateStories from './Pages/User/CreateStories';
 import CreateCharacters from './Pages/User/CreateCharacters';
+import CreateScenes from './Pages/User/CreateScenes';
 
 
 function App() {
@@ -172,6 +173,7 @@ function App() {
                   <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/edit' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/characters' element={<CreateCharacters></CreateCharacters>}></Route>
+                  <Route path='scenes/create/:storyid' element={<CreateScenes></CreateScenes>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 

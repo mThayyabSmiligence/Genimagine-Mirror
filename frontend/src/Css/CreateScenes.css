@@ -1,0 +1,610 @@
+Scenes.css
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+.link-unstyled {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-unstyled:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Icon Size Classes for Material UI Icons */
+.icon-xs {
+  font-size: 12px !important;
+  width: 12px;
+  height: 12px;
+}
+
+.icon-sm {
+  font-size: 16px !important;
+  width: 16px;
+  height: 16px;
+}
+
+.icon-xxl {
+  font-size: 64px !important;
+  width: 64px;
+  height: 64px;
+}
+
+/* Container */
+.scenes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header Styles */
+.scenes-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  text-align: center;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  min-height: 44px;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  flex: 1;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #667eea;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.btn-outline:hover {
+  background: #f7fafc;
+  border-color: #667eea;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scene Generation Section */
+.scene-generation-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Card Styles */
+.prompt-card,
+.tips-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tips-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+.scene-card-header {
+  padding: 20px 20px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.scene-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scene-card-title .icon-sm {
+  color: #667eea;
+}
+
+.scene-card-description {
+  font-size: 0.875rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #1a202c;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.scene-textarea {
+  min-height: 120px;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: white;
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+/* Tips Section */
+.tips-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.tips-content {
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tips-list li {
+  font-size: 0.75rem;
+  color: #718096;
+  line-height: 1.5;
+  margin-bottom: 0.25rem;
+}
+
+/* Scenes Timeline */
+.scenes-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.scene-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.scene-content {
+  padding: 1.5rem;
+}
+
+/* Scene Prompt Section */
+.scene-prompt-section {
+  background: rgba(248, 250, 252, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 4px solid #667eea;
+  margin-bottom: 1.5rem;
+}
+
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a202c;
+  margin: 0;
+}
+
+.prompt-timestamp {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+.prompt-text {
+  font-size: 0.875rem;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+}
+
+.prompt-characters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.characters-text {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+/* Scene Image Section */
+.scene-image-section {
+  margin-bottom: 0;
+}
+
+.image-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a202c;
+  margin: 0 0 0.75rem 0;
+}
+
+.scene-image-container {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.scene-image-container:hover {
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.scene-image-placeholder {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.image-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.image-action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.image-action-btn:hover {
+  background: white;
+  transform: scale(1.05);
+}
+
+.action-danger {
+  color: #e53e3e;
+}
+
+.action-danger:hover {
+  background: #fed7d7;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.empty-icon {
+  color: #a0aec0;
+  margin: 0 auto 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-subtitle {
+  font-size: 1rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Toast Styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.toast-success {
+  background: #48bb78;
+}
+
+.toast-error {
+  background: #e53e3e;
+}
+
+.toast-show {
+  transform: translateX(0);
+}
+
+/* Accordion functionality for tips */
+.tips-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.tips-header:hover {
+  background-color: rgba(102, 126, 234, 0.05);
+}
+
+.accordion-icon {
+  display: none;
+  color: #667eea;
+  transition: transform 0.2s ease;
+}
+
+.tips-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+/* Desktop - show accordion icon but don't make it functional */
+@media (min-width: 769px) {
+  .accordion-icon {
+    display: none;
+  }
+  
+  .tips-header {
+    cursor: default;
+  }
+  
+  .tips-header:hover {
+    background-color: transparent;
+  }
+  
+  .tips-content {
+    max-height: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Mobile accordion functionality */
+@media (max-width: 768px) {
+  .accordion-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tips-content {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  
+  .tips-content.tips-open {
+    max-height: 200px;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .tips-header {
+    border-bottom: none;
+  }
+  
+  .tips-card .scene-card-header.tips-header {
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .tips-content.tips-open + .scene-card-header {
+    border-bottom: none;
+  }
+}
+
+/* Smooth transitions */
+.accordion-icon svg {
+  transition: transform 0.2s ease;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .scene-generation-section {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .scenes-container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .prompt-actions {
+    flex-direction: column;
+  }
+
+  .scene-image-placeholder {
+    height: 200px;
+  }
+
+  .prompt-header {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scenes-container {
+    padding: 0.5rem;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .scene-card-header,
+  .card-content,
+  .scene-content {
+    padding: 1rem;
+  }
+
+  .scene-prompt-section {
+    padding: 0.75rem;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+.btn-primary:focus,
+.btn-outline:focus,
+.form-textarea:focus,
+.image-action-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

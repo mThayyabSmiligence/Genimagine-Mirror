@@ -616,7 +616,7 @@ function CreateCharacters() {
 
   const handleNextBtn = () => {
     if (isNextEnabled) {
-      toast.success("Proceeding to next step!");
+      navigate(`/u/scenes/create/${id}`)
     }
   };
 
