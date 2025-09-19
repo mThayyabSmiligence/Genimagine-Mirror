@@ -1,5 +1,19 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+
+
+//structure outline
+//id: integer
+//name: string
+//description: string
+//full_description: string
+//story_id: integer
+//image_url: string
+//image_path: string
+//image_type: string
+//user_id: integer
+//deleted_at: date
+
 const Character = sequelize.define("Character", {
     id: {
       type: DataTypes.INTEGER,

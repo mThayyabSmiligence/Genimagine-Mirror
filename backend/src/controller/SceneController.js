@@ -1,5 +1,45 @@
 const { generateSceneService, getScenesService } = require("../service/SceneService");
 
+
+exports.generateSceneController= async (req, res) => {
+  const { story_id, prompt } = req.body;
+  const user_id = req.user.id;
+
+  //check if story_id is provided
+  if(!story_id) return res.status(400).json({ success: false, message: 'story_id required' });
+  //check if prompt is provided
+  if(!prompt) return res.status(400).json({ success: false, message: 'prompt required' });
+
+  const result = await generateSceneService(user_id, story_id, prompt);
+  return res.status(result.status).json(result);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // exports.generateSceneController = async (req, res) => {
 //   const { user_id, character_id, pose_id, expression_id, prompt } = req.body;
 //   const result = await generateSceneService(user_id, character_id, pose_id, expression_id, prompt);
