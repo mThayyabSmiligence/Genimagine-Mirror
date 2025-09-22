@@ -1,4 +1,4 @@
-const { generateSceneService, getScenesService } = require("../service/SceneService");
+const { generateSceneService, getScenesService, getScenesByStoryService } = require("../service/SceneService");
 
 
 exports.generateSceneController= async (req, res) => {
@@ -14,9 +14,12 @@ exports.generateSceneController= async (req, res) => {
   return res.status(result.status).json(result);
 };
 
-
-
-
+exports.getScenesByStoryController = async (req, res) => {
+  const { story_id } = req.query;
+  const user_id = req.user.id;
+  const result = await getScenesByStoryService(user_id, story_id);
+  return res.status(result.status).json(result);
+};
 
 
 
