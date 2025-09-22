@@ -2,6 +2,7 @@ const db = require('../config/connectDatabase');
 const { Sequelize } = require('sequelize');
 const Story = require('../models/Story');
 const Character = require('../models/Character');
+const { Scene } = require('../models');
 
 
 /**
@@ -32,25 +33,34 @@ exports.createStory = async ({ user_id, name, description, style_id}) => {
 exports.getUserStories = async (user_id) => {
   try {
     const stories = await Story.findAll({
-      where: { user_id },
-      attributes: {
-        include: [
-          [Sequelize.fn("COUNT", Sequelize.col("characters.id")), "characterCount"]
-        ]
-      },
-      include: [
-        {
-          model: Character,
-          as: "characters",
-          attributes: [], // don’t fetch character details, just use for counting
-          required: false, // so stories with 0 characters still appear
-          where: {
-            deleted_at: null
-          }
-        }
-      ],
-      group: ["Story.id"], // important so COUNT works per story
-    });
+  where: { user_id },
+  attributes: {
+    include: [
+      [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("characters.id"))), "characterCount"],
+      [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("scenes.id"))), "sceneCount"],
+    ],
+  },
+  include: [
+    {
+      model: Character,
+      as: "characters",
+      attributes: [],
+      required: false,
+      where: { deleted_at: null },
+    },
+    {
+      model: Scene,
+      as: "scenes",
+      attributes: [],
+      required: false,
+      where: { deleted_at: null },
+    },
+  ],
+  group: ["Story.id"],
+});
+
+
+
 
     return {
       success: true,
