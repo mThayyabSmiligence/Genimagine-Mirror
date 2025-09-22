@@ -268,6 +268,16 @@ function mapCharacters(parsedCharacters, dbCharacters) {
 
 
 
+exports.getScenesByStoryService= async (user_id, story_id) => {
+  try {
+    const scenes = await Scene.findAll({ where: { user_id, story_id }, order: [["scene_order", "ASC"]] });
+    return { status: 200, success: true, scenes ,message: "Scenes fetched successfully" };
+  } catch (error) {
+    console.error("Error getting scenes:", error);
+    return { status: 500, success: false, message: "Failed to get scenes" };
+  }
+};
+
 // exports.generateSceneService = async (user_id, characters, prompt) => {
 //   try {
 
