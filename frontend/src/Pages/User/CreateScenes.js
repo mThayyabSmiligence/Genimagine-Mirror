@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { axiosPrivate } from '../../API\'s/axios';
+
 // Material UI Icons
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -12,30 +14,61 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import '../../Css/CreateScenes.css';
 
-const mockGeneratedScenes = [
-  {
-    id: 1,
-    prompt: "Aria Shadowheart stands in a mystical forest clearing, bow drawn, facing a massive dragon breathing ethereal fire.",
-    image: "/lovable-uploads/15b38244-0823-4576-bfe7-bf7106f9a346.png",
-    characters: ["Aria Shadowheart"],
-    timestamp: "2 minutes ago"
-  },
-  {
-    id: 2,
-    prompt: "Dr. Elena Voss examines glowing evidence in a neon-lit laboratory filled with holographic displays.",
-    image: "/lovable-uploads/15b38244-0823-4576-bfe7-bf7106f9a346.png",
-    characters: ["Dr. Elena Voss"],
-    timestamp: "5 minutes ago"
-  }
-];
+// Base API URL - Update this according to your environment
+// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
 function CreateScenes() {
-  const [generatedScenes, setGeneratedScenes] = useState(mockGeneratedScenes);
+  const [generatedScenes, setGeneratedScenes] = useState([]);
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isTipsOpen, setIsTipsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { storyid } = useParams(); 
+
+  // Fetch existing scenes when component loads
+  useEffect(() => {
+    fetchExistingScenes();
+  }, [storyid]);
+
+  const fetchExistingScenes = async () => {
+    try {
+      setIsLoading(true);
+      // Replace with your actual endpoint to fetch existing scenes
+      const response = await axiosPrivate.get(`/scenes/story/${storyid}`);
+      
+      if (response.data.success) {
+        const formattedScenes = response.data.scenes.map(scene => ({
+          id: scene.id,
+          prompt: scene.prompt,
+          image_url: scene.image_url,
+          characters: scene.characters ? scene.characters.map(char => char.name) : [],
+          timestamp: formatTimestamp(scene.createdAt),
+          location: scene.location,
+          environment: scene.environment,
+          scene_order: scene.scene_order
+        }));
+        setGeneratedScenes(formattedScenes);
+      }
+    } catch (error) {
+      console.error('Error fetching existing scenes:', error);
+      // Set empty array if there's an error or no scenes exist yet
+      setGeneratedScenes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatTimestamp = (dateString) => {
+    const now = new Date();
+    const sceneDate = new Date(dateString);
+    const diffInMinutes = Math.floor((now - sceneDate) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hour${Math.floor(diffInMinutes / 60) > 1 ? 's' : ''} ago`;
+    return `${Math.floor(diffInMinutes / 1440)} day${Math.floor(diffInMinutes / 1440) > 1 ? 's' : ''} ago`;
+  };
 
   const showToast = (message, type = 'success') => {
     const toast = document.createElement('div');
@@ -59,34 +92,114 @@ function CreateScenes() {
       return;
     }
 
+    if (!storyid) {
+      showToast("Story ID is required", 'error');
+      return;
+    }
+
     setIsGenerating(true);
     
-    // Simulate API call for scene generation
-    await new Promise(resolve => setTimeout(resolve, 4000));
-    
-    // Add the new scene to the beginning of the list
-    const newScene = {
-      id: Date.now(),
-      prompt: prompt,
-      image: "/lovable-uploads/15b38244-0823-4576-bfe7-bf7106f9a346.png",
-      characters: [],
-      timestamp: "Just now"
-    };
-    
-    setGeneratedScenes(prev => [newScene, ...prev]);
-    showToast("Scene generated successfully!");
-    setIsGenerating(false);
-    setPrompt("");
+    try {
+      // API call to generate scene
+      const response = await axiosPrivate.post(`/scenes/generate`, {
+        story_id: parseInt(storyid),
+        prompt: prompt.trim()
+      });
+      
+      if (response.data.success) {
+        const newScene = response.data.scene;
+        
+        // Format the scene data to match component structure
+        const formattedScene = {
+          id: newScene.id,
+          prompt: newScene.prompt,
+          image_url: newScene.image_url,
+          characters: newScene.characters ? newScene.characters.map(char => char.name) : [],
+          timestamp: "Just now",
+          location: newScene.location,
+          environment: newScene.environment,
+          scene_order: newScene.scene_order
+        };
+        
+        // Add the new scene to the beginning of the list
+        setGeneratedScenes(prev => [formattedScene, ...prev]);
+        showToast("Scene generated successfully!");
+        setPrompt(""); // Clear the prompt
+      } else {
+        showToast("Failed to generate scene", 'error');
+      }
+    } catch (error) {
+      console.error('Error generating scene:', error);
+      
+      // Handle different types of errors
+      if (error.response) {
+        const errorMessage = error.response.data?.message || 'Failed to generate scene';
+        showToast(errorMessage, 'error');
+      } else if (error.request) {
+        showToast("Network error. Please check your connection.", 'error');
+      } else {
+        showToast("An unexpected error occurred", 'error');
+      }
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
-  const handleDeleteScene = (sceneId) => {
-    setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
-    showToast("Scene deleted successfully!");
+  const handleDeleteScene = async (sceneId) => {
+    try {
+      // Optional: Make API call to delete from server
+      // await axios.delete(`${API_BASE_URL}/scenes/${sceneId}`);
+      
+      setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
+      showToast("Scene deleted successfully!");
+    } catch (error) {
+      console.error('Error deleting scene:', error);
+      showToast("Failed to delete scene", 'error');
+    }
+  };
+
+  const downloadImage = async (imageUrl, sceneName = 'scene') => {
+    try {
+      const response = await fetch(imageUrl);
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const imageBlob = await response.blob();
+      const imageURL = URL.createObjectURL(imageBlob);
+      
+      const link = document.createElement('a');
+      link.href = imageURL;
+      link.download = `${sceneName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(imageURL);
+      
+      showToast("Image downloaded successfully!");
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      showToast("Failed to download image", 'error');
+    }
   };
 
   const toggleTips = () => {
     setIsTipsOpen(!isTipsOpen);
   };
+
+  if (isLoading) {
+    return (
+      <div className="scenes-container mt-5">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Loading scenes...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="scenes-container mt-5">
@@ -123,6 +236,7 @@ function CreateScenes() {
                 onChange={(e) => setPrompt(e.target.value)}
                 className="form-textarea scene-textarea"
                 rows="5"
+                disabled={isGenerating}
               />
             </div>
 
@@ -194,10 +308,20 @@ function CreateScenes() {
               {/* Prompt Section */}
               <div className="scene-prompt-section">
                 <div className="prompt-header">
-                  <h4 className="prompt-title">Scene Prompt #{generatedScenes.length - index}</h4>
+                  <h4 className="prompt-title">Scene #{scene.scene_order || generatedScenes.length - index}</h4>
                   <span className="prompt-timestamp">{scene.timestamp}</span>
                 </div>
                 <p className="prompt-text">{scene.prompt}</p>
+                
+                {/* Environment and Location Info */}
+                {scene.environment && (
+                  <div className="scene-details">
+                    <p className="scene-environment">
+                      <strong>Environment:</strong> {scene.environment}
+                    </p>
+                  </div>
+                )}
+                
                 {scene.characters.length > 0 && (
                   <div className="prompt-characters">
                     <PeopleOutlineIcon className="icon-xs" />
@@ -212,21 +336,39 @@ function CreateScenes() {
               <div className="scene-image-section">
                 <h5 className="image-title">Generated Scene</h5>
                 <div className="scene-image-container">
-                  <div className="scene-image-placeholder">
-                    <div className="image-overlay"></div>
-                    <div className="image-actions">
-                      <button className="image-action-btn" title="Download Scene">
-                        <DownloadIcon className="icon-xs" />
-                      </button>
-                      <button 
-                        className="image-action-btn action-danger" 
-                        title="Delete Scene"
-                        onClick={() => handleDeleteScene(scene.id)}
-                      >
-                        <DeleteOutlineIcon className="icon-xs" />
-                      </button>
+                  {scene.image_url ? (
+                    <div className="scene-image-wrapper">
+                      <img 
+                        src={scene.image_url} 
+                        alt={`Generated scene: ${scene.prompt}`}
+                        className="scene-image"
+                        onError={(e) => {
+                          e.target.src = '/path/to/fallback-image.png'; // Add a fallback image
+                        }}
+                      />
+                      <div className="image-actions">
+                        <button 
+                          className="image-action-btn" 
+                          title="Download Scene"
+                          onClick={() => downloadImage(scene.image_url, `scene_${scene.id}`)}
+                        >
+                          <DownloadIcon className="icon-xs" />
+                        </button>
+                        <button 
+                          className="image-action-btn action-danger" 
+                          title="Delete Scene"
+                          onClick={() => handleDeleteScene(scene.id)}
+                        >
+                          <DeleteOutlineIcon className="icon-xs" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="scene-image-placeholder">
+                      <div className="image-overlay"></div>
+                      <p className="no-image-text">No image available</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -234,7 +376,7 @@ function CreateScenes() {
         ))}
         
         {/* Empty State */}
-        {generatedScenes.length === 0 && (
+        {generatedScenes.length === 0 && !isLoading && (
           <div className="empty-state">
             <div className="empty-icon">
               <ImageOutlinedIcon className="icon-xxl" />

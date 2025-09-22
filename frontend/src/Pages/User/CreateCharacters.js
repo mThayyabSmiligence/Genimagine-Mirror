@@ -29,7 +29,7 @@ function CreateCharacters() {
     description: ""
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [dialogMode, setDialogMode] = useState(""); // "generate" | "upload"
+  const [dialogMode, setDialogMode] = useState("generate"); // "generate" | "upload"
   const [anchorMenu, setAnchorMenu] = useState(false);
   const [showCharacterPreview, setShowCharacterPreview] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
