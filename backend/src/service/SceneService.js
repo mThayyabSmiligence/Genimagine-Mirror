@@ -73,11 +73,11 @@ exports.getReferencedCharacters = async (user_prompt,story_id) => {
 
     const systemPrompt = `
             You are a scene parser that always returns valid JSON.
-            Extract characters, their actions, and the scene setting from the text.
+            Extract characters, their actions, and emotion if any or just leave it null and the scene setting from the text.
 
             Use this schema:
             {
-              "characters": [{"name": "string", "action": "string"}],
+              "characters": [{"name": "string", "action": "string","emotion": "string"}],
               "location": "string",   // where the scene takes place
               "environment": "string" // extra context (weather, chaos, mood, special events)
             }
