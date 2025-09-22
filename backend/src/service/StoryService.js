@@ -38,6 +38,7 @@ exports.getUserStories = async (user_id) => {
     include: [
       [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("characters.id"))), "characterCount"],
       [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("scenes.id"))), "sceneCount"],
+      [Sequelize.fn("MIN", Sequelize.col("scenes.image_url")), "thumbnail"]
     ],
   },
   include: [
