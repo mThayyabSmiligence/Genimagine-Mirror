@@ -263,7 +263,7 @@ function StoriesPage() {
                        <PeopleOutlineIcon className="icon-xs" />
                     </button>
                   </Link>
-                  <Link to={`/u/stories/${story.id}`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
+                  <Link to={`/u/scenes/create/${story.id}`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
                     <button className="story-action-btn" title="View Story">
                       <VisibilityOutlinedIcon className="icon-xs" />
                     </button>
