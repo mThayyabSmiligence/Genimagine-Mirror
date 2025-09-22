@@ -31,11 +31,15 @@ function CreateScenes() {
     fetchExistingScenes();
   }, [storyid]);
 
-  const fetchExistingScenes = async () => {
-    try {
+ const fetchExistingScenes = async () => {
+  try {
       setIsLoading(true);
-      // Replace with your actual endpoint to fetch existing scenes
-      const response = await axiosPrivate.get(`/scenes/story/${storyid}`);
+      // Updated endpoint to use query parameters
+      const response = await axiosPrivate.get(`/scenes/storyId`, {
+        params: {
+          story_id: storyid
+        }
+      });
       
       if (response.data.success) {
         const formattedScenes = response.data.scenes.map(scene => ({
@@ -58,6 +62,7 @@ function CreateScenes() {
       setIsLoading(false);
     }
   };
+
 
   const formatTimestamp = (dateString) => {
     const now = new Date();
@@ -146,17 +151,22 @@ function CreateScenes() {
   };
 
   const handleDeleteScene = async (sceneId) => {
-    try {
-      // Optional: Make API call to delete from server
-      // await axios.delete(`${API_BASE_URL}/scenes/${sceneId}`);
-      
+  try {
+    const response = await axiosPrivate.post('/scenes/delete', {
+      scene_id: sceneId
+    });
+    
+    if (response.data.success) {
       setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
       showToast("Scene deleted successfully!");
-    } catch (error) {
-      console.error('Error deleting scene:', error);
-      showToast("Failed to delete scene", 'error');
+    } else {
+      showToast(response.data.message || "Failed to delete scene", 'error');
     }
-  };
+  } catch (error) {
+    console.error('Error deleting scene:', error);
+  }
+};
+
 
   const downloadImage = async (imageUrl, sceneName = 'scene') => {
     try {
