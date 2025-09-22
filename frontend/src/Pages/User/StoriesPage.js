@@ -245,7 +245,7 @@ function StoriesPage() {
                 </div>
                 <div className="meta-item">
                   <AutoStoriesRoundedIcon className="icon-xs" />
-                  <span>{story.scenes || 0} scenes</span>
+                  <span>{story.sceneCount || 0} scenes</span>
                 </div>
               </div>
               
