@@ -11,7 +11,7 @@ const { getAspectRatioShape } = require('../service/UserService');
 const { getAllPlansController, getPlanByIdController, subscribeToPlanController, getUserPlanStatusContoller } = require('../controller/PlanController');
 const { getImageToPromptConversationHistoryController, upload } = require('../controller/ImagetoPromptController');
 const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware, generateCharacterController, getCharactersByStoryController, saveCharacterController, regenerateCharacterController, getCharactersByUserController, softDeleteCharacterController, forceDeleteCharacterController, restoreCharacterController, uploadCharacterImageController, reuploadCharacterImageController, characterCollageController } = require('../controller/CharacterController');
-const { generateSceneController, getScenesController, generateLayeredSceneController, getScenesByStoryController } = require('../controller/SceneController');
+const { generateSceneController, getScenesController, generateLayeredSceneController, getScenesByStoryController, deleteSceneByIdController } = require('../controller/SceneController');
 const { createStoryController, getUserStoriesController, getStoryByIdController, updateStoryController, deleteStoryController } = require('../controller/StoryController');
 const characterUpload= require('../middle_ware/uploadCharacter')
 const router = express.Router();
@@ -107,6 +107,8 @@ router.post('/restore-character', restoreCharacterController);
 // router.post('/save-character', saveCharacterController);
 
 //scene route:
-router.post('/scenes/generate', generateSceneController);
 router.get('/scenes/storyId', getScenesByStoryController);
+router.post('/scenes/generate', generateSceneController);
+router.post('/scenes/delete', deleteSceneByIdController);
+
 module.exports = router;

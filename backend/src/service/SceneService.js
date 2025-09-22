@@ -278,6 +278,19 @@ exports.getScenesByStoryService= async (user_id, story_id) => {
   }
 };
 
+exports.deleteSceneByIdService = async (user_id, scene_id) => {
+  try {
+    const result = await Scene.findOne({ where: { user_id, id: scene_id } });
+    if (!result || result.length === 0) return { status: 404, success: false, message: "Scene not found" };
+    const deltedScene = await deleteFromServer(result.image_path, user_id, result.story_id, result.id);
+    await Scene.destroy({ where: { user_id, id: scene_id } });
+    return { status: 200, success: true, message: "Scene deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting scene:", error);
+    return { status: 500, success: false, message: "Failed to delete scene" };
+  }
+};
+
 // exports.generateSceneService = async (user_id, characters, prompt) => {
 //   try {
 
@@ -404,7 +417,7 @@ const { getCharacterById } = require('../service/CharacterService');
 const { imageToImageService } = require('./ImageToImageService');
 const { Story, Style, Character, Scene } = require('../models');
 const { Json } = require('sequelize/lib/utils');
-const { uploadImageToServer } = require('./UploadToServerService');
+const { uploadImageToServer, deleteFromServer } = require('./UploadToServerService');
 
 const ensureDir = async (dir) => fs.promises.mkdir(dir, { recursive: true });
 
