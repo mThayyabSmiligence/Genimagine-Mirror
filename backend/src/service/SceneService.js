@@ -9,8 +9,7 @@ const sharp = require("sharp");
 
 exports.generateSceneService = async (user_id, story_id, prompt) => {
   try {
-
-    console.log("user_id:",user_id); 
+ 
     //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
     // Check if the story exists
@@ -19,6 +18,7 @@ exports.generateSceneService = async (user_id, story_id, prompt) => {
     //get style details
     const style_id = story.style_id;
     const style = await Style.findOne({ where: { id: style_id } });
+    
     // Check if the style exists
     if (!style) return { status: 404, success: false, message: 'Style not found' };
 
@@ -63,7 +63,6 @@ exports.generateSceneService = async (user_id, story_id, prompt) => {
 
 
 
-    console.log("scenePrompt:",scenePrompt);
     const imageData = await this.generateSceneImage(
       story_id,
       scene.id,
@@ -91,29 +90,37 @@ exports.getReferencedCharacters = async (user_prompt,story_id) => {
     const cloud_flare_api_key= process.env.CLOUD_FLARE_API_KEY;
     const model_id= process.env.CLOUD_FLARE_LLAMA_3_8B_INSTRUCT;
 
-   const systemPrompt = `
-        You are a scene parser that always returns valid JSON.
-        Extract characters, their actions, positions, and emotions (if any, inferred from both description and context — not literal words) and the scene setting from the text.
+const systemPrompt = `
+    You are a scene parser that always returns valid JSON.
+    Extract characters, their actions, positions, and emotions (if any, inferred from both description and context — not literal words) and the scene setting from the text.
 
-        Use this schema:
-        {
-          "characters": [
-            {"name": "string", "action": "string", "position": "string | null", "emotion": "string | null"}
-          ],
-          "location": "string",   // where the scene takes place
-          "environment": "string" // extra context (weather, chaos, mood, special events)
-        }
+    Use this schema:
+    {
+      "characters": [
+        {"name": "string", "action": "string", "position": "string | null", "emotion": "string | null"}
+      ],
+      "location": "string",   // where the scene takes place
+      "environment": "string" // extra context (weather, chaos, mood, special events)
+    }
 
-        Rules:
-        - "location" must be the physical place (rooftop, forest, castle hall).
-        - "environment" must include surrounding details (blurred, people falling, magical glow, night sky).
-        - "emotion" should be context-aware. Do NOT just take literal cues (e.g., "smile" doesn’t always mean "happy").
-          - Consider scene tone: tragic, violent, peaceful, tense.
-          - Use nuanced emotions: "grief", "rage", "fear", "relieved", "sinister", "vengeful".
-          - If unclear, set emotion to null.
-        - "position" should capture body orientation, stance, or spatial relationship (e.g., "back-to-back", "kneeling", "standing on a cliff edge"). If not mentioned, use null.
-        - Always return valid JSON ONLY.
-        `;
+    Rules:
+    - "location" must be the physical place (rooftop, forest, castle hall).
+    - "environment" must include surrounding details (blurred, people falling, magical glow, night sky).
+    - "action" must include the **full action phrase** (not just the verb). 
+      Example:
+        - Input: "June shows Sam a mysterious ancient map she inherited."
+        - Action: "showing Sam a mysterious ancient map she inherited"
+      Example:
+        - Input: "Sam runs across the room holding a torch."
+        - Action: "running across the room holding a torch"
+    - "emotion" should be context-aware. Do NOT just take literal cues (e.g., "smile" doesn’t always mean "happy").
+      - Consider scene tone: tragic, violent, peaceful, tense.
+      - Use nuanced emotions: "grief", "rage", "fear", "relieved", "sinister", "vengeful".
+      - If unclear, set emotion to null.
+    - "position" should capture body orientation, stance, or spatial relationship (e.g., "back-to-back", "kneeling", "standing on a cliff edge"). If not mentioned, use null.
+    - Always return valid JSON ONLY.
+    `;
+
 
 
     const result = await axios.post(`https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/${model_id}`, 
@@ -143,14 +150,13 @@ exports.getReferencedCharacters = async (user_prompt,story_id) => {
 
 exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, scene_order, prompt, user_id) => {
   try {
-    const api_mode = scene_order === 1 ? "text-to-image" : "image-to-image";
+    const api_mode = !latest_scene || scene_order === 1 ? "text-to-image" : "image-to-image";
     const api_url = `https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/${api_mode}`;
     const api_key = process.env.STABILITY_API_KEY;
 
     let response;
 
-    if (scene_order === 1) {
-      console.log("Generating scene image...");
+    if (scene_order === 1 || !latest_scene || !latest_scene.image_url){
       // ✅ text-to-image supports JSON
       const input = {
         text_prompts: [{ text: prompt }],
@@ -179,7 +185,6 @@ exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, sce
 
       // compress if larger than 5 MB
       if (imageBuffer.length > 5 * 1024 * 1024) {
-        console.log("⚠️ Image too big, compressing...");
         imageBuffer = await sharp(imageBuffer)
           .jpeg({ quality: 80 })   // adjust quality if needed
           .resize(1024, 1024, { fit: "inside" }) // keep within max dims
@@ -311,7 +316,7 @@ exports.deleteSceneByIdService = async (user_id, scene_id) => {
   try {
     const result = await Scene.findOne({ where: { user_id, id: scene_id } });
     if (!result || result.length === 0) return { status: 404, success: false, message: "Scene not found" };
-    const deltedScene = await deleteFromServer(result.image_path, user_id, result.story_id, result.id);
+    const deletedScene = await deleteFromServer(result.image_path, user_id, result.story_id, result.id);
     await Scene.destroy({ where: { user_id, id: scene_id } });
     return { status: 200, success: true, message: "Scene deleted successfully" };
   } catch (error) {
@@ -319,30 +324,36 @@ exports.deleteSceneByIdService = async (user_id, scene_id) => {
     return { status: 500, success: false, message: "Failed to delete scene" };
   }
 };
-
-
-exports.regenerateSceneService = async (user_id, scene_id, prompt) => {
+// ✅ regenerateSceneService — only regenerates the image in the same DB entry
+exports.regenerateSceneService = async (user_id, scene_id, prompt = null) => {
   try {
-    const result = await Scene.findOne({ where: { user_id, id: scene_id } });    
-    if (!result || result.length === 0) return { status: 404, success: false, message: "Scene not found" };
-    if (prompt){
-      const referenced_characters = await this.getReferencedCharacters(prompt,result.story_id);
-      if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
+    // 1. Find the existing scene
+    const scene = await Scene.findOne({ where: { user_id, id: scene_id } });
+    if (!scene) {
+      return { status: 404, success: false, message: "Scene not found" };
+    }
+
+    // 2. If a new prompt is provided, update the scene fields
+    if (prompt) {
+      // Re-parse characters with LLM
+      const referenced_characters = await this.getReferencedCharacters(prompt, scene.story_id);
+      if (!referenced_characters.success) {
+        return { status: 500, success: false, message: "Failed to regenerate scene" };
+      }
       const characters = referenced_characters.data;
 
+      // Build structured natural language prompt
       const scenePrompt = `
       Scene at ${characters.location}, with environment: ${characters.environment}.
       ${characters.characters.map(c => {
         let description = `${c.name} is ${c.action}`;
         
-        // Add position if available
         if (c.position && c.position.trim() !== "") {
           description += ` while ${c.position}`;
         }
 
         description += `. ${c.full_description || c.description || ''}`;
 
-        // Add emotion if available
         if (c.emotion && c.emotion.trim() !== "") {
           description += ` They appear ${c.emotion}.`;
         }
@@ -350,25 +361,110 @@ exports.regenerateSceneService = async (user_id, scene_id, prompt) => {
         return description;
       }).join(" ")}
       `;
-      
-      result.full_prompt = scenePrompt;
-      result.prompt = prompt;
-      result.characters = characters.characters;
-      result.full_structured_prompt = characters;
-      result.location = characters.location;
-      result.environment = characters.environment;
-      await result.save();
+
+      // update existing DB entry with new text data
+      scene.prompt = prompt;
+      scene.full_prompt = scenePrompt;
+      scene.characters = characters.characters;
+      scene.full_structured_prompt = characters;
+      scene.location = characters.location;
+      scene.environment = characters.environment;
+      await scene.save();
     }
-    const deltedScene = await deleteFromServer(result.image_path, user_id, result.story_id, result.id);
-    if(!deltedScene.success) return { status: 500, success: false, message: "Failed to delete old scene picture from server" };
-    console.log(result.full_prompt);
-    const newScene = await generateSceneService(user_id, result.story_id, result.full_prompt);
-    return { status: 200, success: true, message: "Scene regenerated successfully", newScene };
+
+    // 3. Delete old image file from server
+    const deletedScene = await deleteFromServer(scene.image_path, user_id, scene.story_id, scene.id);
+    if (!deletedScene.success) {
+      return { status: 500, success: false, message: "Failed to delete old scene image" };
+    }
+
+    // 4. Regenerate new image (using same scene_order)
+    //    CHANGE: force regenerate with null for latest_scene so it's fresh
+    const newImage = await this.generateSceneImage(
+      scene.story_id,
+      scene.id,
+      null,                     // always null → don't do img2img
+      scene.scene_order,        // keep same order
+      scene.prompt,             // latest prompt (either old or updated)
+      user_id
+    );
+
+    if (!newImage.success) {
+      return { status: 500, success: false, message: "Failed to generate new scene image" };
+    }
+
+    // 5. Update DB entry with new image path/url
+    scene.image_path = newImage.image_path;   // ✅ changed: direct fields instead of newImage.data
+    scene.image_url = newImage.image_url;
+    await scene.save();
+
+    // 6. Return updated scene
+    return {
+      status: 200,
+      success: true,
+      message: "Scene regenerated successfully",
+      scene
+    };
+
   } catch (error) {
     console.error("Error regenerating scene:", error);
     return { status: 500, success: false, message: "Failed to regenerate scene" };
   }
 };
+
+
+// exports.regenerateSceneService = async (user_id, scene_id, prompt) => {
+//   try {
+//     const result = await Scene.findOne({ where: { user_id, id: scene_id } });    
+//     if (!result || result.length === 0) return { status: 404, success: false, message: "Scene not found" };
+//     if (prompt){
+//       const referenced_characters = await this.getReferencedCharacters(prompt,result.story_id);
+//       if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
+//       const characters = referenced_characters.data;
+
+//       const scenePrompt = `
+//       Scene at ${characters.location}, with environment: ${characters.environment}.
+//       ${characters.characters.map(c => {
+//         let description = `${c.name} is ${c.action}`;
+        
+//         // Add position if available
+//         if (c.position && c.position.trim() !== "") {
+//           description += ` while ${c.position}`;
+//         }
+
+//         description += `. ${c.full_description || c.description || ''}`;
+
+//         // Add emotion if available
+//         if (c.emotion && c.emotion.trim() !== "") {
+//           description += ` They appear ${c.emotion}.`;
+//         }
+
+//         return description;
+//       }).join(" ")}
+//       `;
+      
+//       result.full_prompt = scenePrompt;
+//       result.prompt = prompt;
+//       result.characters = characters.characters;
+//       result.full_structured_prompt = characters;
+//       result.location = characters.location;
+//       result.environment = characters.environment;
+//       await result.save();
+//     }
+//     const deletedScene = await deleteFromServer(result.image_path, user_id, result.story_id, result.id);
+//     if(!deletedScene.success) return { status: 500, success: false, message: "Failed to delete old scene picture from server" };
+//     //story_id, scene_id, latest_scene = null, scene_order, prompt, user_id
+//     const newImage = await this.generateSceneImage(result.story_id, result.id, null, result.scene_order, result.prompt, user_id);
+//     if(!newImage.success) return { status: 500, success: false, message: "Failed to generate new scene picture" };
+//     result.image_path = newImage.data.image_path;
+//     result.image_url = newImage.data.image_url;
+//     const newScene = await result.save();
+//     return { status: 200, success: true, message: "Scene regenerated successfully", newScene };
+//   } catch (error) {
+//     console.error("Error regenerating scene:", error);
+//     return { status: 500, success: false, message: "Failed to regenerate scene" };
+//   }
+// };
 
 // exports.generateSceneService = async (user_id, characters, prompt) => {
 //   try {
@@ -536,7 +632,6 @@ exports.generateCharacterLayer = async ({
     // backgroundPrompt: null, 
     extra: "full body, isolated subject, plain background, studio lighting, centered"
   });
-  console.log("promp :",prompt)
 
   const buffer = await imageToImageService(
     { prompt, width, height, strength: 0.4, guidance: 8.0, num_steps: 20},
