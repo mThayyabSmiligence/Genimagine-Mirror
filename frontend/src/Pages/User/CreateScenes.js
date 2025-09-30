@@ -378,6 +378,15 @@ function CreateScenes() {
                     <div className="scene-image-placeholder">
                       <div className="image-overlay"></div>
                       <p className="no-image-text">No image available</p>
+                      <div className="image-actions">
+                        <button 
+                          className="image-action-btn action-danger" 
+                          title="Delete Scene"
+                          onClick={() => handleDeleteScene(scene.id)}
+                        >
+                          <DeleteOutlineIcon className="icon-xs" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
