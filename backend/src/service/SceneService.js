@@ -150,6 +150,7 @@ const systemPrompt = `
 
 exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, scene_order, prompt, user_id) => {
   try {
+    console.log("prompt:",prompt)
     const api_mode = !latest_scene || scene_order === 1 ? "text-to-image" : "image-to-image";
     const api_url = `https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/${api_mode}`;
     const api_key = process.env.STABILITY_API_KEY;
@@ -385,7 +386,7 @@ exports.regenerateSceneService = async (user_id, scene_id, prompt = null) => {
       scene.id,
       null,                     // always null → don't do img2img
       scene.scene_order,        // keep same order
-      scene.prompt,             // latest prompt (either old or updated)
+      scene.full_prompt,             // latest prompt (either old or updated)
       user_id
     );
 
