@@ -76,6 +76,10 @@ const Scene = sequelize.define(
       allowNull: true,
     },
 
+    full_prompt:{
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     // Image generation outputs
     image_url: {
       type: DataTypes.STRING(500),
