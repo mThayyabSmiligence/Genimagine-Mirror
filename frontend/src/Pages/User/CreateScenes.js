@@ -13,6 +13,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import '../../Css/CreateScenes.css';
+import { toast } from 'react-toastify';
 
 // Base API URL - Update this according to your environment
 // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -158,9 +159,9 @@ function CreateScenes() {
     
     if (response.data.success) {
       setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
-      showToast("Scene deleted successfully!");
+      toast.success("Scene deleted successfully!");
     } else {
-      showToast(response.data.message || "Failed to delete scene", 'error');
+      toast.error(response.data.message || "Failed to delete scene", 'error');
     }
   } catch (error) {
     console.error('Error deleting scene:', error);
@@ -377,6 +378,15 @@ function CreateScenes() {
                     <div className="scene-image-placeholder">
                       <div className="image-overlay"></div>
                       <p className="no-image-text">No image available</p>
+                      <div className="image-actions">
+                        <button 
+                          className="image-action-btn action-danger" 
+                          title="Delete Scene"
+                          onClick={() => handleDeleteScene(scene.id)}
+                        >
+                          <DeleteOutlineIcon className="icon-xs" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
