@@ -22,7 +22,7 @@ function CreateScenes() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isTipsOpen, setIsTipsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [regeneratingScenes, setRegeneratingScenes] = useState(new Set());
+  const [regeneratingSceneId, setRegeneratingSceneId] = useState(null);
 
   const { storyid } = useParams(); 
 
@@ -143,13 +143,9 @@ function CreateScenes() {
     }
   };
 
+  // Simple regenerate function
   const handleRegenerateScene = async (sceneId, prompt) => {
-    if (!sceneId || !prompt) {
-      toast.error("Missing scene ID or prompt for regeneration");
-      return;
-    }
-
-    setRegeneratingScenes(prev => new Set([...prev, sceneId]));
+    setRegeneratingSceneId(sceneId); // Set loading state
     
     try {
       const response = await axiosPrivate.post('/scenes/regenerate', {
@@ -160,39 +156,22 @@ function CreateScenes() {
       if (response.data.success) {
         const updatedScene = response.data.scene;
         
+        // Replace the image in the existing scene
         setGeneratedScenes(prev => 
           prev.map(scene => 
             scene.id === sceneId 
-              ? {
-                  ...scene,
-                  image_url: updatedScene.image_url,
-                  timestamp: "Just now"
-                }
+              ? { ...scene, image_url: updatedScene.image_url, timestamp: "Just now" }
               : scene
           )
         );
         
-        toast.success("Scene regenerated successfully!");
-      } else {
-        toast.error(response.data.message || "Failed to regenerate scene");
+        showToast("Scene regenerated successfully!");
       }
     } catch (error) {
       console.error('Error regenerating scene:', error);
-      
-      if (error.response) {
-        const errorMessage = error.response.data?.message || 'Failed to regenerate scene';
-        toast.error(errorMessage);
-      } else if (error.request) {
-        toast.error("Network error. Please check your connection.");
-      } else {
-        toast.error("An unexpected error occurred");
-      }
+      showToast("Failed to regenerate scene", 'error');
     } finally {
-      setRegeneratingScenes(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(sceneId);
-        return newSet;
-      });
+      setRegeneratingSceneId(null); // Clear loading state
     }
   };
 
@@ -398,20 +377,18 @@ function CreateScenes() {
                 <div className="scene-image-container">
                   {scene.image_url ? (
                     <div className="scene-image-wrapper">
-                      {/* Show loading overlay when regenerating */}
-                      {regeneratingScenes.has(scene.id) && (
-                        <div className="regenerating-overlay">
-                          <div className="regenerating-spinner">
-                            <div className="loading-spinner regenerating-loader"></div>
-                            <p className="regenerating-text">Regenerating scene...</p>
-                          </div>
+                      {/* Show loading spinner when this specific scene is regenerating */}
+                      {regeneratingSceneId === scene.id && (
+                        <div className="simple-loading-overlay">
+                          <div className="simple-spinner"></div>
+                          <p>Regenerating...</p>
                         </div>
                       )}
                       
                       <img 
                         src={scene.image_url} 
-                        alt={`Generated scene: ${scene.prompt}`}
-                        className={`scene-image ${regeneratingScenes.has(scene.id) ? 'regenerating' : ''}`}
+                        alt={`Generated scene`}
+                        className="scene-image"
                         onError={(e) => {
                           e.target.src = '/path/to/fallback-image.png';
                         }}
@@ -422,7 +399,7 @@ function CreateScenes() {
                           className="image-action-btn" 
                           title="Regenerate Scene"
                           onClick={() => handleRegenerateScene(scene.id, scene.prompt)}
-                          disabled={regeneratingScenes.has(scene.id)}
+                          disabled={regeneratingSceneId === scene.id}
                         >
                           <RefreshIcon className="icon-xs" />
                         </button>
@@ -430,7 +407,7 @@ function CreateScenes() {
                           className="image-action-btn" 
                           title="Download Scene"
                           onClick={() => downloadImage(scene.image_url, `scene_${scene.id}`)}
-                          disabled={regeneratingScenes.has(scene.id)}
+                          disabled={regeneratingSceneId === scene.id}
                         >
                           <DownloadIcon className="icon-xs" />
                         </button>
@@ -438,7 +415,7 @@ function CreateScenes() {
                           className="image-action-btn action-danger" 
                           title="Delete Scene"
                           onClick={() => handleDeleteScene(scene.id)}
-                          disabled={regeneratingScenes.has(scene.id)}
+                          disabled={regeneratingSceneId === scene.id}
                         >
                           <DeleteOutlineIcon className="icon-xs" />
                         </button>
