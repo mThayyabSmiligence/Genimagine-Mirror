@@ -1,12 +1,15 @@
-const { generateSceneService, getScenesService, getScenesByStoryService, deleteSceneByIdService } = require("../service/SceneService");
+const { generateSceneService, getScenesService, getScenesByStoryService, deleteSceneByIdService, regenerateSceneService } = require("../service/SceneService");
 
 
 exports.generateSceneController= async (req, res) => {
-  const { story_id, prompt } = req.body;
+  const { story_id, prompt, background_image_url} = req.body;
   const user_id = req.user.id;
 
+  console.log("story id: ",story_id);
+  
   //check if story_id is provided
   if(!story_id) return res.status(400).json({ success: false, message: 'story_id required' });
+  
   //check if prompt is provided
   if(!prompt) return res.status(400).json({ success: false, message: 'prompt required' });
 
@@ -28,6 +31,12 @@ exports.deleteSceneByIdController = async (req, res) => {
   return res.status(result.status).json(result);
 };
 
+exports.regenerateSceneController= async (req, res) => {
+  const { scene_id ,prompt} = req.body;
+  const user_id = req.user.id;
+  const result = await regenerateSceneService(user_id, scene_id, prompt);
+  return res.status(result.status).json(result);
+};
 
 
 
