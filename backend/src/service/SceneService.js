@@ -134,6 +134,7 @@ const systemPrompt = `
       }
     );
     const response = result.data.result.response;
+    console.log("result : ",response)
     const data = safeJsonParse(response);
 
     const dbCharacters = await Character.findAll({ where: { story_id } });

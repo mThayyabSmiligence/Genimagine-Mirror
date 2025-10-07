@@ -144,8 +144,9 @@ function CreateScenes() {
   };
 
   // Simple regenerate function
+ // Simple regenerate function with cache busting
   const handleRegenerateScene = async (sceneId, prompt) => {
-    setRegeneratingSceneId(sceneId); // Set loading state
+    setRegeneratingSceneId(sceneId);
     
     try {
       const response = await axiosPrivate.post('/scenes/regenerate', {
@@ -156,11 +157,20 @@ function CreateScenes() {
       if (response.data.success) {
         const updatedScene = response.data.scene;
         
-        // Replace the image in the existing scene
+        // Add cache busting parameter to force image reload
+        const cacheBustedImageUrl = updatedScene.image_url.includes('?') 
+          ? `${updatedScene.image_url}&t=${Date.now()}`
+          : `${updatedScene.image_url}?t=${Date.now()}`;
+        
         setGeneratedScenes(prev => 
           prev.map(scene => 
             scene.id === sceneId 
-              ? { ...scene, image_url: updatedScene.image_url, timestamp: "Just now" }
+              ? { 
+                  ...scene, 
+                  image_url: cacheBustedImageUrl,  // Use cache-busted URL
+                  timestamp: "Just now",
+                  imageKey: Date.now()  // Add unique key to force re-render
+                }
               : scene
           )
         );
@@ -171,9 +181,10 @@ function CreateScenes() {
       console.error('Error regenerating scene:', error);
       showToast("Failed to regenerate scene", 'error');
     } finally {
-      setRegeneratingSceneId(null); // Clear loading state
+      setRegeneratingSceneId(null);
     }
   };
+
 
   const handleDeleteScene = async (sceneId) => {
     try {
@@ -377,7 +388,7 @@ function CreateScenes() {
                 <div className="scene-image-container">
                   {scene.image_url ? (
                     <div className="scene-image-wrapper">
-                      {/* Show loading spinner when this specific scene is regenerating */}
+                      {/* Loading overlay */}
                       {regeneratingSceneId === scene.id && (
                         <div className="simple-loading-overlay">
                           <div className="simple-spinner"></div>
@@ -386,6 +397,7 @@ function CreateScenes() {
                       )}
                       
                       <img 
+                        key={scene.imageKey || scene.id} // Force re-render with unique key
                         src={scene.image_url} 
                         alt={`Generated scene`}
                         className="scene-image"
