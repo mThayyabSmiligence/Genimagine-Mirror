@@ -29,6 +29,8 @@ const { checkUserStatus } = require('./middle_ware/RestrictBannedUser');
 const NoAuthMiddleWare = require('./middle_ware/NoAuthMiddleWare');
 const { sequelize } = require("./models")    
 
+const numberQueue = require('./queue/TestQueue');
+const worker = require('./worker/TestWorker');
 
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
@@ -93,6 +95,19 @@ app.use('/api/v1/refresh-token',verifyRefreshToken,jwtRouter)
 app.use('/api/v1/auth',AuthenticationRoutes) 
 app.use('/api/v1/no-auth',NoAuthMiddleWare,NoAuthRouter)
 
+app.post("/start-numbers", async (req, res) => {
+  try {
+    // Add jobs 1 to 10 to the queue
+    for (let i = 1; i <= 10; i++) {
+      await numberQueue.add("printNumber", { number: i });
+    }
+
+    res.json({ message: "Number jobs added to queue!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add jobs" });
+  }
+});
 
 // moderator routes
 app.use('/api/v1/moderator',verifyModeratorToken,ModeratorRouter);

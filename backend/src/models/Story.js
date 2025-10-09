@@ -7,7 +7,7 @@ const sequelize = require("../config/database");
 //description: string
 //user_id: integer
 //thumbnail: string
-//style_id: integer
+//style_id: integer\
 
 const Story = sequelize.define(
   "Story",
@@ -48,6 +48,21 @@ const Story = sequelize.define(
       },
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
+    },
+    
+    status: {
+      type: DataTypes.ENUM("started", "in-progress","generating-characters", "generating-scenes", "completed", "failed","partially-completed"),
+      allowNull: false,
+      defaultValue: "started",
+    },
+    total_scenes: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    generated_scenes: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
     },
   },
   {

@@ -69,6 +69,12 @@ const Character = sequelize.define("Character", {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    status: {
+      type: DataTypes.ENUM("pending", "done", "failed"),
+      allowNull: false,
+      defaultValue: "pending",
+    },
+
 }, {
     tableName: "characters",
     timestamps: true, // ✅ Sequelize will add createdAt and updatedAt automatically
