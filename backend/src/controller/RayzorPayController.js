@@ -180,7 +180,7 @@ exports.expireOldPlans = async(req,res) => {
             WHERE is_active = 0 AND start_date <= NOW() AND expiry_date > NOW()
         `);
 
-        console.log(`[Cron Job] Plan activation/deactivation done `);
+
     } catch (error) {
         console.error("Error in plan expiry cron job:", error);
     }

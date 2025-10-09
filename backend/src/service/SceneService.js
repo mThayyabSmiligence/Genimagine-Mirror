@@ -6,8 +6,10 @@ require('dotenv').config();
 const stringSimilarity = require("string-similarity");
 const FormData = require("form-data");
 const sharp = require("sharp");
+const { jsonrepair } = require("jsonrepair");
 
-exports.generateSceneService = async (user_id, story_id, prompt) => {
+
+exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual") => {
   try {
  
     //get story details
@@ -32,10 +34,11 @@ exports.generateSceneService = async (user_id, story_id, prompt) => {
       order: [['scene_order', 'DESC']],
     });
 
-    const scene_order = latestScene ? latestScene.scene_order + 1 : 1;
+    //get scene order
+    const scene_order = scene_order_input ? scene_order_input :  latestScene ? latestScene.scene_order + 1 : 1;
 
     //create scene
-    const scene = await Scene.create({ user_id, story_id, prompt, characters:characters.characters,full_structured_prompt:characters,location:characters.location,environment:characters.environment, scene_order });
+    const scene = await Scene.create({ user_id, story_id, prompt, characters:characters.characters,full_structured_prompt:characters,location:characters.location,environment:characters.environment, scene_order,type:scene_type_input });
 
     //generate scene image
     // Build natural language prompt
@@ -134,8 +137,12 @@ const systemPrompt = `
       }
     );
     const response = result.data.result.response;
-    console.log("result : ",response)
-    const data = safeJsonParse(response);
+
+    // const data = safeJsonParse(response);
+    const data = this.extractValidJson(response);
+
+
+
 
     const dbCharacters = await Character.findAll({ where: { story_id } });
     const mappedCharacters = mapCharacters(data.characters, dbCharacters);
@@ -151,17 +158,27 @@ const systemPrompt = `
 
 exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, scene_order, prompt, user_id) => {
   try {
-    console.log("prompt:",prompt)
-    const api_mode = !latest_scene || scene_order === 1 ? "text-to-image" : "image-to-image";
+    const api_mode = !latest_scene || scene_order === 1  || !latest_scene.image_url ? "text-to-image" : "image-to-image";
     const api_url = `https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/${api_mode}`;
     const api_key = process.env.STABILITY_API_KEY;
 
     let response;
 
+    let cleanPrompt = prompt.trim();
+
+    // Stability text limit = 2000 chars max
+    if (cleanPrompt.length > 2000) {
+      console.warn(`⚠️ Prompt too long (${cleanPrompt.length} chars). Trimming to 2000.`);
+      cleanPrompt = cleanPrompt.substring(0, 2000);
+    }
+
+
     if (scene_order === 1 || !latest_scene || !latest_scene.image_url){
+
+      console.log(1)
       // ✅ text-to-image supports JSON
       const input = {
-        text_prompts: [{ text: prompt }],
+        text_prompts: [{ text: cleanPrompt }],
         cfg_scale: 7,
         clip_guidance_preset: "FAST_BLUE",
         steps: 30,
@@ -178,6 +195,7 @@ exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, sce
         },
       });
     } else {
+      console.log(2)
       // ✅ image-to-image must use multipart/form-data, no width/height allowed
       const image_url = latest_scene.image_url;
 
@@ -194,7 +212,7 @@ exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, sce
       }
       const formData = new FormData();
       formData.append("init_image", imageBuffer, { filename: "init.png" });
-      formData.append("text_prompts[0][text]", prompt);
+      formData.append("text_prompts[0][text]", cleanPrompt);
       formData.append("cfg_scale", 7);
       formData.append("clip_guidance_preset", "FAST_BLUE");
       formData.append("steps", 30);
@@ -301,6 +319,45 @@ function mapCharacters(parsedCharacters, dbCharacters) {
     };
   });
 }
+
+
+exports.extractValidJson = (text) => {
+  if (!text) return null;
+
+  // Extract JSON-like substring
+  const match = text.match(/{[\s\S]*}/);
+  if (!match) return null;
+
+  let jsonString = match[0];
+
+  // Clean up common issues
+  jsonString = jsonString
+    .replace(/\/\/.*$/gm, "") // remove comments
+    .replace(/\/\*[\s\S]*?\*\//gm, "") // remove block comments
+    .replace(/[“”]/g, '"') // fix smart quotes
+    .replace(/\n\s*/g, " ") // remove newlines
+    .replace(/,\s*([}\]])/g, "$1"); // remove trailing commas
+
+  // If it's double-escaped, unescape
+  if (jsonString.includes('\\"') && !jsonString.includes('"{')) {
+    jsonString = jsonString.replace(/\\"/g, '"');
+  }
+
+  try {
+    // 🧠 Try normal JSON.parse first
+    return JSON.parse(jsonString);
+  } catch (err1) {
+    try {
+      // 🩹 Try jsonrepair if it fails
+      const repaired = jsonrepair(jsonString);
+      return JSON.parse(repaired);
+    } catch (err2) {
+      console.error("❌ Still failed to parse or repair JSON:", err2.message);
+      console.log("🔍 Partial content around error:", jsonString.slice(0, 500));
+      return null;
+    }
+  }
+};
 
 
 

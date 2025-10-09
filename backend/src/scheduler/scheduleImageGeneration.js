@@ -96,7 +96,6 @@ function safeParse(value) {
 }
 
 cron.schedule('* * * * *', async () => {
-  console.log("checking schedule generation2");
 
   // const [recurringSchedules] = await db.execute(`
   //   SELECT * FROM scheduled_image_prompts
@@ -135,7 +134,7 @@ cron.schedule('* * * * *', async () => {
       )
   `);
 
-  console.log("checking schedule generation3");
+
 
   const [oneTimeSchedules] = await db.execute(`
     SELECT * FROM scheduled_image_prompts
@@ -146,9 +145,7 @@ cron.schedule('* * * * *', async () => {
       AND run_at > NOW() - INTERVAL 2 MINUTE
   `);
 
-  console.log(
-    `Recurring tasks due: ${recurringSchedules.length}, One-time tasks due: ${oneTimeSchedules.length}`
-  );
+
 
   const allSchedules = [...recurringSchedules, ...oneTimeSchedules];
 
@@ -187,7 +184,7 @@ cron.schedule('* * * * *', async () => {
       });
     }
 
-    console.log("checking schedule generation5");
+
 
     // if (!schedule.is_recurring) {
     //   await db.execute(
