@@ -13,7 +13,8 @@ const { getImageToPromptConversationHistoryController, upload } = require('../co
 const { createCharacterController, addExpressionController, addPoseController, getCharactersController, getUserCharactersController, uploadReferenceController, uploadMiddleware, generateCharacterController, getCharactersByStoryController, saveCharacterController, regenerateCharacterController, getCharactersByUserController, softDeleteCharacterController, forceDeleteCharacterController, restoreCharacterController, uploadCharacterImageController, reuploadCharacterImageController, characterCollageController } = require('../controller/CharacterController');
 const { generateSceneController, getScenesController, generateLayeredSceneController, getScenesByStoryController, deleteSceneByIdController, regenerateSceneController } = require('../controller/SceneController');
 const { createStoryController, getUserStoriesController, getStoryByIdController, updateStoryController, deleteStoryController } = require('../controller/StoryController');
-const characterUpload= require('../middle_ware/uploadCharacter')
+const characterUpload= require('../middle_ware/uploadCharacter');
+const { createAutoStoryController, getstatus, getStoryStatus } = require('../controller/AutoStoryController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -93,6 +94,9 @@ router.get('/get-story/:id', getStoryByIdController);
 router.post('/update-story/:id', updateStoryController);
 router.post('/delete-story/:id', deleteStoryController);
 
+router.post("/auto-story", createAutoStoryController);
+router.get('/story/:id/status',getStoryStatus)
+
 // character route:
 router.get('/get-story-characters', getCharactersByStoryController)
 router.get('/get-characters', getCharactersByUserController)
@@ -111,4 +115,5 @@ router.get('/scenes/storyId', getScenesByStoryController);
 router.post('/scenes/generate', generateSceneController);
 router.post('/scenes/delete', deleteSceneByIdController);
 router.post('/scenes/regenerate', regenerateSceneController);
+
 module.exports = router;

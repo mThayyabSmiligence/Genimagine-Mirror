@@ -1,3 +1,4 @@
+const generateStabilityAiImage = require('../API/StabilityAiImage');
 const db = require('../config/connectDatabase');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { Character, Story, Style } = require('../models');
@@ -61,27 +62,17 @@ exports.generateCharacterService = async (user_id, story_id, name, description =
     if (!full_description.success) return { status: 500, success: false, message: 'Failed to generate character' };
 
     //create character
-    const character = await Character.create({ user_id, story_id, name, description, user_id , full_description: full_description.description||null });
+    const character = await Character.create({ user_id, story_id, name, description, full_description: full_description.description||null });
 
 
     //generate character image
     const prompt = `Character: ${name}. 
-      Description: ${description}. 
+      Description: ${full_description.description||description}. 
       Art style: ${style.name}. 
       Generate a full-body portrait in ${style.name} style, clean background, high quality.`
 
-    const inputs = {
-      prompt: full_description.description || prompt,
-      negative_prompt: "skull",
-      width: 1024,
-      height: 1024,
-      style: style.name
-    };
-
-    console.log("inputs:",inputs);
-
-    const model_url = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
-    const character_image = await paidGenerateImageService(inputs, model_url);
+   
+    const character_image = await generateStabilityAiImage(prompt );
 
     if (!character_image) return { status: 500, success: false, message: 'Failed to generate character' };
 
@@ -127,8 +118,10 @@ exports.regenerateCharacterService = async (user_id, character_id, name = null, 
     if(character.image_type=="uploaded") return { status: 404, success: false, message: 'This charater is uploaded by you, you can not regenerate it' };
     
     //deleting the old character image
-    const deleteCharacterImage = await deleteFromServer(character.image_path, user_id, character.story_id, character.id);
-    if (!deleteCharacterImage.success) return { status: 500, success: false, message: 'Failed to delete character image' };
+    if(character.image_path){
+      const deleteCharacterImage = await deleteFromServer(character.image_path, user_id, character.story_id, character.id);
+      if (!deleteCharacterImage.success) return { status: 500, success: false, message: 'Failed to delete character image' };
+    }
 
     //update character details
     if (name) character.name = name;
@@ -144,24 +137,13 @@ exports.regenerateCharacterService = async (user_id, character_id, name = null, 
 
     //generate character image
     const prompt = `Character: ${character.name}. 
-      Description: ${character.description}. 
+      Description: ${full_description.description || character.description}. 
       Art style: ${character.story.style.name}. 
       Generate a full-body portrait in ${character.story.style.name} style, clean background, high quality.`
 
 
 
-    const inputs = {
-      prompt: full_description.description || prompt,
-      negative_prompt: "skull",
-      width: 704,
-      height: 704,
-      style: character.story.style.name
-    };
-
-    console.log("inputs:",inputs);
-
-    const model_url = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
-    const character_image = await paidGenerateImageService(inputs, model_url);
+    const character_image = await generateStabilityAiImage( prompt );
 
     if (!character_image) return { status: 500, success: false, message: 'Failed to generate character' };
 
@@ -358,6 +340,23 @@ Format:
   }
 
 }
+
+exports.createCharacterImageGeneratePrompt=(character,style)=>{
+
+  if(!character) return { status: 404, success: false, message: 'Character not found' };
+  if(!character.name) return { status: 404, success: false, message: 'Character name not found' };
+  if(!character.description) return { status: 404, success: false, message: 'Character description not found' };
+  if(!style) return { status: 404, success: false, message: 'Character style not found' };
+
+  //generate character image
+  const prompt = `Character: ${character.name}. 
+    Description: ${character.description}. 
+    Art style: ${style}. 
+    Generate a full-body portrait in ${style} style, clean background, high quality.`
+
+  return prompt
+}
+
 // exports.saveCharacterService = async (user_id, character_image, story_id, name, description) => {
 //   try{
 //     console.log(4);

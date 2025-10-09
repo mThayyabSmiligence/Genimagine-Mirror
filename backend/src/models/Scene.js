@@ -14,7 +14,11 @@ const sequelize = require("../config/database");
 //image_path: string
 //image_type: string
 //scene_order: integer
-//deleted_at: date
+//deleted_at: dates
+//status: string(started, in-progress, completed, failed)
+//total_scenes: integer
+//generated_scenes: integer
+
 
 const Scene = sequelize.define(
   "Scene",
@@ -106,6 +110,20 @@ const Scene = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    status: {
+      type: DataTypes.ENUM("pending", "generating", "done", "failed"),
+      allowNull: false,
+      defaultValue: "pending",
+    },
+    generation_log: {
+      type: DataTypes.JSON, // store API response, errors, retries, etc.
+      allowNull: true,
+    },
+    type:{
+      type: DataTypes.ENUM("manual", "auto"),
+      allowNull: false,
+      defaultValue: "manual",
+    }
   },
   {
     tableName: "scenes",
