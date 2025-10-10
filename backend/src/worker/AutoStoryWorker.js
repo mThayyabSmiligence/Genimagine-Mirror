@@ -25,9 +25,11 @@ console.log("DATABASE:", process.env.DATABASE);
 // const sequalize = require("../config/database");
 
 
-const connection = new IORedis({
-    host:"127.0.0.1",
-    port: 6379,
+const redis_url = process.env.REDIS_URL;
+console.log(redis_url,"give")
+
+const connection = new IORedis(redis_url,{
+    tls:{},
     maxRetriesPerRequest: null,
 });
 
@@ -112,12 +114,12 @@ const worker = new Worker(
                 const characterPrompt = createCharacterImageGeneratePrompt(character, style.name);
                 const characterImage = await generateStabilityAiImage(characterPrompt).catch(err => {
                     console.error("Error generating image:", err);
-                    return { success: false };
+                    return null;
                 });
 
 
                 let uploadImage = { success: false };
-                if (characterImage.success) {
+                if (characterImage) {
                     uploadImage = await uploadImageToServer(
                     characterImage,
                     userId,
