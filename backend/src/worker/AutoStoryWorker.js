@@ -74,14 +74,25 @@ const worker = new Worker(
         });
         if (!style) return;
 
-        
-        const parsedPrompt = await extractScenesAndCharactersService(
-            story.description,
-            story.total_scenes
-        ).catch(err => {
-            console.error("Error parsing prompt:", err);
-            return { success: false };
-        });
+        let extactCount = 0;
+        let parsedPrompt = { success: false };
+        let extractFlag = true;
+        while (extractFlag) {
+            extractFlag = false;
+            if(extactCount > 0) {
+                console.log("Retrying to parse prompt");
+            }
+            parsedPrompt = await extractScenesAndCharactersService(
+                story.description,
+                story.total_scenes
+            ).catch(err => {
+                console.error("Error parsing prompt:", err);
+                return { success: false };
+            });
+            extractFlag = !parsedPrompt.success || !parsedPrompt.data.characters || !parsedPrompt.data.scenes;
+            extactCount++;
+        }
+
 
         if (!parsedPrompt.success || !parsedPrompt.data.characters || !parsedPrompt.data.scenes) {
             console.log("Failed to parse prompt");
