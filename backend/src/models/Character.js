@@ -70,7 +70,7 @@ const Character = sequelize.define("Character", {
       allowNull: true,
     },
     status: {
-      type: DataTypes.ENUM("pending", "done", "failed"),
+      type: DataTypes.ENUM("pending", "completed", "failed"),
       allowNull: false,
       defaultValue: "pending",
     },
