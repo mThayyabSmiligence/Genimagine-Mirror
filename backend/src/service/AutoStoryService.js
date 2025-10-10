@@ -8,7 +8,7 @@ require('dotenv').config();
 
 exports.createAutoStoryService = async (user_id, name, description, total_scenes, style_id) => {
     try{
-        const story =await Story.create({name, user_id, description, total_scenes, style_id});
+        const story =await Story.create({name, user_id, description, total_scenes, style_id,type:'auto'});
         // console.log(story);
         return{
           success: true,

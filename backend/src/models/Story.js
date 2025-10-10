@@ -64,6 +64,11 @@ const Story = sequelize.define(
       allowNull: true,
       defaultValue: 0,
     },
+    type:{
+      type: DataTypes.ENUM("manual", "auto"),
+      allowNull: false,
+      defaultValue: "manual",
+    }
   },
   {
     tableName: "story",  // 👈 exact table name
