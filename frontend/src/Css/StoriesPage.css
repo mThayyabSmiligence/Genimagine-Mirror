@@ -172,7 +172,7 @@
   line-height: 1.5;
 }
 
-/* Story Card Styles */
+/* Story Card Styles - FIXED: Added position relative */
 .story-card {
   background: white;
   border-radius: 12px;
@@ -183,6 +183,7 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  position: relative; /* ADDED: This fixes the badge positioning */
 }
 
 .story-card:hover {
@@ -191,10 +192,11 @@
   border-color: #cbd5e1;
 }
 
+/* Story Image Styles - ENHANCED: Added position relative as backup */
 .story-image {
   height: 160px;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-  position: relative;
+  position: relative; /* ENHANCED: Ensure this is relative for badge positioning */
   overflow: hidden;
 }
 
@@ -463,11 +465,56 @@
   border-radius: inherit;
 }
 
-.story-image {
-  position: relative;
+/* FIXED: Auto Status Badge - Enhanced positioning */
+.auto-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1; 
+  text-transform: capitalize;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* ADDED: Ensure the badge stays within its parent container */
+  max-width: calc(100% - 24px); /* Prevent overflow */
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Auto-generate badge in meta */
+.meta-item.auto-badge {
+  color: #667eea;
+  font-weight: 500;
+}
+
+.auto-icon {
+  font-size: 0.75rem;
+}
+
+/* ENHANCED: Responsive adjustments for status badge */
+@media (max-width: 768px) {
+  .auto-status-badge {
+    font-size: 0.6875rem;
+    padding: 0.3rem 0.6rem;
+    top: 8px;
+    right: 8px;
+    max-width: calc(100% - 16px); /* Adjust for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .auto-status-badge {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.5rem;
+    top: 6px;
+    right: 6px;
+    max-width: calc(100% - 12px); /* Further adjust for very small screens */
+  }
+}
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
@@ -489,7 +536,6 @@
 .btn-danger:focus {
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
