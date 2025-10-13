@@ -40,10 +40,6 @@ function CreateScenes() {
 
   // Use useRef for polling interval to avoid stale closures
   const statusPollingRef = useRef(null);
-  const hasShownToastRef = useRef({
-    completed: false,
-    failed: false
-  });
 
   const { storyid } = useParams(); 
 
@@ -82,7 +78,7 @@ function CreateScenes() {
           location: scene.location,
           environment: scene.environment,
           scene_order: scene.scene_order,
-          updated_at: scene.updatedAt || scene.updated_at || scene.createdAt, // Use updatedAt from API
+          updated_at: scene.updatedAt || scene.updated_at || scene.createdAt,
           created_at: scene.createdAt
         }));
         setGeneratedScenes(formattedScenes);
@@ -93,7 +89,7 @@ function CreateScenes() {
     }
   }, [storyid]);
 
-  // Status checking function - ONLY for auto stories
+  // FIXED: Status checking function with localStorage - ONLY for auto stories
   const checkStoryStatus = useCallback(async () => {
     if (!storyid || storyType !== 'auto') return;
     
@@ -126,12 +122,19 @@ function CreateScenes() {
             statusPollingRef.current = null;
           }
           
-          if (statusData.status === 'completed' && !hasShownToastRef.current.completed) {
+          // FIXED: Use localStorage to persist toast flags across page navigations
+          const completedToastKey = `story-${storyid}-completed-toast-shown`;
+          const failedToastKey = `story-${storyid}-failed-toast-shown`;
+          
+          // Show completed toast only once per story
+          if (statusData.status === 'completed' && !localStorage.getItem(completedToastKey)) {
             toast.success('🎉 Story generation completed!');
-            hasShownToastRef.current.completed = true;
-          } else if (statusData.status === 'failed' && !hasShownToastRef.current.failed) {
+            localStorage.setItem(completedToastKey, 'true');
+          } 
+          // Show failed toast only once per story
+          else if (statusData.status === 'failed' && !localStorage.getItem(failedToastKey)) {
             toast.error('❌ Story generation failed. Please try again.');
-            hasShownToastRef.current.failed = true;
+            localStorage.setItem(failedToastKey, 'true');
           }
         }
       }
@@ -149,11 +152,6 @@ function CreateScenes() {
     const initializeComponent = async () => {
       try {
         setIsLoading(true);
-
-        hasShownToastRef.current = {
-          completed: false,
-          failed: false
-        };
 
         await fetchStoryInfo();
         await fetchExistingScenes();
@@ -222,7 +220,7 @@ function CreateScenes() {
     }
   };
 
-  // Characters Not Completed Component
+  // Components remain the same...
   const CharactersNotCompleted = () => (
     <div className="characters-not-completed">
       <div className="not-completed-content">
@@ -243,7 +241,6 @@ function CreateScenes() {
     </div>
   );
 
-  // Auto Generation Failed Component
   const AutoGenerationFailed = () => (
     <div className="auto-generation-failed">
       <div className="failed-header">
@@ -260,7 +257,6 @@ function CreateScenes() {
     </div>
   );
 
-  // Story Generation Completed Component
   const StoryGenerationCompleted = () => (
     <div className="story-generation-completed">
       <div className="completed-header">
@@ -277,7 +273,6 @@ function CreateScenes() {
     </div>
   );
 
-  // Loading Scene Card Component
   const LoadingSceneCard = ({ sceneNumber }) => (
     <div className="scene-card loading-scene">
       <div className="scene-content">
@@ -313,7 +308,6 @@ function CreateScenes() {
     </div>
   );
 
-  // Calculate loading cards
   const getLoadingSceneCards = () => {
     if (storyType !== 'auto' || autoGenState.status !== 'generating-scenes') return [];
     
