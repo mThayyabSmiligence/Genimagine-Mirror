@@ -36,10 +36,10 @@ function CreateStories() {
   const [styleList, setStyleList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [autoGenerate, setAutoGenerate] = useState(false);
-  const [numberOfScenes, setNumberOfScenes] = useState(3); // Default to 3, range 1-10
+  const [numberOfScenes, setNumberOfScenes] = useState(3);
   
   const navigate = useNavigate();
-  const { id } = useParams(); // Get story ID from URL params
+  const { id } = useParams();
 
   const isEditMode = Boolean(id);
 
@@ -68,7 +68,6 @@ function CreateStories() {
     }
   };
 
-  // Fetch existing story data for edit mode
   const fetchStoryData = async (storyId) => {
     try {
       setLoading(true);
@@ -82,7 +81,6 @@ function CreateStories() {
         setAutoGenerate(story.auto_generate || false);
         setNumberOfScenes(story.number_of_scenes || 3);
         
-        // Find and set the style name
         const allStyles = [...await fetchAllStyles(), ...predefinedStyles];
         const selectedStyleData = allStyles.find(style => style.id === story.style_id);
         if (selectedStyleData) {
@@ -103,11 +101,9 @@ function CreateStories() {
 
   useEffect(() => {
     const initializeComponent = async () => {
-      // Fetch styles first
       const dbStyles = await fetchAllStyles();
       setStyleList([...dbStyles, ...predefinedStyles]);
 
-      // If in edit mode, fetch story data
       if (isEditMode) {
         await fetchStoryData(id);
       }
@@ -124,7 +120,6 @@ function CreateStories() {
 
   const handleAutoGenerateChange = (event) => {
     setAutoGenerate(event.target.checked);
-    // Clear description when auto-generate is disabled
     if (!event.target.checked) {
       setDescription("");
     }
@@ -136,18 +131,17 @@ function CreateStories() {
 
   const handleCreateStory = async () => {
     if (!title.trim()) {
-      toast.error("Please enter a story title", "error");
+      toast.error("Please enter a story title");
       return;
     }
 
-    // Make description required when auto-generate is enabled
     if (autoGenerate && !description.trim()) {
-      toast.error("Please enter a story description when auto-generate is enabled", "error");
+      toast.error("Please enter a story description when auto-generate is enabled");
       return;
     }
 
     if (!selectedStyle) {
-      toast.error("Please select a story style", "error");
+      toast.error("Please select a story style");
       return;
     }
 
@@ -167,44 +161,86 @@ function CreateStories() {
         });
       } else {
         // Create new story
-        response = await axiosPrivate.post("/create-story", {
-          name: title,
-          description,
-          style_id: selectedStyle,
-          auto_generate: autoGenerate,
-          number_of_scenes: numberOfScenes
-        });
+        if (autoGenerate) {
+          // Call auto-story API for automated generation
+          response = await axiosPrivate.post("/auto-story", {
+            name: title,
+            description: description,
+            total_scenes: numberOfScenes,
+            style_id: selectedStyle
+          });
+        } else {
+          // Manual story creation
+          response = await axiosPrivate.post("/create-story", {
+            name: title,
+            description,
+            style_id: selectedStyle,
+            auto_generate: autoGenerate,
+            number_of_scenes: numberOfScenes
+          });
+        }
       }
 
       if (response?.data?.success) {
+        const newStoryId = response.data.story?.id;
+        const newStory = response.data.story;
+        
         toast.success(
           isEditMode 
             ? "Story updated successfully!" 
-            : "Story created successfully!", 
-          "success"
+            : autoGenerate
+              ? "Automated story generation started!"
+              : "Story created successfully!"
         );
 
         if (isEditMode) {
-          // Navigate back to stories list after update
-          navigate("/u/stories");
+          // Always go back to stories page after editing
+          navigate("/u/stories", { replace: true });
         } else {
-          // Navigate to characters page after creation
-          const newStoryId = response.data.story?.id;
-          console.log("new story id", newStoryId);
-          navigate(`/u/stories/${newStoryId}/characters`, { replace: true });
+          if (autoGenerate) {
+            // For auto-generated stories, navigate to stories page where status badges are shown
+            console.log('Auto-generation started, navigating to stories page...');
+            navigate("/u/stories", { 
+              replace: true,
+              state: {
+                newAutoStory: {
+                  id: newStory.id,
+                  name: newStory.name,
+                  description: newStory.description,
+                  auto_generate: true,
+                  status: newStory.status || 'in-progress',
+                  total_scenes: newStory.total_scenes || numberOfScenes,
+                  generated_scenes: newStory.generated_scenes || 0,
+                  characters: newStory.characters || 0,
+                  character_count: 0,
+                  scene_count: 0,
+                  created_at: newStory.createdAt || new Date().toISOString(),
+                  style_id: newStory.style_id
+                },
+                justCreated: true // Flag to indicate this was just created
+              }
+            });
+          } else {
+            // For manual stories, navigate to characters page as before
+            navigate(`/u/stories/${newStoryId}/characters`, { 
+              replace: true,
+              state: { 
+                isAutoGenerated: false,
+                totalScenes: numberOfScenes 
+              }
+            });
+          }
         }
       } else {
         toast.error(
           response?.data?.message || 
-          `Failed to ${isEditMode ? 'update' : 'create'} story`, 
-          "error"
+          `Failed to ${isEditMode ? 'update' : 'create'} story`
         );
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} story:`, error);
       toast.error(
-        error.response?.data?.message || "Something went wrong",
-        "error"
+        error.response?.data?.message || "Something went wrong"
       );
     } finally {
       setIsCreating(false);
@@ -215,7 +251,6 @@ function CreateStories() {
     return styleList.find(style => style.id === selectedStyle);
   };
 
-  // Show loading state when fetching story data in edit mode
   if (isEditMode && loading) {
     return (
       <div className="create-story-container mt-5">
@@ -234,6 +269,7 @@ function CreateStories() {
           padding: '4rem 1rem',
           color: '#718096'
         }}>
+          <div className="loading-spinner"></div>
           <p>Loading story data...</p>
         </div>
       </div>
@@ -292,37 +328,32 @@ function CreateStories() {
                         width: 42,
                         height: 24,
                         padding: 0,
-                        // Track styles
                         '& .MuiSwitch-track': {
-                          backgroundColor: 'rgba(0,0,0,0.2)', // Dark track when unchecked
+                          backgroundColor: 'rgba(0,0,0,0.2)',
                           opacity: 1,
                           borderRadius: 12,
                           border: '2px solid rgba(255,255,255,0.3)',
                           transition: 'all 0.3s ease',
                         },
-                        // Checked track
                         '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: 'rgba(255,255,255,0.9)', // Bright white when checked
+                          backgroundColor: 'rgba(255,255,255,0.9)',
                           border: '2px solid rgba(255,255,255,1)',
                           opacity: 1,
                         },
-                        // Thumb styles
                         '& .MuiSwitch-thumb': {
-                          backgroundColor: '#cbd5e0', // Gray thumb when unchecked
+                          backgroundColor: '#cbd5e0',
                           width: 18,
                           height: 18,
                           border: '2px solid #ffffff',
                           boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
                           transition: 'all 0.3s ease',
                         },
-                        // Checked thumb
                         '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb': {
-                          backgroundColor: '#667eea', // Brand color when checked
+                          backgroundColor: '#667eea',
                           border: '2px solid #ffffff',
                           boxShadow: '0 3px 8px rgba(102, 126, 234, 0.4)',
-                          transform: 'scale(1.1)', // Slightly larger when checked
+                          transform: 'scale(1.1)',
                         },
-                        // Switch base
                         '& .MuiSwitch-switchBase': {
                           margin: 0.4,
                           padding: 0,
@@ -335,13 +366,11 @@ function CreateStories() {
                             backgroundColor: 'rgba(255,255,255,0.08)',
                           },
                         },
-                        // Checked switch base hover
                         '& .MuiSwitch-switchBase.Mui-checked:hover': {
                           backgroundColor: 'rgba(255,255,255,0.12)',
                         },
                       }}
                     />
-
                   </div>
                 </div>
               </div>
@@ -465,7 +494,7 @@ function CreateStories() {
             </div>
           </div>
 
-          {/* Button Section - Moved outside columns */}
+          {/* Button Section */}
           <div className="button-wrapper">
             <div className="button-group">
               <button
@@ -479,7 +508,7 @@ function CreateStories() {
                     {isEditMode 
                       ? "Updating Story..." 
                       : autoGenerate 
-                        ? "Generating Story Automatically..." 
+                        ? "Starting Automated Generation..." 
                         : "Creating Story..."
                     }
                   </>
@@ -509,7 +538,7 @@ function CreateStories() {
         </div>
       </div>
 
-      {/* Next Steps Info - Only show in create mode */}
+      {/* Next Steps Info */}
       {!isEditMode && (
         <div className="info-card">
           <div className="info-content">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { axiosPrivate } from '../../API\'s/axios';
 
@@ -13,6 +13,8 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import '../../Css/CreateScenes.css';
 import { toast } from 'react-toastify';
 
@@ -24,16 +26,46 @@ function CreateScenes() {
   const [isLoading, setIsLoading] = useState(true);
   const [regeneratingSceneId, setRegeneratingSceneId] = useState(null);
 
+  // Story type state
+  const [storyType, setStoryType] = useState(null);
+
+  // Auto-generation state
+  const [autoGenState, setAutoGenState] = useState({
+    isActive: false,
+    status: null,
+    totalScenes: 0,
+    generatedScenes: 0,
+    lastSceneCount: 0
+  });
+
+  // Use useRef for polling interval to avoid stale closures
+  const statusPollingRef = useRef(null);
+  const hasShownToastRef = useRef({
+    completed: false,
+    failed: false
+  });
+
   const { storyid } = useParams(); 
 
-  // Fetch existing scenes when component loads
-  useEffect(() => {
-    fetchExistingScenes();
+  // Fetch story info to determine type
+  const fetchStoryInfo = useCallback(async () => {
+    try {
+      const response = await axiosPrivate.get(`/get-story/${storyid}`);
+      
+      if (response.data.success) {
+        const story = response.data.story;
+        setStoryType(story.type || 'manual');
+        console.log('Story type detected:', story.type || 'manual');
+      }
+    } catch (error) {
+      console.error('Error fetching story info:', error);
+      setStoryType('manual');
+    }
   }, [storyid]);
 
-  const fetchExistingScenes = async () => {
+  // Fetch existing scenes function
+  const fetchExistingScenes = useCallback(async () => {
     try {
-      setIsLoading(true);
       const response = await axiosPrivate.get(`/scenes/storyId`, {
         params: {
           story_id: storyid
@@ -49,17 +81,127 @@ function CreateScenes() {
           timestamp: formatTimestamp(scene.createdAt),
           location: scene.location,
           environment: scene.environment,
-          scene_order: scene.scene_order
+          scene_order: scene.scene_order,
+          updated_at: scene.updatedAt || scene.updated_at || scene.createdAt, // Use updatedAt from API
+          created_at: scene.createdAt
         }));
         setGeneratedScenes(formattedScenes);
       }
     } catch (error) {
       console.error('Error fetching existing scenes:', error);
       setGeneratedScenes([]);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [storyid]);
+
+  // Status checking function - ONLY for auto stories
+  const checkStoryStatus = useCallback(async () => {
+    if (!storyid || storyType !== 'auto') return;
+    
+    try {
+      const response = await axiosPrivate.get(`/story/${storyid}/status`);
+      
+      if (response.data.success) {
+        const statusData = response.data.data;
+        console.log('Auto story status:', statusData);
+        
+        setAutoGenState(prev => {
+          const newState = {
+            isActive: ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(statusData.status),
+            status: statusData.status,
+            totalScenes: statusData.total_scenes,
+            generatedScenes: statusData.generated_scenes,
+            lastSceneCount: prev.generatedScenes
+          };
+          
+          if (statusData.generated_scenes > prev.generatedScenes) {
+            fetchExistingScenes();
+          }
+          
+          return newState;
+        });
+
+        if (['completed', 'failed'].includes(statusData.status)) {
+          if (statusPollingRef.current) {
+            clearInterval(statusPollingRef.current);
+            statusPollingRef.current = null;
+          }
+          
+          if (statusData.status === 'completed' && !hasShownToastRef.current.completed) {
+            toast.success('🎉 Story generation completed!');
+            hasShownToastRef.current.completed = true;
+          } else if (statusData.status === 'failed' && !hasShownToastRef.current.failed) {
+            toast.error('❌ Story generation failed. Please try again.');
+            hasShownToastRef.current.failed = true;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking story status:', error);
+      if (statusPollingRef.current) {
+        clearInterval(statusPollingRef.current);
+        statusPollingRef.current = null;
+      }
+    }
+  }, [storyid, storyType, fetchExistingScenes]);
+
+  // Modified useEffect for initialization
+  useEffect(() => {
+    const initializeComponent = async () => {
+      try {
+        setIsLoading(true);
+
+        hasShownToastRef.current = {
+          completed: false,
+          failed: false
+        };
+
+        await fetchStoryInfo();
+        await fetchExistingScenes();
+        
+      } catch (error) {
+        console.error('Error initializing component:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeComponent();
+
+    return () => {
+      if (statusPollingRef.current) {
+        clearInterval(statusPollingRef.current);
+        statusPollingRef.current = null;
+      }
+    };
+  }, [storyid, fetchStoryInfo, fetchExistingScenes]);
+
+  useEffect(() => {
+    if (storyType === 'auto') {
+      checkStoryStatus();
+    }
+  }, [storyType, checkStoryStatus]);
+
+  useEffect(() => {
+    if (storyType !== 'auto') return;
+
+    const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(autoGenState.status);
+    
+    if (shouldPoll && !statusPollingRef.current) {
+      console.log('Starting status polling for auto story, status:', autoGenState.status);
+      statusPollingRef.current = setInterval(checkStoryStatus, 5000);
+    } else if (!shouldPoll && statusPollingRef.current) {
+      console.log('Stopping status polling for auto story, status:', autoGenState.status);
+      clearInterval(statusPollingRef.current);
+      statusPollingRef.current = null;
+    }
+
+    return () => {
+      if (!shouldPoll && statusPollingRef.current) {
+        clearInterval(statusPollingRef.current);
+        statusPollingRef.current = null;
+      }
+    };
+  }, [autoGenState.status, checkStoryStatus, storyType]);
 
   const formatTimestamp = (dateString) => {
     const now = new Date();
@@ -73,19 +215,118 @@ function CreateScenes() {
   };
 
   const showToast = (message, type = 'success') => {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
+    if (type === 'success') {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
+  };
+
+  // Characters Not Completed Component
+  const CharactersNotCompleted = () => (
+    <div className="characters-not-completed">
+      <div className="not-completed-content">
+        <div className="not-completed-icon">
+          <PeopleOutlineIcon className="icon-xxl" />
+        </div>
+        <h3 className="not-completed-title">Characters are not yet completed</h3>
+        <p className="not-completed-subtitle">
+          Please wait for character generation to complete before creating scenes
+        </p>
+        <Link to={`/u/stories/${storyid}/characters`} className="link-unstyled">
+          <button className="btn-primary">
+            <PeopleOutlineIcon className="icon-sm" />
+            Go to Characters
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+
+  // Auto Generation Failed Component
+  const AutoGenerationFailed = () => (
+    <div className="auto-generation-failed">
+      <div className="failed-header">
+        <div className="failed-icon">
+          <span className="failed-emoji">❌</span>
+        </div>
+        <div className="failed-content">
+          <h3 className="failed-title">Scene Generation Failed</h3>
+          <p className="failed-message">
+            Something went wrong during the automated scene generation. You can create scenes manually using the form above.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Story Generation Completed Component
+  const StoryGenerationCompleted = () => (
+    <div className="story-generation-completed">
+      <div className="completed-header">
+        <div className="completed-icon">
+          <CheckCircleIcon className="icon-lg" style={{ color: '#10b981' }} />
+        </div>
+        <div className="completed-content">
+          <h3 className="completed-title">🎉 Story Generation Completed!</h3>
+          <p className="completed-message">
+            Your automated story generation has been successfully completed. All scenes have been generated and are ready for review.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Loading Scene Card Component
+  const LoadingSceneCard = ({ sceneNumber }) => (
+    <div className="scene-card loading-scene">
+      <div className="scene-content">
+        <div className="scene-prompt-section">
+          <div className="prompt-header">
+            <div className="skeleton-text skeleton-title"></div>
+            <div className="skeleton-text skeleton-timestamp"></div>
+          </div>
+          <div className="prompt-details">
+            <div className="skeleton-prompt-container">
+              <div className="skeleton-text skeleton-prompt-line skeleton-line-1"></div>
+              <div className="skeleton-text skeleton-prompt-line skeleton-line-2"></div>
+              <div className="skeleton-text skeleton-prompt-line skeleton-line-3"></div>
+              <div className="skeleton-text skeleton-prompt-line skeleton-line-4"></div>
+            </div>
+          </div>
+          <div className="prompt-characters skeleton-characters">
+            <div className="skeleton-text skeleton-char-label"></div>
+            <div className="skeleton-tags">
+              <div className="skeleton-tag"></div>
+              <div className="skeleton-tag"></div>
+            </div>
+          </div>
+        </div>
+        <div className="scene-image-section">
+          <div className="scene-image-container">
+            <div className="simple-spinner-container">
+              <div className="simple-spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Calculate loading cards
+  const getLoadingSceneCards = () => {
+    if (storyType !== 'auto' || autoGenState.status !== 'generating-scenes') return [];
     
-    setTimeout(() => {
-      toast.classList.add('toast-show');
-    }, 100);
+    const loadingCards = [];
+    const nextSceneNumber = autoGenState.generatedScenes + 1;
     
-    setTimeout(() => {
-      toast.classList.remove('toast-show');
-      setTimeout(() => document.body.removeChild(toast), 300);
-    }, 3000);
+    if (nextSceneNumber <= autoGenState.totalScenes) {
+      loadingCards.push(
+        <LoadingSceneCard key={`loading-${nextSceneNumber}`} sceneNumber={nextSceneNumber} />
+      );
+    }
+    
+    return loadingCards;
   };
 
   const handleGenerateScene = async () => {
@@ -118,7 +359,9 @@ function CreateScenes() {
           timestamp: "Just now",
           location: newScene.location,
           environment: newScene.environment,
-          scene_order: newScene.scene_order
+          scene_order: newScene.scene_order,
+          updated_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
         };
         
         setGeneratedScenes(prev => [formattedScene, ...prev]);
@@ -143,39 +386,44 @@ function CreateScenes() {
     }
   };
 
-  // Simple regenerate function
- // Simple regenerate function with cache busting
+  // FIXED: Regenerate scene function using backend updatedAt
   const handleRegenerateScene = async (sceneId, prompt) => {
     setRegeneratingSceneId(sceneId);
     
     try {
+      console.log('Regenerating scene:', sceneId, 'with prompt:', prompt);
+      
       const response = await axiosPrivate.post('/scenes/regenerate', {
         scene_id: sceneId,
         prompt: prompt
       });
       
       if (response.data.success) {
-        const updatedScene = response.data.scene;
+        const updatedSceneData = response.data.scene;
+        console.log('Regeneration response:', updatedSceneData);
         
-        // Add cache busting parameter to force image reload
-        const cacheBustedImageUrl = updatedScene.image_url.includes('?') 
-          ? `${updatedScene.image_url}&t=${Date.now()}`
-          : `${updatedScene.image_url}?t=${Date.now()}`;
-        
+        // Update the specific scene with the new data from backend
         setGeneratedScenes(prev => 
           prev.map(scene => 
             scene.id === sceneId 
               ? { 
-                  ...scene, 
-                  image_url: cacheBustedImageUrl,  // Use cache-busted URL
-                  timestamp: "Just now",
-                  imageKey: Date.now()  // Add unique key to force re-render
+                  ...scene,
+                  // Use the updated data from backend
+                  image_url: updatedSceneData.image_url,
+                  updated_at: updatedSceneData.updatedAt, // Use the backend's updatedAt
+                  prompt: updatedSceneData.prompt,
+                  characters: updatedSceneData.characters ? updatedSceneData.characters.map(char => char.name) : scene.characters,
+                  location: updatedSceneData.location,
+                  environment: updatedSceneData.environment,
+                  timestamp: "Just now"
                 }
               : scene
           )
         );
         
         showToast("Scene regenerated successfully!");
+      } else {
+        showToast("Failed to regenerate scene", 'error');
       }
     } catch (error) {
       console.error('Error regenerating scene:', error);
@@ -184,7 +432,6 @@ function CreateScenes() {
       setRegeneratingSceneId(null);
     }
   };
-
 
   const handleDeleteScene = async (sceneId) => {
     try {
@@ -196,7 +443,7 @@ function CreateScenes() {
         setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
         toast.success("Scene deleted successfully!");
       } else {
-        toast.error(response.data.message || "Failed to delete scene", 'error');
+        toast.error(response.data.message || "Failed to delete scene");
       }
     } catch (error) {
       console.error('Error deleting scene:', error);
@@ -257,214 +504,276 @@ function CreateScenes() {
         </div>
       </div>
 
-      {/* Scene Generation Panel */}
-      <div className="scene-generation-section">
-        <div className="prompt-card">
-          <div className="scene-card-header d-flex flex-column">
-            <h2 className="scene-card-title">
-              <AutoFixHighIcon className="icon-sm" />
-              Scene Description
-            </h2>
-            <p className="scene-card-description text-start">
-              Describe the scene you want to generate
-            </p>
-          </div>
-          
-          <div className="card-content">
-            <div className="form-group">
-              <label htmlFor="scene-prompt" className="form-label">Scene Prompt</label>
-              <textarea
-                id="scene-prompt"
-                placeholder="Describe your scene in detail... (e.g., 'A dramatic confrontation in a moonlit castle courtyard with mystical fog swirling around')"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="form-textarea scene-textarea"
-                rows="5"
-                disabled={isGenerating}
-              />
-            </div>
+      {/* Show completed state - ONLY for auto stories */}
+      {storyType === 'auto' && autoGenState.status === 'completed' && (
+        <StoryGenerationCompleted />
+      )}
 
-            <div className="prompt-actions">
-              <button
-                onClick={handleGenerateScene}
-                disabled={isGenerating || !prompt.trim()}
-                className="btn-primary btn-large"
-              >
-                {isGenerating ? (
-                  <>
-                    <div className="loading-spinner"></div>
-                    Generating Scene...
-                  </>
+      {/* Show failed state - ONLY for auto stories */}
+      {storyType === 'auto' && autoGenState.status === 'failed' && (
+        <AutoGenerationFailed />
+      )}
+
+      {/* Show "Characters not completed" ONLY for auto stories until generating-scenes */}
+      {storyType === 'auto' && autoGenState.status && !['generating-scenes', 'partially-completed', 'completed', 'failed'].includes(autoGenState.status) ? (
+        <CharactersNotCompleted />
+      ) : (
+        <>
+          {/* Scene Generation Panel */}
+          <div className={`scene-generation-section ${storyType === 'auto' && autoGenState.status === 'generating-scenes' ? 'full-width-layout' : ''}`}>
+            <div className={`prompt-card ${storyType === 'auto' && autoGenState.status === 'generating-scenes' ? 'full-width' : ''}`}>
+              <div className="scene-card-header d-flex flex-column">
+                <h2 className="scene-card-title">
+                  <AutoFixHighIcon className="icon-sm" />
+                  {storyType === 'auto' && autoGenState.status === 'generating-scenes' ? 'Automated Scene Generation' : 'Scene Description'}
+                </h2>
+                <p className="scene-card-description text-start">
+                  {storyType === 'auto' && autoGenState.status === 'generating-scenes' 
+                    ? 'Scenes are being automatically generated based on your story description'
+                    : 'Describe the scene you want to generate'
+                  }
+                </p>
+              </div>
+              
+              <div className="card-content">
+                {storyType === 'auto' && autoGenState.status === 'generating-scenes' ? (
+                  <div className="automated-generation-info">
+                    <div className="generation-progress">
+                      <div className="progress-circle">
+                        <AutoAwesomeIcon className="icon-lg" style={{ color: '#667eea' }} />
+                      </div>
+                      <div className="progress-text">
+                        <h4>🤖 Generating scenes automatically...</h4>
+                        <p>Progress: <strong>{autoGenState.generatedScenes}/{autoGenState.totalScenes}</strong> scenes completed</p>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ 
+                              width: `${(autoGenState.generatedScenes / autoGenState.totalScenes) * 100}%` 
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <>
-                    <PlayArrowIcon className="icon-sm" />
-                    Generate Scene
+                    <div className="form-group">
+                      <label htmlFor="scene-prompt" className="form-label">Scene Prompt</label>
+                      <textarea
+                        id="scene-prompt"
+                        placeholder="Describe your scene in detail... (e.g., 'A dramatic confrontation in a moonlit castle courtyard with mystical fog swirling around')"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        className="form-textarea scene-textarea"
+                        rows="5"
+                        disabled={isGenerating}
+                      />
+                    </div>
+
+                    <div className="prompt-actions">
+                      <button
+                        onClick={handleGenerateScene}
+                        disabled={isGenerating || !prompt.trim()}
+                        className="btn-primary btn-large"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="loading-spinner"></div>
+                            Generating Scene...
+                          </>
+                        ) : (
+                          <>
+                            <PlayArrowIcon className="icon-sm" />
+                            Generate Scene
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </>
                 )}
-              </button>
-              
-              <Link to={`/u/stories/${storyid}/characters`} className="link-unstyled">
-                <button className="btn-outline">
-                  <AddRoundedIcon className="icon-sm" />
-                  Manage Characters
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Scene Tips */}
-        <div className="tips-card">
-          <div 
-            className="scene-card-header tips-header" 
-            onClick={toggleTips}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleTips();
-              }
-            }}
-          >
-            <h3 className="tips-title">Scene Tips</h3>
-            <div className="accordion-icon">
-              {isTipsOpen ? <ExpandLessIcon className="icon-sm" /> : <ExpandMoreIcon className="icon-sm" />}
-            </div>
-          </div>
-          <div className={`tips-content ${isTipsOpen ? 'tips-open' : ''}`}>
-            <ul className="tips-list">
-              <li>• Be specific about lighting and mood</li>
-              <li>• Include environmental details</li>
-              <li>• Describe character actions and emotions</li>
-              <li>• Mention specific props or objects</li>
-              <li>• Consider the camera angle or perspective</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Generated Scenes Timeline */}
-      <div className="scenes-timeline">
-        {generatedScenes.map((scene, index) => (
-          <div key={scene.id} className="scene-card">
-            <div className="scene-content">
-              {/* Prompt Section */}
-              <div className="scene-prompt-section">
-                <div className="prompt-header">
-                  <h4 className="prompt-title">Scene #{scene.scene_order || generatedScenes.length - index}</h4>
-                  <span className="prompt-timestamp">{scene.timestamp}</span>
-                </div>
-                <div className='prompt-details'>
-                  <p className="prompt-text pt-5">
-                    <strong>prompt:</strong> {scene.prompt}
-                  </p>
-                </div>
                 
-                {/* Environment and Location Info */}
-                {scene.environment && (
-                  <div className="scene-details">
-                    <p className="scene-environment">
-                      <strong>Environment:</strong> {scene.environment}
-                    </p>
-                  </div>
-                )}
-                
-                {scene.characters.length > 0 && (
-                  <div className="prompt-characters">
-                    <PeopleOutlineIcon className="icon-xs character-icon" />
-                    <span className="characters-text">
-                      Characters: 
-                      {scene.characters.map((character, idx) => (
-                        <span key={idx} className="character-tag ms-2">{character}</span>
-                      ))}
-                    </span>
-                  </div>
-                )}
+                <div className="navigation-actions">
+                  <Link to={`/u/stories/${storyid}/characters`} className="link-unstyled">
+                    <button className="btn-outline">
+                      <PeopleOutlineIcon className="icon-sm" />
+                      Go to Characters
+                    </button>
+                  </Link>
+                </div>
               </div>
-              
-              {/* Generated Image Section */}
-              <div className="scene-image-section">
-                <div className="scene-image-container">
-                  {scene.image_url ? (
-                    <div className="scene-image-wrapper">
-                      {/* Loading overlay */}
-                      {regeneratingSceneId === scene.id && (
-                        <div className="simple-loading-overlay">
-                          <div className="simple-spinner"></div>
-                          <p>Regenerating...</p>
+            </div>
+
+            {!(storyType === 'auto' && autoGenState.status === 'generating-scenes') && (
+              <div className="tips-card">
+                <div 
+                  className="scene-card-header tips-header" 
+                  onClick={toggleTips}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <h3 className="tips-title">Scene Tips</h3>
+                  <div className="accordion-icon">
+                    {isTipsOpen ? <ExpandLessIcon className="icon-sm" /> : <ExpandMoreIcon className="icon-sm" />}
+                  </div>
+                </div>
+                <div className={`tips-content ${isTipsOpen ? 'tips-open' : ''}`}>
+                  <ul className="tips-list">
+                    <li>• Be specific about lighting and mood</li>
+                    <li>• Include environmental details</li>
+                    <li>• Describe character actions and emotions</li>
+                    <li>• Mention specific props or objects</li>
+                    <li>• Consider the camera angle or perspective</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Generated Scenes Timeline */}
+          <div className="scenes-timeline">
+            {generatedScenes.map((scene, index) => (
+              <div key={scene.id} className="scene-card">
+                <div className="scene-content">
+                  <div className="scene-prompt-section">
+                    <div className="prompt-header">
+                      <h4 className="prompt-title">Scene #{scene.scene_order || generatedScenes.length - index}</h4>
+                      <span className="prompt-timestamp">{scene.timestamp}</span>
+                    </div>
+                    <div className='prompt-details'>
+                      <p className="prompt-text pt-5">
+                        <strong>prompt:</strong> {scene.prompt}
+                      </p>
+                    </div>
+                    
+                    {scene.environment && (
+                      <div className="scene-details">
+                        <p className="scene-environment">
+                          <strong>Environment:</strong> {scene.environment}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {scene.characters.length > 0 && (
+                      <div className="prompt-characters">
+                        <PeopleOutlineIcon className="icon-xs character-icon" />
+                        <span className="characters-text">
+                          Characters: 
+                          {scene.characters.map((character, idx) => (
+                            <span key={idx} className="character-tag ms-2">{character}</span>
+                          ))}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="scene-image-section">
+                    <div className="scene-image-container">
+                      {scene.image_url ? (
+                        <div className="scene-image-wrapper">
+                          {regeneratingSceneId === scene.id && (
+                            <div className="simple-loading-overlay">
+                              <div className="simple-spinner"></div>
+                              <p>Regenerating...</p>
+                            </div>
+                          )}
+                          
+                          {/* FIXED: Use backend's updatedAt for proper cache busting */}
+                          <img 
+                            key={`scene-${scene.id}-${new Date(scene.updated_at).getTime()}`}
+                            src={`${scene.image_url}?v=${new Date(scene.updated_at).getTime()}`} 
+                            alt={`Generated scene`}
+                            className="scene-image"
+                            onError={(e) => {
+                              console.log('Image load error for:', e.target.src);
+                            }}
+                          />
+                          
+                          <div className="image-actions">
+                            <button 
+                              className={`image-action-btn ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
+                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Regenerate not available during generation" : "Regenerate Scene"}
+                              onClick={() => {
+                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                  return;
+                                }
+                                handleRegenerateScene(scene.id, scene.prompt);
+                              }}
+                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
+                            >
+                              <RefreshIcon className="icon-xs" />
+                            </button>
+                            
+                            <button 
+                              className={`image-action-btn ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
+                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Download not available during generation" : "Download Scene"}
+                              onClick={() => {
+                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                  return;
+                                }
+                                downloadImage(scene.image_url, `scene_${scene.id}`);
+                              }}
+                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
+                            >
+                              <DownloadIcon className="icon-xs" />
+                            </button>
+                            
+                            <button 
+                              className={`image-action-btn action-danger ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
+                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Delete not available during generation" : "Delete Scene"}
+                              onClick={() => {
+                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                  return;
+                                }
+                                handleDeleteScene(scene.id);
+                              }}
+                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
+                            >
+                              <DeleteOutlineIcon className="icon-xs" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="scene-image-placeholder">
+                          <div className="image-overlay"></div>
+                          <p className="no-image-text">No image available</p>
+                          <div className="image-actions">
+                            <button 
+                              className={`image-action-btn action-danger ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
+                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Delete not available during generation" : "Delete Scene"}
+                              onClick={() => {
+                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                  return;
+                                }
+                                handleDeleteScene(scene.id);
+                              }}
+                              disabled={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)}
+                            >
+                              <DeleteOutlineIcon className="icon-xs" />
+                            </button>
+                          </div>
                         </div>
                       )}
-                      
-                      <img 
-                        key={scene.imageKey || scene.id} // Force re-render with unique key
-                        src={scene.image_url} 
-                        alt={`Generated scene`}
-                        className="scene-image"
-                        onError={(e) => {
-                          e.target.src = '/path/to/fallback-image.png';
-                        }}
-                      />
-                      
-                      <div className="image-actions">
-                        <button 
-                          className="image-action-btn" 
-                          title="Regenerate Scene"
-                          onClick={() => handleRegenerateScene(scene.id, scene.prompt)}
-                          disabled={regeneratingSceneId === scene.id}
-                        >
-                          <RefreshIcon className="icon-xs" />
-                        </button>
-                        <button 
-                          className="image-action-btn" 
-                          title="Download Scene"
-                          onClick={() => downloadImage(scene.image_url, `scene_${scene.id}`)}
-                          disabled={regeneratingSceneId === scene.id}
-                        >
-                          <DownloadIcon className="icon-xs" />
-                        </button>
-                        <button 
-                          className="image-action-btn action-danger" 
-                          title="Delete Scene"
-                          onClick={() => handleDeleteScene(scene.id)}
-                          disabled={regeneratingSceneId === scene.id}
-                        >
-                          <DeleteOutlineIcon className="icon-xs" />
-                        </button>
-                      </div>
                     </div>
-                  ) : (
-                    <div className="scene-image-placeholder">
-                      <div className="image-overlay"></div>
-                      <p className="no-image-text">No image available</p>
-                      <div className="image-actions">
-                        <button 
-                          className="image-action-btn action-danger" 
-                          title="Delete Scene"
-                          onClick={() => handleDeleteScene(scene.id)}
-                        >
-                          <DeleteOutlineIcon className="icon-xs" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
+            
+            {getLoadingSceneCards()}
+            
+            {generatedScenes.length === 0 && !isLoading && !(storyType === 'auto' && autoGenState.isActive) && (
+              <div className="empty-state">
+                <div className="empty-icon">
+                  <ImageOutlinedIcon className="icon-xxl" />
+                </div>
+                <h3 className="empty-title">No scenes generated yet</h3>
+                <p className="empty-subtitle">Create your first scene using the prompt above</p>
+              </div>
+            )}
           </div>
-        ))}
-        
-        {/* Empty State */}
-        {generatedScenes.length === 0 && !isLoading && (
-          <div className="empty-state">
-            <div className="empty-icon">
-              <ImageOutlinedIcon className="icon-xxl" />
-            </div>
-            <h3 className="empty-title">No scenes generated yet</h3>
-            <p className="empty-subtitle">Create your first scene using the prompt above</p>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
