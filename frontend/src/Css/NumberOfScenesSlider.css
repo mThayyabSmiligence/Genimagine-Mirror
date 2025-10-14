@@ -1,0 +1,138 @@
+/* Number of Scenes Slider Component Styles */
+.scenes-slider-component {
+  width: 100%;
+}
+
+.scenes-slider-container {
+  margin-top: 0.75rem;
+}
+
+.scenes-slider-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.scenes-min,
+.scenes-max {
+  font-size: 0.875rem !important;
+  color: #718096;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  user-select: none;
+}
+
+.scenes-value-display {
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.scenes-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-right: 0.25rem;
+}
+
+.scenes-label {
+  color: #667eea;
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+/* Hover and Focus States */
+.scenes-value-display:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+}
+
+/* Animation for value change */
+.scenes-count {
+  transition: all 0.2s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .scenes-slider-wrapper {
+    margin-bottom: 0.75rem;
+  }
+  
+  .scenes-min,
+  .scenes-max {
+    font-size: 0.75rem !important;
+    min-width: 18px;
+  }
+  
+  .scenes-value-display {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .scenes-count {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scenes-slider-wrapper {
+    margin-bottom: 0.5rem;
+  }
+  
+  .scenes-min,
+  .scenes-max {
+    font-size: 0.6875rem !important;
+    min-width: 16px;
+  }
+  
+  .scenes-value-display {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .scenes-count {
+    font-size: 1.125rem;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .scenes-min,
+  .scenes-max {
+    color: #a0aec0;
+  }
+  
+  .scenes-value-display {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-color: rgba(102, 126, 234, 0.4);
+  }
+}
+
+/* Disabled state */
+.scenes-slider-component.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.scenes-slider-component.disabled .scenes-value-display {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+  color: #a0aec0;
+}
+
+.scenes-slider-component.disabled .scenes-count {
+  color: #a0aec0;
+}
+
+.scenes-slider-component.disabled .scenes-label {
+  color: #a0aec0;
+}

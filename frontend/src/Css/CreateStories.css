@@ -261,7 +261,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: #1a202c;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1px 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -496,6 +496,84 @@
 .button-wrapper .button-group {
   margin-top: 1rem;
   padding: 0 1.5rem 1.5rem;
+}
+
+.auto-generate-badge{
+  font-size: 12px;
+  border: 2px solid transparent;
+  /* background-color: rgba(128, 128, 128, 0.308); */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  padding: 7px 10px;
+  color: white;
+}
+
+.spark-icon{
+  color: white;
+}
+
+/* Auto Generate Badge and Switch Styles */
+.auto-generate-container {
+  display: flex;
+  align-items: center;
+}
+
+.auto-generate-badge {
+  font-size: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  padding: 6px 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spark-icon {
+  color: white;
+  font-size: 14px !important;
+  width: 14px;
+  height: 14px;
+}
+
+/* Required Field Styles */
+.required-indicator {
+  color: #e53e3e;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.form-textarea.required {
+  border-color: #667eea;
+  background-color: rgba(102, 126, 234, 0.02);
+}
+
+.form-textarea.required:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .auto-generate-badge {
+    font-size: 11px;
+    padding: 5px 8px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auto-generate-badge {
+    font-size: 10px;
+    padding: 4px 6px;
+    gap: 4px;
+  }
+  
+  .spark-icon {
+    font-size: 12px !important;
+    width: 12px;
+    height: 12px;
+  }
 }
 
 /* Mobile Layout Fixes */
