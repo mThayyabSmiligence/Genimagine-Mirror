@@ -1248,6 +1248,77 @@
   background: rgba(255, 255, 255, 0.9);
 }
 
+/* NEW: Video Generation Section Styles */
+.video-generation-section {
+  /* margin-bottom: 2rem; */
+}
+
+.video-actions-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.video-generate-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  min-width: 160px;
+  justify-content: center;
+}
+
+.video-generate-btn:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.video-generate-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #9ca3af;
+  box-shadow: none;
+}
+
+.video-generate-btn .loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments for video button */
+@media (max-width: 768px) {
+  .video-actions-container {
+    justify-content: center;
+  }
+  
+  .video-generate-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+
 /* Responsive adjustments with full width */
 @media (max-width: 768px) {
   .simple-spinner-container {

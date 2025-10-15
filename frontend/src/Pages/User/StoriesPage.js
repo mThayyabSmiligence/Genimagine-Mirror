@@ -20,66 +20,39 @@ function StoriesPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [storyToDelete, setStoryToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Use useRef for interval and toast flags to avoid stale closures
+  // Use useRef for interval to avoid stale closures
   const pollingIntervalRef = useRef(null);
   const hasShownToastRef = useRef(new Set()); // Track which stories have shown completion toasts
+
+  // Define the statuses that require polling for auto stories
+  const ACTIVE_POLLING_STATUSES = ["started", "in-progress", "generating-characters", "generating-scenes"];
+  const COMPLETED_STATUSES = ["completed", "failed", "partially-completed"];
 
   // Simple Status Badge Component
   const AutoGenerationStatusBadge = ({ status }) => {
     const getStatusInfo = () => {
       switch (status) {
         case "started":
-          return {
-            text: "Started",
-            color: "#0ea5e9",
-            bgColor: "#e0f2fe",
-          };
+          return { text: "Started", color: "#0ea5e9", bgColor: "#e0f2fe" };
         case "in-progress":
-          return {
-            text: "In Progress",
-            color: "#6366f1",
-            bgColor: "#e0e7ff",
-          };
+          return { text: "In Progress", color: "#6366f1", bgColor: "#e0e7ff" };
         case "generating-characters":
-          return {
-            text: "Generating Characters",
-            color: "#f59e0b",
-            bgColor: "#fef3c7",
-          };
+          return { text: "Generating Characters", color: "#f59e0b", bgColor: "#fef3c7" };
         case "generating-scenes":
-          return {
-            text: "Generating Scenes",
-            color: "#8b5cf6",
-            bgColor: "#ede9fe",
-          };
+          return { text: "Generating Scenes", color: "#8b5cf6", bgColor: "#ede9fe" };
         case "partially-completed":
-          return {
-            text: "Partially Completed",
-            color: "#06b6d4",
-            bgColor: "#cffafe",
-          };
+          return { text: "Partially Completed", color: "#06b6d4", bgColor: "#cffafe" };
         case "completed":
-          return {
-            text: "Completed",
-            color: "#10b981",
-            bgColor: "#d1fae5",
-          };
+          return { text: "Completed", color: "#10b981", bgColor: "#d1fae5" };
         case "failed":
-          return {
-            text: "Failed",
-            color: "#ef4444",
-            bgColor: "#fee2e2",
-          };
+          return { text: "Failed", color: "#ef4444", bgColor: "#fee2e2" };
         default:
-          return {
-            text: "Unknown",
-            color: "#6b7280",
-            bgColor: "#f3f4f6",
-          };
+          return { text: "Unknown", color: "#6b7280", bgColor: "#f3f4f6" };
       }
     };
 
@@ -100,59 +73,39 @@ function StoriesPage() {
     );
   };
 
-  // Fetch stories from API
+  // Fetch all stories from API
   const fetchStories = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const response = await axiosPrivate.get("/get-all-story");
+      console.log("API Response:", response.data);
 
-      console.log("API Response:", response);
-      console.log("Response Data:", response.data);
+      if (response.data.success) {
+        const fetchedStories = response.data.stories || [];
+        
+        // Process stories to ensure proper structure
+        const processedStories = fetchedStories.map(story => ({
+          ...story,
+          characterCount: story.characterCount || 0,
+          sceneCount: story.sceneCount || 0,
+          // For auto stories, track generated scenes
+          ...(story.type === "auto" && {
+            generated_scenes: story.generated_scenes || 0,
+            total_scenes: story.total_scenes || 0
+          })
+        }));
 
-      let fetchedStories = response.data.stories || [];
-
-      // For auto stories, fetch their current status
-      const storiesWithStatus = await Promise.all(
-        fetchedStories.map(async (story) => {
-          // Check if story type is "auto"
-          if (story.type === "auto") {
-            try {
-              // Get current status for auto stories
-              const statusResponse = await axiosPrivate.get(
-                `/story/${story.id}/status`
-              );
-
-              if (statusResponse.data.success) {
-                const statusData = statusResponse.data.data;
-                console.log(`Auto story "${story.name}" status:`, statusData);
-
-                return {
-                  ...story,
-                  status: statusData.status,
-                  generated_scenes: statusData.generated_scenes,
-                  total_scenes: statusData.total_scenes,
-                  characters: statusData.characters,
-                  // Set counts from status API for auto stories
-                  characterCount: statusData.characters || story.characterCount || 0,
-                  sceneCount: statusData.generated_scenes || story.sceneCount || 0
-                };
-              }
-            } catch (error) {
-              console.error(
-                `Error fetching status for story ${story.id}:`,
-                error
-              );
-            }
-          }
-
-          // Return original story (for manual stories or if status fetch fails)
-          return story;
-        })
-      );
-
-      setStories(storiesWithStatus);
+        setStories(processedStories);
+        console.log("Processed stories:", processedStories);
+        
+        // Log auto stories and their statuses for debugging
+        const autoStories = processedStories.filter(s => s.type === "auto");
+        if (autoStories.length > 0) {
+          console.log("Auto stories status:", autoStories.map(s => `${s.name}: ${s.status}`));
+        }
+      }
     } catch (err) {
       console.error("Error fetching stories:", err);
       setError("Failed to load stories. Please try again later.");
@@ -161,167 +114,131 @@ function StoriesPage() {
     }
   };
 
-  // Polling function to update auto story statuses and counts
-  const pollAutoGeneratedStories = async () => {
+  // Refresh stories status using the same API
+  const refreshStoriesStatus = async () => {
     try {
-      // Get current stories from state using a ref to avoid stale closure
-      const currentStories = storiesRef.current;
+      console.log("🔄 Refreshing stories status...");
+      const response = await axiosPrivate.get("/get-all-story");
       
-      // Filter stories that have type === 'auto' and are not completed or failed
-      const autoStories = currentStories.filter(
-        (story) =>
-          story.type === "auto" &&
-          story.status &&
-          !["completed", "failed"].includes(story.status)
-      );
-
-      if (autoStories.length === 0) {
-        // No auto stories to poll, stop polling
-        if (pollingIntervalRef.current) {
-          console.log("No auto stories to poll, stopping interval");
-          clearInterval(pollingIntervalRef.current);
-          pollingIntervalRef.current = null;
-        }
-        return;
-      }
-
-      console.log(`Polling ${autoStories.length} auto stories:`, autoStories.map(s => s.name));
-
-      // Poll each auto-generated story
-      const promises = autoStories.map(async (story) => {
-        try {
-          const response = await axiosPrivate.get(
-            `/story/${story.id}/status`
-          );
-
-          if (response.data.success) {
-            const statusData = response.data.data;
-            console.log(`Status update for "${story.name}":`, statusData);
-
-            return {
-              id: story.id,
-              status: statusData.status,
-              generated_scenes: statusData.generated_scenes,
-              total_scenes: statusData.total_scenes,
-              characters: statusData.characters,
-              // Map status API data to story meta counts
-              characterCount: statusData.characters || story.characterCount || 0,
-              sceneCount: statusData.generated_scenes || story.sceneCount || 0
-            };
-          }
-        } catch (error) {
-          console.error(`Error polling story ${story.id}:`, error);
-          return null;
-        }
-        return null;
-      });
-
-      const results = await Promise.all(promises);
-
-      // Update stories with new status data
-      const validResults = results.filter((result) => result !== null);
-
-      if (validResults.length > 0) {
-        setStories((prev) =>
-          prev.map((story) => {
-            const update = validResults.find((r) => r.id === story.id);
-            if (update) {
-              // Show completion toast only once per story
-              const toastKey = `${story.id}-${update.status}`;
+      if (response.data.success) {
+        const updatedStories = response.data.stories || [];
+        
+        // Log current auto stories status
+        const autoStories = updatedStories.filter(s => s.type === "auto");
+        console.log("Status refresh - auto stories:", autoStories.map(s => `${s.name}: ${s.status}`));
+        
+        // Update stories and check for status changes
+        setStories(prevStories => {
+          return updatedStories.map(updatedStory => {
+            const prevStory = prevStories.find(s => s.id === updatedStory.id);
+            
+            // Show toast for status changes - only for auto stories
+            if (updatedStory.type === "auto" && prevStory && prevStory.status !== updatedStory.status) {
+              const toastKey = `${updatedStory.id}-${updatedStory.status}`;
               
-              if (update.status === "completed" && story.status !== "completed" && !hasShownToastRef.current.has(toastKey)) {
-                toast.success(`🎉 "${story.name}" generation completed!`);
-                hasShownToastRef.current.add(toastKey);
-              } else if (update.status === "failed" && story.status !== "failed" && !hasShownToastRef.current.has(toastKey)) {
-                toast.error(`❌ "${story.name}" generation failed.`);
-                hasShownToastRef.current.add(toastKey);
+              if (!hasShownToastRef.current.has(toastKey)) {
+                if (updatedStory.status === "completed") {
+                  toast.success(`🎉 "${updatedStory.name}" generation completed!`);
+                  hasShownToastRef.current.add(toastKey);
+                } else if (updatedStory.status === "failed") {
+                  toast.error(`❌ "${updatedStory.name}" generation failed.`);
+                  hasShownToastRef.current.add(toastKey);
+                } else if (updatedStory.status === "partially-completed") {
+                  toast.success(`✅ "${updatedStory.name}" partially completed!`);
+                  hasShownToastRef.current.add(toastKey);
+                }
               }
-              
-              return { 
-                ...story, 
-                ...update,
-                // Ensure the counts are updated for auto stories
-                characterCount: update.characterCount,
-                sceneCount: update.sceneCount
-              };
             }
-            return story;
-          })
-        );
+            
+            return {
+              ...updatedStory,
+              characterCount: updatedStory.characterCount || 0,
+              sceneCount: updatedStory.sceneCount || 0,
+              // For auto stories, also track generated scenes
+              ...(updatedStory.type === "auto" && {
+                generated_scenes: updatedStory.generated_scenes || 0,
+                total_scenes: updatedStory.total_scenes || 0
+              })
+            };
+          });
+        });
       }
     } catch (error) {
-      console.error('Error during polling:', error);
+      console.error('❌ Error refreshing stories status:', error);
     }
   };
 
-  // Use ref to store current stories to avoid stale closure in polling
-  const storiesRef = useRef(stories);
+  // MAIN POLLING LOGIC: Start/stop polling based on auto stories status
   useEffect(() => {
-    storiesRef.current = stories;
-  }, [stories]);
-
-  // Start/stop polling based on auto stories
-  useEffect(() => {
-    const hasActiveAutoStories = stories.some(
-      (story) =>
-        story.type === "auto" &&
-        story.status &&
-        !["completed", "failed"].includes(story.status)
+    // Find auto stories that need active polling
+    const activeAutoStories = stories.filter(story => 
+      story.type === "auto" && ACTIVE_POLLING_STATUSES.includes(story.status)
     );
 
+    const hasActiveAutoStories = activeAutoStories.length > 0;
+
+    console.log("🔍 Checking for active auto stories:", activeAutoStories.map(s => `${s.name} (${s.status})`));
+
     if (hasActiveAutoStories) {
-      // Start polling if not already started
+      // Start polling if not already running
       if (!pollingIntervalRef.current) {
-        console.log("🚀 Starting status polling every 5 seconds...");
-        pollingIntervalRef.current = setInterval(pollAutoGeneratedStories, 5000);
+        console.log("🚀 Starting polling for active auto stories...");
+        console.log("Active stories:", activeAutoStories.map(s => `${s.name} (${s.status})`));
         
-        // Also poll immediately
-        pollAutoGeneratedStories();
+        // Start polling every 5 seconds as per your requirement
+        pollingIntervalRef.current = setInterval(refreshStoriesStatus, 5000);
+        
+        // // Do an immediate refresh when starting polling (except on initial load)
+        // if (!isInitialLoad) {
+        //   refreshStoriesStatus();
+        // }
       }
     } else {
       // Stop polling if no active auto stories
       if (pollingIntervalRef.current) {
-        console.log("🛑 Stopping status polling...");
+        console.log("🛑 Stopping polling - no active auto stories");
+        const allAutoStories = stories.filter(s => s.type === "auto");
+        if (allAutoStories.length > 0) {
+          console.log("All auto stories status:", allAutoStories.map(s => `${s.name}: ${s.status}`));
+        }
+        
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
     }
 
+    // Mark as no longer initial load after first check
+    setIsInitialLoad(false);
+
     // Cleanup function
     return () => {
       if (pollingIntervalRef.current) {
+        console.log("🧹 Cleaning up polling interval");
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
     };
-  }, [stories]); // Only depend on stories
+  }, [stories, isInitialLoad]);
 
   // Initial fetch and handle navigation state
   useEffect(() => {
     const initializeStoriesPage = async () => {
+      console.log("🚀 Initializing Stories Page...");
       await fetchStories();
 
       // Handle newly created auto story from navigation state
       const navigationState = location.state;
-      if (navigationState?.newAutoStory && navigationState?.justCreated) {
-        console.log(
-          "Adding new auto story from navigation:",
-          navigationState.newAutoStory
-        );
-        // Add the new story to the beginning of the list
-        setStories((prev) => {
-          // Check if story already exists to avoid duplicates
-          const exists = prev.some(
-            (story) => story.id === navigationState.newAutoStory.id
-          );
-          if (!exists) {
-            return [navigationState.newAutoStory, ...prev];
-          }
-          return prev;
-        });
+      if (navigationState?.newAutoStoryId && navigationState?.justCreated) {
+        console.log("✨ New auto story created with ID:", navigationState.newAutoStoryId);
+        
+        if (navigationState.message) {
+          toast.success(navigationState.message);
+        }
 
         // Clear the navigation state
-        navigate(location.pathname, { replace: true, state: {} });
+        setTimeout(() => {
+          navigate(location.pathname, { replace: true, state: {} });
+        }, 1000);
       }
     };
 
@@ -330,6 +247,7 @@ function StoriesPage() {
     // Cleanup on unmount
     return () => {
       if (pollingIntervalRef.current) {
+        console.log("🧹 Component unmounting - cleaning up polling");
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
@@ -341,7 +259,7 @@ function StoriesPage() {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
-      month: "short",
+      month: "short", 
       day: "numeric",
     });
   };
@@ -363,9 +281,7 @@ function StoriesPage() {
     setIsDeleting(true);
 
     try {
-      const response = await axiosPrivate.post(
-        `/delete-story/${storyToDelete.id}`
-      );
+      const response = await axiosPrivate.post(`/delete-story/${storyToDelete.id}`);
       if (response.data.success) {
         toast.success("Story deleted successfully");
         setStories(stories.filter((story) => story.id !== storyToDelete.id));
@@ -405,15 +321,7 @@ function StoriesPage() {
         </div>
 
         <div className="stories-grid">
-          <div
-            className="loading-state"
-            style={{
-              gridColumn: "1 / -1",
-              textAlign: "center",
-              padding: "4rem 1rem",
-              color: "#718096",
-            }}
-          >
+          <div className="loading-state" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "4rem 1rem", color: "#718096" }}>
             <p>Loading your stories...</p>
           </div>
         </div>
@@ -441,21 +349,9 @@ function StoriesPage() {
         </div>
 
         <div className="stories-grid">
-          <div
-            className="error-state"
-            style={{
-              gridColumn: "1 / -1",
-              textAlign: "center",
-              padding: "4rem 1rem",
-              color: "#e53e3e",
-            }}
-          >
+          <div className="error-state" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "4rem 1rem", color: "#e53e3e" }}>
             <p>{error}</p>
-            <button
-              className="btn-primary"
-              onClick={() => fetchStories()}
-              style={{ marginTop: "1rem" }}
-            >
+            <button className="btn-primary" onClick={() => fetchStories()} style={{ marginTop: "1rem" }}>
               Try Again
             </button>
           </div>
@@ -492,21 +388,15 @@ function StoriesPage() {
                 <AddRoundedIcon className="icon-lg" />
               </div>
               <h3 className="create-title">Create New Story</h3>
-              <p className="create-subtitle">
-                Start your next creative adventure
-              </p>
+              <p className="create-subtitle">Start your next creative adventure</p>
             </div>
           </div>
         </Link>
 
-        {/* Story Cards from API */}
+        {/* Story Cards */}
         {stories.map((story) => (
-          <div
-            key={story.id}
-            className="story-card"
-            onClick={() => handleStoryScenes(story)}
-          >
-            {/* Status Badge - ONLY for stories with type === 'auto' */}
+          <div key={story.id} className="story-card" onClick={() => handleStoryScenes(story)}>
+            {/* Status Badge - ONLY for auto stories */}
             {story.type === "auto" && story.status && (
               <AutoGenerationStatusBadge status={story.status} />
             )}
@@ -518,17 +408,14 @@ function StoriesPage() {
                   alt={story.name || "Story thumbnail"}
                   className="story-thumbnail"
                   onError={(e) => {
-                    // Fallback to default overlay if image fails to load
                     e.target.style.display = "none";
                     e.target.nextSibling.style.display = "block";
                   }}
                 />
               ) : null}
-              <div
-                className="story-overlay"
-                style={{ display: story.thumbnail ? "none" : "block" }}
-              ></div>
+              <div className="story-overlay" style={{ display: story.thumbnail ? "none" : "block" }}></div>
             </div>
+            
             <div className="story-header">
               <h3 title="story title" className="story-title">
                 {story.name || "Untitled Story"}
@@ -542,23 +429,18 @@ function StoriesPage() {
               <div className="story-meta">
                 <div className="meta-item">
                   <PeopleOutlineIcon className="icon-xs" />
-                  <span>
-                    {story.type === "auto" 
-                      ? (story.characters || story.characterCount || 0)
-                      : (story.characterCount || 0)
-                    } characters
-                  </span>
+                  <span>{story.characterCount || 0} characters</span>
                 </div>
                 <div className="meta-item">
                   <AutoStoriesRoundedIcon className="icon-xs" />
                   <span>
                     {story.type === "auto" 
-                      ? (story.generated_scenes || story.sceneCount || 0)
+                      ? (story.generated_scenes || 0)
                       : (story.sceneCount || 0)
                     } scenes
                   </span>
                 </div>
-                {/* Auto-generate badge - ONLY for stories with type === 'auto' */}
+                {/* Auto-generate badge - ONLY for auto stories */}
                 {story.type === "auto" && (
                   <div className="meta-item auto-badge">
                     <span className="auto-icon">⚡</span>
@@ -570,61 +452,37 @@ function StoriesPage() {
               <div className="story-footer">
                 <div className="story-date">
                   <AccessTimeRoundedIcon className="icon-xs" />
-                  <span>
-                    {story.createdAt ? formatDate(story.createdAt) : "No date"}
-                  </span>
+                  <span>{story.createdAt ? formatDate(story.createdAt) : "No date"}</span>
                 </div>
 
                 <div className="story-actions">
-                  <Link
-                    to={`/u/stories/${story.id}/characters`}
-                    className="link-unstyled"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      className="story-action-btn"
-                      title="View characters"
-                    >
+                  <Link to={`/u/stories/${story.id}/characters`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
+                    <button className="story-action-btn" title="View characters">
                       <PeopleOutlineIcon className="icon-xs" />
                     </button>
                   </Link>
-                  <Link
-                    to={`/u/scenes/create/${story.id}`}
-                    className="link-unstyled"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <Link to={`/u/scenes/create/${story.id}`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
                     <button className="story-action-btn" title="View Story">
                       <VisibilityOutlinedIcon className="icon-xs" />
                     </button>
                   </Link>
-                  {/* Edit Button - Enabled for completed, partially-completed, failed auto stories */}
-                  {story.type === "auto" && story.status && !["completed", "partially-completed", "failed"].includes(story.status) ? (
-                    <button
-                      className="story-action-btn disabled"
-                      title="Edit not available during generation"
-                      disabled
-                    >
+                  
+                  {/* Edit Button - Disabled during active auto generation */}
+                  {story.type === "auto" && ACTIVE_POLLING_STATUSES.includes(story.status) ? (
+                    <button className="story-action-btn disabled" title="Edit not available during generation" disabled>
                       <EditOutlinedIcon className="icon-xs" />
                     </button>
                   ) : (
-                    <Link
-                      to={`/u/stories/edit/${story.id}`}
-                      className="link-unstyled"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <Link to={`/u/stories/edit/${story.id}`} className="link-unstyled" onClick={(e) => e.stopPropagation()}>
                       <button className="story-action-btn" title="Edit Story">
                         <EditOutlinedIcon className="icon-xs" />
                       </button>
                     </Link>
                   )}
                   
-                  {/* Delete Button - Enabled for completed, partially-completed, failed auto stories */}
-                  {story.type === "auto" && story.status && !["completed", "partially-completed", "failed"].includes(story.status) ? (
-                    <button
-                      className="story-action-btn action-danger disabled"
-                      title="Delete not available during generation"
-                      disabled
-                    >
+                  {/* Delete Button - Disabled during active auto generation */}
+                  {story.type === "auto" && ACTIVE_POLLING_STATUSES.includes(story.status) ? (
+                    <button className="story-action-btn action-danger disabled" title="Delete not available during generation" disabled>
                       <DeleteOutlineIcon className="icon-xs" />
                     </button>
                   ) : (
@@ -639,7 +497,6 @@ function StoriesPage() {
                       <DeleteOutlineIcon className="icon-xs" />
                     </button>
                   )}
-
                 </div>
               </div>
             </div>
@@ -647,19 +504,18 @@ function StoriesPage() {
         ))}
       </div>
 
-      {/* Empty State - Only show when not loading and no stories */}
+      {/* Empty State */}
       {!loading && stories.length === 0 && (
         <div className="empty-state">
           <div className="empty-icon">
             <AutoStoriesRoundedIcon className="icon-xxl" />
           </div>
           <h3 className="empty-title">No stories yet</h3>
-          <p className="empty-subtitle">
-            Create your first AI-generated story to get started
-          </p>
+          <p className="empty-subtitle">Create your first AI-generated story to get started</p>
         </div>
       )}
 
+      {/* Delete Modal */}
       {showDeleteModal && (
         <div
           className={`modal fade ${showDeleteModal ? "show" : ""}`}
@@ -691,47 +547,28 @@ function StoriesPage() {
 
               <div className="modal-body">
                 <p className="text-muted mb-3">
-                  Are you sure you want to delete{" "}
-                  <strong>"{storyToDelete?.name}"</strong>?
+                  Are you sure you want to delete <strong>"{storyToDelete?.name}"</strong>?
                 </p>
                 <div className="alert alert-warning">
                   <small className="text-dark">
-                    <strong>Warning:</strong> This action cannot be undone. All
-                    characters, scenes, and content associated with this story
-                    will be permanently deleted.
+                    <strong>Warning:</strong> This action cannot be undone. All characters, scenes, and content associated with this story will be permanently deleted.
                   </small>
                 </div>
               </div>
 
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-light"
-                  onClick={handleCloseDeleteModal}
-                  disabled={isDeleting}
-                >
+                <button type="button" className="btn btn-light" onClick={handleCloseDeleteModal} disabled={isDeleting}>
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={handleConfirmDelete}
-                  disabled={isDeleting}
-                >
+                <button type="button" className="btn btn-danger" onClick={handleConfirmDelete} disabled={isDeleting}>
                   {isDeleting ? (
                     <>
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Deleting...
                     </>
                   ) : (
                     <>
-                      <DeleteOutlineIcon
-                        style={{ fontSize: "16px", marginRight: "4px" }}
-                      />
+                      <DeleteOutlineIcon style={{ fontSize: "16px", marginRight: "4px" }} />
                       Delete Story
                     </>
                   )}
@@ -739,9 +576,9 @@ function StoriesPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+      </div>
   );
 }
 
