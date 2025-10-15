@@ -3,7 +3,6 @@ const { Worker } = require("bullmq");
 const IORedis = require("ioredis");
 const { printNumbers, extractScenesAndCharactersService } = require("../service/AutoStoryService");
 
-const { sequelize } = require("../models");
 const { getStoryById } = require("../service/StoryService");
 const Style = require("../models/Style");
 const { fullCharacterDescriptionGenerateService, createCharacterImageGeneratePrompt } = require("../service/CharacterService");
@@ -14,39 +13,11 @@ const { generateSceneService } = require("../service/SceneService");
 
 
 
-console.log("Loaded ENV values:");
-console.log("HOST:", process.env.DB_HOST);
-console.log("DB_PORT:", process.env.DB_PORT);
-console.log("USER:", process.env.DB_USER);
-console.log("PASSWORD:", process.env.DB_PASSWORD);
-console.log("DATABASE:", process.env.DATABASE);
 
 
-// const sequalize = require("../config/database");
 
 
-const redis_url = process.env.REDIS_URL;
-console.log(redis_url,"give")
-
-// const connection = new IORedis(redis_url,{
-//     tls:{},
-//     maxRetriesPerRequest: null,
-// });
-
-const connection = new IORedis({
-    host:"127.0.0.1",
-    port: 6379,
-    maxRetriesPerRequest: null,
-});
-
-sequelize.authenticate()
-  .then(() => console.log("✅ Sequelize connected"))
-  .catch(err => console.error("❌ Sequelize error: ", err));
-
-sequelize.sync({ alter: false })  
-  .then(() => console.log("✅ Sequelize models are synced"))
-  .catch(err => console.error("❌ Sequelize sync error: ", err));
-
+module.exports = (connection) =>{ 
 const worker = new Worker(
   "autoStoryQueue",
   async (job) => {
@@ -220,3 +191,5 @@ worker.on("completed", job => {
 worker.on("failed", (job, err) => {
     console.log(`Job ${job.id} failed: ${err.message}`);
 });
+
+}
