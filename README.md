@@ -194,7 +194,7 @@ sudo service redis-server start
 ## ▶️ Run the Backend Server
 
 ```bash
-npm run dev
+npm start
 ```
 
 The backend should now be running at:
