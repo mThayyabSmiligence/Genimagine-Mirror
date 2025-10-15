@@ -14,6 +14,7 @@ db.Style = require("./Style");
 db.ImageGenerationBatch = require("./ImageGenerationBatch");
 db.CharacterExpressionImage = require("./CharacterExpressionImage");
 db.Scene = require("./Scene");
+db.StoryToVideo = require("./StoryToVideo");
 
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });
@@ -40,6 +41,10 @@ db.CharacterExpressionImage.belongsTo(db.Character, { foreignKey: "character_id"
 //scene and story associations
 db.Story.hasMany(db.Scene, { foreignKey: "story_id", as: "scenes" });
 db.Scene.belongsTo(db.Story, { foreignKey: "story_id", as: "story" });
+
+//story and video associations
+db.Story.hasMany(db.StoryToVideo, { foreignKey: "story_id", as: "video" });
+db.StoryToVideo.belongsTo(db.Story, { foreignKey: "story_id", as: "story" });
 
 
 module.exports = db;

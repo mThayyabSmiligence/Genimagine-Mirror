@@ -7,22 +7,34 @@ const stringSimilarity = require("string-similarity");
 const FormData = require("form-data");
 const sharp = require("sharp");
 const { jsonrepair } = require("jsonrepair");
+const AppError = require('../utils/AppError');
+
 
 
 exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual") => {
-  try {
+
  
     //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
     // Check if the story exists
     if (!story || story.user_id !== user_id) return { status: 404, success: false, message: 'Story not found' };
 
+
+    //get character count for story id
+    const characterCount = await Character.count({ where: { story_id } });
+
+    if(characterCount == 0) {
+      throw new AppError('No characters found for this story', 409)
+    };
+
     //get style details
     const style_id = story.style_id;
     const style = await Style.findOne({ where: { id: style_id } });
     
     // Check if the style exists
-    if (!style) return { status: 404, success: false, message: 'Style not found' };
+    if (!style) {
+      throw new AppError('No style found for this story', 404)
+    };
 
     const referenced_characters = await this.getReferencedCharacters(prompt,story_id);
     if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
@@ -81,10 +93,7 @@ exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_inp
     await scene.save();
 
     return { status: 200, success: true, scene};
-  } catch (error) {
-    console.error("Error generating scene:", error);
-    return { status: 500, success: false, message: "Image generation failed" };
-  }
+
 };
 
 exports.getReferencedCharacters = async (user_prompt,story_id) => {

@@ -1,7 +1,7 @@
 const { generateSceneService, getScenesService, getScenesByStoryService, deleteSceneByIdService, regenerateSceneService } = require("../service/SceneService");
+const asyncHandler = require("../utils/asyncHandler")
 
-
-exports.generateSceneController= async (req, res) => {
+exports.generateSceneController= asyncHandler( async (req, res) => {
   const { story_id, prompt, background_image_url} = req.body;
   const user_id = req.user.id;
 
@@ -15,7 +15,7 @@ exports.generateSceneController= async (req, res) => {
 
   const result = await generateSceneService(user_id, story_id, prompt);
   return res.status(result.status).json(result);
-};
+});
 
 exports.getScenesByStoryController = async (req, res) => {
   const { story_id } = req.query;
