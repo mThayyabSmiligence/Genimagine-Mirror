@@ -28,8 +28,14 @@ console.log("DATABASE:", process.env.DATABASE);
 const redis_url = process.env.REDIS_URL;
 console.log(redis_url,"give")
 
-const connection = new IORedis(redis_url,{
-    tls:{},
+// const connection = new IORedis(redis_url,{
+//     tls:{},
+//     maxRetriesPerRequest: null,
+// });
+
+const connection = new IORedis({
+    host:"127.0.0.1",
+    port: 6379,
     maxRetriesPerRequest: null,
 });
 
@@ -92,6 +98,8 @@ const worker = new Worker(
             extractFlag = !parsedPrompt.success || !parsedPrompt.data.characters || !parsedPrompt.data.scenes;
             extactCount++;
         }
+
+        console.log("parsedPrompt:",parsedPrompt);
 
 
         if (!parsedPrompt.success || !parsedPrompt.data.characters || !parsedPrompt.data.scenes) {
@@ -202,6 +210,8 @@ const worker = new Worker(
   },
   { connection, concurrency: 10 }
 );
+
+
 
 worker.on("completed", job => {
     console.log(`Job ${job.id} completed`);

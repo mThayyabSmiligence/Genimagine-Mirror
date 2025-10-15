@@ -1,8 +1,9 @@
 
 const Story = require('../models/Story');
 const axios = require('axios');
-const { extractValidJson } = require('./SceneService');
 const { Scene, Character } = require('../models');
+const { extractValidJson } = require('../helper/JsonHelper');
+const { llama3BInstructText } = require('../API/CloudFlare.api');
 require('dotenv').config();
 
 
@@ -70,19 +71,29 @@ exports.extractScenesAndCharactersService = async (description, no_of_scene) => 
         Number of scenes: ${no_of_scene}
         `;
 
-      const result = await axios.post(`https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/${model_id}`, 
-        {prompt: `${systemPrompt}\n\nUser: ${userPrompt}`}, 
-        {
-          headers: {
-            'Authorization': `Bearer ${cloud_flare_api_key}`,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'json',
-        }
-      );
+      // const result = await axios.post(`https://api.cloudflare.com/client/v4/accounts/${cloud_flare_acc_id}/ai/run/${model_id}`, 
+      //   {prompt: `${systemPrompt}\n\nUser: ${userPrompt}`}, 
+      //   {
+      //     headers: {
+      //       'Authorization': `Bearer ${cloud_flare_api_key}`,
+      //       'Content-Type': 'application/json',
+      //     },
+      //     responseType: 'json',
+      //   }
+      // );
 
-      console.log(result.data.result.response);
-      let response = result.data.result.response;
+      message =[
+        {
+          "role": "system",
+          "content": systemPrompt
+        },
+        {
+          "role": "user",
+          "content": userPrompt
+        }
+      ]
+
+      let response = await llama3BInstructText(message,2000);
       response= extractValidJson(response);
       return {
         success: true,

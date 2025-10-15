@@ -19,20 +19,25 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
     },
     narration: {
         type: DataTypes.JSON,
-        allowNull: false,
+        allowNull: true,
     }
     ,
     video_url: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     video_path: {
         type: DataTypes.STRING,
+        allowNull: true,
+    },
+    status:{
+        type: DataTypes.ENUM("pending", "in-progress","generating-audio", "generating-video", "done", "failed"),
         allowNull: false,
+        defaultValue: "pending",
     },
     created_at: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: false,   
         defaultValue: DataTypes.NOW,
     },
     updated_at: {
