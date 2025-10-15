@@ -721,13 +721,14 @@ function CreateScenes() {
                     )}
                     
                     {scene.characters.length > 0 && (
-                      <div className="prompt-characters">
-                        <PeopleOutlineIcon className="icon-xs character-icon" />
+                      <div className="prompt-characters align-items-center">
+                        <span><PeopleOutlineIcon className="icon-xs character-icon"/></span>
                         <span className="characters-text">
-                          Characters: 
+                          
                           {scene.characters.map((character, idx) => (
                             <span key={idx} className="character-tag ms-2">{character}</span>
                           ))}
+                           
                         </span>
                       </div>
                     )}
