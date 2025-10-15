@@ -181,7 +181,7 @@ function CreateCharacters() {
     }
   }, [id]);
 
-  // FIXED: Status checking function - ONLY for auto stories
+  // UPDATED: Status checking function - ONLY for auto stories
   const checkStoryStatus = useCallback(async () => {
     if (!id || storyType !== 'auto') return; // Only check status for auto stories
     
@@ -194,7 +194,8 @@ function CreateCharacters() {
         
         setAutoGenState(prev => {
           const newState = {
-            isActive: ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(statusData.status),
+            // UPDATED: Removed 'partially-completed' from active statuses
+            isActive: ['in-progress', 'generating-characters', 'generating-scenes'].includes(statusData.status),
             status: statusData.status,
             totalScenes: statusData.total_scenes || prev.totalScenes,
             generatedScenes: statusData.generated_scenes || 0,
@@ -204,15 +205,14 @@ function CreateCharacters() {
           
           // If character count increased, fetch new characters
           if (statusData.characters > prev.characters) {
-            console.log(`Character count increased from ${prev.characters} to ${statusData.characters}, fetching characters...`);
             fetchExistingCharacters();
           }
           
           return newState;
         });
 
-        // Stop polling and show toast only once for completed or failed
-        if (['completed', 'failed'].includes(statusData.status)) {
+        // UPDATED: Stop polling and show toast for completed, failed, OR partially-completed
+        if (['completed', 'failed', 'partially-completed'].includes(statusData.status)) {
           // Clear the interval immediately
           if (statusPollingRef.current) {
             clearInterval(statusPollingRef.current);
@@ -220,9 +220,10 @@ function CreateCharacters() {
             console.log('Polling stopped for status:', statusData.status);
           }
           
-          // FIXED: Use localStorage to persist toast flags across page navigations
+          // UPDATED: Use localStorage to persist toast flags across page navigations
           const completedToastKey = `story-${id}-completed-toast-shown`;
           const failedToastKey = `story-${id}-failed-toast-shown`;
+          const partiallyCompletedToastKey = `story-${id}-partially-completed-toast-shown`; // NEW
           
           // Show completed toast only once per story
           if (statusData.status === 'completed' && !localStorage.getItem(completedToastKey)) {
@@ -233,6 +234,11 @@ function CreateCharacters() {
           else if (statusData.status === 'failed' && !localStorage.getItem(failedToastKey)) {
             toast.error('❌ Story generation failed. Please try again.');
             localStorage.setItem(failedToastKey, 'true');
+          }
+          // UPDATED: Show partially completed toast only once per story
+          else if (statusData.status === 'partially-completed' && !localStorage.getItem(partiallyCompletedToastKey)) {
+            toast.success('✅ Story generation partially completed!');
+            localStorage.setItem(partiallyCompletedToastKey, 'true');
           }
         }
       }
@@ -288,11 +294,12 @@ function CreateCharacters() {
     }
   }, [storyType, checkStoryStatus]);
 
-  // FIXED: Separate useEffect to handle polling based on status changes - ONLY for auto stories
+  // UPDATED: Separate useEffect to handle polling based on status changes - ONLY for auto stories
   useEffect(() => {
     if (storyType !== 'auto') return; // Skip polling for manual stories
 
-    const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(autoGenState.status);
+    // UPDATED: Removed 'partially-completed' from polling conditions
+    const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes'].includes(autoGenState.status);
     
     if (shouldPoll && !statusPollingRef.current) {
       // Start polling if we should poll and aren't already
@@ -702,7 +709,7 @@ function CreateCharacters() {
                     
                     <div className="character-footer">
                       <div className="character-actions">
-                        {/* Edit Button - Disabled during active auto generation */}
+                        {/* UPDATED: Edit Button - Disabled during active auto generation (UPDATED LOGIC) */}
                         {storyType === 'auto' && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) && autoGenState.isActive ? (
                           <button 
                             className="character-preview-action-btn disabled" 
@@ -724,7 +731,7 @@ function CreateCharacters() {
                           </button>
                         )}
                         
-                        {/* Delete Button - Disabled during active auto generation */}
+                        {/* UPDATED: Delete Button - Disabled during active auto generation (UPDATED LOGIC) */}
                         {storyType === 'auto' && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) && autoGenState.isActive ? (
                           <button 
                             className="character-preview-action-btn action-danger disabled" 

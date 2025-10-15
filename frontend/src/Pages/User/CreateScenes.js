@@ -15,6 +15,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary'; // NEW: Import for video icon
 import '../../Css/CreateScenes.css';
 import { toast } from 'react-toastify';
 
@@ -25,6 +26,9 @@ function CreateScenes() {
   const [isTipsOpen, setIsTipsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [regeneratingSceneId, setRegeneratingSceneId] = useState(null);
+  
+  // NEW: Add state for video generation
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
 
   // Story type state
   const [storyType, setStoryType] = useState(null);
@@ -89,7 +93,7 @@ function CreateScenes() {
     }
   }, [storyid]);
 
-  // FIXED: Status checking function with localStorage - ONLY for auto stories
+  // UPDATED: Status checking function - ONLY for auto stories (Added partially-completed to stop polling)
   const checkStoryStatus = useCallback(async () => {
     if (!storyid || storyType !== 'auto') return;
     
@@ -102,7 +106,8 @@ function CreateScenes() {
         
         setAutoGenState(prev => {
           const newState = {
-            isActive: ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(statusData.status),
+            // UPDATED: Removed 'partially-completed' from active statuses
+            isActive: ['in-progress', 'generating-characters', 'generating-scenes'].includes(statusData.status),
             status: statusData.status,
             totalScenes: statusData.total_scenes,
             generatedScenes: statusData.generated_scenes,
@@ -116,15 +121,18 @@ function CreateScenes() {
           return newState;
         });
 
-        if (['completed', 'failed'].includes(statusData.status)) {
+        // UPDATED: Stop polling for completed, failed, OR partially-completed
+        if (['completed', 'failed', 'partially-completed'].includes(statusData.status)) {
           if (statusPollingRef.current) {
             clearInterval(statusPollingRef.current);
             statusPollingRef.current = null;
+            console.log('Polling stopped for status:', statusData.status);
           }
           
-          // FIXED: Use localStorage to persist toast flags across page navigations
+          // UPDATED: Use localStorage to persist toast flags across page navigations
           const completedToastKey = `story-${storyid}-completed-toast-shown`;
           const failedToastKey = `story-${storyid}-failed-toast-shown`;
+          const partiallyCompletedToastKey = `story-${storyid}-partially-completed-toast-shown`; // NEW
           
           // Show completed toast only once per story
           if (statusData.status === 'completed' && !localStorage.getItem(completedToastKey)) {
@@ -135,6 +143,11 @@ function CreateScenes() {
           else if (statusData.status === 'failed' && !localStorage.getItem(failedToastKey)) {
             toast.error('❌ Story generation failed. Please try again.');
             localStorage.setItem(failedToastKey, 'true');
+          }
+          // UPDATED: Show partially completed toast only once per story
+          else if (statusData.status === 'partially-completed' && !localStorage.getItem(partiallyCompletedToastKey)) {
+            toast.success('✅ Story generation partially completed!');
+            localStorage.setItem(partiallyCompletedToastKey, 'true');
           }
         }
       }
@@ -179,10 +192,12 @@ function CreateScenes() {
     }
   }, [storyType, checkStoryStatus]);
 
+  // UPDATED: Polling useEffect - Removed 'partially-completed' from polling conditions
   useEffect(() => {
     if (storyType !== 'auto') return;
 
-    const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes', 'partially-completed'].includes(autoGenState.status);
+    // UPDATED: Removed 'partially-completed' from polling conditions
+    const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes'].includes(autoGenState.status);
     
     if (shouldPoll && !statusPollingRef.current) {
       console.log('Starting status polling for auto story, status:', autoGenState.status);
@@ -217,6 +232,39 @@ function CreateScenes() {
       toast.success(message);
     } else {
       toast.error(message);
+    }
+  };
+
+  // NEW: Generate Video function
+  const handleGenerateVideo = async () => {
+    if (generatedScenes.length === 0) {
+      showToast("No scenes available to generate video", 'error');
+      return;
+    }
+
+    setIsGeneratingVideo(true);
+    
+    try {
+      const response = await axiosPrivate.post('/video/generate', {
+        story_id: parseInt(storyid),
+        scenes: generatedScenes.map(scene => ({
+          id: scene.id,
+          image_url: scene.image_url,
+          prompt: scene.prompt,
+          scene_order: scene.scene_order
+        }))
+      });
+      
+      if (response.data.success) {
+        showToast("Video generation started! You will be notified when it's ready.");
+      } else {
+        showToast("Failed to start video generation", 'error');
+      }
+    } catch (error) {
+      console.error('Error generating video:', error);
+      showToast("Failed to generate video", 'error');
+    } finally {
+      setIsGeneratingVideo(false);
     }
   };
 
@@ -622,6 +670,30 @@ function CreateScenes() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* NEW: Generate Video Button Section */}
+          <div className="video-generation-section">
+            <div className="video-actions-container">
+              <button
+                onClick={handleGenerateVideo}
+                disabled={isGeneratingVideo || generatedScenes.length === 0}
+                className={`btn-primary video-generate-btn ${generatedScenes.length === 0 ? 'disabled' : ''}`}
+                title={generatedScenes.length === 0 ? "Generate at least one scene to create video" : "Generate video from scenes"}
+              >
+                {isGeneratingVideo ? (
+                  <>
+                    <div className="loading-spinner"></div>
+                    Generating Video...
+                  </>
+                ) : (
+                  <>
+                    <VideoLibraryIcon className="icon-sm" />
+                    Generate Video
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Generated Scenes Timeline */}
