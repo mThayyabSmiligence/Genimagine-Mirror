@@ -32,14 +32,17 @@ const { sequelize } = require("./models")
 const numberQueue = require('./queue/TestQueue');
 const worker = require('./worker/TestWorker');
 
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
+const errorHandler = require('./middle_ware/errorHandler');
+
+
 
 dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require('socket.io');
 
 const io = new Server(server, {
     cors: {
@@ -75,7 +78,6 @@ const corsOptions = {
     credentials: true
 };
 app.use( cors(corsOptions) );
-app.use(express.json());
 app.use(cookieParser());
 
 // app.use(fileUpload({
@@ -159,6 +161,8 @@ app.post('/post-token', (req, res) => {
     const token = cookies.token
     console.log("token ",token);
 })
+
+app.use(errorHandler);
 
 server.listen(process.env.PORT,() => {
 

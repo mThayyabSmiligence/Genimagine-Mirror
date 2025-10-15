@@ -1,15 +1,24 @@
 const { Scene } = require("../models");
+const AppError = require("../utils/AppError");
 
 exports.createStoryToVideoService = async (userId, storyId) => {
-    try {
-        const Scenes= await Scene.findAll({ where: { user_id: userId, story_id: storyId } });
+    
+    const Scenes= await Scene.findAll({ where: { user_id: userId, story_id: storyId } });
 
-        if(Scenes === null||Scenes.length === 0){
-            return { status: 404, success: false, message: 'Story not found' };
-        }
+    if(Scenes === null||Scenes.length === 0){
+        throw new AppError('No scenes found for this story', 404)
+    };
+    
         
-    } catch (e) {
-        console.error(e);
-        return { status: 500, success: false, message: 'Failed to create story to video' };
-    }
+        
+   
+};
+
+
+exports.nrrativizeTheDescription = async (scenes) => {
+    // This will return an array of objects, each with a scene_order and description property:
+    // Example: [{scene_order: 1, description: "Scene 1 description"}, {scene_order: 2, description: "Scene 2 description"}]
+    const input = scenes.map((scene) => ({scene_order: scene.scene_order, description: scene.prompt}));
+    
+    
 };
