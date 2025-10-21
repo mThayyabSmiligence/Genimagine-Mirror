@@ -17,6 +17,16 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
     },
+     user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",   // 👈 table name of User
+        key: "user_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
     narration: {
         type: DataTypes.JSON,
         allowNull: true,
