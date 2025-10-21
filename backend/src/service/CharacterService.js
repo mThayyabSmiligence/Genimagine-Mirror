@@ -271,7 +271,7 @@ exports.restoreCharacterService = async (user_id, character_id) => {
 
 exports.fullCharacterDescriptionGenerateService = async (description, style) => {
   try {
-    const model_url = process.env.FULL_DESCRIPTION_API_MODEL;
+    const model_url = process.env.CLOUD_FLARE_LLAMA_3_8B_INSTRUCT;
     const api_key = process.env.CLOUD_FLARE_API_KEY;
     const account_id = process.env.CLOUD_FLARE_ACC_ID;
     const messages = [

@@ -7,22 +7,34 @@ const stringSimilarity = require("string-similarity");
 const FormData = require("form-data");
 const sharp = require("sharp");
 const { jsonrepair } = require("jsonrepair");
+const AppError = require('../utils/AppError');
+
 
 
 exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual") => {
-  try {
+
  
     //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
     // Check if the story exists
     if (!story || story.user_id !== user_id) return { status: 404, success: false, message: 'Story not found' };
 
+
+    //get character count for story id
+    const characterCount = await Character.count({ where: { story_id } });
+
+    if(characterCount == 0) {
+      throw new AppError('No characters found for this story', 409)
+    };
+
     //get style details
     const style_id = story.style_id;
     const style = await Style.findOne({ where: { id: style_id } });
     
     // Check if the style exists
-    if (!style) return { status: 404, success: false, message: 'Style not found' };
+    if (!style) {
+      throw new AppError('No style found for this story', 404)
+    };
 
     const referenced_characters = await this.getReferencedCharacters(prompt,story_id);
     if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
@@ -81,10 +93,7 @@ exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_inp
     await scene.save();
 
     return { status: 200, success: true, scene};
-  } catch (error) {
-    console.error("Error generating scene:", error);
-    return { status: 500, success: false, message: "Image generation failed" };
-  }
+
 };
 
 exports.getReferencedCharacters = async (user_prompt,story_id) => {
@@ -139,7 +148,7 @@ const systemPrompt = `
     const response = result.data.result.response;
 
     // const data = safeJsonParse(response);
-    const data = this.extractValidJson(response);
+    const data = extractValidJson(response);
 
 
 
@@ -321,43 +330,7 @@ function mapCharacters(parsedCharacters, dbCharacters) {
 }
 
 
-exports.extractValidJson = (text) => {
-  if (!text) return null;
 
-  // Extract JSON-like substring
-  const match = text.match(/{[\s\S]*}/);
-  if (!match) return null;
-
-  let jsonString = match[0];
-
-  // Clean up common issues
-  jsonString = jsonString
-    .replace(/\/\/.*$/gm, "") // remove comments
-    .replace(/\/\*[\s\S]*?\*\//gm, "") // remove block comments
-    .replace(/[“”]/g, '"') // fix smart quotes
-    .replace(/\n\s*/g, " ") // remove newlines
-    .replace(/,\s*([}\]])/g, "$1"); // remove trailing commas
-
-  // If it's double-escaped, unescape
-  if (jsonString.includes('\\"') && !jsonString.includes('"{')) {
-    jsonString = jsonString.replace(/\\"/g, '"');
-  }
-
-  try {
-    // 🧠 Try normal JSON.parse first
-    return JSON.parse(jsonString);
-  } catch (err1) {
-    try {
-      // 🩹 Try jsonrepair if it fails
-      const repaired = jsonrepair(jsonString);
-      return JSON.parse(repaired);
-    } catch (err2) {
-      console.error("❌ Still failed to parse or repair JSON:", err2.message);
-      console.log("🔍 Partial content around error:", jsonString.slice(0, 500));
-      return null;
-    }
-  }
-};
 
 
 
@@ -652,6 +625,7 @@ const { imageToImageService } = require('./ImageToImageService');
 const { Story, Style, Character, Scene } = require('../models');
 const { Json } = require('sequelize/lib/utils');
 const { uploadImageToServer, deleteFromServer } = require('./UploadToServerService');
+const { extractValidJson } = require('../helper/JsonHelper');
 
 const ensureDir = async (dir) => fs.promises.mkdir(dir, { recursive: true });
 

@@ -1,0 +1,52 @@
+const { uploadFile } = require("../API/S3.api")
+const crypto = require('crypto');
+const algorithm = 'aes-128-cbc';
+const secretKey = process.env.SECRET_KEY || 'secretkey123';
+const iv = Buffer.from(process.env.IV || '1234567890123456', 'hex');
+
+function encrypt(data) {
+    try {
+        const algorithm = 'aes-256-cbc'; // or your preferred algorithm
+        const key = crypto.randomBytes(32); // 32 bytes for AES-256
+        const iv = crypto.randomBytes(16); // 16 bytes for CBC mode
+        
+        const cipher = crypto.createCipheriv(algorithm, key, iv);
+        let encrypted = cipher.update(data, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        
+        return {
+            encrypted,
+            key: key.toString('hex'),
+            iv: iv.toString('hex')
+        };
+    } catch (error) {
+        console.error('Encryption error:', error);
+        throw error;
+    }
+}
+
+exports.uploadImage = async(image , path)=>{
+    const upload = await uploadFile(image,path,"image/png");
+    return upload
+}
+
+exports.uploadVideo = async(image , path)=>{
+    const upload = await uploadFile(image,path,"video/mp4");
+    return upload
+}
+
+
+exports.uploadAudio = async(image , path)=>{
+    const upload = await uploadFile(image,path,"audio/mpeg");
+    return upload
+}
+
+exports.uploadStoryToVideo = async(video,story_id,video_id)=>{
+
+    const path = "/storyToVideo/"+encrypt(story_id.toString()).encrypted+"/"+encrypt(video_id.toString()).encrypted;
+    const upload = await this.uploadVideo(video,path);
+    return {
+        ...upload,
+        path
+    }
+}
