@@ -119,7 +119,7 @@ exports.starStoryToVideotWorker = async (storyToVideoId) => {
     }
     storyToVideo.video_url = video_upload.fileUrl;
     storyToVideo.video_path = video_upload.path;
-    storyToVideo.status="completed";
+    storyToVideo.status="done";
     await storyToVideo.save();
 
 

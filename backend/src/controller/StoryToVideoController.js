@@ -15,5 +15,5 @@ exports.getStoryToVideoByStoryIdController =asyncHandler( async (req, res) => {
     const {id} = req.params;
     const userId = req.user.id;
     const result = await getStoryToVideoByStoryIdService(id, userId);
-    return res.status(result.status).json(result);
+    return res.status(200).json(result);
 })
