@@ -1,5 +1,5 @@
 require("dotenv").config({ path: require("path").resolve(__dirname, "../config.env") });
-const S3 = require("aws-sdk/clients/s3");
+
 const { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require('@aws-sdk/client-s3');
 const s3 = new S3Client({
     region: process.env.AWS_DEFAULT_REGION,
