@@ -10,6 +10,7 @@ const { getAudioDurationInSeconds } = require('get-audio-duration');
 const { uploadStoryToVideo } = require("./S3Service");
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
+const StoryToVideoError = require("../utils/StoryToVideoError");
 
 
 
@@ -20,18 +21,27 @@ const TEMP_IMAGES_DIR = path.join(ROOT_DIR, 'assets/temp/images');
 const OUTPUT_DIR = path.join(ROOT_DIR, 'assets/output');
 
 if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR, { recursive: true });
+if (!fs.existsSync(TEMP_IMAGES_DIR)) fs.mkdirSync(TEMP_IMAGES_DIR, { recursive: true });
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 
 
 exports.createStoryToVideoService = async (userId, storyId) => {
     
+    const storyToVideoCheck = await StoryToVideo.findOne({ where: { story_id: storyId, user_id: userId } });
+
+    if (storyToVideoCheck && storyToVideoCheck.status == "failed") {
+        await StoryToVideo.destroy({ where: { story_id: storyId } });
+    }
+    else if (storyToVideoCheck) {
+        throw new AppError('StoryToVideo already exists', 409)
+    };
+
     const Scenes= await Scene.findAll({ where: { user_id: userId, story_id: storyId } });
 
     if(Scenes === null||Scenes.length === 0){
         throw new AppError('No scenes found for this story', 404)
     };
-    
     
        
     try {
@@ -52,81 +62,101 @@ exports.createStoryToVideoService = async (userId, storyId) => {
 };
 
 
-exports.starStoryToVideotWorker = async (storyToVideoId) => {
-    console.log("test1");
-    const storyToVideo = await StoryToVideo.findByPk(storyToVideoId);
-    if (!storyToVideo) {
-        throw new AppError('StoryToVideo not found', 404)
-    }
+exports.startStoryToVideoWorker = async (storyToVideoId) => {
 
-    storyToVideo.status="in-progress";
-    await storyToVideo.save();
-
-    console.log("test1");
-    
-    const scenes = await Scene.findAll({ where: { story_id: storyToVideo.story_id } });
-    
-    if(scenes === null||scenes.length === 0){
-        storyToVideo.status="failed";
-        await storyToVideo.save();
-        throw new AppError('No scenes found for this story', 404)
-    };
-
-    let narrations = await this.nrrativizeTheDescription(scenes);
-    console.log("test1");
-
-    storyToVideo.status="generating-audio";
-    await storyToVideo.save();
-
-
-    const audioObject = await this.generateAndCombineAudioForNarrations(narrations.scenesWithNarrations);
-    console.log("test1");
-
-
-    if(audioObject.success === false){
-        storyToVideo.status="failed";
-        await storyToVideo.save();
-        throw new AppError('Failed to generate audio ', 500)
-    };
-
-    console.log(audioObject);
-    narrations = audioObject.narrations
-    console.log("test1");
-
-    storyToVideo.status="generating-video";
-    await storyToVideo.save();
-
-    const videoObject = await this.generateAndCombineVideoForNarrations(audioObject.combinedAudioPath, narrations, audioObject.totalDuration);
-
-    console.log("test1");
-
-    if(videoObject.success === false){
-        storyToVideo.status="failed";
-        await storyToVideo.save();
-        throw new AppError('Failed to generate video ', 500)
-    };
-
-    let video_upload;
+    let storyToVideo = null;
     try{
-        const video = fs.readFileSync(videoObject.videoPath);
-     video_upload = await uploadStoryToVideo(video,storyToVideo.story_id,storyToVideo.id);
+        console.log("test1");
+        storyToVideo = await StoryToVideo.findByPk(storyToVideoId);
+        if (!storyToVideo) {
+            throw new AppError('StoryToVideo not found', 404)
+        }
+
+        storyToVideo.status="in-progress";
+        await storyToVideo.save();
+
+        console.log("test1");
+        
+        const scenes = await Scene.findAll({ where: { story_id: storyToVideo.story_id } });
+        
+        if(scenes === null||scenes.length === 0){
+            throw new StoryToVideoError('No scenes found for this story', 404,storyToVideoId)
+        };
+
+        let narrations = await this.nrrativizeTheDescription(scenes,storyToVideoId);
+        console.log("test1");
+
+        if(narrations === null||narrations.length === 0){
+            storyToVideo.status="failed";
+            storyToVideo.error_message="No narrations found for this story";
+            await storyToVideo.save();
+            throw new AppError('No narrations found for this story', 404)
+        };
+
+        storyToVideo.status="generating-audio";
+        await storyToVideo.save();
+
+
+        const audioObject = await this.generateAndCombineAudioForNarrations(narrations.scenesWithNarrations,storyToVideoId);
+        console.log("test1");
+
+
+        if(audioObject.success === false){
+            storyToVideo.status="failed";
+            storyToVideo.error_message="Failed to generate audio";
+            await storyToVideo.save();
+            throw new AppError('Failed to generate audio ', 500)
+        };
+
+        console.log(audioObject);
+        narrations = audioObject.narrations
+        console.log("test1");
+
+        storyToVideo.status="generating-video";
+        await storyToVideo.save();
+
+        const videoObject = await this.generateAndCombineVideoForNarrations(audioObject.combinedAudioPath, narrations, audioObject.totalDuration,storyToVideoId);
+
+        console.log("test1");
+
+        if(videoObject.success === false){
+            storyToVideo.status="failed";
+            storyToVideo.error_message="Failed to generate video";
+            await storyToVideo.save();
+            throw new AppError('Failed to generate video ', 500)
+        };
+
+        let video_upload;
+        try{
+            const video = fs.readFileSync(videoObject.videoPath);
+        video_upload = await uploadStoryToVideo(video,storyToVideo.story_id,storyToVideo.id);
+
+        }catch(error){
+            console.log(error);
+            storyToVideo.status="failed";
+            storyToVideo.error_message="Failed to upload video";
+            await storyToVideo.save();
+            throw new AppError('Failed to upload video ', 500)
+        }
+        storyToVideo.video_url = video_upload.fileUrl;
+        storyToVideo.video_path = video_upload.path;
+        storyToVideo.status="done";
+        await storyToVideo.save();
 
     }catch(error){
-        console.log(error);
-        storyToVideo.status="failed";
+        console.error("Unhandled error in worker:", error);
+        if (storyToVideo) {
+        storyToVideo.status = "failed";
+        storyToVideo.error_message = error.message || "Unknown error";
         await storyToVideo.save();
-        throw new AppError('Failed to upload video ', 500)
+        }
+        throw new StoryToVideoError('Worker failed unexpectedly', 500, storyToVideoId);
     }
-    storyToVideo.video_url = video_upload.fileUrl;
-    storyToVideo.video_path = video_upload.path;
-    storyToVideo.status="done";
-    await storyToVideo.save();
-
-
     
 };
 
-exports.nrrativizeTheDescription = async (scenes) => {
+exports.nrrativizeTheDescription = async (scenes,storyToVideoId) => {
+
   console.log("narrations is starting");
     // This will return an array of objects, each with a scene_order and description property:
     // Example: [{scene_order: 1, description: "Scene 1 description"}, {scene_order: 2, description: "Scene 2 description"}]
@@ -163,8 +193,10 @@ exports.nrrativizeTheDescription = async (scenes) => {
         }
       }).filter(s => s !== null);
     } catch (error) {
+
         console.error("Error creating storyToVideo:", error);
-        throw new AppError('Failed to create storyToVideo', 500)
+        throw new StoryToVideoError('Failed to generate narrations', 500,storyToVideoId)
+        
     }
 
 
@@ -176,7 +208,7 @@ exports.nrrativizeTheDescription = async (scenes) => {
     }
     
 };
-exports.generateAndCombineAudioForNarrations = async (narrations) => {
+exports.generateAndCombineAudioForNarrations = async (narrations,storyToVideoId) => {
     try {
         console.log("generateAndCombineAudioForNarrations is starting");
         const narrationsWithDuration = [];
@@ -262,19 +294,13 @@ exports.generateAndCombineAudioForNarrations = async (narrations) => {
 
     } catch (error) {
         console.error("Error generating and combining audio:", error);
-        return {
-            combinedAudioPath: null,
-            narrations: [],
-            totalDuration: 0,
-            success: false,
-            error
-        }
+        throw new StoryToVideoError('Failed to create narration audio', 500,storyToVideoId)
     }
 };
 
 
 // Replace your empty function with this complete implementation:
-exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrations, totalDuration) => {
+exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrations, totalDuration, storyToVideoId) => {
     try {
         console.log("generateAndCombineVideoForNarrations is starting");
         
@@ -341,11 +367,7 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
             console.warn("Error during cleanup:", cleanupError);
         }
 
-        return {
-            success: false,
-            error: error.message,
-            videoUrl: null
-        };
+        throw new StoryToVideoError('Failed to generate video', 500,storyToVideoId)
     }
 };
 
@@ -489,3 +511,4 @@ exports.getStoryToVideoByStoryIdService = async (storyId, userId) => {
     }
     return storyToVideo;
 };
+
