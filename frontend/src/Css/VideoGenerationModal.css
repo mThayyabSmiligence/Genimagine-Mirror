@@ -1,0 +1,261 @@
+/* Video Modal Overlay */
+.video-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* Video Modal Container */
+.video-modal-container {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Video Modal Header */
+.video-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.video-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.video-modal-close-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.video-modal-close-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Video Modal Content */
+.video-modal-content {
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Video Content State (for loading, error, initial states) */
+.video-content-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  text-align: center;
+  width: 100%;
+}
+
+.video-state-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 24px 0 12px 0;
+}
+
+.video-state-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.video-status-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* Video Spinner */
+.video-spinner-container {
+  margin-bottom: 8px;
+}
+
+.video-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #8b5cf6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Video Player Container */
+.video-player-container {
+  width: 100%;
+  height: 450px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icons */
+.initial-icon {
+  font-size: 48px !important;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.error-icon {
+  font-size: 48px !important;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.video-error-icon {
+  margin-bottom: 8px;
+}
+
+.video-initial-icon {
+  margin-bottom: 8px;
+}
+
+/* Buttons */
+.video-generate-btn,
+.video-retry-btn,
+.video-check-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.video-generate-btn:hover,
+.video-retry-btn:hover,
+.video-check-btn:hover {
+  background: #7c3aed;
+}
+
+.video-check-btn {
+  background: #6b7280;
+}
+
+.video-check-btn:hover {
+  background: #4b5563;
+}
+
+.btn-icon {
+  font-size: 18px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .video-modal-overlay {
+    padding: 10px;
+  }
+  
+  .video-modal-container {
+    max-height: 95vh;
+  }
+  
+  .video-player-container {
+    height: 300px;
+  }
+  
+  .video-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .video-modal-title {
+    font-size: 1.125rem;
+  }
+  
+  .video-content-state {
+    padding: 40px 20px;
+  }
+  
+  .video-state-title {
+    font-size: 1.25rem;
+  }
+  
+  .video-state-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-modal-overlay {
+    padding: 5px;
+  }
+  
+  .video-content-state {
+    padding: 30px 15px;
+  }
+  
+  .video-spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+  
+  .initial-icon,
+  .error-icon {
+    font-size: 40px !important;
+  }
+}
