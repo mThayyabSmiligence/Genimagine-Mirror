@@ -40,6 +40,10 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    error_message: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     status:{
         type: DataTypes.ENUM("pending", "in-progress","generating-audio", "generating-video", "done", "failed"),
         allowNull: false,
