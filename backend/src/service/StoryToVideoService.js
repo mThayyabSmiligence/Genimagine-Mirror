@@ -18,7 +18,8 @@ const StoryToVideoError = require("../utils/StoryToVideoError");
 const ROOT_DIR = path.join(__dirname, '..'); // go up one level
 const AUDIO_DIR = path.join(ROOT_DIR, 'assets/temp/audio');
 const TEMP_IMAGES_DIR = path.join(ROOT_DIR, 'assets/temp/images');
-const OUTPUT_DIR = path.join(ROOT_DIR, 'assets/output');
+const OUTPUT_DIR = path.normalize(path.join(ROOT_DIR, 'assets/output'));
+
 
 if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR, { recursive: true });
 if (!fs.existsSync(TEMP_IMAGES_DIR)) fs.mkdirSync(TEMP_IMAGES_DIR, { recursive: true });
@@ -157,7 +158,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
 
 exports.nrrativizeTheDescription = async (scenes,storyToVideoId) => {
 
-  console.log("narrations is starting");
+    console.log("narrations is starting");
     // This will return an array of objects, each with a scene_order and description property:
     // Example: [{scene_order: 1, description: "Scene 1 description"}, {scene_order: 2, description: "Scene 2 description"}]
     const input = scenes.map((scene) => ({scene_order: scene.scene_order, description: scene.prompt}));
@@ -322,6 +323,10 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
             })
         );
 
+        // Step 2: Generate SRT subtitle file
+        console.log("📝 Generating subtitle file...");
+        const srtPath = generateSRTFile(narrations);
+
         // Step 2: Create slideshow video with dynamic durations
         console.log("🎬 Creating slideshow video...");
         const slideshowVideoPath = path.join(OUTPUT_DIR, `slideshow_${Date.now()}.mp4`);
@@ -332,10 +337,10 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
         console.log("🎵 Combining video with audio...");
         const finalVideoPath = path.join(OUTPUT_DIR, `final_story_${Date.now()}.mp4`);
         
-        await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
-
+        // await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
+        await combineVideoWithAudioAndSubtitles(slideshowVideoPath, combinedAudioPath, srtPath, finalVideoPath);
     
-
+        await cleanupTempFiles([srtPath]);
         // Step 5: Clean up temporary files
         console.log("🧹 Cleaning up temporary files...");
         await cleanupTempFiles([
@@ -481,6 +486,54 @@ const combineVideoWithAudio = async (videoPath, audioPath, outputPath) => {
     });
 };
 
+const combineVideoWithAudioAndSubtitles = async (videoPath, audioPath, srtPath, outputPath) => {
+    return new Promise((resolve, reject) => {
+        // Properly escape the SRT path for Windows subtitle filter
+        // On Windows: C:\path\file.srt becomes C\\:\\\\path\\\\file.srt
+        const escapedSrtPath = srtPath
+            .replace(/\\/g, '\\\\\\\\')  // Escape backslashes (\ -> \\\\)
+            .replace(/:/g, '\\\\:');      // Escape colons (: -> \\:)
+        
+        console.log('Original SRT path:', srtPath);
+        console.log('Escaped SRT path:', escapedSrtPath);
+
+        ffmpeg()
+            .input(videoPath)
+            .input(audioPath)
+            .outputOptions([
+                '-c:v libx264',
+                '-c:a aac',
+                '-shortest',
+                '-movflags +faststart'
+            ])
+            .videoFilters([
+                {
+                    filter: 'subtitles',
+                    options: {
+                        filename: escapedSrtPath,
+                        force_style: 'Fontname=Arial,Fontsize=16,PrimaryColour=&HFFFFFF,OutlineColour=&H40000000,BorderStyle=3,Outline=1,Shadow=0,MarginV=10'
+                    }
+                }
+            ])
+            .on('end', () => {
+                console.log('✅ Video, audio, and subtitles combined successfully');
+                resolve();
+            })
+            .on('error', (err) => {
+                console.error('Error combining video, audio, and subtitles:', err);
+                reject(err);
+            })
+            .on('progress', (progress) => {
+                if (progress.percent) {
+                    console.log('Processing: ' + Math.round(progress.percent) + '% done');
+                }
+            })
+            .save(outputPath);
+    });
+};
+
+
+
 // Helper function for cleanup
 const cleanupTempFiles = async (filePaths) => {
     const cleanupResults = await Promise.allSettled(
@@ -501,6 +554,121 @@ const cleanupTempFiles = async (filePaths) => {
         console.warn(`${failedCleanups.length} files could not be cleaned up`);
     }
 };
+
+// Add after your other helper functions
+// Enhanced function to split long text intelligently
+const splitTextIntoChunks = (text, maxCharsPerChunk = 80) => {
+    // If text is short enough, return as single chunk
+    if (text.length <= maxCharsPerChunk) {
+        return [text];
+    }
+
+    const chunks = [];
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    
+    let currentChunk = '';
+    
+    for (let sentence of sentences) {
+        sentence = sentence.trim();
+        
+        // If adding this sentence exceeds max, save current chunk and start new one
+        if ((currentChunk + sentence).length > maxCharsPerChunk) {
+            if (currentChunk) {
+                chunks.push(currentChunk.trim());
+                currentChunk = sentence + ' ';
+            } else {
+                // Single sentence is too long, split by comma or space
+                const parts = sentence.split(/,|\band\b|\bor\b/);
+                for (let part of parts) {
+                    part = part.trim();
+                    if ((currentChunk + part).length > maxCharsPerChunk) {
+                        if (currentChunk) chunks.push(currentChunk.trim());
+                        // If still too long, split by words
+                        if (part.length > maxCharsPerChunk) {
+                            const words = part.split(' ');
+                            currentChunk = '';
+                            for (let word of words) {
+                                if ((currentChunk + word).length > maxCharsPerChunk) {
+                                    chunks.push(currentChunk.trim());
+                                    currentChunk = word + ' ';
+                                } else {
+                                    currentChunk += word + ' ';
+                                }
+                            }
+                        } else {
+                            currentChunk = part + ' ';
+                        }
+                    } else {
+                        currentChunk += part + ', ';
+                    }
+                }
+            }
+        } else {
+            currentChunk += sentence + ' ';
+        }
+    }
+    
+    // Add remaining chunk
+    if (currentChunk.trim()) {
+        chunks.push(currentChunk.trim());
+    }
+    
+    return chunks.filter(chunk => chunk.length > 0);
+};
+
+// Updated generateSRTFile function with automatic splitting
+const generateSRTFile = (narrations) => {
+    let srtContent = '';
+    let subtitleIndex = 1;
+    let currentTime = 0;
+    
+    const MAX_CHARS_PER_SUBTITLE = 80; // 2 lines × ~40 chars
+    const MAX_DURATION_PER_SUBTITLE = 6; // Maximum 6 seconds per subtitle
+    
+    const formatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        const milliseconds = Math.floor((seconds % 1) * 1000);
+        
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+    };
+    
+    narrations.forEach((narration) => {
+        const text = narration.narration;
+        const totalDuration = narration.duration;
+        
+        // Split text into chunks if it's too long
+        const textChunks = splitTextIntoChunks(text, MAX_CHARS_PER_SUBTITLE);
+        
+        // Calculate duration for each chunk
+        const chunkDuration = totalDuration / textChunks.length;
+        
+        // If individual chunk duration exceeds max, use max duration
+        const actualChunkDuration = Math.min(chunkDuration, MAX_DURATION_PER_SUBTITLE);
+        
+        textChunks.forEach((chunk) => {
+            const startTime = currentTime;
+            const endTime = currentTime + actualChunkDuration;
+            
+            // SRT format
+            srtContent += `${subtitleIndex}\n`;
+            srtContent += `${formatTime(startTime)} --> ${formatTime(endTime)}\n`;
+            srtContent += `${chunk}\n\n`;
+            
+            subtitleIndex++;
+            currentTime = endTime;
+        });
+    });
+    
+    // Save SRT file
+    const srtPath = path.join(OUTPUT_DIR, `subtitles_${Date.now()}.srt`);
+    fs.writeFileSync(srtPath, srtContent, 'utf8');
+    
+    console.log(`✅ SRT file generated with ${subtitleIndex - 1} subtitle segments: ${srtPath}`);
+    return srtPath;
+};
+
 
 
 
