@@ -4,12 +4,14 @@ const dotenv = require("dotenv");
 const path = require("path");
 dotenv.config({ path: path.join(__dirname, "../config.env") });
 
+const redis_url = process.env.REDIS_URL;
 
-const connection = new IORedis({
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  port: process.env.REDIS_PORT || 6379,
-  maxRetriesPerRequest: null,
+const connection = new IORedis(redis_url,{
+    tls:{},
+    maxRetriesPerRequest: null,
 });
+
+// const autoStoryQueue = new Queue("autoStoryQueue", { connection });
 
 // export helper to create queues
 const createQueue = (name) => new Queue(name, { connection });

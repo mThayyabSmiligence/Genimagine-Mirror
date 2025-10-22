@@ -157,7 +157,7 @@ const ImageUpload = ({setConversationHistory,conversationHistory}) => {
           </>
         ) : (
           <div className="image-preview-container">
-            <div className="image-actions">
+            <div className="image-to-prompt image-actions">
               <button
                 className="action-btn replace-btn"
                 onClick={replaceImage}

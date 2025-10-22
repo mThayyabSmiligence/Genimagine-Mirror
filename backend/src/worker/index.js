@@ -8,17 +8,19 @@ const path = require("path");
 // Connect to DB
 sequelize.authenticate()
   .then(() => console.log("✅ Sequelize connected"))
-  .catch(err => console.error("❌ Sequelize error:", err));
+  .catch(err => console.error("❌ Sequelize error: ", err));
 
-sequelize.sync({ alter: false })
-  .then(() => console.log("✅ Sequelize models synced"))
-  .catch(err => console.error("❌ Sequelize sync error:", err));
+sequelize.sync({ alter: false })  
+  .then(() => console.log("✅ Sequelize models are synced"))
+  .catch(err => console.error("❌ Sequelize sync error: ", err));
 
 // Redis connection
-const connection = new IORedis({
-  host: "127.0.0.1",
-  port: 6379,
-  maxRetriesPerRequest: null,
+const redis_url = process.env.REDIS_URL;
+console.log(redis_url,"give")
+
+const connection = new IORedis(redis_url,{
+    tls:{},
+    maxRetriesPerRequest: null,
 });
 
 // Dynamically load all workers
