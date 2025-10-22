@@ -129,8 +129,8 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
         let video_upload;
         try{
             const video = fs.readFileSync(videoObject.videoPath);
-        video_upload = await uploadStoryToVideo(video,storyToVideo.story_id,storyToVideo.id);
-
+            video_upload = await uploadStoryToVideo(video,storyToVideo.story_id,storyToVideo.id);
+            fs.unlinkSync(videoObject.videoPath);
         }catch(error){
             console.log(error);
             storyToVideo.status="failed";
@@ -487,7 +487,7 @@ const cleanupTempFiles = async (filePaths) => {
         filePaths.map(async (filePath) => {
             try {
                 if (fs.existsSync(filePath)) {
-                    await fs.promises.unlink(filePath);
+                    fs.unlinkSync(filePath);
                     console.log(`🗑️ Cleaned up: ${path.basename(filePath)}`);
                 }
             } catch (err) {
