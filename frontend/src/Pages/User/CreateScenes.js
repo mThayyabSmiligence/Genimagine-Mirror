@@ -698,12 +698,12 @@ function CreateScenes() {
             )}
           </div>
 
-          {/* UPDATED: Generate Video Button Section - with status checking */}
+          {/* UPDATED: Generate / View Video Button Section - Unified */}
           <div className="video-generation-section">
             <div className="video-actions-container">
               {isCheckingVideo ? (
                 <button
-                  disabled={true}
+                  disabled
                   className="btn-primary video-generate-btn disabled"
                 >
                   <div className="loading-spinner-small"></div>
@@ -711,42 +711,37 @@ function CreateScenes() {
                 </button>
               ) : (
                 <button
-                  onClick={handleGenerateVideo}
-                  disabled={generatedScenes.length === 0 || existingVideoStatus === 'done' || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)}
+                  onClick={
+                    existingVideoStatus === 'done'
+                      ? () => setIsVideoModalOpen(true)
+                      : handleGenerateVideo
+                  }
+                  disabled={
+                    generatedScenes.length === 0 ||
+                    ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
+                  }
                   className={`btn-primary video-generate-btn ${
-                    generatedScenes.length === 0 || existingVideoStatus === 'done' || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus) 
-                      ? 'disabled' 
+                    generatedScenes.length === 0 ||
+                    ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
+                      ? 'disabled'
                       : ''
                   }`}
                   title={
-                    generatedScenes.length === 0 
+                    generatedScenes.length === 0
                       ? "Generate at least one scene to create video"
-                      : existingVideoStatus === 'done'
-                      ? "Video already generated for this story"
                       : ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
                       ? "Video is currently being generated"
+                      : existingVideoStatus === 'done'
+                      ? "View the generated video"
                       : "Generate video from scenes"
                   }
                 >
                   <VideoLibraryIcon className="icon-sm" />
-                  {existingVideoStatus === 'done' 
-                    ? 'Video Already Generated' 
+                  {existingVideoStatus === 'done'
+                    ? 'View Video'
                     : ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
                     ? 'Generating Video...'
-                    : 'Generate Video'
-                  }
-                </button>
-              )}
-              
-              {/* Show "View Video" button if video is completed */}
-              {existingVideoStatus === 'done' && (
-                <button
-                  onClick={() => setIsVideoModalOpen(true)}
-                  className="btn-outline video-view-btn"
-                  title="View generated video"
-                >
-                  <VideoLibraryIcon className="icon-sm" />
-                  View Video
+                    : 'Generate Video'}
                 </button>
               )}
             </div>

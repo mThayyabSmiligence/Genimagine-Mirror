@@ -1515,25 +1515,6 @@
   background-color: #9ca3af !important;
 }
 
-.video-view-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border: 2px solid #8b5cf6;
-  background: transparent;
-  color: #8b5cf6;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.video-view-btn:hover {
-  background: #8b5cf6;
-  color: white;
-}
-
 .loading-spinner-small {
   width: 16px;
   height: 16px;
