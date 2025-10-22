@@ -69,7 +69,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
         console.log("test1");
         storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
         if (!storyToVideo) {
-            throw new AppError('StoryToVideo not found', 404)
+            throw new AppError('StoryToVideo not found 123', 404)
         }
 
         storyToVideo.status="in-progress";
