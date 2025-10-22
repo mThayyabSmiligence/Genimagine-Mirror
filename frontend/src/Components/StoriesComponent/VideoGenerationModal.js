@@ -263,15 +263,18 @@ const VideoGenerationModal = ({
             </div>
           )}
 
-          {error && !isGenerating && (
+          {videoData?.status === 'failed' && !isGenerating && (
             <div className="video-content-state">
               <div className="video-error-icon">
                 <ErrorOutlineIcon className="error-icon" />
               </div>
               <h3 className="video-state-title">Video Generation Failed</h3>
-              <p className="video-state-subtitle">{error}</p>
-              <button className="video-retry-btn" onClick={handleRetry}>
-                Try Again
+              <p className="video-state-subtitle">{error || 'Something went wrong while generating the video.'}</p>
+              <button
+                className="video-retry-btn"
+                onClick={handleGenerateVideo}
+              >
+                Generate Video Again
               </button>
             </div>
           )}
