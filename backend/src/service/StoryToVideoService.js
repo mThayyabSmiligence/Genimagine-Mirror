@@ -67,7 +67,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
     let storyToVideo = null;
     try{
         console.log("test1");
-        storyToVideo = await StoryToVideo.findByPk(storyToVideoId);
+        storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
         if (!storyToVideo) {
             throw new AppError('StoryToVideo not found', 404)
         }
