@@ -18,10 +18,16 @@ sequelize.sync({ alter: false })
 const redis_url = process.env.REDIS_URL;
 console.log(redis_url,"give")
 
-const connection = new IORedis(redis_url,{
-    tls:{},
-    maxRetriesPerRequest: null,
+// const connection = new IORedis(redis_url,{
+//     tls:{},
+//     maxRetriesPerRequest: null,
+// });
+const connection = new IORedis({
+  host: "127.0.0.1",
+  port: 6379,
+  maxRetriesPerRequest: null,
 });
+
 
 // Dynamically load all workers
 const workerFiles = fs.readdirSync(__dirname).filter(file =>
