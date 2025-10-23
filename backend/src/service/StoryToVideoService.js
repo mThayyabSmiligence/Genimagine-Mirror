@@ -88,10 +88,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
         console.log("test1");
 
         if(narrations === null||narrations.length === 0){
-            storyToVideo.status="failed";
-            storyToVideo.error_message="No narrations found for this story";
-            await storyToVideo.save();
-            throw new AppError('No narrations found for this story', 404)
+            throw new StoryToVideoError('No narrations found for this story', 404,storyToVideoId)
         };
 
         storyToVideo.status="generating-audio";
@@ -103,10 +100,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
 
 
         if(audioObject.success === false){
-            storyToVideo.status="failed";
-            storyToVideo.error_message="Failed to generate audio";
-            await storyToVideo.save();
-            throw new AppError('Failed to generate audio ', 500)
+            throw new StoryToVideoError('Failed to generate audio', 500,storyToVideoId)
         };
 
         console.log(audioObject);
