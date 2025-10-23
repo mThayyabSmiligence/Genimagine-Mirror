@@ -174,7 +174,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #8b5cf6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -185,9 +185,143 @@
   transition: background-color 0.2s ease;
 }
 
-.video-retry-btn:hover {
-  background: #7c3aed;
+/* Language selection container */
+.language-selection-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  text-align: center;
 }
+
+/* Label for language select */
+.language-select-label {
+  display: block;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Custom select container */
+.custom-select-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* Style the select dropdown */
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  font-size: 1rem;
+  color: #1f2937;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+  background-color: white;
+}
+
+/* Custom arrow for select using pseudo-element on container */
+.custom-select-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  margin-top: -3px;
+  border-top: 6px solid #667eea;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow on focus */
+.custom-select:focus + .custom-select-container::after {
+  transform: rotate(180deg);
+}
+
+/* Generate Video button */
+.generate-video-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.generate-video-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.generate-video-btn:not(:disabled):hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .language-selection-container {
+    max-width: 100%;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+
+  .custom-select {
+    font-size: 0.95rem;
+    padding: 10px 36px 10px 14px;
+  }
+
+  .generate-video-btn {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-select {
+    font-size: 0.9rem;
+    padding: 8px 32px 8px 12px;
+  }
+
+  .custom-select-container::after {
+    right: 12px;
+    border-top-width: 5px;
+    border-left-width: 5px;
+    border-right-width: 5px;
+  }
+
+  .generate-video-btn {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

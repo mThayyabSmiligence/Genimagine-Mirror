@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import videojs from 'video.js';
-import 'video.js/dist/video-js.css'; // Import Video.js styles
+import 'video.js/dist/video-js.css';
 import { axiosPrivate } from '../../API\'s/axios';
 import { toast } from 'react-toastify';
 
@@ -10,30 +10,38 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import '../../Css/VideoGenerationModal.css';
 
-const VideoGenerationModal = ({ 
-  isOpen, 
-  onClose, 
-  storyId, 
-  generatedScenes,
-  onVideoComplete // Callback when video generation completes
-}) => {
+const SUBTITLE_LANGUAGES = {
+  'en': 'English',
+  'es': 'Spanish',
+  'hi': 'Hindi',
+  'fr': 'French',
+  'de': 'German',
+  'ja': 'Japanese',
+  'zh-cn': 'Chinese',
+  'pt': 'Portuguese',
+  'ar': 'Arabic',
+  'ta': 'Tamil',
+  'te': 'Telugu'
+};
+
+const VideoGenerationModal = ({ isOpen, onClose, storyId, generatedScenes, onVideoComplete }) => {
   const [videoData, setVideoData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
 
-  // Refs for polling, aborting, etc.
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [showLanguageSelection, setShowLanguageSelection] = useState(true);
+
   const pollingRef = useRef(null);
   const abortControllerRef = useRef(null);
   const delayTimeoutRef = useRef(null);
   const hasInitialized = useRef(false);
 
-  // Video.js player refs
   const videoRef = useRef(null);
   const playerRef = useRef(null);
 
   const activeStatuses = ['in-progress', 'generating-audio', 'generating-video'];
 
-  // Initialize on open
   useEffect(() => {
     if (isOpen && storyId && !hasInitialized.current) {
       hasInitialized.current = true;
@@ -50,9 +58,7 @@ const VideoGenerationModal = ({
     };
   }, [isOpen, storyId]);
 
-  // ---- Video.js Setup ----
   useEffect(() => {
-    // Initialize the Video.js player when the video URL becomes available
     if (videoData?.status === 'done' && videoData.video_url && videoRef.current) {
       if (!playerRef.current) {
         setTimeout(() => {
@@ -64,13 +70,11 @@ const VideoGenerationModal = ({
             poster: videoData.thumbnail_url || '',
           });
 
-          // Set video source
           playerRef.current.src({ src: videoData.video_url, type: 'video/mp4' });
         }, 0);
       }
     }
 
-    // Dispose player when modal closes or video changes
     return () => {
       disposePlayer();
     };
@@ -83,14 +87,11 @@ const VideoGenerationModal = ({
     }
   };
 
-  // ---- Video Generation Logic ----
-
   const initializeVideoGeneration = async () => {
     try {
       const existingVideo = await checkExistingVideo();
-
       if (!existingVideo) {
-        await handleGenerateVideo();
+        setShowLanguageSelection(true);
       }
     } catch (error) {
       console.error('Error initializing video generation:', error);
@@ -101,18 +102,20 @@ const VideoGenerationModal = ({
   const checkExistingVideo = async () => {
     try {
       const response = await axiosPrivate.get(`/story-to-video/${storyId}`);
-
       if (response.data) {
         setVideoData(response.data);
 
         if (activeStatuses.includes(response.data.status)) {
           setIsGenerating(true);
+          setShowLanguageSelection(false);
           startPolling();
           return true;
         } else if (response.data.status === 'failed') {
           setError('Video generation failed. Please try again.');
+          setShowLanguageSelection(false);
           return true;
         } else if (response.data.status === 'done') {
+          setShowLanguageSelection(false);
           return true;
         }
       }
@@ -124,21 +127,21 @@ const VideoGenerationModal = ({
     }
   };
 
-  const handleGenerateVideo = async () => {
+  const handleGenerateVideoWithLanguage = async (languageCode) => {
     if (generatedScenes.length === 0) {
       setError('No scenes available to generate video');
       return;
     }
-
     setIsGenerating(true);
     setError(null);
-
+    setShowLanguageSelection(false);
     try {
       abortControllerRef.current = new AbortController();
 
-      const response = await axiosPrivate.post(`/story-to-video/${storyId}`, {}, {
-        signal: abortControllerRef.current.signal
-      });
+      const response = await axiosPrivate.post(`/story-to-video/${storyId}`, 
+        { language: languageCode }, 
+        { signal: abortControllerRef.current.signal }
+      );
 
       if (response.data) {
         setVideoData(response.data);
@@ -156,7 +159,6 @@ const VideoGenerationModal = ({
 
   const startPollingWithDelay = () => {
     if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
-
     delayTimeoutRef.current = setTimeout(() => {
       startPolling();
       delayTimeoutRef.current = null;
@@ -206,16 +208,14 @@ const VideoGenerationModal = ({
     setError(null);
     setVideoData(null);
     setIsGenerating(false);
-    hasInitialized.current = false;
+    setShowLanguageSelection(true);
+    setSelectedLanguage("");
     onClose();
   };
 
-  const handleRetry = () => {
-    disposePlayer();
-    setError(null);
-    setVideoData(null);
-    hasInitialized.current = false;
-    initializeVideoGeneration();
+  const handleLanguageGenerateClick = () => {
+    if (!selectedLanguage) return;
+    handleGenerateVideoWithLanguage(selectedLanguage);
   };
 
   const getStatusMessage = (status) => {
@@ -239,10 +239,13 @@ const VideoGenerationModal = ({
 
   return (
     <div className="video-modal-overlay" onClick={handleClose}>
-      <div className="video-modal-container" onClick={(e) => e.stopPropagation()}>
+      <div className="video-modal-container" onClick={e => e.stopPropagation()}>
+
         {/* Header */}
         <div className="video-modal-header">
-          <h2 className="video-modal-title">Generated Video</h2>
+          <h2 className="video-modal-title">
+            {showLanguageSelection ? "Select Subtitle Language" : "Generated Video"}
+          </h2>
           <button className="video-modal-close-btn" onClick={handleClose}>
             <CloseIcon />
           </button>
@@ -250,46 +253,78 @@ const VideoGenerationModal = ({
 
         {/* Content */}
         <div className="video-modal-content">
-          {isGenerating && (
-            <div className="video-content-state">
-              <div className="video-spinner-container">
-                <div className="video-spinner"></div>
+          {showLanguageSelection ? (
+            <div className="language-selection-container">
+              <label htmlFor="language-select" className="language-select-label">Choose subtitle language</label>
+              <div className="custom-select-container">
+                <select
+                  id="language-select"
+                  className="custom-select"
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                >
+                  <option value="" disabled>Select a language</option>
+                  {Object.entries(SUBTITLE_LANGUAGES).map(([code, label]) => (
+                    <option key={code} value={code}>{label}</option>
+                  ))}
+                </select>
               </div>
-              <h3 className="video-state-title">Generating your video...</h3>
-              <p className="video-state-subtitle">This may take a few moments</p>
-              <p className="video-status-text">
-                Status: {videoData?.status ? getStatusMessage(videoData.status) : 'Starting generation...'}
-              </p>
-            </div>
-          )}
-
-          {videoData?.status === 'failed' && !isGenerating && (
-            <div className="video-content-state">
-              <div className="video-error-icon">
-                <ErrorOutlineIcon className="error-icon" />
-              </div>
-              <h3 className="video-state-title">Video Generation Failed</h3>
-              <p className="video-state-subtitle">{error || 'Something went wrong while generating the video.'}</p>
               <button
-                className="video-retry-btn"
-                onClick={handleGenerateVideo}
+                className="generate-video-btn"
+                disabled={!selectedLanguage}
+                onClick={handleLanguageGenerateClick}
               >
-                Generate Video Again
+                Generate Video
               </button>
             </div>
-          )}
+          ) : (
+            <>
+              {isGenerating && (
+                <div className="video-content-state">
+                  <div className="video-spinner-container">
+                    <div className="video-spinner"></div>
+                  </div>
+                  <h3 className="video-state-title">Generating your video...</h3>
+                  <p className="video-state-subtitle">This may take a few moments</p>
+                  <p className="video-status-text">
+                    Status: {videoData?.status ? getStatusMessage(videoData.status) : 'Starting generation...'}
+                  </p>
+                </div>
+              )}
 
-          {/* ✅ Video.js Player */}
-          {videoData?.status === 'done' && videoData.video_url && !isGenerating && !error && (
-            <div className="video-player-container">
-              <div data-vjs-player>
-                <video
-                  ref={videoRef}
-                  className="video-js vjs-big-play-centered"
-                  playsInline
-                />
-              </div>
-            </div>
+              {videoData?.status === 'failed' && !isGenerating && (
+                <div className="video-content-state">
+                  <div className="video-error-icon">
+                    <ErrorOutlineIcon className="error-icon" />
+                  </div>
+                  <h3 className="video-state-title">Video Generation Failed</h3>
+                  <p className="video-state-subtitle">{error || 'Something went wrong while generating the video.'}</p>
+                  <button
+                    className="video-retry-btn"
+                    onClick={() => {
+                      setShowLanguageSelection(true);
+                      setError(null);
+                      setVideoData(null);
+                      setIsGenerating(false);
+                    }}
+                  >
+                    Generate Video Again
+                  </button>
+                </div>
+              )}
+
+              {videoData?.status === 'done' && videoData.video_url && !isGenerating && !error && (
+                <div className="video-player-container">
+                  <div data-vjs-player>
+                    <video
+                      ref={videoRef}
+                      className="video-js vjs-big-play-centered"
+                      playsInline
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
