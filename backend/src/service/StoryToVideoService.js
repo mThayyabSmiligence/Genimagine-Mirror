@@ -7,7 +7,7 @@ const gTTS = require('gtts');
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const { getAudioDurationInSeconds } = require('get-audio-duration');
-const { uploadStoryToVideo } = require("./S3Service");
+const { uploadStoryToVideo, uploadSubtitles } = require("./S3Service");
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const StoryToVideoError = require("../utils/StoryToVideoError");
@@ -25,10 +25,25 @@ if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR, { recursive: true });
 if (!fs.existsSync(TEMP_IMAGES_DIR)) fs.mkdirSync(TEMP_IMAGES_DIR, { recursive: true });
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-
+const languageNames = {
+        'en': 'English',
+        'es': 'Spanish',
+        'hi': 'Hindi',
+        'fr': 'French',
+        'de': 'German',
+        'ja': 'Japanese',
+        'zh-cn': 'Chinese',
+        'pt': 'Portuguese',
+        'ar': 'Arabic',
+        'ta': 'Tamil',
+        'te': 'Telugu'
+    };
 
 exports.createStoryToVideoService = async (userId, storyId, language) => {
-    
+
+    console.log("userId : ",userId);
+    console.log("storyId : ",storyId);
+    console.log("language : ",language);
     const storyToVideoCheck = await StoryToVideo.findOne({ where: { story_id: storyId, user_id: userId } });
 
     if (storyToVideoCheck && storyToVideoCheck.status == "failed") {
@@ -38,8 +53,8 @@ exports.createStoryToVideoService = async (userId, storyId, language) => {
         throw new AppError('StoryToVideo already exists', 409)
     };
 
-    const Scenes= await Scene.findAll({ where: { user_id: userId, story_id: storyId } });
-
+    const Scenes= await Scene.findAll({ where: { story_id: storyId } });
+    console.log("Scenes : ",Scenes);
     if(Scenes === null||Scenes.length === 0){
         throw new AppError('No scenes found for this story', 404)
     };
@@ -100,6 +115,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
             throw new StoryToVideoError('Narrations are not in the required format', 400, storyToVideoId)
         }
 
+        storyToVideo.narrations=narrations.narrations; 
         storyToVideo.status="generating-audio";
         await storyToVideo.save();
 
@@ -116,6 +132,32 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
         narrations = audioObject.narrations
         console.log("test1");
 
+        storyToVideo.status="generating-subtitles";
+        await storyToVideo.save();
+
+        console.log("🌐 Generating multi-language subtitles...");
+        const targetLanguages = ['en', 'es', 'hi', 'fr', 'de', 'ja', 'zh-cn', 'pt', 'ar', 'ta', 'te'];
+        
+        const subtitleFiles = await this.generateMultiLanguageSubtitles(
+            narrations,
+            storyToVideoId,
+            storyToVideo.language,
+            targetLanguages
+        );
+
+        console.log(`✅ Generated ${subtitleFiles.length} subtitle files`);
+
+        // Store subtitle paths temporarily (you'll upload to S3 and store URLs)
+        const subtitlePathsForUpload = subtitleFiles.map(sf => ({
+            language: sf.language,
+            label: sf.label,
+            localPath: sf.srtPath
+        }));
+
+        const uploadedSubtitles = await uploadSubtitles(subtitlePathsForUpload, storyToVideoId);
+
+
+        storyToVideo.subtitles = uploadedSubtitles;
         storyToVideo.status="generating-video";
         await storyToVideo.save();
 
@@ -166,23 +208,11 @@ exports.nrrativizeTheDescription = async (scenes,storyToVideoId,language) => {
     // Example: [{scene_order: 1, description: "Scene 1 description"}, {scene_order: 2, description: "Scene 2 description"}]
     const input = scenes.map((scene) => ({scene_order: scene.scene_order, description: scene.prompt}));
 
-    const languageNames = {
-        'en': 'English',
-        'es': 'Spanish',
-        'hi': 'Hindi',
-        'fr': 'French',
-        'de': 'German',
-        'ja': 'Japanese',
-        'zh-cn': 'Chinese',
-        'pt': 'Portuguese',
-        'ar': 'Arabic',
-        'ta': 'Tamil',
-        'te': 'Telugu'
-    };
+    
 
     const targetLanguage = languageNames[language] || 'English';
 
-    const systemPrompt =`You convert scene descriptions to short, engaging narratives for video narration in a json format with the following structure: [{scene_order: number, narration: string}]. The narration text must be written in ${targetLanguage}. and keep the lables in english`
+    const systemPrompt =`You convert scene descriptions to short, engaging narratives for video narration in a json format with the following structure: [{scene_order: number, narration: string}]. The narration text must be written in ${targetLanguage}. and keep the lables in english and always give object inside the array even if there is only one object.`
     const message=[
         {
             role: "system",
@@ -206,7 +236,8 @@ exports.nrrativizeTheDescription = async (scenes,storyToVideoId,language) => {
             id: scene.id,
             image_url: scene.image_url,
             scene_order: scene.scene_order,
-            narration: narration.narration
+            narration: narration.narration,
+            english_narration: narration.english_narration
           }
         } else {
           return null;
@@ -228,98 +259,6 @@ exports.nrrativizeTheDescription = async (scenes,storyToVideoId,language) => {
     }
     
 };
-// exports.generateAndCombineAudioForNarrations = async (narrations,storyToVideoId,language) => {
-//     try {
-//         console.log("generateAndCombineAudioForNarrations is starting");
-//         const narrationsWithDuration = [];
-
-//         // Step 1: Generate individual audio files and store filename in object
-//         await Promise.all(
-//             narrations.map(async (narration, index) => {
-//                 return new Promise(async (resolve, reject) => {
-//                     const randomNumber = Math.floor(100000 + Math.random() * 900000);
-//                     const audioPath = path.join(AUDIO_DIR, `temp_audio_${randomNumber}.mp3`);
-
-//                     const gtts = new gTTS(narration.narration, language||'en');
-
-//                     gtts.save(audioPath, async (err) => {
-//                         if (err) {
-//                             console.error("Error saving audio:", err);
-//                             reject(err);
-//                         } else {
-//                             try {
-//                                 const duration = await getAudioDurationInSeconds(audioPath);
-                                
-//                                 // Store everything including filename in the object
-//                                 narrationsWithDuration[index] = {
-//                                     ...narration,
-//                                     duration: duration,
-//                                     audioFile: audioPath  // Store filename here!
-//                                 };
-
-//                                 console.log(`✅ Audio generated: ${audioPath}, Duration: ${duration}s`);
-//                                 resolve(audioPath);
-//                             } catch (durationError) {
-//                                 console.error("Error getting duration:", durationError);
-//                                 reject(durationError);
-//                             }
-//                         }
-//                     });
-
-//                 });
-//             })
-//         );
-
-//         // Step 2: Combine audio files in order (narrations array is already ordered!)
-//         const combinedAudioPath = path.join(AUDIO_DIR, `combined_audio_${Date.now()}.mp3`);
-
-//         await new Promise((resolve, reject) => {
-//             let command = ffmpeg();
-
-//             // Add files in the correct order from the narrations array
-//             narrationsWithDuration.forEach(narration => {
-//                 command = command.input(narration.audioFile);
-//             });
-
-//             command
-//                 .complexFilter([
-//                     narrationsWithDuration.map((_, i) => `[${i}:a]`).join('') +
-//                     `concat=n=${narrationsWithDuration.length}:v=0:a=1[outa]`
-//                 ])
-//                 .outputOptions(['-map', '[outa]'])
-//                 .save(combinedAudioPath)
-//                 .on('end', () => {
-//                     console.log('✅ Audio files combined successfully');
-//                     resolve();
-//                 })
-//                 .on('error', (err) => {
-//                     console.error('Error combining audio files:', err);
-//                     reject(err);
-//                 });
-//         });
-
-//         // Step 3: Clean up temporary files
-//         narrationsWithDuration.forEach(narration => {
-//             try {
-//                 fs.unlinkSync(narration.audioFile);
-//             } catch (err) {
-//                 console.warn(`Warning: Could not delete temp file ${narration.audioFile}:`, err.message);
-//             }
-//         });
-
-//         return {
-//             combinedAudioPath,
-//             narrations: narrationsWithDuration,
-//             totalDuration: narrationsWithDuration.reduce((sum, n) => sum + n.duration, 0),
-//             success: true
-//         };
-
-//     } catch (error) {
-//         console.error("Error generating and combining audio:", error);
-//         throw new StoryToVideoError('Failed to create narration audio', 500,storyToVideoId)
-//     }
-// };
-
 
 exports.generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, language) => {
   try {
@@ -449,9 +388,6 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
             })
         );
 
-        // Step 2: Generate SRT subtitle file
-        console.log("📝 Generating subtitle file...");
-        const srtPath = generateSRTFile(narrations);
 
         // Step 2: Create slideshow video with dynamic durations
         console.log("🎬 Creating slideshow video...");
@@ -464,9 +400,9 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
         const finalVideoPath = path.join(OUTPUT_DIR, `final_story_${Date.now()}.mp4`);
         
         // await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
-        await combineVideoWithAudioAndSubtitles(slideshowVideoPath, combinedAudioPath, srtPath, finalVideoPath);
+        await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
     
-        await cleanupTempFiles([srtPath]);
+
         // Step 5: Clean up temporary files
         console.log("🧹 Cleaning up temporary files...");
         await cleanupTempFiles([
@@ -501,6 +437,261 @@ exports.generateAndCombineVideoForNarrations = async (combinedAudioPath, narrati
         throw new StoryToVideoError('Failed to generate video', 500,storyToVideoId)
     }
 };
+
+/**
+ * Generate subtitles in multiple languages
+ * @param {Array} narrations - Array of narration objects with scene_order, narration, duration
+ * @param {Number} storyToVideoId - Story to video ID
+ * @param {String} primaryLanguage - The original language code
+ * @param {Array} targetLanguages - Array of language codes to generate subtitles for
+ * @returns {Array} Array of subtitle file paths with language info
+ */
+exports.generateMultiLanguageSubtitles = async (narrations, storyToVideoId, primaryLanguage, targetLanguages) => {
+    try {
+        console.log("🌐 Starting multi-language subtitle generation...");
+        
+        // Default target languages if not provided
+        if (!targetLanguages || targetLanguages.length === 0) {
+            targetLanguages = ['en', 'es', 'hi', 'fr', 'de', 'ja', 'zh-cn', 'pt', 'ar', 'ta', 'te'];
+        }
+
+        const subtitleData = [];
+
+        // Process all languages in parallel
+        const results = await Promise.allSettled(
+            targetLanguages.map(async (lang) => {
+                try {
+                    let translatedNarrations = narrations;
+
+                    // Translate if not the primary language
+                    if (lang !== primaryLanguage) {
+                        console.log(`📝 Translating to ${lang}...`);
+                        translatedNarrations = await this.translateNarrationsToLanguage(
+                            narrations, 
+                            lang,
+                            storyToVideoId
+                        );
+                    } else {
+                        console.log(`✅ Using original narrations for ${lang}`);
+                    }
+
+                    // Generate SRT file
+                    const srtPath = this.generateSRTFileForLanguage(translatedNarrations, lang, storyToVideoId);
+
+                    return {
+                        language: lang,
+                        label: this.getLanguageLabel(lang),
+                        srtPath: srtPath,
+                        success: true
+                    };
+
+                } catch (error) {
+                    console.error(`❌ Failed to generate subtitle for ${lang}:`, error.message);
+                    return {
+                        language: lang,
+                        label: this.getLanguageLabel(lang),
+                        srtPath: null,
+                        success: false,
+                        error: error.message
+                    };
+                }
+            })
+        );
+
+        // Process results
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled' && result.value.success) {
+                subtitleData.push(result.value);
+                console.log(`✅ ${result.value.label} subtitle generated`);
+            } else {
+                const lang = targetLanguages[index];
+                console.warn(`⚠️ ${this.getLanguageLabel(lang)} subtitle failed`);
+            }
+        });
+
+        console.log(`🎉 Generated ${subtitleData.length}/${targetLanguages.length} subtitle files`);
+
+        return subtitleData;
+
+    } catch (error) {
+        console.error("❌ Error in generateMultiLanguageSubtitles:", error);
+        throw new StoryToVideoError('Failed to generate multi-language subtitles', 500, storyToVideoId);
+    }
+};
+
+
+/**
+ * Translate narrations to target language using LLaMA
+ * @param {Array} narrations - Original narrations
+ * @param {String} targetLang - Target language code
+ * @param {Number} storyToVideoId - Story to video ID for error handling
+ * @returns {Array} Translated narrations
+ */
+exports.translateNarrationsToLanguage = async (narrations, targetLang, storyToVideoId) => {
+    try {
+        const languageNames = {
+            'en': 'English',
+            'es': 'Spanish',
+            'hi': 'Hindi',
+            'fr': 'French',
+            'de': 'German',
+            'ja': 'Japanese',
+            'zh-cn': 'Simplified Chinese',
+            'pt': 'Portuguese',
+            'ar': 'Arabic',
+            'ta': 'Tamil',
+            'te': 'Telugu'
+        };
+
+        const targetLanguageName = languageNames[targetLang] || targetLang;
+
+        // Prepare input for translation
+        const input = narrations.map(n => ({
+            scene_order: n.scene_order,
+            narration: n.narration
+        }));
+
+        const systemPrompt = `You are a professional translator. Translate the narration text to ${targetLanguageName}. 
+Maintain the emotional tone and context. Keep the JSON structure with scene_order intact.
+Return format: [{"scene_order": number, "narration": "translated text"}]
+Always return a valid JSON array even if there's only one object.`;
+
+        const message = [
+            {
+                role: "system",
+                content: systemPrompt
+            },
+            {
+                role: "user",
+                content: JSON.stringify(input)
+            }
+        ];
+
+        const response = await llama3BInstructText(message, 2500);
+        const translatedData = extractValidJson(response);
+
+        // Map translated narrations back to original structure with durations
+        const translatedNarrations = narrations.map((original) => {
+            const translated = translatedData.find(t => t.scene_order === original.scene_order);
+            return {
+                ...original,
+                narration: translated ? translated.narration : original.narration
+            };
+        });
+
+        console.log(`✅ Translated ${translatedNarrations.length} narrations to ${targetLanguageName}`);
+        return translatedNarrations;
+
+    } catch (error) {
+        console.error(`❌ Translation failed for ${targetLang}:`, error);
+        throw new StoryToVideoError(`Failed to translate to ${targetLang}`, 500, storyToVideoId);
+    }
+};
+
+/**
+ * Generate SRT file for a specific language
+ * @param {Array} narrations - Narrations with timing info
+ * @param {String} language - Language code
+ * @param {Number} storyToVideoId - Story to video ID
+ * @returns {String} Path to generated SRT file
+ */
+exports.generateSRTFileForLanguage = (narrations, language, storyToVideoId) => {
+    let srtContent = '';
+    let subtitleIndex = 1;
+    let currentTime = 0;
+
+    const MAX_CHARS_PER_SUBTITLE = 80;
+    const MAX_DURATION_PER_SUBTITLE = 6;
+
+    const formatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        const milliseconds = Math.floor((seconds % 1) * 1000);
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+    };
+
+    narrations.forEach((narration) => {
+        const text = narration.narration;
+        const totalDuration = narration.duration;
+
+        // Split text into chunks if too long
+        const textChunks = splitTextIntoChunks(text, MAX_CHARS_PER_SUBTITLE);
+        const chunkDuration = totalDuration / textChunks.length;
+        const actualChunkDuration = Math.min(chunkDuration, MAX_DURATION_PER_SUBTITLE);
+
+        textChunks.forEach((chunk) => {
+            const startTime = currentTime;
+            const endTime = currentTime + actualChunkDuration;
+
+            // SRT format: index, timing, text, blank line
+            srtContent += `${subtitleIndex}\n`;
+            srtContent += `${formatTime(startTime)} --> ${formatTime(endTime)}\n`;
+            srtContent += `${chunk}\n\n`;
+
+            subtitleIndex++;
+            currentTime = endTime;
+        });
+    });
+
+    // Save SRT file
+    const filename = `subtitle_${language}_${storyToVideoId}_${Date.now()}.srt`;
+    const srtPath = path.join(OUTPUT_DIR, filename);
+    fs.writeFileSync(srtPath, srtContent, 'utf8');
+
+    console.log(`💾 Generated ${language} SRT: ${filename} (${subtitleIndex - 1} segments)`);
+    return srtPath;
+};
+
+
+/**
+ * Helper: Get human-readable language label
+ */
+exports.getLanguageLabel = (languageCode) => {
+    const labels = {
+        'en': 'English',
+        'es': 'Spanish (Español)',
+        'hi': 'Hindi (हिंदी)',
+        'fr': 'French (Français)',
+        'de': 'German (Deutsch)',
+        'ja': 'Japanese (日本語)',
+        'zh-cn': 'Chinese (中文)',
+        'pt': 'Portuguese (Português)',
+        'ar': 'Arabic (العربية)',
+        'ta': 'Tamil (தமிழ்)',
+        'te': 'Telugu (తెలుగు)'
+    };
+    return labels[languageCode] || languageCode.toUpperCase();
+};
+
+
+
+
+// exports.translateNarrations = async (narrations, currentLanguage) => {
+//     try {
+       
+//         for(narration of narrations){
+//             const translatedNarration = await translateNarration(narration.narration, currentLanguage);
+//             narration.narration = translatedNarration;
+//         }
+//         return translatedNarrations;
+//     } catch (error) {
+//         console.error("Error translating narrations:", error);
+//         throw error;
+//     }
+// };
+
+// exports.translateText= async(text, currentLanguage, targetLanguage) => {
+//     try{
+//         const systemprompt="you are a narration translator you will translate the text from "+currentLanguage+" into "+targetLanguage+" and keep the lables in english and always give object inside the array even if there is only one object"
+
+        
+//     }catch(err){
+//         console.error("Error translating text:", err);
+//         throw err;
+//     }
+// }
 
 // Function to download image from AWS S3 URL
 const downloadImageFromUrl = async (imageUrl, filename) => {
@@ -612,51 +803,34 @@ const combineVideoWithAudio = async (videoPath, audioPath, outputPath) => {
     });
 };
 
-const combineVideoWithAudioAndSubtitles = async (videoPath, audioPath, srtPath, outputPath) => {
-    return new Promise((resolve, reject) => {
-        // Properly escape the SRT path for Windows subtitle filter
-        // On Windows: C:\path\file.srt becomes C\\:\\\\path\\\\file.srt
-        const escapedSrtPath = srtPath
-            .replace(/\\/g, '\\\\\\\\')  // Escape backslashes (\ -> \\\\)
-            .replace(/:/g, '\\\\:');      // Escape colons (: -> \\:)
-        
-        console.log('Original SRT path:', srtPath);
-        console.log('Escaped SRT path:', escapedSrtPath);
+// const combineVideoWithAudio = async (videoPath, audioPath, outputPath) => {
+//     return new Promise((resolve, reject) => {
 
-        ffmpeg()
-            .input(videoPath)
-            .input(audioPath)
-            .outputOptions([
-                '-c:v libx264',
-                '-c:a aac',
-                '-shortest',
-                '-movflags +faststart'
-            ])
-            .videoFilters([
-                {
-                    filter: 'subtitles',
-                    options: {
-                        filename: escapedSrtPath,
-                        force_style: 'Fontname=Arial,Fontsize=16,PrimaryColour=&HFFFFFF,OutlineColour=&H40000000,BorderStyle=3,Outline=1,Shadow=0,MarginV=10'
-                    }
-                }
-            ])
-            .on('end', () => {
-                console.log('✅ Video, audio, and subtitles combined successfully');
-                resolve();
-            })
-            .on('error', (err) => {
-                console.error('Error combining video, audio, and subtitles:', err);
-                reject(err);
-            })
-            .on('progress', (progress) => {
-                if (progress.percent) {
-                    console.log('Processing: ' + Math.round(progress.percent) + '% done');
-                }
-            })
-            .save(outputPath);
-    });
-};
+//         ffmpeg()
+//             .input(videoPath)
+//             .input(audioPath)
+//             .outputOptions([
+//                 '-c:v libx264',
+//                 '-c:a aac',
+//                 '-shortest',
+//                 '-movflags +faststart'
+//             ])
+//             .on('end', () => {
+//                 console.log('✅ Video, audio, and subtitles combined successfully');
+//                 resolve();
+//             })
+//             .on('error', (err) => {
+//                 console.error('Error combining video, audio, and subtitles:', err);
+//                 reject(err);
+//             })
+//             .on('progress', (progress) => {
+//                 if (progress.percent) {
+//                     console.log('Processing: ' + Math.round(progress.percent) + '% done');
+//                 }
+//             })
+//             .save(outputPath);
+//     });
+// };
 
 
 
