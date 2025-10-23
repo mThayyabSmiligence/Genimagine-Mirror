@@ -27,7 +27,7 @@ if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 
 
-exports.createStoryToVideoService = async (userId, storyId) => {
+exports.createStoryToVideoService = async (userId, storyId, language) => {
     
     const storyToVideoCheck = await StoryToVideo.findOne({ where: { story_id: storyId, user_id: userId } });
 
@@ -49,7 +49,8 @@ exports.createStoryToVideoService = async (userId, storyId) => {
         const storyToVideo = await StoryToVideo.create(
             {
             story_id: storyId,
-            user_id: userId
+            user_id: userId,
+            language
             }
         );
 
@@ -70,7 +71,7 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
         console.log("test1");
         storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
         if (!storyToVideo) {
-            throw new AppError('StoryToVideo not found 123', 404)
+            throw new AppError('StoryToVideo not found', 404)
         }
 
         storyToVideo.status="in-progress";
@@ -84,29 +85,31 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
             throw new StoryToVideoError('No scenes found for this story', 404,storyToVideoId)
         };
 
-        let narrations = await this.nrrativizeTheDescription(scenes,storyToVideoId);
+        let narrations = await this.nrrativizeTheDescription(scenes,storyToVideoId,storyToVideo.language);
         console.log("test1");
 
         if(narrations === null||narrations.length === 0){
-            storyToVideo.status="failed";
-            storyToVideo.error_message="No narrations found for this story";
-            await storyToVideo.save();
-            throw new AppError('No narrations found for this story', 404)
+            throw new StoryToVideoError('No narrations found for this story', 404,storyToVideoId)
         };
+
+        const requiredNarrationFormat = narrations.scenesWithNarrations.every(scene => {
+            const narration = scene.narration;
+            return narration !== null && typeof narration === 'string' && 'scene_order' in scene && 'id' in scene && 'image_url' in scene;
+        });
+        if(!requiredNarrationFormat){
+            throw new StoryToVideoError('Narrations are not in the required format', 400, storyToVideoId)
+        }
 
         storyToVideo.status="generating-audio";
         await storyToVideo.save();
 
 
-        const audioObject = await this.generateAndCombineAudioForNarrations(narrations.scenesWithNarrations,storyToVideoId);
+        const audioObject = await this.generateAndCombineAudioForNarrations(narrations.scenesWithNarrations,storyToVideoId,storyToVideo.language);
         console.log("test1");
 
 
         if(audioObject.success === false){
-            storyToVideo.status="failed";
-            storyToVideo.error_message="Failed to generate audio";
-            await storyToVideo.save();
-            throw new AppError('Failed to generate audio ', 500)
+            throw new StoryToVideoError('Failed to generate audio', 500,storyToVideoId)
         };
 
         console.log(audioObject);
@@ -156,14 +159,30 @@ exports.startStoryToVideoWorker = async (storyToVideoId) => {
     
 };
 
-exports.nrrativizeTheDescription = async (scenes,storyToVideoId) => {
+exports.nrrativizeTheDescription = async (scenes,storyToVideoId,language) => {
 
     console.log("narrations is starting");
     // This will return an array of objects, each with a scene_order and description property:
     // Example: [{scene_order: 1, description: "Scene 1 description"}, {scene_order: 2, description: "Scene 2 description"}]
     const input = scenes.map((scene) => ({scene_order: scene.scene_order, description: scene.prompt}));
 
-    const systemPrompt ="You convert scene descriptions to short, engaging narratives for video narration in a json format with the following structure: [{scene_order: number, narration: string}]."
+    const languageNames = {
+        'en': 'English',
+        'es': 'Spanish',
+        'hi': 'Hindi',
+        'fr': 'French',
+        'de': 'German',
+        'ja': 'Japanese',
+        'zh-cn': 'Chinese',
+        'pt': 'Portuguese',
+        'ar': 'Arabic',
+        'ta': 'Tamil',
+        'te': 'Telugu'
+    };
+
+    const targetLanguage = languageNames[language] || 'English';
+
+    const systemPrompt =`You convert scene descriptions to short, engaging narratives for video narration in a json format with the following structure: [{scene_order: number, narration: string}]. The narration text must be written in ${targetLanguage}. and keep the lables in english`
     const message=[
         {
             role: "system",
@@ -209,94 +228,201 @@ exports.nrrativizeTheDescription = async (scenes,storyToVideoId) => {
     }
     
 };
-exports.generateAndCombineAudioForNarrations = async (narrations,storyToVideoId) => {
-    try {
-        console.log("generateAndCombineAudioForNarrations is starting");
-        const narrationsWithDuration = [];
+// exports.generateAndCombineAudioForNarrations = async (narrations,storyToVideoId,language) => {
+//     try {
+//         console.log("generateAndCombineAudioForNarrations is starting");
+//         const narrationsWithDuration = [];
 
-        // Step 1: Generate individual audio files and store filename in object
-        await Promise.all(
-            narrations.map(async (narration, index) => {
-                return new Promise(async (resolve, reject) => {
-                    const randomNumber = Math.floor(100000 + Math.random() * 900000);
-                    const audioPath = path.join(AUDIO_DIR, `temp_audio_${randomNumber}.mp3`);
-                    const gtts = new gTTS(narration.narration, 'en');
+//         // Step 1: Generate individual audio files and store filename in object
+//         await Promise.all(
+//             narrations.map(async (narration, index) => {
+//                 return new Promise(async (resolve, reject) => {
+//                     const randomNumber = Math.floor(100000 + Math.random() * 900000);
+//                     const audioPath = path.join(AUDIO_DIR, `temp_audio_${randomNumber}.mp3`);
 
-                    gtts.save(audioPath, async (err) => {
-                        if (err) {
-                            console.error("Error saving audio:", err);
-                            reject(err);
-                        } else {
-                            try {
-                                const duration = await getAudioDurationInSeconds(audioPath);
+//                     const gtts = new gTTS(narration.narration, language||'en');
+
+//                     gtts.save(audioPath, async (err) => {
+//                         if (err) {
+//                             console.error("Error saving audio:", err);
+//                             reject(err);
+//                         } else {
+//                             try {
+//                                 const duration = await getAudioDurationInSeconds(audioPath);
                                 
-                                // Store everything including filename in the object
-                                narrationsWithDuration[index] = {
-                                    ...narration,
-                                    duration: duration,
-                                    audioFile: audioPath  // Store filename here!
-                                };
+//                                 // Store everything including filename in the object
+//                                 narrationsWithDuration[index] = {
+//                                     ...narration,
+//                                     duration: duration,
+//                                     audioFile: audioPath  // Store filename here!
+//                                 };
 
-                                console.log(`✅ Audio generated: ${audioPath}, Duration: ${duration}s`);
-                                resolve(audioPath);
-                            } catch (durationError) {
-                                console.error("Error getting duration:", durationError);
-                                reject(durationError);
-                            }
-                        }
-                    });
-                });
-            })
-        );
+//                                 console.log(`✅ Audio generated: ${audioPath}, Duration: ${duration}s`);
+//                                 resolve(audioPath);
+//                             } catch (durationError) {
+//                                 console.error("Error getting duration:", durationError);
+//                                 reject(durationError);
+//                             }
+//                         }
+//                     });
 
-        // Step 2: Combine audio files in order (narrations array is already ordered!)
-        const combinedAudioPath = path.join(AUDIO_DIR, `combined_audio_${Date.now()}.mp3`);
+//                 });
+//             })
+//         );
 
-        await new Promise((resolve, reject) => {
-            let command = ffmpeg();
+//         // Step 2: Combine audio files in order (narrations array is already ordered!)
+//         const combinedAudioPath = path.join(AUDIO_DIR, `combined_audio_${Date.now()}.mp3`);
 
-            // Add files in the correct order from the narrations array
-            narrationsWithDuration.forEach(narration => {
-                command = command.input(narration.audioFile);
-            });
+//         await new Promise((resolve, reject) => {
+//             let command = ffmpeg();
 
-            command
-                .complexFilter([
-                    narrationsWithDuration.map((_, i) => `[${i}:a]`).join('') +
-                    `concat=n=${narrationsWithDuration.length}:v=0:a=1[outa]`
-                ])
-                .outputOptions(['-map', '[outa]'])
-                .save(combinedAudioPath)
-                .on('end', () => {
-                    console.log('✅ Audio files combined successfully');
-                    resolve();
-                })
-                .on('error', (err) => {
-                    console.error('Error combining audio files:', err);
-                    reject(err);
-                });
-        });
+//             // Add files in the correct order from the narrations array
+//             narrationsWithDuration.forEach(narration => {
+//                 command = command.input(narration.audioFile);
+//             });
 
-        // Step 3: Clean up temporary files
-        narrationsWithDuration.forEach(narration => {
-            try {
-                fs.unlinkSync(narration.audioFile);
-            } catch (err) {
-                console.warn(`Warning: Could not delete temp file ${narration.audioFile}:`, err.message);
-            }
-        });
+//             command
+//                 .complexFilter([
+//                     narrationsWithDuration.map((_, i) => `[${i}:a]`).join('') +
+//                     `concat=n=${narrationsWithDuration.length}:v=0:a=1[outa]`
+//                 ])
+//                 .outputOptions(['-map', '[outa]'])
+//                 .save(combinedAudioPath)
+//                 .on('end', () => {
+//                     console.log('✅ Audio files combined successfully');
+//                     resolve();
+//                 })
+//                 .on('error', (err) => {
+//                     console.error('Error combining audio files:', err);
+//                     reject(err);
+//                 });
+//         });
 
-        return {
-            combinedAudioPath,
-            narrations: narrationsWithDuration,
-            totalDuration: narrationsWithDuration.reduce((sum, n) => sum + n.duration, 0),
-            success: true
-        };
+//         // Step 3: Clean up temporary files
+//         narrationsWithDuration.forEach(narration => {
+//             try {
+//                 fs.unlinkSync(narration.audioFile);
+//             } catch (err) {
+//                 console.warn(`Warning: Could not delete temp file ${narration.audioFile}:`, err.message);
+//             }
+//         });
 
-    } catch (error) {
-        console.error("Error generating and combining audio:", error);
-        throw new StoryToVideoError('Failed to create narration audio', 500,storyToVideoId)
+//         return {
+//             combinedAudioPath,
+//             narrations: narrationsWithDuration,
+//             totalDuration: narrationsWithDuration.reduce((sum, n) => sum + n.duration, 0),
+//             success: true
+//         };
+
+//     } catch (error) {
+//         console.error("Error generating and combining audio:", error);
+//         throw new StoryToVideoError('Failed to create narration audio', 500,storyToVideoId)
+//     }
+// };
+
+
+exports.generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, language) => {
+  try {
+    console.log("🎙️ generateAndCombineAudioForNarrations is starting");
+
+    if (!Array.isArray(narrations) || narrations.length === 0) {
+      throw new StoryToVideoError('Narrations array is empty or invalid', 400, storyToVideoId);
     }
+
+    const narrationsWithDuration = [];
+
+    await Promise.all(
+      narrations.map(async (narration, index) => {
+        return new Promise(async (resolve) => {
+          try {
+            if (!narration || typeof narration.narration !== 'string' || !narration.narration.trim()) {
+              console.warn(`⚠️ Skipping empty narration at scene_order ${narration?.scene_order}`);
+              narrationsWithDuration[index] = { ...narration, duration: 0, audioFile: null };
+              return resolve(null); // skip silently
+            }
+
+            const randomNumber = Math.floor(100000 + Math.random() * 900000);
+            const audioPath = path.join(AUDIO_DIR, `temp_audio_${randomNumber}.mp3`);
+            const gtts = new gTTS(narration.narration.trim(), language || 'en');
+
+            gtts.save(audioPath, async (err) => {
+              if (err) {
+                console.error(`❌ Error generating audio for scene ${narration.scene_order}:`, err.message);
+                narrationsWithDuration[index] = { ...narration, duration: 0, audioFile: null };
+                return resolve(null);
+              }
+
+              try {
+                const duration = await getAudioDurationInSeconds(audioPath);
+                narrationsWithDuration[index] = { ...narration, duration, audioFile: audioPath };
+                console.log(`✅ Scene ${narration.scene_order}: audio generated (${duration.toFixed(2)}s)`);
+                resolve(audioPath);
+              } catch (durationError) {
+                console.error("❌ Error reading audio duration:", durationError);
+                narrationsWithDuration[index] = { ...narration, duration: 0, audioFile: null };
+                resolve(null);
+              }
+            });
+          } catch (innerErr) {
+            console.error(`❌ Unexpected audio gen error (scene ${narration?.scene_order}):`, innerErr);
+            narrationsWithDuration[index] = { ...narration, duration: 0, audioFile: null };
+            resolve(null);
+          }
+        });
+      })
+    );
+
+    const validAudioFiles = narrationsWithDuration.filter(n => n.audioFile);
+
+    if (validAudioFiles.length === 0) {
+      throw new StoryToVideoError('All narrations failed or were empty', 422, storyToVideoId);
+    }
+
+    const combinedAudioPath = path.join(AUDIO_DIR, `combined_audio_${Date.now()}.mp3`);
+
+    await new Promise((resolve, reject) => {
+      let command = ffmpeg();
+      validAudioFiles.forEach(n => command = command.input(n.audioFile));
+
+      command
+        .complexFilter([
+          validAudioFiles.map((_, i) => `[${i}:a]`).join('') +
+          `concat=n=${validAudioFiles.length}:v=0:a=1[outa]`
+        ])
+        .outputOptions(['-map', '[outa]'])
+        .save(combinedAudioPath)
+        .on('end', () => {
+          console.log('✅ Audio files combined successfully');
+          resolve();
+        })
+        .on('error', (err) => {
+          console.error('❌ Error combining audio files:', err);
+          reject(err);
+        });
+    });
+
+    // cleanup
+    narrationsWithDuration.forEach(n => {
+      if (n.audioFile && fs.existsSync(n.audioFile)) {
+        try {
+          fs.unlinkSync(n.audioFile);
+        } catch (err) {
+          console.warn(`⚠️ Could not delete ${n.audioFile}: ${err.message}`);
+        }
+      }
+    });
+
+    return {
+      combinedAudioPath,
+      narrations: validAudioFiles,
+      totalDuration: validAudioFiles.reduce((sum, n) => sum + n.duration, 0),
+      success: true
+    };
+
+  } catch (error) {
+    console.error("❌ Error generating and combining audio:", error);
+    throw new StoryToVideoError(error.message || 'Failed to create narration audio', 500, storyToVideoId);
+  }
 };
 
 

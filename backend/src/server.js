@@ -44,13 +44,6 @@ dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"],
-        credentials: true
-    }
-});
 
 sequelize.authenticate()
   .then(() => console.log("✅ Sequelize connected"))
@@ -60,8 +53,7 @@ sequelize.sync({ alter: false })
   .then(() => console.log("✅ Sequelize models are synced"))
   .catch(err => console.error("❌ Sequelize sync error: ", err));
 
-// Make io available globally (for cron jobs & routes)
-global.io = io;
+
 
 // Recommended: built-in parser
 app.use(express.json({ limit: "10mb" }));
@@ -118,19 +110,6 @@ app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 // api's --end
 
 
-io.on('connection', (socket) => {
-    console.log(' User connected:', socket.id);
-
-    socket.on('joinUserRoom', (userId) => {
-        socket.join(`user_${userId}`);
-        console.log("Socket rooms after join:", socket.rooms);
-    });
-    
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
-    });
-});
-
 // cron jobs schedulers
 require('./scheduler/suspensionChecker');
 require('./scheduler/PlanValidityChecker'); 
@@ -179,3 +158,30 @@ server.listen(process.env.PORT,() => {
 // console.log('Generated Secret Key:', secretKey);
 });
 
+
+
+// const io = new Server(server, {
+//     cors: {
+//         origin: "http://localhost:3000",
+//         methods: ["GET", "POST"],
+//         credentials: true
+//     }
+// });
+
+
+
+// Make io available globally (for cron jobs & routes)
+// global.io = io;
+
+// io.on('connection', (socket) => {
+//     console.log(' User connected:', socket.id);
+
+//     socket.on('joinUserRoom', (userId) => {
+//         socket.join(`user_${userId}`);
+//         console.log("Socket rooms after join:", socket.rooms);
+//     });
+    
+//     socket.on('disconnect', () => {
+//         console.log('User disconnected:', socket.id);
+//     });
+// });
