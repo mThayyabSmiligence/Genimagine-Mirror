@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { axiosPrivate } from '../../API\'s/axios';
 import '../../Css/Scheduled.css';
 import socket from '../../utils/socket';
+import DeleteConfirmationModal from '../../Components/CommonComponents/DeleteConfirmationModal';
 
 // Helper for formatting times like "14:30" to "2:30 PM"
 function formatTime12h(timeStr) {
@@ -15,6 +16,11 @@ function formatTime12h(timeStr) {
 const Scheduled = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     socket.on("scheduledUpdate", (data) => {
@@ -60,16 +66,51 @@ const Scheduled = () => {
     }
   };
 
-  const deleteTask = async (scheduleId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this scheduled task?");
-    if (!confirmed) return;
+  // Open delete modal
+  const handleDeleteClick = (task) => {
+    setTaskToDelete(task);
+    setShowDeleteModal(true);
+  };
+
+  // Close delete modal
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setTaskToDelete(null);
+    setIsDeleting(false);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = async () => {
+    if (!taskToDelete) return;
+
+    setIsDeleting(true);
 
     try {
-      await axiosPrivate.post(`/delete-schedule/${scheduleId}`);
-      setTasks(prevTasks => prevTasks.filter(task => task.schedule_id !== scheduleId));
+      await axiosPrivate.post(`/delete-schedule/${taskToDelete.schedule_id}`);
+      setTasks(prevTasks => prevTasks.filter(task => task.schedule_id !== taskToDelete.schedule_id));
+      handleCloseDeleteModal();
     } catch (err) {
       console.error('Error deleting task:', err);
+      setIsDeleting(false);
     }
+  };
+
+  // Get a readable name for the task based on its properties
+  const getTaskDisplayName = (task) => {
+    if (task.is_recurring) {
+      return `${task.frequency} at ${formatTime12h(task.time)}`;
+    } else {
+      const date = new Date(task.run_at);
+      return `One-time task on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    }
+  };
+
+  // Get additional info for the delete modal
+  const getTaskAdditionalInfo = (task) => {
+    const promptPreview = task.prompt.length > 50 
+      ? `${task.prompt.substring(0, 50)}...` 
+      : task.prompt;
+    return `Prompt: "${promptPreview}"`;
   };
 
   return (
@@ -139,7 +180,7 @@ const Scheduled = () => {
                 </button>
                 <button
                   className="schedule-btn schedule-btn--delete"
-                  onClick={() => deleteTask(task.schedule_id)}
+                  onClick={() => handleDeleteClick(task)}
                 >
                   Delete
                 </button>
@@ -148,6 +189,18 @@ const Scheduled = () => {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        itemName={taskToDelete ? getTaskDisplayName(taskToDelete) : ''}
+        itemType="scheduled task"
+        warningMessage="This action cannot be undone. The scheduled task will be permanently deleted and will not generate any more images."
+        additionalInfo={taskToDelete ? getTaskAdditionalInfo(taskToDelete) : ''}
+      />
     </div>
   );
 };
