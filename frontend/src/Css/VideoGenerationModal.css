@@ -284,6 +284,26 @@
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
+.video-publish-btn{
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.video-publish-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .language-selection-container {

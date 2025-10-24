@@ -7,8 +7,10 @@ import { toast } from 'react-toastify';
 // Material UI Icons
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 
 import '../../Css/VideoGenerationModal.css';
+import { useNavigate } from 'react-router-dom';
 
 const SUBTITLE_LANGUAGES = {
   'en': 'English',
@@ -25,6 +27,11 @@ const SUBTITLE_LANGUAGES = {
 };
 
 const VideoGenerationModal = ({ isOpen, onClose, storyId, generatedScenes, onVideoComplete }) => {
+  const navigate = useNavigate();
+  const [success,setSuccess]=useState(false)
+  const [errorMessage,setErrorMessage]=useState(null)
+  const [successMessage,setSuccessMessage]=useState("")
+
   const [videoData, setVideoData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
@@ -157,6 +164,24 @@ const VideoGenerationModal = ({ isOpen, onClose, storyId, generatedScenes, onVid
     }
   };
 
+  const handleVideoPublish = async() => {
+    try{
+        const response = await axiosPrivate.post('/publish-video-to-explore',{
+          story_id: storyId,
+        })
+        console.log(response.data)
+        if(response.status==200){
+          setSuccess(true)
+          setSuccessMessage(response.data.message)
+          setErrorMessage(null)
+          navigate('/explore');
+        }
+      }catch(error){
+        console.error("error in publishing image", error)
+        setErrorMessage(error.response?.data?.message)
+      }
+  }
+
   const startPollingWithDelay = () => {
     if (delayTimeoutRef.current) clearTimeout(delayTimeoutRef.current);
     delayTimeoutRef.current = setTimeout(() => {
@@ -246,9 +271,14 @@ const VideoGenerationModal = ({ isOpen, onClose, storyId, generatedScenes, onVid
           <h2 className="video-modal-title">
             {showLanguageSelection ? "Select Subtitle Language" : "Generated Video"}
           </h2>
-          <button className="video-modal-close-btn" onClick={handleClose}>
-            <CloseIcon />
-          </button>
+          <div className='d-flex gap-2 align-items-center'>
+            <button title='publish video' className='video-publish-btn' onClick={handleVideoPublish}>
+              <span className='d-flex align-itms-center video-publish-icon'><FileUploadOutlinedIcon/></span>
+            </button>
+            <button title='close' className="video-modal-close-btn" onClick={handleClose}>
+              <CloseIcon />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
