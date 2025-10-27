@@ -1,5 +1,5 @@
 const storyToVideoQueue = require("../queue/StoryToVideoQueue");
-const { createStoryToVideoService, getStoryToVideoByIdService, getStoryToVideoByStoryIdService, deleteStoryToVideoByStoryIdService, addLanguageAudioTrackService } = require("../service/StoryToVideoService");
+const { createStoryToVideoService, getStoryToVideoByIdService, getStoryToVideoByStoryIdService, deleteStoryToVideoByStoryIdService, addLanguageAudioTrackService } = require("../service/storyToVideo/StoryToVideoService");
 const asyncHandler = require("../utils/asyncHandler");
 
 exports.createStoryToVideoController =asyncHandler( async (req, res) => {

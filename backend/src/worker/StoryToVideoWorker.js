@@ -1,6 +1,6 @@
 require("dotenv").config({ path: require("path").resolve(__dirname, "../config.env") });
 const { Worker } = require("bullmq");
-const { startStoryToVideoWorker } = require("../service/StoryToVideoService");
+const { startStoryToVideoWorker } = require("../service/storyToVideo/storyToVideoWorker.service");
 
 
 module.exports = (connection) =>{

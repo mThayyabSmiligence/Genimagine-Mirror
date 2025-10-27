@@ -7,26 +7,32 @@ const secretKey = process.env.SECRET_KEY || 'secretkey123';
 const iv = Buffer.from(process.env.IV || '1234567890123456', 'hex');
 
 const fs = require('fs');
-function encrypt(data) {
-    try {
-        const algorithm = 'aes-256-cbc'; // or your preferred algorithm
-        const key = crypto.randomBytes(32); // 32 bytes for AES-256
-        const iv = crypto.randomBytes(16); // 16 bytes for CBC mode
-        
-        const cipher = crypto.createCipheriv(algorithm, key, iv);
-        let encrypted = cipher.update(data, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        
-        return {
-            encrypted,
-            key: key.toString('hex'),
-            iv: iv.toString('hex')
-        };
-    } catch (error) {
-        console.error('Encryption error:', error);
-        throw error;
-    }
+
+
+function encryptId(id) {
+  return crypto.createHash('sha256').update(id.toString()).digest('hex').slice(0, 16);
 }
+
+// function encrypt(data) {
+//     try {
+//         const algorithm = 'aes-256-cbc'; // or your preferred algorithm
+//         const key = crypto.randomBytes(32); // 32 bytes for AES-256
+//         const iv = crypto.randomBytes(16); // 16 bytes for CBC mode
+        
+//         const cipher = crypto.createCipheriv(algorithm, key, iv);
+//         let encrypted = cipher.update(data, 'utf8', 'hex');
+//         encrypted += cipher.final('hex');
+        
+//         return {
+//             encrypted,
+//             key: key.toString('hex'),
+//             iv: iv.toString('hex')
+//         };
+//     } catch (error) {
+//         console.error('Encryption error:', error);
+//         throw error;
+//     }
+// }
 
 exports.uploadImage = async(image , path)=>{
     const upload = await uploadFile(image,path,"image/png");
@@ -46,7 +52,7 @@ exports.uploadAudio = async(image , path)=>{
 
 exports.uploadStoryToVideo = async(video,story_id,video_id)=>{
 
-    const path = "/storyToVideo/"+encrypt(story_id.toString()).encrypted+"/"+encrypt(video_id.toString()).encrypted;
+    const path = "/storyToVideo/"+encryptId(story_id.toString())+"/"+encryptId(video_id.toString());
     const upload = await this.uploadVideo(video,path);
     return {
         ...upload,
@@ -60,7 +66,7 @@ exports.uploadSubtitles = async (subtitles, storyToVideoId) => {
     
     for (const subtitle of subtitles) {
         // Add .srt extension to the path
-        const path = `/storyToVideo/${encrypt(storyToVideoId.toString()).encrypted}/${subtitle.language}.srt`;
+        const path = `storyToVideo/${encryptId(storyToVideoId.toString())}/sub/${subtitle.language}.srt`;
         
         // Read file as buffer
         const fileBuffer = fs.readFileSync(subtitle.localPath);
@@ -95,10 +101,9 @@ exports.uploadSubtitles = async (subtitles, storyToVideoId) => {
 exports.uploadAudioTrack = async (audio, storyId, videoId, language) => {
     try {
         // Create path with encrypted IDs and language identifier
-        const encryptedStoryId = encrypt(storyId.toString()).encrypted;
-        const encryptedVideoId = encrypt(videoId.toString()).encrypted;
+        const encryptedStoryId = encryptId(storyId.toString());
         
-        const path = `/storyToVideo/${encryptedStoryId}/${encryptedVideoId}/audio/${language}.mp3`;
+        const path = `storyToVideo/${encryptedStoryId}/audio/${language}.mp3`;
         
         // Upload audio file
         const upload = await this.uploadAudio(audio, path);
