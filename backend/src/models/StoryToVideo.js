@@ -5,7 +5,7 @@ const sequelize = require("../config/database");
 //id: integer
 //story_id: integer
 //user_id: integer
-//narration: json
+//narrations: json
 //video_url: string
 //video_path: string
 //error_message: string
@@ -14,10 +14,9 @@ const sequelize = require("../config/database");
 //status: string
 //created_at: date
 //updated_at: date
-// primary_language: STRING,
-// scene_timings: JSON, // [{scene_order: 1, duration: 5.2, scene_id: 123}, ...]
+// scene_timings: JSON, // [{scene_order: 1, duration: 5.2, orginal_duration: 5,scene_id: 123,}, ...]
 // audio_tracks: JSON, // [{language: 'en', url: '...', type: 'primary'}, ...]
-// subtitle_languages: JSON // ['en', 'es', 'hi']
+// subtitle_tracks: JSON, // [{language: 'en', url: '...', type: 'primary'}, ...]
 const StoryToVideo = sequelize.define("StoryToVideo", {
     id: {
         type: DataTypes.INTEGER,
@@ -44,11 +43,10 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
-    narration: {
+    narrations: {
         type: DataTypes.JSON,
         allowNull: true,
-    }
-    ,
+    },
     video_url: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -59,14 +57,6 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
     },
     error_message: {
         type: DataTypes.STRING,
-        allowNull: true,
-    },
-    language: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    subtitles: {
-        type: DataTypes.JSON,
         allowNull: true,
     },
     status:{
@@ -84,10 +74,6 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-    primary_language: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
     scene_timings: {
         type: DataTypes.JSON,
         allowNull: true,
@@ -96,7 +82,7 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         type: DataTypes.JSON,
         allowNull: true,
     },
-    subtitle_languages: {
+    subtitle_tracks: {
         type: DataTypes.JSON,
         allowNull: true,
     }
