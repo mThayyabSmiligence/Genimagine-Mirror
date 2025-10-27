@@ -16,6 +16,7 @@ const { createStoryController, getUserStoriesController, getStoryByIdController,
 const characterUpload= require('../middle_ware/uploadCharacter');
 const { createAutoStoryController, getstatus, getStoryStatus } = require('../controller/AutoStoryController');
 const { createStoryToVideoController, getStoryToVideoController, getStoryToVideoByStoryIdController } = require('../controller/StoryToVideoController');
+const { publishVideoToExploreController } = require('../controller/ExploreVideoController');
 const router = express.Router();
 
 router.route('/edit-user').post(editUserController)
@@ -120,6 +121,6 @@ router.post('/scenes/regenerate', regenerateSceneController);
 // story to video
 router.post('/story-to-video/:id', createStoryToVideoController);
 router.get('/story-to-video/:id', getStoryToVideoByStoryIdController)
-
+router.post('/publish-video-to-explore', publishVideoToExploreController);
 
 module.exports = router;

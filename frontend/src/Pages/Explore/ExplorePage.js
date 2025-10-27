@@ -6,14 +6,23 @@ import { useInView } from "react-intersection-observer";
 import Masonry from "react-masonry-css";
 import imagesLoaded from "imagesloaded";
 import { useNavigate } from "react-router-dom";
+import ExploreVideoPlayerModal from "../../Components/CommonComponents/ExploreVideoPlayerModal";
+import VideoCard from "../../Components/Explore/VideoCard";
 
 function ExplorePage() {
     const [images, setImages] = useState([]);
     const [videos, setVideos] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    
+    const [imageCurrentPage, setImageCurrentPage] = useState(1);
+    const [videoCurrentPage, setVideoCurrentPage] = useState(1);
     const [hasMoreImages, setHasMoreImages] = useState(true);
+    const [hasMoreVideos, setHasMoreVideos] = useState(true);
+    
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("images");
+    
+    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [sortSelectedIndex, setSortSelectedIndex] = useState(0);
     const [topSelectedIndex, setTopSelectedIndex] = useState(0);
@@ -31,17 +40,16 @@ function ExplorePage() {
 
         let query = `?page=${pageNumber}`;
         if (sort) query += `&sort=${sort}`;
-        if (sort == 'top' && top) query += `&time=${top}`;
+        if (sort === 'top' && top) query += `&time=${top}`;
 
         try {
-            console.log("Fetching:", query);
+            console.log("Fetching images:", query);
             const response = await axiosNoAUth.get(`explore${query}`);
-            console.log("Response:", response.data);
 
             if (response.data.success) {
                 setImages((prevImages) => reset ? response.data.images : [...prevImages, ...response.data.images]);
                 setHasMoreImages(!!response.data.pagination.nextPage);
-                setCurrentPage(pageNumber + 1);
+                setImageCurrentPage(pageNumber + 1);
             }
         } catch (error) {
             console.error("Error fetching explore images", error);
@@ -53,21 +61,16 @@ function ExplorePage() {
 
     // 🔹 Fetch Explore Videos
     const getVideos = async (pageNumber, reset = false) => {
-        if (!hasMoreImages || loading) return;
+        if (!hasMoreVideos || loading) return;
 
         setLoading(true);
-
         let query = `?page=${pageNumber}`;
-        if (sort) query += `&sort=${sort}`;
-        if (sort == 'top' && top) query += `&time=${top}`;
 
         try {
             console.log("Fetching videos:", query);
-            const response = await axiosNoAUth.get(`explore/videos${query}`);
-            console.log("Videos Response:", response.data);
+            const response = await axiosNoAUth.get(`videos/explore${query}`);
 
             if (response.data.success) {
-                // ✅ Add safety check - ensure videos is an array
                 const videosData = Array.isArray(response.data.videos) 
                     ? response.data.videos 
                     : [];
@@ -77,49 +80,62 @@ function ExplorePage() {
                         ? videosData 
                         : [...(prevVideos || []), ...videosData]
                 );
-                setHasMoreImages(!!response.data.pagination?.nextPage);
-                setCurrentPage(pageNumber + 1);
+                setHasMoreVideos(!!response.data.pagination?.nextPage);
+                setVideoCurrentPage(pageNumber + 1);
             }
         } catch (error) {
             console.error("Error fetching explore videos", error);
-            setHasMoreImages(false);
+            setHasMoreVideos(false);
         } finally {
             setLoading(false);
         }
     };
 
-
-    // Load first page when sort, top, or activeTab changes
+    // ⭐ Effect for IMAGES when sort/top changes
     useEffect(() => {
-        setImages([]);
-        setVideos([]);
-        setCurrentPage(1);
-        setHasMoreImages(true);
-        
         if (activeTab === "images") {
+            setImages([]);
+            setImageCurrentPage(1);
+            setHasMoreImages(true);
             getImages(1, true);
-        } else {
-            getVideos(1, true);
         }
-    }, [sort, top, activeTab]);
+    }, [sort, top, activeTab]); // ⭐ Only affects images
 
-    // Load next page when user reaches bottom
+    // ⭐ Effect for VIDEOS when switching to video tab (independent of sort/top)
     useEffect(() => {
-        if (inView && hasMoreImages && !loading) {
-            if (activeTab === "images") {
-                getImages(currentPage);
-            } else {
-                getVideos(currentPage);
+        if (activeTab === "videos") {
+            // Only fetch if videos array is empty (first time loading videos tab)
+            if (videos.length === 0) {
+                setVideoCurrentPage(1);
+                setHasMoreVideos(true);
+                getVideos(1, true);
             }
         }
-    }, [inView]);
+    }, [activeTab]); // ⭐ Only depends on activeTab
+
+    // ⭐ Load next page when user reaches bottom
+    useEffect(() => {
+        if (!inView || loading) return;
+
+        if (activeTab === "images" && hasMoreImages) {
+            getImages(imageCurrentPage);
+        } else if (activeTab === "videos" && hasMoreVideos) {
+            getVideos(videoCurrentPage);
+        }
+    }, [inView, activeTab]);
 
     const handleImageClick = (published_id) => {
         Navigate(`/explore/image/${published_id}`);
     };
 
-    const handleVideoClick = (published_id) => {
-        Navigate(`/explore/video/${published_id}`);
+    const handleVideoPlay = (video) => {
+        setSelectedVideo(video);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setTimeout(() => setSelectedVideo(null), 300);
     };
 
     const handleTabChange = (tab) => {
@@ -129,11 +145,13 @@ function ExplorePage() {
     useEffect(() => {
         if (images.length > 0 && activeTab === "images") {
             const grid = document.querySelector(".explore-image-masonry");
-            imagesLoaded(grid, () => {
-                console.log("All images loaded, reflowing Masonry...");
-            });
+            if (grid) {
+                imagesLoaded(grid, () => {
+                    console.log("All images loaded, reflowing Masonry...");
+                });
+            }
         }
-    }, [images]);
+    }, [images, activeTab]);
 
     return (
         <div className="mt-5 explore-page-container">
@@ -142,7 +160,6 @@ function ExplorePage() {
                     <h1>Explore</h1>
                 </div>
 
-                {/* Tab Switcher */}
                 <div className="explore-tabs-wrapper">
                     <div className="explore-tabs">
                         <button
@@ -161,38 +178,59 @@ function ExplorePage() {
                 </div>
             </div>
 
-            <div className="explore-sort-section mb-3">
-                <SortSection
-                    sort={sort}
-                    setSort={setSort}
-                    sortSelectedIndex={sortSelectedIndex}
-                    setSortSelectedIndex={setSortSelectedIndex}
-                    top={top}
-                    setTop={setTop}
-                    topSelectedIndex={topSelectedIndex}
-                    setTopSelectedIndex={setTopSelectedIndex}
-                    oldest={true}
-                />
-            </div>
+            {activeTab === "images" && (
+                <div className="explore-sort-section mb-3">
+                    <SortSection
+                        sort={sort}
+                        setSort={setSort}
+                        sortSelectedIndex={sortSelectedIndex}
+                        setSortSelectedIndex={setSortSelectedIndex}
+                        top={top}
+                        setTop={setTop}
+                        topSelectedIndex={topSelectedIndex}
+                        setTopSelectedIndex={setTopSelectedIndex}
+                        oldest={true}
+                    />
+                </div>
+            )}
 
             <div className="explore-body">
                 {activeTab === "images" ? (
                     <div className="explore-image-container">
-                        <Masonry
-                            breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }}
-                            className="explore-image-masonry"
-                            columnClassName="explore-image-column"
-                        >
-                            {images.map((image, index) => (
-                                <div
-                                    key={index}
-                                    className="explore-image col-6 col-md-4 col-lg-3 br-10"
-                                    onClick={() => handleImageClick(image.published_id)}
-                                >
-                                    <img src={image.image_url} alt={image.caption} className="br-10 img-fluid shadow" />
+                        {images.length === 0 && !loading ? (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="80"
+                                        height="80"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                    >
+                                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                    </svg>
                                 </div>
-                            ))}
-                        </Masonry>
+                                <h3 className="empty-state-title">No Images Found</h3>
+                            </div>
+                        ) : (
+                            <Masonry
+                                breakpointCols={{ default: 4, 992: 3, 768: 2, 576: 1 }}
+                                className="explore-image-masonry"
+                                columnClassName="explore-image-column"
+                            >
+                                {images.map((image, index) => (
+                                    <div
+                                        key={`${image.published_id}-${index}`}
+                                        className="explore-image col-6 col-md-4 col-lg-3 br-10"
+                                        onClick={() => handleImageClick(image.published_id)}
+                                    >
+                                        <img src={image.image_url} alt={image.caption} className="br-10 img-fluid shadow" />
+                                    </div>
+                                ))}
+                            </Masonry>
+                        )}
                     </div>
                 ) : (
                     <div className="explore-video-container">
@@ -227,36 +265,12 @@ function ExplorePage() {
                             </div>
                         ) : (
                             <div className="explore-video-grid">
-                                {videos && videos.map((video, index) => (
-                                    <div
-                                        key={index}
-                                        className="explore-video-card"
-                                        onClick={() => handleVideoClick(video.published_id)}
-                                    >
-                                        <div className="video-thumbnail-wrapper">
-                                            <img
-                                                src={video.thumbnail_url}
-                                                alt={video.title}
-                                                className="video-thumbnail"
-                                            />
-                                            <div className="video-overlay">
-                                                <div className="play-button">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="64"
-                                                        height="64"
-                                                        viewBox="0 0 24 24"
-                                                        fill="white"
-                                                    >
-                                                        <path d="M8 5v14l11-7z" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            {video.duration && (
-                                                <div className="video-duration">{video.duration}</div>
-                                            )}
-                                        </div>
-                                    </div>
+                                {videos.map((video, index) => (
+                                    <VideoCard
+                                        key={`${video.id}-${index}`}
+                                        video={video}
+                                        onPlay={handleVideoPlay}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -264,11 +278,15 @@ function ExplorePage() {
                 )}
             </div>
 
-            {/* Loading Spinner */}
             {loading && <p className="text-center my-4">Loading more {activeTab}...</p>}
 
-            {/* Invisible div for detecting scroll */}
             <div ref={ref} style={{ height: "10px", background: "transparent" }}></div>
+
+            <ExploreVideoPlayerModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                video={selectedVideo}
+            />
         </div>
     );
 }

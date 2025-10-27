@@ -86,12 +86,14 @@ const VideoGenerationModal = ({
         setSuccess(true);
         setSuccessMessage(response.data.message);
         setErrorMessage(null);
+        onClose();
         toast.success('Video published successfully!');
         navigate('/explore');
       }
     } catch (error) {
       console.error("error in publishing video", error);
       setErrorMessage(error.response?.data?.message);
+      onClose();
       toast.error(error.response?.data?.message || 'Failed to publish video');
     }
   };

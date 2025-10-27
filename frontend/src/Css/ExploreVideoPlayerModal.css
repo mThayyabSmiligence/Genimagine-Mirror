@@ -1,0 +1,186 @@
+/* Modal Overlay */
+.explore-video-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+  padding: 20px;
+}
+
+/* Modal Content */
+.explore-video-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Close Button - Smaller and cleaner */
+.explore-video-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10001;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #000;
+  padding: 0;
+}
+
+.explore-video-modal-close:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+.explore-video-modal-close:active {
+  transform: scale(0.95);
+}
+
+/* Video Player */
+.explore-video-player-wrapper {
+  width: 100%;
+  background: #000;
+  position: relative;
+}
+
+.explore-video-player-wrapper .video-js {
+  width: 100%;
+  height: auto;
+  font-family: inherit;
+}
+
+/* Custom Video.js Big Play Button */
+.explore-video-player-wrapper .video-js .vjs-big-play-button {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  font-size: 2.5em;
+  transition: all 0.3s ease;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.explore-video-player-wrapper .video-js .vjs-big-play-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.explore-video-player-wrapper .video-js .vjs-big-play-button .vjs-icon-placeholder:before {
+  color: #000;
+}
+
+/* Hide unwanted Video.js buttons */
+.explore-video-player-wrapper .video-js .vjs-picture-in-picture-control {
+  display: none !important;
+}
+
+/* Video Info */
+.explore-video-info {
+  padding: 20px 24px;
+  background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+}
+
+.explore-video-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .explore-video-modal-overlay {
+    padding: 10px;
+  }
+
+  .explore-video-modal-content {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+
+  .explore-video-modal-close {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .explore-video-modal-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .explore-video-info {
+    padding: 16px;
+  }
+
+  .explore-video-title {
+    font-size: 1.125rem;
+  }
+
+  .explore-video-player-wrapper .video-js .vjs-big-play-button {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 2em;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-video-title {
+    font-size: 1rem;
+  }
+
+  .explore-video-player-wrapper .video-js .vjs-big-play-button {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 1.75em;
+  }
+}

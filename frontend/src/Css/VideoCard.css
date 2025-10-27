@@ -1,0 +1,149 @@
+/* Video Card Wrapper */
+.video-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.video-card-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Thumbnail Container */
+.video-card-thumbnail {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+  background: #000;
+}
+
+.video-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.video-card-wrapper:hover .video-card-image {
+  transform: scale(1.05);
+}
+
+/* Overlay */
+.video-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.video-card-wrapper:hover .video-card-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Play Button Wrapper */
+.video-play-button-wrapper {
+  transform: scale(0.75);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.video-card-wrapper:hover .video-play-button-wrapper {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Play Button */
+.video-play-button {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  color: #1a1a1a;
+}
+
+.video-card-wrapper:hover .video-play-button {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+.video-play-button svg {
+  margin-left: 3px; /* Center the triangle visually */
+}
+
+/* Content */
+.video-card-content {
+  padding: 16px;
+  background: #fff;
+}
+
+.video-card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  transition: color 0.2s ease;
+}
+
+.video-card-wrapper:hover .video-card-title {
+  color: #6366f1; /* Primary color on hover */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .video-play-button {
+    width: 56px;
+    height: 56px;
+  }
+
+  .video-play-button svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .video-card-content {
+    padding: 12px;
+  }
+
+  .video-card-title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-play-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .video-play-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}

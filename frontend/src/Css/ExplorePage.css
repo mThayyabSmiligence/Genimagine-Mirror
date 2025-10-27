@@ -89,6 +89,8 @@
     transform: scale(1.05);
 }
 
+/* Existing styles... */
+
 /* Video Grid Styles */
 .explore-video-container {
     padding: 0 20px;
@@ -97,65 +99,74 @@
 
 .explore-video-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
-    width: 100%;
+    padding: 20px 0;
 }
 
 .explore-video-card {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .explore-video-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* Video Thumbnail Wrapper */
 .video-thumbnail-wrapper {
     position: relative;
-    aspect-ratio: 1;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
     overflow: hidden;
     background: #000;
 }
 
 .video-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* Video Overlay - CRITICAL STYLES */
 .video-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Let clicks pass through to card */
 }
 
 .explore-video-card:hover .video-overlay {
-    background: rgba(0, 0, 0, 0.35);
+    opacity: 1;
 }
 
+/* Play Button */
 .play-button {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 50%;
     width: 80px;
     height: 80px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .explore-video-card:hover .play-button {
@@ -164,21 +175,110 @@
 }
 
 .play-button svg {
-    margin-left: 4px;
+    margin-left: 6px; /* Offset to center visually */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.video-duration {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    background: rgba(0, 0, 0, 0.85);
-    color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+/* Video Info Below Thumbnail */
+.video-info-below {
+    padding: 16px;
+    background: #fff;
 }
+
+.video-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.empty-state-icon {
+    margin-bottom: 24px;
+    opacity: 0.3;
+}
+
+.empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.empty-state-description {
+    font-size: 1rem;
+    color: #6b6b6b;
+    max-width: 400px;
+}
+
+/* Responsive Styles */
+@media (min-width: 1280px) and (max-width: 1366px) {
+    .explore-video-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    .explore-video-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+    
+    .play-button {
+        width: 64px;
+        height: 64px;
+    }
+
+    .play-button svg {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 767px) {
+    .explore-video-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .play-button {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .play-button svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .video-info-below {
+        padding: 12px;
+    }
+
+    .video-title {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .explore-video-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 /* Responsive Styles */
 @media (min-width: 1600px) and (max-width: 2560px) {
