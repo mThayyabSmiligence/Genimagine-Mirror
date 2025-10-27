@@ -1,6 +1,23 @@
 const {DataTypes} = require("sequelize");
 const sequelize = require("../config/database");
 
+//table structure
+//id: integer
+//story_id: integer
+//user_id: integer
+//narration: json
+//video_url: string
+//video_path: string
+//error_message: string
+//language: string
+//subtitles: json
+//status: string
+//created_at: date
+//updated_at: date
+// primary_language: STRING,
+// scene_timings: JSON, // [{scene_order: 1, duration: 5.2, scene_id: 123}, ...]
+// audio_tracks: JSON, // [{language: 'en', url: '...', type: 'primary'}, ...]
+// subtitle_languages: JSON // ['en', 'es', 'hi']
 const StoryToVideo = sequelize.define("StoryToVideo", {
     id: {
         type: DataTypes.INTEGER,
@@ -67,6 +84,22 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
+    primary_language: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    scene_timings: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
+    audio_tracks: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
+    subtitle_languages: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    }
 });
 
 module.exports = StoryToVideo

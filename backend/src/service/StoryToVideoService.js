@@ -350,6 +350,7 @@ exports.generateAndCombineAudioForNarrations = async (narrations, storyToVideoId
         }
       }
     });
+    
 
     return {
       combinedAudioPath,
@@ -980,3 +981,15 @@ exports.getStoryToVideoByStoryIdService = async (storyId, userId) => {
     return storyToVideo;
 };
 
+exports.deleteStoryToVideoByStoryIdService = async (storyId, userId) => {
+    const storyToVideo = await StoryToVideo.findOne({ where: { story_id: storyId } });
+    if (!storyToVideo || storyToVideo.user_id !== userId) {
+        throw new AppError('StoryToVideo not found', 404)
+    }
+    try {
+        await StoryToVideo.destroy({ where: { story_id: storyId } });
+    } catch (error) {
+        console.error("Error deleting storyToVideo:", error);
+        throw new AppError('Failed to delete storyToVideo', 500)
+    }
+};

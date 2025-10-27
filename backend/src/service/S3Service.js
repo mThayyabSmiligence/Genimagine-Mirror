@@ -83,3 +83,45 @@ exports.uploadSubtitles = async (subtitles, storyToVideoId) => {
     
     return uploadedSubtitles;
 };
+
+/**
+ * Upload audio track for a specific language
+ * @param {Buffer} audio - Audio file buffer
+ * @param {Number} storyId - Story ID
+ * @param {Number} videoId - StoryToVideo ID
+ * @param {String} language - Language code (e.g., 'en', 'es', 'hi')
+ * @returns {Object} Upload result with fileUrl and path
+ */
+exports.uploadAudioTrack = async (audio, storyId, videoId, language) => {
+    try {
+        // Create path with encrypted IDs and language identifier
+        const encryptedStoryId = encrypt(storyId.toString()).encrypted;
+        const encryptedVideoId = encrypt(videoId.toString()).encrypted;
+        
+        const path = `/storyToVideo/${encryptedStoryId}/${encryptedVideoId}/audio/${language}.mp3`;
+        
+        // Upload audio file
+        const upload = await this.uploadAudio(audio, path);
+        
+        if (!upload.success) {
+            throw new StoryToVideoError(
+                `Failed to upload audio track for language: ${language}`, 
+                500, 
+                videoId
+            );
+        }
+        
+        return {
+            ...upload,
+            path,
+            language
+        };
+    } catch (error) {
+        console.error(`❌ Error uploading audio track for ${language}:`, error);
+        throw new StoryToVideoError(
+            error.message || 'Failed to upload audio track', 
+            500, 
+            videoId
+        );
+    }
+};
