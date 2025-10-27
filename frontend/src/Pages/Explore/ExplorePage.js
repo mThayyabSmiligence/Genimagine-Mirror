@@ -67,10 +67,17 @@ function ExplorePage() {
             console.log("Videos Response:", response.data);
 
             if (response.data.success) {
+                // ✅ Add safety check - ensure videos is an array
+                const videosData = Array.isArray(response.data.videos) 
+                    ? response.data.videos 
+                    : [];
+                
                 setVideos((prevVideos) => 
-                    reset ? response.data.videos : [...(prevVideos || []), ...response.data.videos]
+                    reset 
+                        ? videosData 
+                        : [...(prevVideos || []), ...videosData]
                 );
-                setHasMoreImages(!!response.data.pagination.nextPage);
+                setHasMoreImages(!!response.data.pagination?.nextPage);
                 setCurrentPage(pageNumber + 1);
             }
         } catch (error) {
@@ -80,6 +87,7 @@ function ExplorePage() {
             setLoading(false);
         }
     };
+
 
     // Load first page when sort, top, or activeTab changes
     useEffect(() => {
