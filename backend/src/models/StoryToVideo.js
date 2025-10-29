@@ -1,6 +1,22 @@
 const {DataTypes} = require("sequelize");
 const sequelize = require("../config/database");
 
+//table structure
+//id: integer
+//story_id: integer
+//user_id: integer
+//narrations: json
+//video_url: string
+//video_path: string
+//error_message: string
+//language: string
+//subtitles: json
+//status: string
+//created_at: date
+//updated_at: date
+// scene_timings: JSON, // [{scene_order: 1, duration: 5.2, orginal_duration: 5,scene_id: 123,}, ...]
+// audio_tracks: JSON, // [{language: 'en', url: '...', type: 'primary'}, ...]
+// subtitle_tracks: JSON, // [{language: 'en', url: '...', type: 'primary'}, ...]
 const StoryToVideo = sequelize.define("StoryToVideo", {
     id: {
         type: DataTypes.INTEGER,
@@ -27,11 +43,10 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
-    narration: {
+    narrations: {
         type: DataTypes.JSON,
         allowNull: true,
-    }
-    ,
+    },
     video_url: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -44,12 +59,8 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    language: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
     status:{
-        type: DataTypes.ENUM("pending", "in-progress","generating-audio", "generating-video", "done", "failed"),
+        type: DataTypes.ENUM("pending", "in-progress","generating-audio", "generating-video","generating-subtitles", "done", "failed"),
         allowNull: false,
         defaultValue: "pending",
     },
@@ -63,6 +74,18 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
+    scene_timings: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
+    audio_tracks: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
+    subtitle_tracks: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    }
 });
 
 module.exports = StoryToVideo

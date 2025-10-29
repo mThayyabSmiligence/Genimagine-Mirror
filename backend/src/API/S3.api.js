@@ -16,7 +16,7 @@ const uploadFile = async (file, path, type ) => {
         const params = {
             Bucket: process.env.AWS_BUCKET,
             Key: path,
-            Body: file.buffer,
+             Body:file,
             ContentType: type,
         };
 
