@@ -8,6 +8,7 @@ const { getModelById } = require('../service/IGSettingService');
 const { imageToPromptController, upload } = require('../controller/ImagetoPromptController');
 const { testCharacterExpression } = require('../controller/CharacterExpressionController');
 const { characterCollageController } = require('../controller/CharacterController');
+const { getAllExploreVideosController } = require('../controller/ExploreVideoController');
 const router = express.Router();
 
 router.route('/get-packages').get(getCreditPackagesController);
@@ -18,6 +19,10 @@ router.route("/explore/:user_id").get(getExploreImageByUserIdController)
 router.route(`/explore/image/:published_id`).get(getExploreImageByIdController)
 
 router.route('/explore/:published_id/view').post(ViewExploreImageController)
+
+// get all explore video
+router.get("/videos/explore", getAllExploreVideosController);
+
 router.route('/user/:user_id').get(getUserNameByIdController)
 
 router.route("/models").post(getAllModelsController);
@@ -44,5 +49,6 @@ router.route('/image-to-prompt').post(upload, imageToPromptController);
 //test routes
 router.route('/test-character-expression').post(testCharacterExpression);
 router.post('/character-collage', characterCollageController);
+
 module.exports = router;
 

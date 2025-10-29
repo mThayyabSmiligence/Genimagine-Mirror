@@ -5,6 +5,7 @@ import { axiosPrivate } from '../../API\'s/axios';
 // Video generate component
 import VideoGenerationModal from '../../Components/StoriesComponent/VideoGenerationModal';
 
+
 // Material UI Icons
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -12,7 +13,6 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -21,6 +21,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import '../../Css/CreateScenes.css';
 import { toast } from 'react-toastify';
+import DeleteConfirmationModal from '../../Components/CommonComponents/DeleteConfirmationModal';
 
 function CreateScenes() {
   const [generatedScenes, setGeneratedScenes] = useState([]);
@@ -32,10 +33,18 @@ function CreateScenes() {
   
   // Modal state for video generation
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [videoModalMode, setVideoModalMode] = useState('language-selection');
 
   // Video status checking states
   const [existingVideoStatus, setExistingVideoStatus] = useState(null);
   const [isCheckingVideo, setIsCheckingVideo] = useState(false);
+  const [videoGenerationInProgress, setVideoGenerationInProgress] = useState(false);
+  const [existingVideoData, setExistingVideoData] = useState(null);
+
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [sceneToDelete, setSceneToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Story type state
   const [storyType, setStoryType] = useState(null);
@@ -51,34 +60,9 @@ function CreateScenes() {
 
   // Use useRef for polling interval to avoid stale closures
   const statusPollingRef = useRef(null);
+  const videoPollingRef = useRef(null);
 
   const { storyid } = useParams(); 
-
-  // Generate video handler - opens modal and modal handles the generation
-  const handleGenerateVideo = () => {
-    if (generatedScenes.length === 0) {
-      showToast("No scenes available to generate video", 'error');
-      return;
-    }
-    
-    // Check if video already exists and is completed
-    if (existingVideoStatus === 'done') {
-      showToast("Video already exists for this story", 'info');
-      return;
-    }
-    
-    setIsVideoModalOpen(true);
-  };
-
-  // Close video modal function
-  const handleCloseVideoModal = () => {
-    setIsVideoModalOpen(false);
-  };
-
-  // Handle video generation completion callback
-  const handleVideoGenerationComplete = () => {
-    setExistingVideoStatus('done');
-  };
 
   // Check existing video status
   const checkExistingVideoStatus = useCallback(async () => {
@@ -91,20 +75,175 @@ function CreateScenes() {
       if (response.data) {
         setExistingVideoStatus(response.data.status);
         console.log('Existing video status:', response.data.status);
+        
+        // If video is done, just set status
+        if (response.data.status === 'done') {
+          setVideoGenerationInProgress(false);
+          if (videoPollingRef.current) {
+            clearInterval(videoPollingRef.current);
+            videoPollingRef.current = null;
+          }
+        }
+        // If video failed, stop polling
+        else if (response.data.status === 'failed') {
+          setVideoGenerationInProgress(false);
+          if (videoPollingRef.current) {
+            clearInterval(videoPollingRef.current);
+            videoPollingRef.current = null;
+          }
+        }
+        // If video is in progress, start polling
+        else if (['in-progress', 'generating-audio', 'generating-video'].includes(response.data.status)) {
+          setVideoGenerationInProgress(true);
+          startVideoPolling();
+        }
       }
     } catch (error) {
-      // 404 means no video exists - that's normal
       if (error.response?.status === 404) {
         setExistingVideoStatus(null);
+        setExistingVideoData(null);
         console.log('No existing video found');
       } else {
         console.error('Error checking video status:', error);
         setExistingVideoStatus(null);
+        setExistingVideoData(null);
       }
     } finally {
       setIsCheckingVideo(false);
     }
   }, [storyid]);
+
+  // Start video polling
+  const startVideoPolling = useCallback(() => {
+    if (videoPollingRef.current) {
+      clearInterval(videoPollingRef.current);
+    }
+
+    videoPollingRef.current = setInterval(async () => {
+      try {
+        const response = await axiosPrivate.get(`/story-to-video/${storyid}`);
+        
+        if (response.data) {
+          const status = response.data.status;
+          setExistingVideoStatus(status);
+          
+          if (status === 'done') {
+            setVideoGenerationInProgress(false);
+            clearInterval(videoPollingRef.current);
+            videoPollingRef.current = null;
+            toast.success('🎉 Video generation completed!');
+          } else if (status === 'failed') {
+            setVideoGenerationInProgress(false);
+            clearInterval(videoPollingRef.current);
+            videoPollingRef.current = null;
+            toast.error('❌ Video generation failed');
+          }
+        }
+      } catch (error) {
+        console.error('Error polling video status:', error);
+      }
+    }, 5000);
+  }, [storyid]);
+
+  // Handle language selection from modal
+  const handleLanguageSelect = async (languageCode) => {
+    try {
+      setVideoGenerationInProgress(true);
+      
+      const response = await axiosPrivate.post(`/story-to-video/${storyid}`, {
+        language: languageCode
+      });
+      
+      if (response.data) {
+        setExistingVideoStatus(response.data.status);
+        toast.success('Video generation started! Please wait...');
+        startVideoPolling();
+      }
+    } catch (error) {
+      console.error('Error generating video:', error);
+      toast.error('Failed to start video generation');
+      setVideoGenerationInProgress(false);
+    }
+  };
+
+  // Handle generate video button click
+  const handleGenerateVideo = () => {
+    if (generatedScenes.length === 0) {
+      showToast("No scenes available to generate video", 'error');
+      return;
+    }
+    
+    setVideoModalMode('language-selection');
+    setIsVideoModalOpen(true);
+  };
+
+  // Handle view video button click - ALWAYS fetches fresh video data
+  const handleViewVideo = async () => {
+    try {
+      console.log('Fetching video data from API...');
+      const response = await axiosPrivate.get(`/story-to-video/${storyid}`);
+      
+      if (response.data && response.data.status === 'done') {
+        setExistingVideoData(response.data);
+        console.log('Video data fetched:', response.data);
+        setVideoModalMode('view-video');
+        setIsVideoModalOpen(true);
+      } else {
+        toast.error('Video is not ready yet');
+      }
+    } catch (error) {
+      console.error('Error fetching video data:', error);
+      toast.error('Failed to load video');
+    }
+  };
+
+  // Close video modal function
+  const handleCloseVideoModal = () => {
+    setIsVideoModalOpen(false);
+  };
+
+  // Handle video generation completion callback
+  const handleVideoGenerationComplete = () => {
+    setExistingVideoStatus('done');
+    setVideoGenerationInProgress(false);
+  };
+
+  // Delete modal handlers
+  const handleDeleteClick = (scene) => {
+    setSceneToDelete(scene);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSceneToDelete(null);
+    setIsDeleting(false);
+  };
+
+  const handleConfirmDeleteScene = async () => {
+    if (!sceneToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await axiosPrivate.post('/scenes/delete', {
+        scene_id: sceneToDelete.id
+      });
+      
+      if (response.data.success) {
+        setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneToDelete.id));
+        toast.success("Scene deleted successfully!");
+        handleCloseDeleteModal();
+      } else {
+        toast.error(response.data.message || "Failed to delete scene");
+        setIsDeleting(false);
+      }
+    } catch (error) {
+      console.error('Error deleting scene:', error);
+      toast.error("Failed to delete scene");
+      setIsDeleting(false);
+    }
+  };
 
   // Fetch story info to determine type
   const fetchStoryInfo = useCallback(async () => {
@@ -192,17 +331,14 @@ function CreateScenes() {
           const failedToastKey = `story-${storyid}-failed-toast-shown`;
           const partiallyCompletedToastKey = `story-${storyid}-partially-completed-toast-shown`;
           
-          // Show completed toast only once per story
           if (statusData.status === 'completed' && !localStorage.getItem(completedToastKey)) {
             toast.success('🎉 Story generation completed!');
             localStorage.setItem(completedToastKey, 'true');
           } 
-          // Show failed toast only once per story
           else if (statusData.status === 'failed' && !localStorage.getItem(failedToastKey)) {
             toast.error('❌ Story generation failed. Please try again.');
             localStorage.setItem(failedToastKey, 'true');
           }
-          // Show partially completed toast only once per story
           else if (statusData.status === 'partially-completed' && !localStorage.getItem(partiallyCompletedToastKey)) {
             toast.success('✅ Story generation partially completed!');
             localStorage.setItem(partiallyCompletedToastKey, 'true');
@@ -225,7 +361,6 @@ function CreateScenes() {
         setIsLoading(true);
         await fetchStoryInfo();
         await fetchExistingScenes();
-        // Check video status after initial load
         await checkExistingVideoStatus();
       } catch (error) {
         console.error('Error initializing component:', error);
@@ -240,6 +375,10 @@ function CreateScenes() {
       if (statusPollingRef.current) {
         clearInterval(statusPollingRef.current);
         statusPollingRef.current = null;
+      }
+      if (videoPollingRef.current) {
+        clearInterval(videoPollingRef.current);
+        videoPollingRef.current = null;
       }
     };
   }, [storyid, fetchStoryInfo, fetchExistingScenes, checkExistingVideoStatus]);
@@ -294,7 +433,7 @@ function CreateScenes() {
     }
   };
 
-  // Components remain the same...
+  // Components
   const CharactersNotCompleted = () => (
     <div className="characters-not-completed">
       <div className="not-completed-content">
@@ -454,7 +593,6 @@ function CreateScenes() {
     }
   };
 
-  // Regenerate scene function using backend updatedAt
   const handleRegenerateScene = async (sceneId, prompt) => {
     setRegeneratingSceneId(sceneId);
     
@@ -470,15 +608,13 @@ function CreateScenes() {
         const updatedSceneData = response.data.scene;
         console.log('Regeneration response:', updatedSceneData);
         
-        // Update the specific scene with the new data from backend
         setGeneratedScenes(prev => 
           prev.map(scene => 
             scene.id === sceneId 
               ? { 
                   ...scene,
-                  // Use the updated data from backend
                   image_url: updatedSceneData.image_url,
-                  updated_at: updatedSceneData.updatedAt, // Use the backend's updatedAt
+                  updated_at: updatedSceneData.updatedAt,
                   prompt: updatedSceneData.prompt,
                   characters: updatedSceneData.characters ? updatedSceneData.characters.map(char => char.name) : scene.characters,
                   location: updatedSceneData.location,
@@ -498,23 +634,6 @@ function CreateScenes() {
       showToast("Failed to regenerate scene", 'error');
     } finally {
       setRegeneratingSceneId(null);
-    }
-  };
-
-  const handleDeleteScene = async (sceneId) => {
-    try {
-      const response = await axiosPrivate.post('/scenes/delete', {
-        scene_id: sceneId
-      });
-      
-      if (response.data.success) {
-        setGeneratedScenes(prev => prev.filter(scene => scene.id !== sceneId));
-        toast.success("Scene deleted successfully!");
-      } else {
-        toast.error(response.data.message || "Failed to delete scene");
-      }
-    } catch (error) {
-      console.error('Error deleting scene:', error);
     }
   };
 
@@ -698,7 +817,7 @@ function CreateScenes() {
             )}
           </div>
 
-          {/* UPDATED: Generate / View Video Button Section - Unified */}
+          {/* Generate / View Video Button Section */}
           <div className="video-generation-section">
             <div className="video-actions-container">
               {isCheckingVideo ? (
@@ -709,39 +828,45 @@ function CreateScenes() {
                   <div className="loading-spinner-small"></div>
                   Checking Video Status...
                 </button>
+              ) : existingVideoStatus === 'done' ? (
+                <button
+                  onClick={handleViewVideo}
+                  className="btn-primary video-generate-btn"
+                >
+                  <VideoLibraryIcon className="icon-sm" />
+                  View Video
+                </button>
+              ) : existingVideoStatus === 'failed' ? (
+                <button
+                  onClick={handleGenerateVideo}
+                  className="btn-primary video-generate-btn"
+                >
+                  <RefreshIcon className="icon-sm" />
+                  Generate Video Again
+                </button>
+              ) : videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus) ? (
+                <button
+                  disabled
+                  className="btn-primary video-generate-btn disabled"
+                >
+                  <div className="loading-spinner-small"></div>
+                  Generating Video...
+                </button>
               ) : (
                 <button
-                  onClick={
-                    existingVideoStatus === 'done'
-                      ? () => setIsVideoModalOpen(true)
-                      : handleGenerateVideo
-                  }
-                  disabled={
-                    generatedScenes.length === 0 ||
-                    ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
-                  }
+                  onClick={handleGenerateVideo}
+                  disabled={generatedScenes.length === 0}
                   className={`btn-primary video-generate-btn ${
-                    generatedScenes.length === 0 ||
-                    ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
-                      ? 'disabled'
-                      : ''
+                    generatedScenes.length === 0 ? 'disabled' : ''
                   }`}
                   title={
                     generatedScenes.length === 0
                       ? "Generate at least one scene to create video"
-                      : ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
-                      ? "Video is currently being generated"
-                      : existingVideoStatus === 'done'
-                      ? "View the generated video"
                       : "Generate video from scenes"
                   }
                 >
                   <VideoLibraryIcon className="icon-sm" />
-                  {existingVideoStatus === 'done'
-                    ? 'View Video'
-                    : ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus)
-                    ? 'Generating Video...'
-                    : 'Generate Video'}
+                  Generate Video
                 </button>
               )}
             </div>
@@ -806,45 +931,67 @@ function CreateScenes() {
                           
                           <div className="image-actions">
                             <button 
-                              className={`image-action-btn ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
-                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Regenerate not available during generation" : "Regenerate Scene"}
+                              className={`image-action-btn ${
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? 'disabled' 
+                                  : ''
+                              }`}
+                              title={
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))
+                                  ? "Regenerate not available during story generation"
+                                  : (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? "Regenerate not available during video generation"
+                                  : "Regenerate Scene"
+                              }
                               onClick={() => {
-                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                if (
+                                  (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                  (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                ) {
                                   return;
                                 }
                                 handleRegenerateScene(scene.id, scene.prompt);
                               }}
-                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
+                              disabled={
+                                regeneratingSceneId === scene.id || 
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                              }
                             >
                               <RefreshIcon className="icon-xs" />
                             </button>
                             
                             <button 
-                              className={`image-action-btn ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
-                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Download not available during generation" : "Download Scene"}
+                              className={`image-action-btn ${
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? 'disabled' 
+                                  : ''
+                              }`}
+                              title={
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))
+                                  ? "Download not available during story generation"
+                                  : (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? "Download not available during video generation"
+                                  : "Download Scene"
+                              }
                               onClick={() => {
-                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
+                                if (
+                                  (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                  (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                ) {
                                   return;
                                 }
                                 downloadImage(scene.image_url, `scene_${scene.id}`);
                               }}
-                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
+                              disabled={
+                                regeneratingSceneId === scene.id || 
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                              }
                             >
                               <DownloadIcon className="icon-xs" />
-                            </button>
-                            
-                            <button 
-                              className={`image-action-btn action-danger ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
-                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Delete not available during generation" : "Delete Scene"}
-                              onClick={() => {
-                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
-                                  return;
-                                }
-                                handleDeleteScene(scene.id);
-                              }}
-                              disabled={regeneratingSceneId === scene.id || (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))}
-                            >
-                              <DeleteOutlineIcon className="icon-xs" />
                             </button>
                           </div>
                         </div>
@@ -852,25 +999,45 @@ function CreateScenes() {
                         <div className="scene-image-placeholder">
                           <div className="image-overlay"></div>
                           <p className="no-image-text">No image available</p>
-                          <div className="image-actions">
-                            <button 
-                              className={`image-action-btn action-danger ${storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? 'disabled' : ''}`}
-                              title={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) ? "Delete not available during generation" : "Delete Scene"}
-                              onClick={() => {
-                                if (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) {
-                                  return;
-                                }
-                                handleDeleteScene(scene.id);
-                              }}
-                              disabled={storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)}
-                            >
-                              <DeleteOutlineIcon className="icon-xs" />
-                            </button>
-                          </div>
                         </div>
                       )}
                     </div>
                   </div>
+                </div>
+                
+                {/* Delete button - always visible */}
+                <div className="scene-card-actions">
+                  <button 
+                    className={`scene-delete-btn ${
+                      (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                      (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                        ? 'disabled' 
+                        : ''
+                    }`}
+                    title={
+                      (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))
+                        ? "Delete not available during story generation"
+                        : (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                        ? "Delete not available during video generation"
+                        : "Delete Scene"
+                    }
+                    onClick={() => {
+                      if (
+                        (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                        (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                      ) {
+                        return;
+                      }
+                      handleDeleteClick(scene);
+                    }}
+                    disabled={
+                      (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                      (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                    }
+                  >
+                    <DeleteOutlineIcon className="icon-xs" />
+                    Delete Scene
+                  </button>
                 </div>
               </div>
             ))}
@@ -890,13 +1057,26 @@ function CreateScenes() {
         </>
       )}
 
-      {/* Video Generation Modal - pass callback for completion */}
+      {/* Video Generation Modal */}
       <VideoGenerationModal
         isOpen={isVideoModalOpen}
         onClose={handleCloseVideoModal}
         storyId={storyid}
         generatedScenes={generatedScenes}
         onVideoComplete={handleVideoGenerationComplete}
+        modalMode={videoModalMode}
+        onLanguageSelect={handleLanguageSelect}
+        videoData={existingVideoData}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDeleteScene}
+        isDeleting={isDeleting}
+        itemName={`Scene #${sceneToDelete?.scene_order || ''}`}
+        itemType="scene"
       />
     </div>
   );

@@ -68,6 +68,8 @@ import StoriesPage from './Pages/User/StoriesPage';
 import CreateStories from './Pages/User/CreateStories';
 import CreateCharacters from './Pages/User/CreateCharacters';
 import CreateScenes from './Pages/User/CreateScenes';
+import PublishedVideosPage from './Pages/User/PublishedVideosPage';
+import PostsPage from './Pages/User/PostsPage';
 
 
 function App() {
@@ -164,14 +166,16 @@ function App() {
                   <Route path='profile' element={<ProfilePage></ProfilePage>}></Route>
                   <Route path='c/:chatId' element={<ChatPage></ChatPage>}></Route>
                   <Route path='library' element={<LibraryPage></LibraryPage>}></Route>
+                  <Route path='posts' element={<PostsPage></PostsPage>}></Route>
                   <Route path='publish' element={<PublishImagePage></PublishImagePage>}></Route>
                   <Route path='published-images' element={<PublishedImages></PublishedImages>}></Route>
                   <Route path='published-images/:published_id' element={<ExploreImageDetail></ExploreImageDetail>}></Route>
+                  <Route path='published-videos' element={<PublishedVideosPage></PublishedVideosPage>}></Route>
                   <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>
                   <Route path='scheduled' element={<Scheduled></Scheduled>}></Route>
                   <Route path='stories' element={<StoriesPage></StoriesPage>}></Route>
                   <Route path='stories/create' element={<CreateStories></CreateStories>}></Route>
-                  <Route path='stories/:id/edit' element={<CreateStories></CreateStories>}></Route>
+                  <Route path='stories/edit/:id' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/characters' element={<CreateCharacters></CreateCharacters>}></Route>
                   <Route path='scenes/create/:storyid' element={<CreateScenes></CreateScenes>}></Route>
                 </Route>

@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import '../../Css/CreateCharacters.css';
 import { axiosPrivate } from '../../API\'s/axios';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import DeleteConfirmationModal from '../../Components/CommonComponents/DeleteConfirmationModal';
 
 function CreateCharacters() {
   const [characters, setCharacters] = useState([]);
@@ -912,88 +913,14 @@ function CreateCharacters() {
       )}
 
       {/* Delete Modal */}
-      {showDeleteModal && (
-        <div 
-          className={`modal fade ${showDeleteModal ? 'show' : ''}`}
-          style={{ 
-            display: showDeleteModal ? 'block' : 'none',
-            backgroundColor: 'rgba(0,0,0,0.5)'
-          }}
-          tabIndex="-1"
-          aria-labelledby="deleteCharacterModalLabel"
-          aria-hidden={!showDeleteModal}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header border-0 pb-0">
-                <div className="d-flex align-items-center">
-                  <div 
-                    className="d-flex align-items-center justify-content-center me-3"
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      backgroundColor: '#fee2e2',
-                      borderRadius: '50%'
-                    }}
-                  >
-                    <WarningAmberIcon style={{ color: '#dc2626', fontSize: '20px' }} />
-                  </div>
-                  <h1 className="modal-title fs-5 mb-0" id="deleteCharacterModalLabel">
-                    Delete Character
-                  </h1>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseDeleteModal}
-                  aria-label="Close"
-                  disabled={isDeleting}
-                ></button>
-              </div>
-              
-              <div className="modal-body pt-2">
-                <p className="text-muted mb-3">
-                  Are you sure you want to delete <strong>"{characterToDelete?.name}"</strong>?
-                </p>
-                <div className="alert alert-warning border-0" style={{ backgroundColor: '#fef3c7' }}>
-                  <small className="text-dark">
-                    <strong>Warning:</strong> This action cannot be undone. The character and all associated content will be permanently deleted from your story.
-                  </small>
-                </div>
-              </div>
-              
-              <div className="modal-footer border-0 pt-0">
-                <button
-                  type="button"
-                  className="btn btn-light"
-                  onClick={handleCloseDeleteModal}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={handleConfirmDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <DeleteOutlineIcon style={{ fontSize: '16px', marginRight: '4px' }} />
-                      Delete Character
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        itemName={characterToDelete?.name}
+        itemType="character"
+      />
 
       {/* Character Preview Modal */}
       {showCharacterPreview && selectedCharacter && (

@@ -15,6 +15,7 @@ db.ImageGenerationBatch = require("./ImageGenerationBatch");
 db.CharacterExpressionImage = require("./CharacterExpressionImage");
 db.Scene = require("./Scene");
 db.StoryToVideo = require("./StoryToVideo");
+db.ExploreVideo = require("./ExploreVideo")
 
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });
@@ -46,5 +47,10 @@ db.Scene.belongsTo(db.Story, { foreignKey: "story_id", as: "story" });
 db.Story.hasMany(db.StoryToVideo, { foreignKey: "story_id", as: "video" });
 db.StoryToVideo.belongsTo(db.Story, { foreignKey: "story_id", as: "story" });
 
+// ExploreVideo belongs to Story (to get thumbnail) 
+db.ExploreVideo.belongsTo(db.Story, { foreignKey: "story_id", targetKey: "id", as: "story" });
+
+// ExploreVideo belongs to StoryToVideo (to get video data)
+db.ExploreVideo.belongsTo(db.StoryToVideo, { foreignKey: "story_id", targetKey: "story_id", as: "videoData" });
 
 module.exports = db;
