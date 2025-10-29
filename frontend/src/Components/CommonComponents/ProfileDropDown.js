@@ -86,7 +86,7 @@ function ProfileDropDown() {
             <Link to="/u/profile" className="dropdown-item" onClick={handleNavigation}>Profile</Link>
             <Link to="/u/library" className="dropdown-item" onClick={handleNavigation}>Library </Link>
             <div className="dropdown-item" onClick={() => setShowFeedbackPopUp(true)}>Feedback </div>
-            <Link to="/u/published-images" className="dropdown-item" onClick={handleNavigation}>Published Images</Link>
+            <Link to="/u/posts" className="dropdown-item" onClick={handleNavigation}>Posts</Link>
         </>
         
         }
