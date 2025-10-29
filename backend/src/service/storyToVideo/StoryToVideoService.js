@@ -43,11 +43,10 @@ const languageNames = {
         'te': 'Telugu'
     };
 
-exports.createStoryToVideoService = async (userId, storyId, language) => {
+exports.createStoryToVideoService = async (userId, storyId, ) => {
 
     console.log("userId : ",userId);
     console.log("storyId : ",storyId);
-    console.log("language : ",language);
     const storyToVideoCheck = await StoryToVideo.findOne({ where: { story_id: storyId, user_id: userId } });
 
     if (storyToVideoCheck && storyToVideoCheck.status == "failed") {
@@ -69,7 +68,6 @@ exports.createStoryToVideoService = async (userId, storyId, language) => {
             {
             story_id: storyId,
             user_id: userId,
-            language
             }
         );
 
@@ -102,6 +100,18 @@ exports.deleteStoryToVideoByStoryIdService = async (storyId, userId) => {
         throw new AppError('Failed to delete storyToVideo', 500)
     }
 };
+
+exports.addLanguageStoryToVideoCheck = async (storyToVideoId,language) => {
+    const storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
+    if (!storyToVideo) {
+        throw new AppError('StoryToVideo not found', 404)
+    }
+
+    if(getLanguageLabel(language) === language){
+        throw new AppError('Language not supported', 409)
+    }
+    return true;
+}
 // exports.startStoryToVideoWorker = async (storyToVideoId) => {
 
 //     let storyToVideo = null;

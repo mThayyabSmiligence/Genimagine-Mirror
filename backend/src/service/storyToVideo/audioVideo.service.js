@@ -21,12 +21,38 @@ if (!fs.existsSync(TEMP_IMAGES_DIR)) fs.mkdirSync(TEMP_IMAGES_DIR, { recursive: 
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 
-const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, language) => {
+// Function to generate and combine audio for narrations
+//input:
+//narration:[{id,scene_order: 1, narration: "Scene 1 narration", image_url: "Scene 1 image url"}]
+//storyToVideoId: int
+//language: string('en','es'...)
+//scene_durations: [{scene_order: 1, duration: 10}, {scene_order: 2, duration: 20}]
+//isNew: boolean
+
+//output:
+//success: boolean
+//combinedAudioPath: string
+//narrations: [{id,scene_order: 1, narration: "Scene 1 narration", image_url: "Scene 1 image url", duration: 10,originalDuration: 7, audioFile: "Scene 1 audio file path",}]
+
+const generateAndCombineAudioForNarrations = async (
+  narrations,
+  storyToVideoId,
+  language,
+  scene_durations = [],
+  isNew = false
+) => {
   try {
     console.log("🎙️ generateAndCombineAudioForNarrations is starting");
 
     if (!Array.isArray(narrations) || narrations.length === 0) {
-      throw new StoryToVideoError('Narrations array is empty or invalid', 400, storyToVideoId);
+      if (!isNew) {
+        throw new StoryToVideoError('Narrations array is empty or invalid', 400, storyToVideoId);
+      }
+      return {
+        success: false,
+        error: "No narrations provided",
+        data: null
+      };
     }
 
     const narrationsWithDuration = [];
@@ -38,7 +64,7 @@ const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, 
             if (!narration || typeof narration.narration !== 'string' || !narration.narration.trim()) {
               console.warn(`⚠️ Skipping empty narration at scene_order ${narration?.scene_order}`);
               narrationsWithDuration[index] = { ...narration, duration: 0, audioFile: null };
-              return resolve(null); // skip silently
+              return resolve(null);
             }
 
             const randomNumber = Math.floor(100000 + Math.random() * 900000);
@@ -54,8 +80,84 @@ const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, 
 
               try {
                 const duration = await getAudioDurationInSeconds(audioPath);
-                narrationsWithDuration[index] = { ...narration, duration, audioFile: audioPath };
-                console.log(`✅ Scene ${narration.scene_order}: audio generated (${duration.toFixed(2)}s)`);
+
+                // Generate silence of 30% of narration duration
+                let silenceDuration ;
+                let full_duration;
+                if (scene_durations.length > 0) {
+                  full_duration = scene_durations.find((d) => d.scene_order === narration.scene_order)?.duration;
+                  
+                  // FIX 2: Handle undefined and validate the calculation
+                  if (full_duration === undefined || full_duration === null) {
+                    console.warn(`⚠️ No predefined duration found for scene ${narration.scene_order}, using 30% silence`);
+                    silenceDuration = duration * 0.3;
+                  } else if (full_duration <= duration) {
+                    // FIX 3: Ensure silence duration is never negative
+                    console.warn(`⚠️ Scene ${narration.scene_order}: predefined duration (${full_duration}s) <= audio (${duration}s), using minimal silence`);
+                    silenceDuration = Math.max(0.1, duration * 0.05); // Minimum 0.1s or 5% of duration
+                  } else {
+                    silenceDuration = full_duration - duration;
+                  }
+                } else {
+                  silenceDuration = duration * 0.3;
+                }
+
+                // FIX 4: Validate silenceDuration before buffer allocation
+                if (silenceDuration < 0 || isNaN(silenceDuration)) {
+                  console.error(`❌ Invalid silence duration (${silenceDuration}) for scene ${narration.scene_order}, defaulting to 0.5s`);
+                  silenceDuration = 0.5;
+                }
+                const silencePath = path.join(AUDIO_DIR, `silence_${randomNumber}.mp3`);
+
+                await new Promise((resolveSilence, rejectSilence) => {
+                    try {
+                        // Each second of silence = 44100 samples * 2 channels * 2 bytes = 176400 bytes
+                        const totalBytes = Math.ceil(silenceDuration * 44100 * 2 * 2);
+
+                        
+                        // FIX 5: Final safety check before buffer allocation
+                        if (totalBytes < 0 || totalBytes > Number.MAX_SAFE_INTEGER) {
+                          throw new Error(`Invalid buffer size: ${totalBytes} bytes`);
+                        }
+                        const silenceBuffer = Buffer.alloc(totalBytes, 0);
+                        const rawPath = path.join(AUDIO_DIR, `silence_raw_${randomNumber}.pcm`);
+
+                        // Write silent raw PCM file
+                        fs.writeFileSync(rawPath, silenceBuffer);
+
+                        // Convert PCM to mp3 using FFmpeg (this part always works on Windows)
+                        ffmpeg()
+                        .input(rawPath)
+                        .inputFormat('s16le')
+                        .audioFrequency(44100)
+                        .audioChannels(2)
+                        .audioCodec('libmp3lame')
+                        .duration(silenceDuration)
+                        .save(silencePath)
+                        .on('end', () => {
+                            fs.unlinkSync(rawPath); // cleanup
+                            resolveSilence();
+                        })
+                        .on('error', (err) => {
+                            console.error('❌ Failed to encode silence:', err.message);
+                            rejectSilence(err);
+                        });
+                    } catch (err) {
+                        rejectSilence(err);
+                    }
+                });
+
+
+
+                narrationsWithDuration[index] = {
+                  ...narration,
+                  duration: duration + silenceDuration,
+                  originalDuration: duration,
+                  audioFile: audioPath,
+                  silenceFile: silencePath
+                };
+
+                console.log(`✅ Scene ${narration.scene_order}: audio (${duration.toFixed(2)}s) + silence (${silenceDuration.toFixed(2)}s)`);
                 resolve(audioPath);
               } catch (durationError) {
                 console.error("❌ Error reading audio duration:", durationError);
@@ -72,17 +174,26 @@ const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, 
       })
     );
 
-    const validAudioFiles = narrationsWithDuration.filter(n => n.audioFile);
+    const validAudioFiles = narrationsWithDuration
+      .filter(n => n.audioFile)
+      .flatMap(n => [n.audioFile, n.silenceFile]); // include silence files sequentially
 
     if (validAudioFiles.length === 0) {
-      throw new StoryToVideoError('All narrations failed or were empty', 422, storyToVideoId);
+      if (isNew) {
+        throw new StoryToVideoError('All narrations failed or were empty', 422, storyToVideoId);
+      }
+      return {
+        success: false,
+        error: "All narrations failed or were empty",
+        data: null
+      };
     }
 
     const combinedAudioPath = path.join(AUDIO_DIR, `combined_audio_${Date.now()}.mp3`);
 
     await new Promise((resolve, reject) => {
       let command = ffmpeg();
-      validAudioFiles.forEach(n => command = command.input(n.audioFile));
+      validAudioFiles.forEach(file => command = command.input(file));
 
       command
         .complexFilter([
@@ -92,7 +203,7 @@ const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, 
         .outputOptions(['-map', '[outa]'])
         .save(combinedAudioPath)
         .on('end', () => {
-          console.log('✅ Audio files combined successfully');
+          console.log('✅ Audio files (with silence) combined successfully');
           resolve();
         })
         .on('error', (err) => {
@@ -101,34 +212,53 @@ const generateAndCombineAudioForNarrations = async (narrations, storyToVideoId, 
         });
     });
 
-    // cleanup
+    // cleanup temporary files
     narrationsWithDuration.forEach(n => {
-      if (n.audioFile && fs.existsSync(n.audioFile)) {
-        try {
-          fs.unlinkSync(n.audioFile);
-        } catch (err) {
-          console.warn(`⚠️ Could not delete ${n.audioFile}: ${err.message}`);
+      [n.audioFile, n.silenceFile].forEach(file => {
+        if (file && fs.existsSync(file)) {
+          try {
+            fs.unlinkSync(file);
+          } catch (err) {
+            console.warn(`⚠️ Could not delete ${file}: ${err.message}`);
+          }
         }
-      }
+      });
     });
-    
 
     return {
       combinedAudioPath,
-      narrations: validAudioFiles,
-      totalDuration: validAudioFiles.reduce((sum, n) => sum + n.duration, 0),
+      narrations: narrationsWithDuration,
+      totalDuration: narrationsWithDuration.reduce((sum, n) => sum + n.duration, 0),
       success: true
     };
 
   } catch (error) {
     console.error("❌ Error generating and combining audio:", error);
-    throw new StoryToVideoError(error.message || 'Failed to create narration audio', 500, storyToVideoId);
+    if (isNew) {
+      throw new StoryToVideoError(error.message || 'Failed to create narration audio', 500, storyToVideoId);
+    }
+    return {
+      success: false,
+      error: error.message || 'Failed to create narration audio',
+      data: null
+    };
   }
 };
 
 
+
 // Replace your empty function with this complete implementation:
-const generateAndCombineVideoForNarrations = async (combinedAudioPath, narrations, totalDuration, storyToVideoId) => {
+//input:
+//narrations: [{id,scene_order: 1, narration: "Scene 1 narration", image_url: "Scene 1 image url", duration: 10,originalDuration: 7, audioFile: "Scene 1 audio file path",}]
+//totalDuration: int
+//storyToVideoId: int
+
+//output:
+//success: boolean
+//videoPath: string
+//duration: double
+//scenes: int (no of scenes)
+const generateVideoForNarrations = async ( narrations, totalDuration, storyToVideoId) => {
     try {
         console.log("generateAndCombineVideoForNarrations is starting");
         
@@ -157,19 +287,14 @@ const generateAndCombineVideoForNarrations = async (combinedAudioPath, narration
         
         await createSlideshowWithCustomDurations(downloadedImages, slideshowVideoPath);
 
-        // Step 3: Combine slideshow with audio
-        console.log("🎵 Combining video with audio...");
-        const finalVideoPath = path.join(OUTPUT_DIR, `final_story_${Date.now()}.mp4`);
+
         
-        // await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
-        await combineVideoWithAudio(slideshowVideoPath, combinedAudioPath, finalVideoPath);
+
     
 
-        // Step 5: Clean up temporary files
+        // Step 3: Clean up temporary files
         console.log("🧹 Cleaning up temporary files...");
         await cleanupTempFiles([
-            slideshowVideoPath,
-            combinedAudioPath,
             ...downloadedImages.map(img => img.localImagePath)
         ]);
 
@@ -177,7 +302,7 @@ const generateAndCombineVideoForNarrations = async (combinedAudioPath, narration
         
         return {
             success: true,
-            videoPath: finalVideoPath,
+            videoPath: slideshowVideoPath,
             duration: totalDuration,
             scenes: narrations.length
         };
@@ -201,4 +326,4 @@ const generateAndCombineVideoForNarrations = async (combinedAudioPath, narration
 };
 
 
-module.exports = { generateAndCombineAudioForNarrations, generateAndCombineVideoForNarrations };
+module.exports = { generateAndCombineAudioForNarrations, generateVideoForNarrations };

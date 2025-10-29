@@ -72,11 +72,15 @@ const splitTextIntoChunks = (text, maxCharsPerChunk = 80) => {
     return chunks.filter(chunk => chunk.length > 0);
 };
 
+//input:
+//narrations: [{id,scene_order: 1, narration: "Scene 1 narration", image_url: "Scene 1 image url", duration: 10,originalDuration: 7, audioFile: "Scene 1 audio file path",}]
+//language: string('en','es'...)
+//storyToVideoId: int
 const generateSRTFileForLanguage = (narrations, language, storyToVideoId) => {
     let srtContent = '';
     let subtitleIndex = 1;
     let currentTime = 0;
-
+    console.log("narartions in generateSRTFile: ",narrations);
     const MAX_CHARS_PER_SUBTITLE = 80;
     const MAX_DURATION_PER_SUBTITLE = 6;
 
@@ -91,7 +95,8 @@ const generateSRTFileForLanguage = (narrations, language, storyToVideoId) => {
 
     narrations.forEach((narration) => {
         const text = narration.narration;
-        const totalDuration = narration.duration;
+        const totalDuration = narration.originalDuration;
+        const narrationStartTime = currentTime;
 
         // Split text into chunks if too long
         const textChunks = splitTextIntoChunks(text, MAX_CHARS_PER_SUBTITLE);
@@ -110,6 +115,7 @@ const generateSRTFileForLanguage = (narrations, language, storyToVideoId) => {
             subtitleIndex++;
             currentTime = endTime;
         });
+        currentTime= narrationStartTime + narration.duration;
     });
 
     // Save SRT file
@@ -140,7 +146,7 @@ const generateSRTFile = (narrations) => {
     
     narrations.forEach((narration) => {
         const text = narration.narration;
-        const totalDuration = narration.duration;
+        const totalDuration = narration.originalDuration;
         
         // Split text into chunks if it's too long
         const textChunks = splitTextIntoChunks(text, MAX_CHARS_PER_SUBTITLE);
@@ -161,7 +167,7 @@ const generateSRTFile = (narrations) => {
             srtContent += `${chunk}\n\n`;
             
             subtitleIndex++;
-            currentTime = endTime;
+            currentTime = currentTime+ narration.duration;
         });
     });
     

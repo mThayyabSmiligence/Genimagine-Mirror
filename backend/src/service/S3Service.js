@@ -61,33 +61,25 @@ exports.uploadStoryToVideo = async(video,story_id,video_id)=>{
 }
 
 // Fixed uploadSubtitles function for SRT files
-exports.uploadSubtitles = async (subtitles, storyToVideoId) => {
-    const uploadedSubtitles = [];
-    
-    for (const subtitle of subtitles) {
-        // Add .srt extension to the path
-        const path = `storyToVideo/${encryptId(storyToVideoId.toString())}/sub/${subtitle.language}.srt`;
-        
-        // Read file as buffer
-        const fileBuffer = fs.readFileSync(subtitle.localPath);
-        
-        // Upload with correct MIME type for SRT
-        const upload = await uploadFile(fileBuffer, path, "application/x-subrip");
+exports.uploadSubtitles = async (srtPath, storyToVideoId, language) => {
+  const pathKey = `storyToVideo/${encryptId(storyToVideoId.toString())}/sub/${language}.srt`;
+  
+  // Read as UTF-8 text, not a raw buffer
+  const srtContent = fs.readFileSync(srtPath);
 
-        if (!upload.success) {
-            console.error(`Failed to upload ${subtitle.language}:`, upload.message);
-            continue;
-        }
+  // Upload with correct MIME type and charset
+  const upload = await uploadFile(Buffer.from(srtContent), pathKey, "text/plain;");
 
-        uploadedSubtitles.push({
-            language: subtitle.language,
-            Label: subtitle.Label, // Fixed typo
-            path: path,
-            url: upload.fileUrl
-        });
-    }
-    
-    return uploadedSubtitles;
+  if (!upload.success) {
+    console.error(`Failed to upload ${language}:`, upload.message);
+    return { ...upload, success: false };
+  }
+
+  return {
+    ...upload,
+    path: pathKey,
+    success: true,
+  };
 };
 
 /**
@@ -98,12 +90,12 @@ exports.uploadSubtitles = async (subtitles, storyToVideoId) => {
  * @param {String} language - Language code (e.g., 'en', 'es', 'hi')
  * @returns {Object} Upload result with fileUrl and path
  */
-exports.uploadAudioTrack = async (audio, storyId, videoId, language) => {
+exports.uploadAudioTrack = async (audio,storyToVideoId, language) => {
     try {
         // Create path with encrypted IDs and language identifier
-        const encryptedStoryId = encryptId(storyId.toString());
+        const encryptedStoryToVideoId = encryptId(storyToVideoId.toString());
         
-        const path = `storyToVideo/${encryptedStoryId}/audio/${language}.mp3`;
+        const path = `storyToVideo/${encryptedStoryToVideoId}/audio/${language}.mp3`;
         
         // Upload audio file
         const upload = await this.uploadAudio(audio, path);
@@ -112,14 +104,15 @@ exports.uploadAudioTrack = async (audio, storyId, videoId, language) => {
             throw new StoryToVideoError(
                 `Failed to upload audio track for language: ${language}`, 
                 500, 
-                videoId
+                storyToVideoId
             );
         }
         
         return {
             ...upload,
             path,
-            language
+            language,
+            success: true
         };
     } catch (error) {
         console.error(`❌ Error uploading audio track for ${language}:`, error);

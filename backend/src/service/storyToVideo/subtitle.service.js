@@ -93,23 +93,18 @@ const generateMultiLanguageSubtitles = async (narrations, storyToVideoId, primar
     }
 };
 
+
+//input:
+//narrations: [{scene_order: 1, narration: "Scene 1 narration"}]
+
+//output:
+//translatedNarrations: [{scene_order: 1, narration: "Translated Scene 1 narration"}]
+//storyToVideoId: int
 const translateNarrationsToLanguage = async (narrations, targetLang, storyToVideoId) => {
     try {
-        const languageNames = {
-            'en': 'English',
-            'es': 'Spanish',
-            'hi': 'Hindi',
-            'fr': 'French',
-            'de': 'German',
-            'ja': 'Japanese',
-            'zh-cn': 'Simplified Chinese',
-            'pt': 'Portuguese',
-            'ar': 'Arabic',
-            'ta': 'Tamil',
-            'te': 'Telugu'
-        };
+        
 
-        const targetLanguageName = languageNames[targetLang] || targetLang;
+        const targetLanguageName = getLanguageLabel(targetLang);
 
         // Prepare input for translation
         const input = narrations.map(n => ({
@@ -146,14 +141,70 @@ Always return a valid JSON array even if there's only one object.`;
         });
 
         console.log(`✅ Translated ${translatedNarrations.length} narrations to ${targetLanguageName}`);
-        return translatedNarrations;
+        return {
+            narrations: translatedNarrations,
+            success: true
+        };
 
     } catch (error) {
         console.error(`❌ Translation failed for ${targetLang}:`, error);
-        throw new StoryToVideoError(`Failed to translate to ${targetLang}`, 500, storyToVideoId);
+        return {
+            success: false,
+            error: error.message
+        }
     }
 };
-
+const generateSRTFile = (narrations) => {
+    let srtContent = '';
+    let subtitleIndex = 1;
+    let currentTime = 0;
+    
+    const MAX_CHARS_PER_SUBTITLE = 80; // 2 lines × ~40 chars
+    const MAX_DURATION_PER_SUBTITLE = 6; // Maximum 6 seconds per subtitle
+    
+    const formatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        const milliseconds = Math.floor((seconds % 1) * 1000);
+        
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+    };
+    
+    narrations.forEach((narration) => {
+        const text = narration.narration;
+        const totalDuration = narration.originalDuration;
+        
+        // Split text into chunks if it's too long
+        const textChunks = splitTextIntoChunks(text, MAX_CHARS_PER_SUBTITLE);
+        
+        // Calculate duration for each chunk
+        const chunkDuration = totalDuration / textChunks.length;
+        
+        // If individual chunk duration exceeds max, use max duration
+        const actualChunkDuration = Math.min(chunkDuration, MAX_DURATION_PER_SUBTITLE);
+        
+        textChunks.forEach((chunk) => {
+            const startTime = currentTime;
+            const endTime = currentTime + actualChunkDuration;
+            
+            // SRT format
+            srtContent += `${subtitleIndex}\n`;
+            srtContent += `${formatTime(startTime)} --> ${formatTime(endTime)}\n`;
+            srtContent += `${chunk}\n\n`;
+            
+            subtitleIndex++;
+            currentTime = endTime;
+        });
+    });
+    
+    // Save SRT file
+    const srtPath = path.join(OUTPUT_DIR, `subtitles_${Date.now()}.srt`);
+    fs.writeFileSync(srtPath, srtContent, 'utf8');
+    
+    console.log(`✅ SRT file generated with ${subtitleIndex - 1} subtitle segments: ${srtPath}`);
+    return srtPath;
+};
 module.exports = {
     generateMultiLanguageSubtitles,
     translateNarrationsToLanguage

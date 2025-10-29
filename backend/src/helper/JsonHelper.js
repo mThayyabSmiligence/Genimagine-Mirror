@@ -1,6 +1,6 @@
 const { jsonrepair } = require("jsonrepair");
 
-exports.extractValidJson = (text) => {
+const extractValidJson = (text) => {
   if (!text) return null;
 
   // Extract JSON-like substring
@@ -37,3 +37,42 @@ exports.extractValidJson = (text) => {
     }
   }
 };
+
+
+/**
+ * Safely parses JSON with fallback support
+ * @param {any} value - Value to parse (string, object, or null)
+ * @param {any} fallback - Default value if parsing fails (default: null)
+ * @returns {any} Parsed object or fallback value
+ */
+const safeJsonParse = (value, fallback = null) => {
+    // Handle null/undefined
+    if (value === null || value === undefined) {
+        return fallback;
+    }
+    
+    // Already an object (Sequelize auto-parsed)
+    if (typeof value === 'object') {
+        return value;
+    }
+    
+    // Not a string, return as-is or fallback
+    if (typeof value !== 'string') {
+        return fallback;
+    }
+    
+    // Empty string
+    if (value.trim() === '') {
+        return fallback;
+    }
+    
+    // Parse JSON string
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('JSON parse error:', error.message);
+        return fallback;
+    }
+};
+
+module.exports = { extractValidJson, safeJsonParse };

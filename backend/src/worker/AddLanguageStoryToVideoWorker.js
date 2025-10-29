@@ -1,15 +1,15 @@
 require("dotenv").config({ path: require("path").resolve(__dirname, "../config.env") });
 const { Worker } = require("bullmq");
-const { startStoryToVideoWorker } = require("../service/storyToVideo/storyToVideoWorker.service");
+const { startAddLanguageStoryToVideoWorker } = require("../service/storyToVideo/storyToVideoWorker.service");
 
 
 module.exports = (connection) =>{
-    const worker = new Worker("storyToVideoQueue", async job => {
-        const { id ,userId} = job.data; 
+    const worker = new Worker("AddLanguageStoryToVideoQueue", async job => {
+        const { id ,userId,language} = job.data; 
 
         console.log(`Processing storyToVideo: ${id}`);
 
-        const result = await startStoryToVideoWorker(id,'en'); 
+        const result = await startAddLanguageStoryToVideoWorker(id,language); 
 
         
     }, { connection, concurrency: 1 });
