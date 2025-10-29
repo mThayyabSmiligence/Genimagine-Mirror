@@ -12,6 +12,7 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import { axiosPrivate } from "../../API's/axios";
 import { toast } from "react-toastify";
 import "../../Css/StoriesPage.css";
+import DeleteConfirmationModal from "../../Components/CommonComponents/DeleteConfirmationModal";
 
 function StoriesPage() {
   const [stories, setStories] = useState([]);
@@ -516,69 +517,15 @@ function StoriesPage() {
       )}
 
       {/* Delete Modal */}
-      {showDeleteModal && (
-        <div
-          className={`modal fade ${showDeleteModal ? "show" : ""}`}
-          onClick={handleCloseDeleteModal}
-          style={{ display: showDeleteModal ? "block" : "none" }}
-          tabIndex="-1"
-          aria-labelledby="deleteModalLabel"
-          aria-hidden={!showDeleteModal}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <div className="d-flex align-items-center">
-                  <div>
-                    <WarningAmberIcon />
-                  </div>
-                  <h1 className="modal-title fs-5" id="deleteModalLabel">
-                    Delete Story
-                  </h1>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseDeleteModal}
-                  aria-label="Close"
-                  disabled={isDeleting}
-                ></button>
-              </div>
-
-              <div className="modal-body">
-                <p className="text-muted mb-3">
-                  Are you sure you want to delete <strong>"{storyToDelete?.name}"</strong>?
-                </p>
-                <div className="alert alert-warning">
-                  <small className="text-dark">
-                    <strong>Warning:</strong> This action cannot be undone. All characters, scenes, and content associated with this story will be permanently deleted.
-                  </small>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button type="button" className="btn btn-light" onClick={handleCloseDeleteModal} disabled={isDeleting}>
-                  Cancel
-                </button>
-                <button type="button" className="btn btn-danger" onClick={handleConfirmDelete} disabled={isDeleting}>
-                  {isDeleting ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <DeleteOutlineIcon style={{ fontSize: "16px", marginRight: "4px" }} />
-                      Delete Story
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-          </div>
-        )}
-      </div>
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        itemName={storyToDelete?.name}
+        itemType="story"
+      />
+    </div>
   );
 }
 

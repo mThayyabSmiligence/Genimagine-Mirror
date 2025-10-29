@@ -537,7 +537,7 @@
   justify-content: center;
 }
 
-.image-container {
+.inline-character-preview .image-container {
   position: relative;
   display: inline-block;
   width: 100%;
