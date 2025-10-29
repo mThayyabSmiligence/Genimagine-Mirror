@@ -164,3 +164,123 @@ exports.getExploreVideosService = async (page, user_id) => {
     };
   }
 };
+
+exports.getUserPublishedVideosService = async (user_id) => {
+  try {
+    const videos = await ExploreVideo.findAll({
+      where: { user_id },
+      attributes: [
+        "id",
+        "user_id",
+        "story_id",
+        "createdAt",
+        // Get thumbnail from story or first scene
+        [
+          Sequelize.fn(
+            "COALESCE",
+            Sequelize.col("story.thumbnail"),
+            Sequelize.fn("MIN", Sequelize.col("story.scenes.image_url"))
+          ),
+          "thumbnail"
+        ],
+      ],
+      include: [
+        {
+          model: Story,
+          as: "story",
+          attributes: ["name", "thumbnail"],
+          required: true,
+          include: [
+            {
+              model: Scene,
+              as: "scenes",
+              attributes: [],
+              required: false,
+              where: { deleted_at: null },
+            },
+          ],
+        },
+        {
+          model: StoryToVideo,
+          as: "videoData",
+          attributes: ["video_url", "video_path", "status"],
+          required: true,
+        },
+      ],
+      group: ["ExploreVideo.id", "story.id", "videoData.id"],
+      order: [["createdAt", "DESC"]],
+      subQuery: false,
+    });
+
+    // Format response
+    const formattedVideos = videos.map((video) => {
+      const videoJson = video.toJSON();
+      return {
+        id: videoJson.id,
+        user_id: videoJson.user_id,
+        story_id: videoJson.story_id,
+        title: videoJson.story?.name || null,
+        thumbnail: videoJson.thumbnail || null,
+        video_url: videoJson.videoData?.video_url || null,
+        video_path: videoJson.videoData?.video_path || null,
+        status: videoJson.videoData?.status || null,
+        published_date: videoJson.createdAt,
+      };
+    });
+
+    return {
+      success: true,
+      videos: formattedVideos,
+      message: "User videos fetched successfully",
+      status: 200,
+    };
+  } catch (e) {
+    console.error("Error fetching user published videos:", e);
+    return {
+      success: false,
+      message: "Failed to fetch user videos",
+      status: 500,
+    };
+  }
+};
+
+exports.deletePublishedVideoService = async (video_id, user_id) => {
+  try {
+    // Check if video exists and belongs to user
+    const video = await ExploreVideo.findOne({
+      where: {
+        id: video_id,
+        user_id: user_id,
+      },
+    });
+
+    if (!video) {
+      return {
+        success: false,
+        message: "Video not found or you don't have permission to delete it",
+        status: 404,
+      };
+    }
+
+    // Delete the video
+    await ExploreVideo.destroy({
+      where: {
+        id: video_id,
+        user_id: user_id,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Video deleted successfully",
+      status: 200,
+    };
+  } catch (e) {
+    console.error("Error deleting published video:", e);
+    return {
+      success: false,
+      message: "Failed to delete video",
+      status: 500,
+    };
+  }
+};

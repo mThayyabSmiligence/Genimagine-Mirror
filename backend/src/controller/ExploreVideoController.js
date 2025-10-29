@@ -1,6 +1,6 @@
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { publishVideoToExplore, getExploreVideosService } = require("../service/publishVideoToExplore");
+const { publishVideoToExplore, getExploreVideosService, getUserPublishedVideosService, deletePublishedVideoService } = require("../service/ExploreVideoService");
 
 exports.publishVideoToExploreController = async (req, res) => {
   try {
@@ -58,6 +58,46 @@ exports.getAllExploreVideosController = async (req, res) => {
     res.status(500).json({
       message: "Internal server error",
       success: false,
+    });
+  }
+};
+
+exports.getUserPublishedVideosController = async(req, res) => {
+  try {
+    const user_id = req.user.id; 
+
+    const result = await getUserPublishedVideosService(user_id);
+
+    res.status(result.status).json(result);
+  } catch (e) {
+    console.error("Error in getUserPublishedVideosController:", e);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user videos",
+    });
+  }
+}
+
+exports.deletePublishedVideoController = async (req, res) => {
+  try {
+    const { video_id } = req.params;
+    const user_id = req.user.id; // From auth middleware
+
+    if (!video_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Video ID is required",
+      });
+    }
+
+    const result = await deletePublishedVideoService(video_id, user_id);
+
+    res.status(result.status).json(result);
+  } catch (e) {
+    console.error("Error in deletePublishedVideoController:", e);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete video",
     });
   }
 };
