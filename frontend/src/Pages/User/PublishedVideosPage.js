@@ -3,6 +3,7 @@ import { axiosPrivate } from "../../API's/axios";
 import { toast } from "react-toastify";
 import VideoCard from "../../Components/Explore/VideoCard";
 import ExploreVideoPlayerModal from "../../Components/CommonComponents/ExploreVideoPlayerModal";
+import DeleteConfirmationModal from "../../Components/CommonComponents/DeleteConfirmationModal";
 import "../../Css/PublishedVideosPage.css";
 
 function PublishedVideosPage() {
@@ -10,6 +11,11 @@ function PublishedVideosPage() {
   const [loading, setLoading] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Delete confirmation state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [videoToDelete, setVideoToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch user's published videos
   const fetchUserVideos = async () => {
@@ -28,25 +34,42 @@ function PublishedVideosPage() {
     }
   };
 
-  // Delete a video
-  const handleDeleteVideo = async (videoId, e) => {
+  // Open delete confirmation modal
+  const handleDeleteClick = (video, e) => {
     e.stopPropagation(); // Prevent card click
+    setVideoToDelete(video);
+    setIsDeleteModalOpen(true);
+  };
 
-    if (!window.confirm("Are you sure you want to unpublish this video?")) {
-      return;
-    }
+  // Confirm delete
+  const handleConfirmDelete = async () => {
+    if (!videoToDelete) return;
 
+    setIsDeleting(true);
     try {
-      const response = await axiosPrivate.delete(`/published-videos/${videoId}`);
+      const response = await axiosPrivate.delete(`/published-videos/${videoToDelete.id}`);
 
       if (response.data.success) {
         toast.success("Video unpublished successfully");
         // Remove from state
-        setVideos(videos.filter((v) => v.id !== videoId));
+        setVideos(videos.filter((v) => v.id !== videoToDelete.id));
+        // Close modal
+        setIsDeleteModalOpen(false);
       }
     } catch (error) {
       console.error("Error deleting video:", error);
       toast.error(error.response?.data?.message || "Failed to unpublish video");
+    } finally {
+      setIsDeleting(false);
+      setVideoToDelete(null);
+    }
+  };
+
+  // Cancel delete
+  const handleCancelDelete = () => {
+    if (!isDeleting) {
+      setIsDeleteModalOpen(false);
+      setVideoToDelete(null);
     }
   };
 
@@ -119,7 +142,7 @@ function PublishedVideosPage() {
                   {/* Delete Button Overlay */}
                   <button
                     className="published-video-delete-btn"
-                    onClick={(e) => handleDeleteVideo(video.id, e)}
+                    onClick={(e) => handleDeleteClick(video, e)}
                     title="Unpublish video"
                   >
                     <svg
@@ -151,6 +174,18 @@ function PublishedVideosPage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         video={selectedVideo}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        itemName={videoToDelete?.title}
+        itemType="video"
+        warningMessage="This action cannot be undone. The video will be removed from the explore page and your published content."
+        additionalInfo="You can always publish this video again later if needed."
       />
     </div>
   );
