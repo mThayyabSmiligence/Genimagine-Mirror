@@ -10,6 +10,7 @@ const Character = require("../models/Character");
 const generateStabilityAiImage = require("../API/StabilityAiImage");
 const { uploadImageToServer } = require("../service/UploadToServerService");
 const { generateSceneService } = require("../service/SceneService");
+const { generateImage } = require("../API/CloudFlare.api");
 
 
 
@@ -102,7 +103,11 @@ const worker = new Worker(
                 });
 
                 const characterPrompt = createCharacterImageGeneratePrompt(character, style.name);
-                const characterImage = await generateStabilityAiImage(characterPrompt).catch(err => {
+                // const characterImage = await generateStabilityAiImage(characterPrompt).catch(err => {
+                //     console.error("Error generating image:", err);
+                //     return null;
+                // });
+                const characterImage = await generateImage(characterPrompt,1024,1024).catch(err => {
                     console.error("Error generating image:", err);
                     return null;
                 });
