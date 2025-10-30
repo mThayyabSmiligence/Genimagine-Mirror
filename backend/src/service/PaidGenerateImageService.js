@@ -12,6 +12,14 @@ dotenv.config({path: path.join(__dirname, 'config', 'config.env')})
 const cloud_flare_acc_id= process.env.CLOUD_FLARE_ACC_ID
 const cloud_flare_api_key=process.env.CLOUD_FLARE_API_KEY
 
+
+//input :
+// const inputs = {
+//                 prompt: String,
+//                 negative_prompt: optional,
+//                 width: int,
+//                 height: int,
+//             };
 exports.paidGenerateImageService= async(inputs,model_url)=>{
     
         try{
