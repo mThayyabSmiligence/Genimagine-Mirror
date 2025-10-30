@@ -77,16 +77,17 @@ exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_inp
     `;
 
 
-
-    const imageData = await this.generateSceneImage(
-      story_id,
-      scene.id,
-      latestScene,
-      scene_order,
-      scenePrompt, // ✅ plain descriptive text
-      user_id
-    );
+    //stability ai
+    // const imageData = await this.generateSceneImage(
+    //   story_id,
+    //   scene.id,
+    //   latestScene,
+    //   scene_order,
+    //   scenePrompt, // ✅ plain descriptive text
+    //   user_id
+    // );
       
+    const imageData = await this.generateCouldFlareSceneImage(story_id,scene.id, scenePrompt, user_id);
     scene.full_prompt = scenePrompt;
     scene.image_url = imageData.image_url;
     scene.image_path = imageData.image_path;
@@ -260,6 +261,40 @@ exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, sce
   }
 };
 
+exports.generateCouldFlareSceneImage=async (story_id, scene_id, prompt, user_id) => {
+  try {
+
+    let cleanPrompt = prompt.trim();
+
+    // Stability text limit = 2000 chars max
+    if (cleanPrompt.length > 2000) {
+      console.warn(`⚠️ Prompt too long (${cleanPrompt.length} chars). Trimming to 2000.`);
+      cleanPrompt = cleanPrompt.substring(0, 2000);
+    }
+
+
+    const imageBuffer = await generateImage(cleanPrompt, 1024, 1024, process.env.MODEL_1);
+
+    const imageUploadResponse = await uploadImageToServer(
+      imageBuffer,
+      user_id,
+      story_id,
+      scene_id,
+      "story"
+    );
+
+    return {
+      status: 200,
+      success: true,
+      image_url: imageUploadResponse.imageUrl,
+      image_path: imageUploadResponse.imagePath,
+    };
+  } catch (error) {
+    console.error("Error generating scene image:", error.response?.data || error.message);
+    return { status: 500, success: false, message: "Image generation failed" };
+  }
+};
+
 function safeJsonParse(output) {
   try {
     // Extract only the JSON part using regex
@@ -412,14 +447,15 @@ exports.regenerateSceneService = async (user_id, scene_id, prompt = null) => {
 
     // 4. Regenerate new image (using same scene_order)
     //    CHANGE: force regenerate with null for latest_scene so it's fresh
-    const newImage = await this.generateSceneImage(
-      scene.story_id,
-      scene.id,
-      null,                     // always null → don't do img2img
-      scene.scene_order,        // keep same order
-      scene.full_prompt,             // latest prompt (either old or updated)
-      user_id
-    );
+    // const newImage = await this.generateSceneImage(
+    //   scene.story_id,
+    //   scene.id,
+    //   null,                     // always null → don't do img2img
+    //   scene.scene_order,        // keep same order
+    //   scene.full_prompt,             // latest prompt (either old or updated)
+    //   user_id
+    // );
+    const newImage = await this.generateCouldFlareSceneImage(scene.story_id, scene.id, scene.full_prompt, user_id);
 
     if (!newImage.success) {
       return { status: 500, success: false, message: "Failed to generate new scene image" };
@@ -626,6 +662,7 @@ const { Story, Style, Character, Scene } = require('../models');
 const { Json } = require('sequelize/lib/utils');
 const { uploadImageToServer, deleteFromServer } = require('./UploadToServerService');
 const { extractValidJson } = require('../helper/JsonHelper');
+const { generateImage } = require('../API/CloudFlare.api');
 
 const ensureDir = async (dir) => fs.promises.mkdir(dir, { recursive: true });
 
