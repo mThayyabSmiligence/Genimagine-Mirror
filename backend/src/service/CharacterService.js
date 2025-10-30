@@ -1,3 +1,4 @@
+const { generateImage } = require('../API/CloudFlare.api');
 const generateStabilityAiImage = require('../API/StabilityAiImage');
 const db = require('../config/connectDatabase');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
@@ -143,7 +144,9 @@ exports.regenerateCharacterService = async (user_id, character_id, name = null, 
 
 
 
-    const character_image = await generateStabilityAiImage( prompt );
+    // const character_image = await generateStabilityAiImage( prompt );
+    const character_image = await generateImage( prompt );
+
 
     if (!character_image) return { status: 500, success: false, message: 'Failed to generate character' };
 
