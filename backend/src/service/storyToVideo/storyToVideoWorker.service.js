@@ -270,13 +270,14 @@ const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
 
     const srtPath= await generateSRTFileForLanguage(narrations,language,storyToVideoId);
     const uploadedSubtitles = await uploadSubtitles(srtPath,storyToVideoId,language);
+    console.log("uploadedSubtitles:- ",uploadedSubtitles);
      
     const new_subtitle_track={
         language: language,
         url: uploadedSubtitles.fileUrl,
         path: uploadedSubtitles.path,
         type: 'secondary',
-        status:uploadSubtitles.success?"done":"failed"
+        status:uploadedSubtitles.success?"done":"failed"
     };
     let subtitle_tracks= safeJsonParse(storyToVideo.subtitle_tracks,storyToVideo.subtitle_tracks);
     subtitle_tracks=[...subtitle_tracks,new_subtitle_track];
