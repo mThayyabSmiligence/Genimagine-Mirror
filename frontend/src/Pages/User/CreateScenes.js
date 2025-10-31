@@ -33,7 +33,7 @@ function CreateScenes() {
   
   // Modal state for video generation
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [videoModalMode, setVideoModalMode] = useState('language-selection');
+  // const [videoModalMode, setVideoModalMode] = useState('language-selection');
 
   // Video status checking states
   const [existingVideoStatus, setExistingVideoStatus] = useState(null);
@@ -146,13 +146,11 @@ function CreateScenes() {
   }, [storyid]);
 
   // Handle language selection from modal
-  const handleLanguageSelect = async (languageCode) => {
+  const handleLanguageSelect = async () => {
     try {
       setVideoGenerationInProgress(true);
       
-      const response = await axiosPrivate.post(`/story-to-video/${storyid}`, {
-        language: languageCode
-      });
+      const response = await axiosPrivate.post(`/story-to-video/${storyid}`,);
       
       if (response.data) {
         setExistingVideoStatus(response.data.status);
@@ -167,15 +165,15 @@ function CreateScenes() {
   };
 
   // Handle generate video button click
-  const handleGenerateVideo = () => {
-    if (generatedScenes.length === 0) {
-      showToast("No scenes available to generate video", 'error');
-      return;
-    }
+  // const handleGenerateVideo = () => {
+  //   if (generatedScenes.length === 0) {
+  //     showToast("No scenes available to generate video", 'error');
+  //     return;
+  //   }
     
-    setVideoModalMode('language-selection');
-    setIsVideoModalOpen(true);
-  };
+  //   setVideoModalMode('language-selection');
+  //   setIsVideoModalOpen(true);
+  // };
 
   // Handle view video button click - ALWAYS fetches fresh video data
   const handleViewVideo = async () => {
@@ -186,7 +184,6 @@ function CreateScenes() {
       if (response.data && response.data.status === 'done') {
         setExistingVideoData(response.data);
         console.log('Video data fetched:', response.data);
-        setVideoModalMode('view-video');
         setIsVideoModalOpen(true);
       } else {
         toast.error('Video is not ready yet');
@@ -838,7 +835,7 @@ function CreateScenes() {
                 </button>
               ) : existingVideoStatus === 'failed' ? (
                 <button
-                  onClick={handleGenerateVideo}
+                  onClick={handleLanguageSelect}
                   className="btn-primary video-generate-btn"
                 >
                   <RefreshIcon className="icon-sm" />
@@ -854,7 +851,7 @@ function CreateScenes() {
                 </button>
               ) : (
                 <button
-                  onClick={handleGenerateVideo}
+                  onClick={handleLanguageSelect}
                   disabled={generatedScenes.length === 0}
                   className={`btn-primary video-generate-btn ${
                     generatedScenes.length === 0 ? 'disabled' : ''
@@ -1064,7 +1061,7 @@ function CreateScenes() {
         storyId={storyid}
         generatedScenes={generatedScenes}
         onVideoComplete={handleVideoGenerationComplete}
-        modalMode={videoModalMode}
+        // modalMode={videoModalMode}
         onLanguageSelect={handleLanguageSelect}
         videoData={existingVideoData}
       />

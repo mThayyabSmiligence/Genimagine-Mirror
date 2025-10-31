@@ -271,7 +271,6 @@ const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
     const srtPath= await generateSRTFileForLanguage(narrations,language,storyToVideoId);
     const uploadedSubtitles = await uploadSubtitles(srtPath,storyToVideoId,language);
     console.log("uploadedSubtitles:- ",uploadedSubtitles);
-     
     const new_subtitle_track={
         language: language,
         url: uploadedSubtitles.fileUrl,
