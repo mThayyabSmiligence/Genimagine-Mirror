@@ -109,7 +109,7 @@ exports.getExploreVideosService = async (page, user_id) => {
         {
           model: StoryToVideo,
           as: "videoData",
-          attributes: ["video_url", "video_path", "status"],
+          attributes: ["video_url", "video_path", "status", 'id','subtitle_tracks', 'audio_tracks'],
           required: true,
         },
       ],
@@ -129,20 +129,8 @@ exports.getExploreVideosService = async (page, user_id) => {
     }
 
     // Format response
-    const formattedVideos = videos.map((video) => {
-      const videoJson = video.toJSON();
-      return {
-        id: videoJson.id,
-        user_id: videoJson.user_id,
-        story_id: videoJson.story_id,
-        title: videoJson.story?.name || null,
-        thumbnail: videoJson.thumbnail || null, // From aggregated COALESCE
-        video_url: videoJson.videoData?.video_url || null,
-        video_path: videoJson.videoData?.video_path || null,
-        status: videoJson.videoData?.status || null,
-        published_date: videoJson.createdAt,
-      };
-    });
+    const formattedVideos = formatteVideoDate(videos)
+    console.log("formatted videos: ",formattedVideos)
 
     return {
       status: 200,
@@ -203,7 +191,7 @@ exports.getUserPublishedVideosService = async (user_id) => {
         {
           model: StoryToVideo,
           as: "videoData",
-          attributes: ["video_url", "video_path", "status"],
+          attributes: ["video_url", "video_path", "status",'subtitle_tracks', 'audio_tracks'],
           required: true,
         },
       ],
@@ -213,20 +201,7 @@ exports.getUserPublishedVideosService = async (user_id) => {
     });
 
     // Format response
-    const formattedVideos = videos.map((video) => {
-      const videoJson = video.toJSON();
-      return {
-        id: videoJson.id,
-        user_id: videoJson.user_id,
-        story_id: videoJson.story_id,
-        title: videoJson.story?.name || null,
-        thumbnail: videoJson.thumbnail || null,
-        video_url: videoJson.videoData?.video_url || null,
-        video_path: videoJson.videoData?.video_path || null,
-        status: videoJson.videoData?.status || null,
-        published_date: videoJson.createdAt,
-      };
-    });
+    const formattedVideos = formatteVideoDate(videos)
 
     return {
       success: true,
@@ -284,3 +259,22 @@ exports.deletePublishedVideoService = async (video_id, user_id) => {
     };
   }
 };
+
+const formatteVideoDate=(videos)=>{
+  return videos.map((video) => {
+      const videoJson = video.toJSON();
+      return {
+        id: videoJson.id,
+        user_id: videoJson.user_id,
+        story_id: videoJson.story_id,
+        title: videoJson.story?.name || null,
+        thumbnail: videoJson.thumbnail || null, // From aggregated COALESCE
+        video_url: videoJson.videoData?.video_url || null,
+        video_path: videoJson.videoData?.video_path || null,
+        status: videoJson.videoData?.status || null,
+        published_date: videoJson.createdAt,
+        subtitle_tracks: videoJson.videoData.subtitle_tracks,
+        audio_tracks:videoJson.videoData.audio_tracks
+      };
+    });
+}

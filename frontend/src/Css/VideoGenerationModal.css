@@ -367,7 +367,6 @@
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
-
 /* Responsive adjustments for language selection */
 @media (max-width: 768px) {
   .language-selection-container {
