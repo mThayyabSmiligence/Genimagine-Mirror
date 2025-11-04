@@ -3,7 +3,7 @@ const { getUsersList, getSingleUser, userLogout, firstTimeVerification, getChats
 const { paidGenerateImageService } = require('../service/PaidGenerateImageService');
 const { userGenerateImageController } = require('../controller/UserGenerateImageController');
 const { buyCreditsPackageController, getCreditTopUpController, getUserPurchasedTopUp, getTotalActiveCreditsController } = require('../controller/CreditController');
-const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController } = require('../controller/ExploreController');
+const { publishToExploreController, ViewExploreImageController, LikeExploreImageController, UnlikeExploreImageController, getExploreImagesByUserId, getExploreImageByUserIdController, deleteExploreImageByPublishedIdController, editCaptionController, ImageReportController, videoReportController } = require('../controller/ExploreController');
 const { getExploreImagesByUserIdService } = require('../service/ExploreService');
 const { RayzorPayOrderController, validatePaymentController, handelFailedPaymentController } = require('../controller/RayzorPayController');
 const { submitFeedbackController } = require('../controller/UserFeedbackController');
@@ -133,5 +133,7 @@ router.post('/publish-video-to-explore', publishVideoToExploreController);
 router.get("/published-videos",  getUserPublishedVideosController);
 router.delete("/published-videos/:video_id", deletePublishedVideoController);
 
+// report video
+router.post("/report-video", videoReportController);
 
 module.exports = router;

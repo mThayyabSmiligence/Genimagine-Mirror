@@ -1,8 +1,10 @@
 const db = require('../config/connectDatabase');
+const { Op } = require("sequelize");
 const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
 const { use } = require('../routes/Users');
 const { decrypt } = require('./EncrypDecrypt');
+const { VideoReport, ExploreVideo, StoryToVideo } = require('../models');
 
 exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     let generated_image_data;
@@ -613,3 +615,114 @@ exports.ImageReportService = async (image_id, userID, published_id, reason) => {
         };
     }
 }
+
+
+exports.videoReportService = async ({ story_id, reason, user_id }) => {
+  try {
+    if (!story_id || !reason) {
+      return {
+        status: 400,
+        message: "Story ID and reason are required.",
+        success: false,
+      };
+    }
+
+    // 🔹 Step 1: Get username
+    const [userData] = await db.query(
+      `SELECT username FROM users WHERE user_id = ?`,
+      [user_id]
+    );
+    const username = userData[0]?.username || "Unknown";
+
+    // 🔹 Step 2: Get video_id from StoryToVideo
+    const storyVideo = await StoryToVideo.findOne({
+      where: { story_id },
+      attributes: ["id"],
+    });
+    if (!storyVideo) {
+      return {
+        status: 404,
+        message: "No video found for this story.",
+        success: false,
+      };
+    }
+    const video_id = storyVideo.id;
+
+    // 🔹 Step 3: Get published_id from ExploreVideo
+    const publishedVideo = await ExploreVideo.findOne({
+      where: { story_id },
+      attributes: ["id"],
+    });
+    const published_id = publishedVideo ? publishedVideo.id : null;
+
+    // 🔹 Step 4: Check existing report for this video/published_id pair
+    const existingReport = await VideoReport.findOne({
+      where: { [Op.or]: [{ video_id }, { published_id }] },
+    });
+
+    // New report entry
+    const newReportEntry = {
+      reason,
+      user_id,
+      username,
+      reported_at: new Date().toISOString(),
+    };
+
+    if (existingReport) {
+      const reportDetails = existingReport.report_details || [];
+
+      // Check if user already reported
+      const alreadyReported = reportDetails.some(
+        (r) => r.user_id === user_id
+      );
+
+      if (alreadyReported) {
+        return {
+          status: 409,
+          message: "You have already reported this video.",
+          success: false,
+        };
+      }
+
+      // Append new report
+      reportDetails.push(newReportEntry);
+
+      await existingReport.update({
+        report_details: reportDetails,
+        report_count: reportDetails.length,
+      });
+
+      return {
+        status: 200,
+        message: "Your report has been added.",
+        success: true,
+      };
+    }
+
+    // 🔹 Step 5: Create new report record
+    const newReport = await VideoReport.create({
+      video_id,
+      published_id,
+      report_details: [newReportEntry],
+      report_count: 1,
+    });
+
+    return {
+      status: 201,
+      message: "Video reported successfully.",
+      success: true,
+      data: newReport,
+    };
+  } catch (error) {
+    console.error("Error in videoReportService:", error);
+    return {
+      status: 500,
+      message: "Server error while reporting video.",
+      success: false,
+    };
+  }
+};
+
+//139
+//video id: 38
+//publisged id: 9
