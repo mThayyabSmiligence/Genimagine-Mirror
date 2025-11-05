@@ -13,7 +13,9 @@ const AppError = require('../utils/AppError');
 
 exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual") => {
 
- 
+    // return {
+    //   success:false
+    // }
     //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
     // Check if the story exists

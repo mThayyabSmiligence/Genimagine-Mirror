@@ -11,6 +11,7 @@ const generateStabilityAiImage = require("../API/StabilityAiImage");
 const { uploadImageToServer } = require("../service/UploadToServerService");
 const { generateSceneService } = require("../service/SceneService");
 const { generateImage } = require("../API/CloudFlare.api");
+const { Story } = require("../models");
 
 
 
@@ -41,16 +42,14 @@ const worker = new Worker(
             story.status = "in-progress";
             await story.save();
         } catch (err) {
-            console.error("Failed to set story in-progress:", err);
-            return;
+            throw new Error("Failed to update story status");
         }
 
         
         const style = await Style.findOne({ where: { id: story.style_id } }).catch(err => {
             console.error("Error fetching style:", err);
-            return null;
+            throw new Error("Failed to fetch style");
         });
-        if (!style) return;
 
         let extactCount = 0;
         let parsedPrompt = { success: false };
@@ -75,10 +74,7 @@ const worker = new Worker(
 
 
         if (!parsedPrompt.success || !parsedPrompt.data.characters || !parsedPrompt.data.scenes) {
-            console.log("Failed to parse prompt");
-            story.status = "failed";
-            await story.save();
-            return;
+            throw new Error("Failed to parse prompt");
         }
 
 
@@ -155,17 +151,17 @@ const worker = new Worker(
           );
 
           if (!result.success) {
-            console.log("Failed to generate scene");
+            throw err;
           }
 
           story.generated_scenes = story.generated_scenes + 1;
           await story.save().catch(err => console.error("Failed to update story scenes:", err));
         } catch (err) {
-          console.error("Scene generation error:", err);
+          throw new Error("Failed to generate scene");
         }
       }
 
-      
+      //uuser corn job to update the status the its failed here 
       try {
         story.status =
           story.generated_scenes === story.total_scenes
@@ -176,12 +172,8 @@ const worker = new Worker(
         console.error("Error saving final story status:", err);
       }
     } catch (err) {
-
       console.error("Unexpected worker error:", err);
-      if (story) {
-        story.status = "failed";
-        await story.save().catch(() => {});
-      }
+      throw err;
     }
   },
   { connection, concurrency: 10 }
@@ -193,8 +185,52 @@ worker.on("completed", job => {
     console.log(`Job ${job.id} completed`);
 });
 
-worker.on("failed", (job, err) => {
+worker.on("failed",async (job, err) => {
     console.log(`Job ${job.id} failed: ${err.message}`);
+    
+    // Access job data to update database
+    const { storyId, userId } = job.data;
+    
+    try {
+        // Update story status in database
+        const story = await Story.findOne({ 
+            where: { id: storyId, user_id: userId } 
+        });
+        
+        if (story) {
+            story.status = "failed";
+            story.error_message = err.message; // Optional: store error details
+            await story.save();
+            console.log(`Story ${storyId} marked as failed in database`);
+        }
+    } catch (dbError) {
+        console.error(`Failed to update story status in DB:`, dbError);
+        // This is a critical error - consider alerting/monitoring
+    }
+});
+
+worker.on('error',async (job, err) => {
+    console.log(`Job ${job.id} error: ${err.message}`);
+    
+    // Access job data to update database
+    const { storyId, userId } = job.data;
+    
+    try {
+        // Update story status in database
+        const story = await Story.findOne({ 
+            where: { id: storyId, user_id: userId } 
+        });
+        
+        if (story) {
+            story.status = "failed";
+            story.error_message = err.message; // Optional: store error details
+            await story.save();
+            console.log(`Story ${storyId} marked as failed in database`);
+        }
+    } catch (dbError) {
+        console.error(`Failed to update story status in DB:`, dbError);
+        // This is a critical error - consider alerting/monitoring
+    }
 });
 
 }

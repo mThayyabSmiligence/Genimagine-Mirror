@@ -68,6 +68,14 @@ const Story = sequelize.define(
       type: DataTypes.ENUM("manual", "auto"),
       allowNull: false,
       defaultValue: "manual",
+    },
+    error_message: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    job_id:{
+        type: DataTypes.STRING,
+        allowNull: true
     }
   },
   {

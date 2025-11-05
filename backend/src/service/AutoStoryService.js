@@ -155,3 +155,36 @@ exports.getStoryStatusService = async (story_id, user_id) => {
     return { success: false, message: 'Failed to fetch story', status: 500 };
   }
 }
+
+
+exports.stuckHandler= async()=>{
+  try{
+    const stories = await Story.findAll({
+      where: {
+        status: {
+          [Op.or]: ['started', 'in_progress', 'generating_characters', 'generating_scenes']
+        },
+        updatedAt: {
+          [Op.lte]: new Date(Date.now() - 30 * 60 * 1000)
+        }
+      }
+    });
+
+    for (const story of stories) {
+      if(story.status=='started'||story.status=="in_progress"){
+        
+      }
+    }
+
+  }
+  catch(err){
+    console.log("error in Auto Story Stuck handler",err)
+  }
+}
+
+const RestartAutoStoryWorker = async (story_id) => {
+  try {
+  } catch (error) {
+    console.error('Error restarting worker:', error);
+  }
+};
