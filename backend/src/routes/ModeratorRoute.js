@@ -23,6 +23,13 @@ router.route("/getreportdetail/:report_id").post(getReportedImageDetail);
 
 // video report management
 router.route("/reported-videos").get(getAllReportedVideosController);
+router.route("/reported-video/:report_id").get(getReportedVideoDetailByReportIdController)
+// video report actions
+router.route("reported-video/:report_id/ban").post()
+router.route("reported-video/:report_id/suspend").post()
+router.route("reported-video/:report_id/warn").post()
+router.route("reported-video/:report_id/no-action").post()
+router.route("reported-video/:report_id/delete").post()
 
 // router.route('/reported-images/user/:userId').get(getReportedImagesByUserController);
 // Moderator Actions on Reported Images

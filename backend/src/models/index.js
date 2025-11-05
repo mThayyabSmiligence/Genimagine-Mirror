@@ -17,6 +17,8 @@ db.Scene = require("./Scene");
 db.StoryToVideo = require("./StoryToVideo");
 db.ExploreVideo = require("./ExploreVideo");
 db.VideoReport = require("./VideoReport"); 
+db.User = require("./User")(sequelize, Sequelize.DataTypes);
+
 
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });
@@ -66,10 +68,16 @@ db.VideoReport.belongsTo(db.StoryToVideo, { foreignKey: "video_id", as: "video" 
 db.ExploreVideo.hasMany(db.VideoReport, { foreignKey: "published_id", as: "published_reports" });
 db.VideoReport.belongsTo(db.ExploreVideo, { foreignKey: "published_id", as: "published_video" });
 
-// // VideoReport ↔ User (who reported)
-// db.VideoReport.belongsTo(db.User, { foreignKey: "reported_by", as: "reporter" });
+// Each ExploreVideo belongs to one User (the uploader)
+// db.ExploreVideo.belongsTo(db.User, {
+//   foreignKey: "user_id",
+//   as: "uploader"
+// });
 
-// // VideoReport ↔ User (who took action)
-// db.VideoReport.belongsTo(db.User, { foreignKey: "action_taken_by", as: "action_taker" });
+// Each User can have many ExploreVideos (uploads)
+// db.User.hasMany(db.ExploreVideo, {
+//   foreignKey: "user_id",
+//   as: "uploaded_videos"
+// });
 
 module.exports = db;

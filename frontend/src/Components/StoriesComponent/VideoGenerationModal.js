@@ -38,7 +38,7 @@ const VideoGenerationModal = ({
   videoData: initialVideoData
 }) => {
   const navigate = useNavigate();
-  const location = useLocation(); 
+   const location = useLocation(); 
 
   // status/toast state (unchanged API surface)
   const [success, setSuccess] = useState(false);
@@ -60,7 +60,7 @@ const VideoGenerationModal = ({
   const pollingRef = useRef(null);
   const playerInitializedRef = useRef(false);
 
-  const isPublishedVideosPage = location.pathname === '/u/published-videos';
+   const isPublishedVideosPage = location.pathname === '/u/published-videos';
   const isExploreVideoPage = location.pathname === '/explore'
 
   // Reflect prop changes
@@ -249,100 +249,89 @@ const VideoGenerationModal = ({
 
 
   
-   const updateLanguageMenu = (data) => {
-    if (!menuRef.current) return;
+  // Build/update the in-player menu
+  // Build/update the in-player menu
+const updateLanguageMenu = (data) => {
+  if (!menuRef.current) return;
 
-    menuRef.current.innerHTML = '';
+  menuRef.current.innerHTML = '';
 
-    Object.entries(SUBTITLE_LANGUAGES).forEach(([code, label]) => {
-      const item = document.createElement('div');
-      item.className = 'vjs-language-menu-item';
+  Object.entries(SUBTITLE_LANGUAGES).forEach(([code, label]) => {
+    const item = document.createElement('div');
+    item.className = 'vjs-language-menu-item';
 
-      const audioTrack = data.audio_tracks?.find(t => t.language === code);
-      const subtitleTrack = data.subtitle_tracks?.find(t => t.language === code);
-      const isGenerated = audioTrack?.status === 'done' && subtitleTrack?.status === 'done';
-      const isGenerating = generatingLanguages.has(code);
-      const isCurrent = currentLanguage === code;
+    const audioTrack = data.audio_tracks?.find(t => t.language === code);
+    const isGenerated = audioTrack?.status === 'done';
+    const isGenerating = generatingLanguages.has(code);
+    const isCurrent = currentLanguage === code;
 
-      // ⭐ KEY LOGIC: ONLY on explore page, hide non-generated languages
-      // On published videos page and stories page, show ALL languages
-      if (isExploreVideoPage && !isGenerated) {
-        return; // Skip this language entirely ONLY on explore page
+    // On explore page, skip languages that aren't generated
+    if (isExploreVideoPage && !isGenerated) {
+      return; // Don't show this language option
+    }
+
+    item.style.cssText = `
+      padding: 10px 16px;
+      cursor: ${isGenerated ? 'pointer' : (isExploreVideoPage ? 'not-allowed' : 'pointer')};
+      color: ${isCurrent ? '#4CAF50' : 'white'};
+      opacity: ${isGenerated || !isExploreVideoPage ? '1' : '0.5'};
+      font-weight: ${isCurrent ? 'bold' : 'normal'};
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    `;
+
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = label;
+    item.appendChild(labelSpan);
+
+    if (isGenerating) {
+      const badge = document.createElement('span');
+      badge.textContent = 'Generating...';
+      badge.style.cssText = 'font-size: 11px; color: #FFA726; margin-left: 8px;';
+      item.appendChild(badge);
+    } else if (!isGenerated && !isExploreVideoPage && !isPublishedVideosPage) {
+      // Only show "+ Generate" if NOT on explore or published videos page
+      const badge = document.createElement('span');
+      badge.textContent = '+ Generate';
+      badge.style.cssText = 'font-size: 11px; color: #4CAF50; margin-left: 8px;';
+      item.appendChild(badge);
+    } else if (!isGenerated && isPublishedVideosPage) {
+      // On published videos page, show "+ Generate" option
+      const badge = document.createElement('span');
+      badge.textContent = '+ Generate';
+      badge.style.cssText = 'font-size: 11px; color: #4CAF50; margin-left: 8px;';
+      item.appendChild(badge);
+    }
+
+    item.addEventListener('mouseenter', () => {
+      if (!isCurrent && isGenerated) {
+        item.style.background = 'rgba(255, 255, 255, 0.1)';
       }
-
-      // Determine if user can interact with this language
-      const canGenerate = !isExploreVideoPage && !isGenerating && !isGenerated;
-      const canSwitch = isGenerated;
-      const isClickable = canGenerate || canSwitch;
-
-      item.style.cssText = `
-        padding: 10px 16px;
-        cursor: ${isClickable ? 'pointer' : 'not-allowed'};
-        color: ${isCurrent ? '#4CAF50' : 'white'};
-        opacity: ${isClickable ? '1' : '0.5'};
-        font-weight: ${isCurrent ? 'bold' : 'normal'};
-        font-size: 14px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: background 0.2s;
-      `;
-
-      const labelSpan = document.createElement('span');
-      labelSpan.textContent = label;
-      item.appendChild(labelSpan);
-
-      // ⭐ Show appropriate badge based on generation status
-      if (isGenerating) {
-        // Language is currently being generated
-        const badge = document.createElement('span');
-        badge.textContent = 'Generating...';
-        badge.style.cssText = 'font-size: 11px; color: #FFA726; margin-left: 8px;';
-        item.appendChild(badge);
-      } else if (isGenerated && (isPublishedVideosPage || !isExploreVideoPage)) {
-        // ⭐ On published videos page: show generated languages WITHOUT badge
-        // User can simply click to switch - clean UI for already-available languages
-        // No badge needed - the fact it's clickable indicates it's available
-      } else if (!isGenerated && !isExploreVideoPage) {
-        // ⭐ Show "+ Generate" badge for languages not yet generated
-        // This applies to BOTH stories page AND published videos page
-        const badge = document.createElement('span');
-        badge.textContent = '+ Generate';
-        badge.style.cssText = 'font-size: 11px; color: #4CAF50; margin-left: 8px;';
-        item.appendChild(badge);
-      }
-
-      item.addEventListener('mouseenter', () => {
-        if (!isCurrent && isClickable) {
-          item.style.background = 'rgba(255, 255, 255, 0.1)';
-        }
-      });
-
-      item.addEventListener('mouseleave', () => {
-        item.style.background = 'transparent';
-      });
-
-      item.addEventListener('click', () => {
-        if (!isClickable) return;
-
-        menuRef.current.style.display = 'none';
-
-        if (isGenerated) {
-          // Switch to already generated language
-          handleLanguageSwitch(code, data);
-          // ⭐ Optional: Only show toast on published videos page for clarity
-          if (isPublishedVideosPage) {
-            toast.success(`Switched to ${label}`);
-          }
-        } else if (canGenerate) {
-          // Generate new language (works on both stories and published videos pages)
-          handleGenerateLanguage(code);
-        }
-      });
-
-      menuRef.current.appendChild(item);
     });
-  };
+    item.addEventListener('mouseleave', () => {
+      item.style.background = 'transparent';
+    });
+
+    item.addEventListener('click', () => {
+      menuRef.current.style.display = 'none';
+
+      if (isGenerated) {
+        // Switch to generated language
+        handleLanguageSwitch(code, data);
+        toast.success(`Switched to ${label}`);
+      } else if (!isGenerating && !isExploreVideoPage) {
+        // Only allow generation if NOT on explore page
+        handleGenerateLanguage(code);
+      }
+    });
+
+    menuRef.current.appendChild(item);
+  });
+};
+
 
   // Create the language button and attach to control bar
   const createCustomCaptionButton = (player, data) => {

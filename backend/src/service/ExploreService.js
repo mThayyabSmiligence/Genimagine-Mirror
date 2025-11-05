@@ -4,7 +4,7 @@ const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
 const { use } = require('../routes/Users');
 const { decrypt } = require('./EncrypDecrypt');
-const { VideoReport, ExploreVideo, StoryToVideo } = require('../models');
+const { VideoReport, ExploreVideo, StoryToVideo, Story } = require('../models');
 
 exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     let generated_image_data;
@@ -627,14 +627,25 @@ exports.videoReportService = async ({ story_id, reason, user_id }) => {
       };
     }
 
-    // 🔹 Step 1: Get username
+    const story = await Story.findOne({
+      where: { id: story_id },
+      attributes: ["id", "name"],
+    });
+
+    if (!story) {
+      return {
+        status: 404,
+        message: "Invalid story. The story does not exist.",
+        success: false,
+      };
+    }
+
     const [userData] = await db.query(
       `SELECT username FROM users WHERE user_id = ?`,
       [user_id]
     );
     const username = userData[0]?.username || "Unknown";
 
-    // 🔹 Step 2: Get video_id from StoryToVideo
     const storyVideo = await StoryToVideo.findOne({
       where: { story_id },
       attributes: ["id"],
@@ -648,19 +659,16 @@ exports.videoReportService = async ({ story_id, reason, user_id }) => {
     }
     const video_id = storyVideo.id;
 
-    // 🔹 Step 3: Get published_id from ExploreVideo
     const publishedVideo = await ExploreVideo.findOne({
       where: { story_id },
       attributes: ["id"],
     });
     const published_id = publishedVideo ? publishedVideo.id : null;
 
-    // 🔹 Step 4: Check existing report for this video/published_id pair
     const existingReport = await VideoReport.findOne({
       where: { [Op.or]: [{ video_id }, { published_id }] },
     });
 
-    // New report entry
     const newReportEntry = {
       reason,
       user_id,
@@ -669,9 +677,10 @@ exports.videoReportService = async ({ story_id, reason, user_id }) => {
     };
 
     if (existingReport) {
-      const reportDetails = existingReport.report_details || [];
+      let reportDetails = Array.isArray(existingReport.report_details)
+        ? existingReport.report_details
+        : JSON.parse(existingReport.report_details || "[]");
 
-      // Check if user already reported
       const alreadyReported = reportDetails.some(
         (r) => r.user_id === user_id
       );
@@ -684,22 +693,28 @@ exports.videoReportService = async ({ story_id, reason, user_id }) => {
         };
       }
 
-      // Append new report
       reportDetails.push(newReportEntry);
 
-      await existingReport.update({
-        report_details: reportDetails,
-        report_count: reportDetails.length,
+      await VideoReport.update(
+        {
+          report_details: reportDetails,
+          report_count: reportDetails.length,
+        },
+        { where: { report_id: existingReport.report_id } }
+      );
+
+      const updated = await VideoReport.findOne({
+        where: { report_id: existingReport.report_id },
       });
 
       return {
         status: 200,
         message: "Your report has been added.",
         success: true,
+        data: updated,
       };
     }
 
-    // 🔹 Step 5: Create new report record
     const newReport = await VideoReport.create({
       video_id,
       published_id,
@@ -722,6 +737,7 @@ exports.videoReportService = async ({ story_id, reason, user_id }) => {
     };
   }
 };
+
 
 //139
 //video id: 38
