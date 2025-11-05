@@ -9,6 +9,7 @@ const { imageToPromptController, upload } = require('../controller/ImagetoPrompt
 const { testCharacterExpression } = require('../controller/CharacterExpressionController');
 const { characterCollageController } = require('../controller/CharacterController');
 const { getAllExploreVideosController } = require('../controller/ExploreVideoController');
+const { testUserModel } = require('../controller/TestController');
 const router = express.Router();
 
 router.route('/get-packages').get(getCreditPackagesController);
@@ -49,6 +50,8 @@ router.route('/image-to-prompt').post(upload, imageToPromptController);
 //test routes
 router.route('/test-character-expression').post(testCharacterExpression);
 router.post('/character-collage', characterCollageController);
+
+router.get('/test-user-model',testUserModel)
 
 module.exports = router;
 

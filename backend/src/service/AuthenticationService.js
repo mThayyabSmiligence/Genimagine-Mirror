@@ -73,12 +73,15 @@ exports.generateTestEmailService=async(email,password)=>{
         const query = `INSERT INTO users (username, password_hash, age, email, role, credits,dob,is_verified) 
                     VALUES (?,?,?,?,?,?,?,?)`;
 
+        let username=email.split('@')[0]
+        username="test"+username;
+
         
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const [rows] = await db.execute(query, ['test', hashedPassword, 30, email, 'user', 0, '2000-01-01', 1])
+        const [rows] = await db.execute(query, [username, hashedPassword, 30, email, 'user', 0, '2000-01-01', 1])
         return [{
-            username:'test',
+            username:username,
             user_id: rows.insertId,
             age:30,
             role:'user',

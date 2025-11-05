@@ -114,7 +114,7 @@ const systemPrompt = `
       ],
       "location": "string",   // where the scene takes place
       "environment": "string" // extra context (weather, chaos, mood, special events)
-    }
+    } 
 
     Rules:
     - "location" must be the physical place (rooftop, forest, castle hall).

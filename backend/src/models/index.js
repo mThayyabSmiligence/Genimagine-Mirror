@@ -15,10 +15,9 @@ db.ImageGenerationBatch = require("./ImageGenerationBatch");
 db.CharacterExpressionImage = require("./CharacterExpressionImage");
 db.Scene = require("./Scene");
 db.StoryToVideo = require("./StoryToVideo");
-db.ExploreVideo = require("./ExploreVideo");
+db.ExploreVideo = require("./ExploreVideo")
 db.VideoReport = require("./VideoReport"); 
-db.User = require("./User")(sequelize, Sequelize.DataTypes);
-
+db.Users = require("./Users")
 
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });

@@ -176,119 +176,119 @@ const startStoryToVideoWorker = async (storyToVideoId,language) => {
 const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
 
     try{
-    console.log("startAddLanguageStoryToVideoWorker is starting");
-    const storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
-    if(!storyToVideo){
-        throw new StoryToVideoError('StoryToVideo not found', 404,storyToVideoId)
-    }
-
-    console.log("startAddLanguageStoryToVideoWorker is starting2");
-    let narrations = safeJsonParse(storyToVideo.narrations,storyToVideo.narrations);
-    const englishNarrations =narrations.find((narration) => narration.language === 'en');
-    if(englishNarrations.narrations.length === 0){
-        console.log("error fetching english narrations");
-        throw new AppError('No english narrations found', 404)
-    };
-    const translatedNarrations=await translateNarrationsToLanguage(englishNarrations.narrations,language,storyToVideoId);
-
-    
-    if(translatedNarrations.success === false){
-        const failedNarration={
-            language:language,
-            narrations:null,
-            status:"failed"
+        console.log("startAddLanguageStoryToVideoWorker is starting");
+        const storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
+        if(!storyToVideo){
+            throw new StoryToVideoError('StoryToVideo not found', 404,storyToVideoId)
         }
-        narrations.push(failedNarration);
+
+        console.log("startAddLanguageStoryToVideoWorker is starting2");
+        let narrations = safeJsonParse(storyToVideo.narrations,storyToVideo.narrations);
+        const englishNarrations =narrations.find((narration) => narration.language === 'en');
+        if(englishNarrations.narrations.length === 0){
+            console.log("error fetching english narrations");
+            throw new AppError('No english narrations found', 404)
+        };
+        const translatedNarrations=await translateNarrationsToLanguage(englishNarrations.narrations,language,storyToVideoId);
+
+        
+        if(translatedNarrations.success === false){
+            const failedNarration={
+                language:language,
+                narrations:null,
+                status:"failed"
+            }
+            narrations.push(failedNarration);
+            storyToVideo.narrations=narrations;
+            await storyToVideo.save();
+            throw new AppError('Failed to translate narrations', 500)
+        };
+
+        console.log({
+            language:language,
+            narrations:translatedNarrations.narrations,
+            status:"done"
+        });
+        narrations.push({
+            language:language,
+            narrations:translatedNarrations.narrations,
+            status:"done"
+        })
         storyToVideo.narrations=narrations;
         await storyToVideo.save();
-        throw new AppError('Failed to translate narrations', 500)
-    };
 
-    console.log({
-        language:language,
-        narrations:translatedNarrations.narrations,
-        status:"done"
-    });
-    narrations.push({
-        language:language,
-        narrations:translatedNarrations.narrations,
-        status:"done"
-    })
-    storyToVideo.narrations=narrations;
-    await storyToVideo.save();
+        console.log("startAddLanguageStoryToVideoWorker is starting3");
+        const audioObject = await generateAndCombineAudioForNarrations(translatedNarrations.narrations,storyToVideoId,language,safeJsonParse(storyToVideo.scene_timings,storyToVideo.scene_timings),false);
 
-    console.log("startAddLanguageStoryToVideoWorker is starting3");
-    const audioObject = await generateAndCombineAudioForNarrations(translatedNarrations.narrations,storyToVideoId,language,safeJsonParse(storyToVideo.scene_timings,storyToVideo.scene_timings),false);
+        if(audioObject.success === false){
+            const failedAudioTrack={
+                language:language,
+                narrations:null,
+                status:"failed"
+            
+            }
+            let audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
 
-    if(audioObject.success === false){
-        const failedAudioTrack={
-            language:language,
-            narrations:null,
-            status:"failed"
-        
+            audio_tracks.push(failedAudioTrack);
+            storyToVideo.adio_tracks=audio_tracks;
+            await storyToVideo.save();
+            throw new AppError('Failed to generate audio', 500)
+        };
+        console.log("audioObject:- ",audioObject);
+        narrations = audioObject.narrations;
+        const audio = fs.readFileSync(audioObject.combinedAudioPath);
+        const audioUpload= await uploadAudioTrack(audio,storyToVideoId,language);
+
+        let new_audio_track;
+        if(audioUpload.success === false){
+            new_audio_track={
+                language: language,
+                url: null,
+                path: null,
+                type: 'secondary',
+                status:"failed"
+            }
         }
+        else{
+            new_audio_track={
+                language: language,
+                url: audioUpload.fileUrl,
+                path: audioUpload.path,
+                type: 'secondary',
+                status:"done"
+            }
+        };
+        
+
         let audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
 
-        audio_tracks.push(failedAudioTrack);
-        storyToVideo.adio_tracks=audio_tracks;
+        
+        audio_tracks=[...audio_tracks,new_audio_track];
+        storyToVideo.audio_tracks=audio_tracks;
         await storyToVideo.save();
-        throw new AppError('Failed to generate audio', 500)
-    };
-    console.log("audioObject:- ",audioObject);
-    narrations = audioObject.narrations;
-    const audio = fs.readFileSync(audioObject.combinedAudioPath);
-    const audioUpload= await uploadAudioTrack(audio,storyToVideoId,language);
 
-    let new_audio_track;
-    if(audioUpload.success === false){
-        new_audio_track={
+
+        const srtPath= await generateSRTFileForLanguage(narrations,language,storyToVideoId);
+        const uploadedSubtitles = await uploadSubtitles(srtPath,storyToVideoId,language);
+        console.log("uploadedSubtitles:- ",uploadedSubtitles);
+        
+        const new_subtitle_track={
             language: language,
-            url: null,
-            path: null,
+            url: uploadedSubtitles.fileUrl,
+            path: uploadedSubtitles.path,
             type: 'secondary',
-            status:"failed"
-        }
+            status:uploadedSubtitles.success?"done":"failed"
+        };
+        let subtitle_tracks= safeJsonParse(storyToVideo.subtitle_tracks,storyToVideo.subtitle_tracks);
+        subtitle_tracks=[...subtitle_tracks,new_subtitle_track];
+        storyToVideo.subtitle_tracks=subtitle_tracks;
+        await storyToVideo.save();
+        await cleanupTempFiles([srtPath,audioObject.combinedAudioPath]);
+    }catch(error){
+        console.error("Unhandled error in worker:", error);
+        throw new AppError('Worker failed unexpectedly', 500);
+
     }
-    else{
-        new_audio_track={
-            language: language,
-            url: audioUpload.fileUrl,
-            path: audioUpload.path,
-            type: 'secondary',
-            status:"done"
-        }
-    };
-    
-
-    let audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
-
-    
-    audio_tracks=[...audio_tracks,new_audio_track];
-    storyToVideo.audio_tracks=audio_tracks;
-    await storyToVideo.save();
-
-
-    const srtPath= await generateSRTFileForLanguage(narrations,language,storyToVideoId);
-    const uploadedSubtitles = await uploadSubtitles(srtPath,storyToVideoId,language);
-    console.log("uploadedSubtitles:- ",uploadedSubtitles);
-    const new_subtitle_track={
-        language: language,
-        url: uploadedSubtitles.fileUrl,
-        path: uploadedSubtitles.path,
-        type: 'secondary',
-        status:uploadedSubtitles.success?"done":"failed"
-    };
-    let subtitle_tracks= safeJsonParse(storyToVideo.subtitle_tracks,storyToVideo.subtitle_tracks);
-    subtitle_tracks=[...subtitle_tracks,new_subtitle_track];
-    storyToVideo.subtitle_tracks=subtitle_tracks;
-    await storyToVideo.save();
-    await cleanupTempFiles([srtPath,audioObject.combinedAudioPath]);
-}catch(error){
-    console.error("Unhandled error in worker:", error);
-    
-    throw new AppError('Worker failed unexpectedly', 500);
-
-}
 }
 
 

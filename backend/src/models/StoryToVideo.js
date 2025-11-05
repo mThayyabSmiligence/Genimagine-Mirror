@@ -64,16 +64,16 @@ const StoryToVideo = sequelize.define("StoryToVideo", {
         allowNull: false,
         defaultValue: "pending",
     },
-    created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,   
-        defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-    },
+    // created_at: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false,   
+    //     defaultValue: DataTypes.NOW,
+    // },
+    // updated_at: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false,
+    //     defaultValue: DataTypes.NOW,
+    // },
     scene_timings: {
         type: DataTypes.JSON,
         allowNull: true,
