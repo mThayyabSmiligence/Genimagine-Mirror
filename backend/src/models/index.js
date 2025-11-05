@@ -16,6 +16,7 @@ db.CharacterExpressionImage = require("./CharacterExpressionImage");
 db.Scene = require("./Scene");
 db.StoryToVideo = require("./StoryToVideo");
 db.ExploreVideo = require("./ExploreVideo")
+db.Users = require("./Users")
 
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });
