@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "../../Css/ExplorePage.css";
 import ExploreImages from "../../Components/Explore/ExploreImages";
 import ExploreVideos from "../../Components/Explore/ExploreVideos";
+import AuthContext from "../../Context/AuthProvider";
 
 
 function ExplorePage() {
     const [activeTab, setActiveTab] = useState("images");
+    const {loggedIn}= useContext(AuthContext);
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
@@ -37,7 +39,7 @@ function ExplorePage() {
             </div>
 
             <div className="explore-body">
-                {activeTab === "images" ? <ExploreImages /> : <ExploreVideos />}
+                {activeTab === "images" ? <ExploreImages /> : <ExploreVideos loggedIn = {loggedIn}/>}
             </div>
         </div>
     );

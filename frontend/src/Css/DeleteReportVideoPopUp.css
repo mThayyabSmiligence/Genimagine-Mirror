@@ -1,0 +1,125 @@
+/* ReportVideoDetail.css */
+
+.content-details {
+  max-width: 100%;
+}
+
+.text-muted {
+  width: 100%;
+  margin: 0;
+  align-items: center;
+}
+
+.prompt-container,
+.caption-container {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10px;
+  max-height: 90px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  width: 100%;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+.inner-card-detail {
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.inner-card-detail .user-id-tag-container {
+  width: 100%;
+  border-bottom: 1px solid rgb(207, 207, 207);
+}
+
+.scrollable-report-details {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.action-dropdown-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.report-action-button {
+  width: 160px;
+  background-color: #343a40;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.report-action-button:hover {
+  background-color: #495057;
+}
+
+.report-action-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
+}
+
+.dropdown-menu {
+  right: 0;
+  left: auto;
+  min-width: 160px;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger {
+  color: #dc3545;
+}
+
+.dropdown-item.text-warning {
+  color: #ffc107;
+}
+
+.dropdown-item.text-secondary {
+  color: #6c757d;
+}
+
+.dropdown-item:disabled {
+  background-color: rgb(168, 168, 168);
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.no-action-btn {
+  width: 110px;
+  background-color: #117f51;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bgblur-container {
+  z-index: 1;
+}
+
+.popup-container {
+  z-index: 2;
+}
+
+.btn-close:focus,
+.btn-close:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}

@@ -70,6 +70,7 @@ import CreateCharacters from './Pages/User/CreateCharacters';
 import CreateScenes from './Pages/User/CreateScenes';
 import PublishedVideosPage from './Pages/User/PublishedVideosPage';
 import PostsPage from './Pages/User/PostsPage';
+import ReportVideoDetail from './Pages/Moderator/ReportVideoDetail';
 
 
 function App() {
@@ -215,6 +216,7 @@ function App() {
                 <Route path = "user-Detail/:user_id" element={<UserDetail/>} ></Route>
                 <Route path = "reports" element={<Reports/>} ></Route>
                 <Route path= "report-image-detail/:report_id" element={<ReportImageDetail/>}></Route>
+                <Route path= "report-video-detail/:report_id" element={<ReportVideoDetail/>}></Route>
                 <Route path = "feedbacks" element={<ModeratorFeedbacks/>} ></Route>
                 <Route path = "profile-page" element={<ModeratorProfilePage/>} ></Route>
                 <Route path='change-password' element={<ChangePassword></ChangePassword>}></Route>

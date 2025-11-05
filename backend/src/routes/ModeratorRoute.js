@@ -3,7 +3,7 @@ const { banUserController, unbanUserController, suspendUserController, unsuspend
 const { getAllReportedImagesController, getReportedImageDetail, banReportedImageUserController, suspendReportedImageUserController, warnReportedImageUserController, deleteReportedImageController, noActionReportedImageController, getReportedImagesByUserController, getUserListWithReportCountController, getUserReportedImageCountsController } = require('../controller/ReportImageController');
 const { getAllFeedbacksController, respondToFeedbackController, escalateFeedbackController, updateFeedbackStatusController } = require('../controller/UserFeedbackController');
 const { getModeratorDetailController } = require('../controller/ModeratorController');
-const { getAllReportedVideosController } = require('../controller/ReportVideoConntroller');
+const { getAllReportedVideosController, getReportedVideoDetailByReportIdController, banReportedVideoUserController, suspendReportedVideoUserController, warnReportedVideoUserController, noActionReportedVideoController, deleteReportedVideoController } = require('../controller/ReportVideoConntroller');
 const router = express.Router();
 // user management
 // router.route('/user-report-list').get(getUserListWithReportCountController);
@@ -25,11 +25,11 @@ router.route("/getreportdetail/:report_id").post(getReportedImageDetail);
 router.route("/reported-videos").get(getAllReportedVideosController);
 router.route("/reported-video/:report_id").get(getReportedVideoDetailByReportIdController)
 // video report actions
-router.route("reported-video/:report_id/ban").post()
-router.route("reported-video/:report_id/suspend").post()
-router.route("reported-video/:report_id/warn").post()
-router.route("reported-video/:report_id/no-action").post()
-router.route("reported-video/:report_id/delete").post()
+router.route("/reported-video/:report_id/ban").post(banReportedVideoUserController)
+router.route("/reported-video/:report_id/suspend").post(suspendReportedVideoUserController)
+router.route("/reported-video/:report_id/warn").post(warnReportedVideoUserController)
+router.route("/reported-video/:report_id/no-action").post(noActionReportedVideoController)
+router.route("/reported-video/:report_id/delete-Video").post(deleteReportedVideoController)
 
 // router.route('/reported-images/user/:userId').get(getReportedImagesByUserController);
 // Moderator Actions on Reported Images

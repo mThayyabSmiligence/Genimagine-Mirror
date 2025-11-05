@@ -26,50 +26,51 @@ function ReportVideoCard({ report }) {
     return dateString.split('T')[0];
   };
 
-  const getPromptText = () => {
-    if (report.report_details && report.report_details.length > 0) {
-      const firstReport = report.report_details[0];
-      return `Reported by ${firstReport.username} for ${firstReport.reason}`;
-    }
-    return 'No details available';
-  };
-
   return (
     <div className="report-card">
       <div className="report-image-container">
-        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-          <span className="text-gray-500 text-sm">Video ID: {report.video_id}</span>
-        </div>
+        {report.thumbnail ? (
+          <img src={report.thumbnail} alt="Video Thumbnail" />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span>No Image</span>
+          </div>
+        )}
         <span className={`status-badge ${className}`}>{label}</span>
       </div>
-      
+
       <div className="report-details">
-        <div className='d-flex justify-content-between align-items-center mb-2'>
-          <h3 className='h-3 text-lg font-semibold text-gray-900 m-0 text-start'>ID: {report.video_id}</h3>
-          <div className='report-detail'>
-            <h3 className='h-3 font-semibold'>{formatDate(report.reported_at)}</h3>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h3 className="h-3 text-lg font-semibold text-gray-900 m-0 text-start">
+            ID: {report.video_id}
+          </h3>
+          <div className="report-detail">
+            <h3 className="h-3 font-semibold">{formatDate(report.reported_at)}</h3>
           </div>
         </div>
 
         <div className="mb-2">
-          <span className="d-flex mb-1 prompt-container-text details-title">Prompt:</span>
-          <div className='prompt-container-box border'>
-            <p>{getPromptText()}</p>
+          <span className="d-flex mb-1 prompt-container-text details-title">Story:</span>
+          <div className="prompt-container-box border">
+            <p>{report.story_name || 'No story available'}</p>
           </div>
         </div>
 
-        <div className='report-detail'>
-          <p className='details-title'>Report Count:</p>
+        <div className="report-detail">
+          <p className="details-title">Report Count:</p>
           <span>{report.report_count}</span>
         </div>
 
-        <div className='report-detail'>
-          <p className='details-title'>Report ID:</p>
+        <div className="report-detail">
+          <p className="details-title">Report ID:</p>
           <span>{report.report_id}</span>
         </div>
 
         <div className="action-buttons">
-          <Link to={`/moderator/report-video-detail/${report.report_id}`} className="review-btn link w-100">
+          <Link
+            to={`/moderator/report-video-detail/${report.report_id}`}
+            className="review-btn link w-100"
+          >
             Review
           </Link>
         </div>

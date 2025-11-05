@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/database");
+const ModeratorVideoAction = require("./ModeratorVideoAction");
 
 
 
@@ -68,15 +69,15 @@ db.ExploreVideo.hasMany(db.VideoReport, { foreignKey: "published_id", as: "publi
 db.VideoReport.belongsTo(db.ExploreVideo, { foreignKey: "published_id", as: "published_video" });
 
 // Each ExploreVideo belongs to one User (the uploader)
-// db.ExploreVideo.belongsTo(db.User, {
-//   foreignKey: "user_id",
-//   as: "uploader"
-// });
+db.ExploreVideo.belongsTo(db.Users, {
+  foreignKey: "user_id",
+  as: "uploader"
+});
 
 // Each User can have many ExploreVideos (uploads)
-// db.User.hasMany(db.ExploreVideo, {
-//   foreignKey: "user_id",
-//   as: "uploaded_videos"
-// });
+db.Users.hasMany(db.ExploreVideo, {
+  foreignKey: "user_id",
+  as: "uploaded_videos"
+});
 
 module.exports = db;

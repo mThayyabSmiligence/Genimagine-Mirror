@@ -4,7 +4,7 @@ import { useInView } from "react-intersection-observer";
 import VideoCard from "../../Components/Explore/VideoCard";
 import VideoGenerationModal from "../../Components/StoriesComponent/VideoGenerationModal";
 
-function ExploreVideos() {
+function ExploreVideos({loggedIn}) {
     const [videos, setVideos] = useState([]);
     const [videoCurrentPage, setVideoCurrentPage] = useState(1);
     const [hasMoreVideos, setHasMoreVideos] = useState(true);
@@ -111,6 +111,7 @@ function ExploreVideos() {
                                 key={`${video.id}-${index}`}
                                 video={video}
                                 onPlay={handleVideoPlay}
+                                loggedIn = {loggedIn}
                             />
                         ))}
                     </div>
