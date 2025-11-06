@@ -148,7 +148,7 @@ sudo apt install ffmpeg
 
 Redis is used for caching, queues, and job management. You can use a **cloud Redis (Upstash)** or **local Redis server**.
 
-### 🟢 Option 1: Use Upstash Redis (Recommended)
+### 🟢 Option 1: Use Upstash Redis 
 
 1. Visit [Upstash](https://upstash.com/)
 2. Create a Redis database.
@@ -158,7 +158,7 @@ Redis is used for caching, queues, and job management. You can use a **cloud Red
    REDIS_URL=redis://default:<your_password>@<your_upstash_instance>.upstash.io:6379
    ```
 
-### ⚙️ Option 2: Local Redis Server
+### ⚙️ Option 2: Local Redis Server (Recommended)
 
 #### On Ubuntu/Linux:
 
