@@ -194,7 +194,15 @@ sudo service redis-server start
 ## ▶️ Run the Backend Server
 
 ```bash
+cd .\backend\
 npm start
+```
+## ▶️ Run the Backend Worker
+needed to run some feature(auto story generation , story to video)
+
+```bash
+cd .\backend\
+node .\src\worker\index.js
 ```
 
 The backend should now be running at:
