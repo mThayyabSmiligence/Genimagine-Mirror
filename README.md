@@ -283,12 +283,13 @@ If using a deployed server (e.g., AWS / Oracle Cloud), replace `localhost` with 
 
 ## 🧰 Available Scripts Summary
 
-| Location | Command         | Description                               |
-| -------- | --------------- | ----------------------------------------- |
-| Backend  | `npm run dev`   | Starts backend server in development mode |
-| Backend  | `npm start`     | Starts backend in production mode         |
-| Frontend | `npm start`     | Runs React dev server                     |
-| Frontend | `npm run build` | Builds optimized React app                |
+| Location | Command                     | Description                               |
+| -------- | --------------------------- | ----------------------------------------- |
+| Backend  | `npm run dev`               | Starts backend server in development mode |
+| Backend  | `npm start`                 | Starts backend in production mode         |
+| Backend  | `node .\src\worker\index.js`| Starts backend workers                    |
+| Frontend | `npm start`                 | Runs React dev server                     |
+| Frontend | `npm run build`             | Builds optimized React app                |
 
 ---
 
