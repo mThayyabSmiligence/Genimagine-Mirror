@@ -11,22 +11,26 @@ const AppError = require('../utils/AppError');
 
 
 
-exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual") => {
+exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_input=null , scene_type_input="manual", scene_id=null,is_worker=false) => {
 
-    // return {
-    //   success:false
-    // }
+  try{
+
     //get story details
     const story = await Story.findOne({ where: { id: story_id, user_id } });
     // Check if the story exists
     if (!story || story.user_id !== user_id) return { status: 404, success: false, message: 'Story not found' };
 
+    let scene
+    if(scene_id) {
+      scene = await Scene.findOne({ where: { id: scene_id, user_id } });
+      if (!scene || scene.user_id !== user_id) return { status: 404, success: false, message: 'Scene not found' };
+    }
 
     //get character count for story id
     const characterCount = await Character.count({ where: { story_id } });
 
     if(characterCount == 0) {
-      throw new AppError('No characters found for this story', 409)
+      throw new Error('No characters found for this story')
     };
 
     //get style details
@@ -35,31 +39,32 @@ exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_inp
     
     // Check if the style exists
     if (!style) {
-      throw new AppError('No style found for this story', 404)
+      throw new Error('No style found for this story')
     };
-
-    const referenced_characters = await this.getReferencedCharacters(prompt,story_id);
-    if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
-    const characters = referenced_characters.data;
-
-    //get latest scene of story
-    const latestScene = await Scene.findOne({
-      where: { story_id },
-      order: [['scene_order', 'DESC']],
-    });
-
-    //get scene order
-    const scene_order = scene_order_input ? scene_order_input :  latestScene ? latestScene.scene_order + 1 : 1;
-
-    //create scene
-    const scene = await Scene.create({ user_id, story_id, prompt, characters:characters.characters,full_structured_prompt:characters,location:characters.location,environment:characters.environment, scene_order,type:scene_type_input });
+    if(!scene){      
+      const referenced_characters = await this.getReferencedCharacters(prompt,story_id);
+      if (!referenced_characters.success) return { status: 500, success: false, message: 'Failed to generate scene' };
+      const characters = referenced_characters.data;
+  
+      //get latest scene of story
+      const latestScene = await Scene.findOne({
+        where: { story_id },
+        order: [['scene_order', 'DESC']],
+      });
+  
+      //get scene order
+      const scene_order = scene_order_input ? scene_order_input :  latestScene ? latestScene.scene_order + 1 : 1;
+  
+      //create scene
+      scene = await Scene.create({ user_id, story_id, prompt, characters:characters.characters,full_structured_prompt:characters,location:characters.location,environment:characters.environment, scene_order,type:scene_type_input });
+    }
 
     //generate scene image
     // Build natural language prompt
     // Build natural language prompt
     const scenePrompt = `
-    Scene at ${characters.location}, with environment: ${characters.environment}.
-    ${characters.characters.map(c => {
+    Scene at ${scene.full_structured_prompt.location}, with environment: ${scene.full_structured_prompt.environment}.
+    ${scene.full_structured_prompt.characters.map(c => {
       let description = `${c.name} is ${c.action}`;
       
       // Add position if available
@@ -90,12 +95,29 @@ exports.generateSceneService = async (user_id, story_id, prompt ,scene_order_inp
     // );
       
     const imageData = await this.generateCouldFlareSceneImage(story_id,scene.id, scenePrompt, user_id);
+    if(!imageData.success){
+      scene.status="failed";
+      await scene.save();
+      throw new Error('Failed to generate scene image')
+    }
     scene.full_prompt = scenePrompt;
     scene.image_url = imageData.image_url;
     scene.image_path = imageData.image_path;
+    scene.status="done";
     await scene.save();
 
     return { status: 200, success: true, scene};
+  }catch(err){
+    console.error("error in scene generation: ",error.response?.data || error.message)
+    if(is_worker){
+      return{
+         success:false,
+         message:err.message
+      }
+    }else{
+      throw new AppError(err.message,500)
+    }
+  }
 
 };
 
@@ -243,6 +265,7 @@ exports.generateSceneImage = async (story_id, scene_id, latest_scene = null, sce
     const imageBase64 = response.data.artifacts[0].base64;
     const imageBuffer = Buffer.from(imageBase64, "base64");
 
+    
     const imageUploadResponse = await uploadImageToServer(
       imageBuffer,
       user_id,
@@ -277,6 +300,8 @@ exports.generateCouldFlareSceneImage=async (story_id, scene_id, prompt, user_id)
 
     const imageBuffer = await generateImage(cleanPrompt, 1024, 1024, process.env.MODEL_1);
 
+    if(!imageBuffer) throw new Error("error generating scene image");
+
     const imageUploadResponse = await uploadImageToServer(
       imageBuffer,
       user_id,
@@ -285,6 +310,8 @@ exports.generateCouldFlareSceneImage=async (story_id, scene_id, prompt, user_id)
       "story"
     );
 
+    if(!imageUploadResponse) throw new Error("error uploading scene image");
+    
     return {
       status: 200,
       success: true,

@@ -114,7 +114,7 @@ app.use('/api/v1/admin',verifyAdminToken,AdminRouter);
 require('./scheduler/suspensionChecker');
 require('./scheduler/PlanValidityChecker'); 
 require('./scheduler/scheduleImageGeneration');
-// require('./scheduler/AutoStoryStuckHandler');
+require('./scheduler/AutoStoryStuckHandler');
 
 
 // http only cookie test

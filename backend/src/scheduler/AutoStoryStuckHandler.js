@@ -1,5 +1,6 @@
 const cron = require('node-cron');
+const { stuckHandler } = require('../service/AutoStoryService');
 
-cron.schedule('*/30 * * * * *', async () => {
-    console.log("hi the corn job is running")
+cron.schedule('* * * * *', async () => {
+    await stuckHandler();
 });

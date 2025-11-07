@@ -76,6 +76,10 @@ const Story = sequelize.define(
     job_id:{
         type: DataTypes.STRING,
         allowNull: true
+    },
+    parsed_prompt:{
+      type:DataTypes.JSON,
+      allowNull:true
     }
   },
   {
