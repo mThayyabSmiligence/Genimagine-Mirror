@@ -1,8 +1,10 @@
 const db = require('../config/connectDatabase');
+const { Op } = require("sequelize");
 const axios =require('axios');
 const { uploadImageToExplore } = require('./UploadToServerService');
 const { use } = require('../routes/Users');
 const { decrypt } = require('./EncrypDecrypt');
+const { VideoReport, ExploreVideo, StoryToVideo, Story } = require('../models');
 
 exports.publishToExploreService=async(image_id,caption,token,user_id)=>{
     let generated_image_data;
@@ -613,3 +615,130 @@ exports.ImageReportService = async (image_id, userID, published_id, reason) => {
         };
     }
 }
+
+
+exports.videoReportService = async ({ story_id, reason, user_id }) => {
+  try {
+    if (!story_id || !reason) {
+      return {
+        status: 400,
+        message: "Story ID and reason are required.",
+        success: false,
+      };
+    }
+
+    const story = await Story.findOne({
+      where: { id: story_id },
+      attributes: ["id", "name"],
+    });
+
+    if (!story) {
+      return {
+        status: 404,
+        message: "Invalid story. The story does not exist.",
+        success: false,
+      };
+    }
+
+    const [userData] = await db.query(
+      `SELECT username FROM users WHERE user_id = ?`,
+      [user_id]
+    );
+    const username = userData[0]?.username || "Unknown";
+
+    const storyVideo = await StoryToVideo.findOne({
+      where: { story_id },
+      attributes: ["id"],
+    });
+    if (!storyVideo) {
+      return {
+        status: 404,
+        message: "No video found for this story.",
+        success: false,
+      };
+    }
+    const video_id = storyVideo.id;
+
+    const publishedVideo = await ExploreVideo.findOne({
+      where: { story_id },
+      attributes: ["id"],
+    });
+    const published_id = publishedVideo ? publishedVideo.id : null;
+
+    const existingReport = await VideoReport.findOne({
+      where: { [Op.or]: [{ video_id }, { published_id }] },
+    });
+
+    const newReportEntry = {
+      reason,
+      user_id,
+      username,
+      reported_at: new Date().toISOString(),
+    };
+
+    if (existingReport) {
+      let reportDetails = Array.isArray(existingReport.report_details)
+        ? existingReport.report_details
+        : JSON.parse(existingReport.report_details || "[]");
+
+      const alreadyReported = reportDetails.some(
+        (r) => r.user_id === user_id
+      );
+
+      if (alreadyReported) {
+        return {
+          status: 409,
+          message: "You have already reported this video.",
+          success: false,
+        };
+      }
+
+      reportDetails.push(newReportEntry);
+
+      await VideoReport.update(
+        {
+          report_details: reportDetails,
+          report_count: reportDetails.length,
+        },
+        { where: { report_id: existingReport.report_id } }
+      );
+
+      const updated = await VideoReport.findOne({
+        where: { report_id: existingReport.report_id },
+      });
+
+      return {
+        status: 200,
+        message: "Your report has been added.",
+        success: true,
+        data: updated,
+      };
+    }
+
+    const newReport = await VideoReport.create({
+      video_id,
+      published_id,
+      report_details: [newReportEntry],
+      report_count: 1,
+    });
+
+    return {
+      status: 201,
+      message: "Video reported successfully.",
+      success: true,
+      data: newReport,
+    };
+  } catch (error) {
+    console.error("Error in videoReportService:", error);
+    return {
+      status: 500,
+      message: "Server error while reporting video.",
+      success: false,
+    };
+  }
+};
+
+
+//139
+//video id: 38
+//publisged id: 9

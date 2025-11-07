@@ -80,7 +80,7 @@
 .video-modal-content {
   flex: 1 1 auto;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   min-height: 300px;
   max-height: calc(90vh - 80px);
   display: flex;
@@ -88,23 +88,49 @@
   justify-content: center;
 }
 
-/* Video Player Container */
+/* Video Player Container - UPDATED */
 .video-player-container {
+  position: relative;
   width: 100%;
-  max-height: 100%;
-  height: 60vh;
-  min-height: 250px;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: visible;
 }
 
-/* Video.js Player */
+/* Video.js Player - UPDATED */
 .video-js {
+  position: absolute !important;
+  top: 0;
+  left: 0;
   width: 100% !important;
   height: 100% !important;
-  min-height: 250px;
+}
+
+/* Ensure video element fits properly */
+.video-js video {
+  object-fit: contain !important;
+  width: 100%;
+  height: 100%;
+}
+
+/* Keep controls always visible - ADDED */
+.video-js .vjs-control-bar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+  overflow: visible !important;
+}
+
+/* Ensure controls are visible when video has started */
+.video-js.vjs-has-started .vjs-control-bar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Video Spinner */
@@ -284,7 +310,7 @@
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-.video-publish-btn{
+.video-publish-btn {
   background: none;
   border: none;
   padding: 8px;
@@ -304,7 +330,44 @@
   color: #374151;
 }
 
-/* Responsive adjustments */
+/* Custom Language Button Styles */
+.vjs-language-button-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.vjs-language-button {
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.vjs-language-button .vjs-icon-placeholder {
+  font-size: 1.5em;
+  font-weight: bold;
+  line-height: 1.67;
+}
+
+.vjs-language-button:hover {
+  color: #4CAF50;
+}
+
+.vjs-language-menu {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.vjs-language-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Responsive adjustments for language selection */
 @media (max-width: 768px) {
   .language-selection-container {
     max-width: 100%;
@@ -342,8 +405,7 @@
   }
 }
 
-
-/* Responsive Design */
+/* Responsive Design - UPDATED */
 @media (max-width: 768px) {
   .video-modal-container {
     max-width: 100%;
@@ -351,8 +413,7 @@
   }
 
   .video-player-container {
-    height: 45vh;
-    min-height: 200px;
+    padding-bottom: 56.25%; /* Maintain 16:9 ratio */
   }
 
   .video-modal-header {
@@ -362,6 +423,10 @@
   .video-modal-title {
     font-size: 1.125rem;
   }
+
+  .video-modal-content {
+    overflow: visible;
+  }
 }
 
 @media (max-width: 480px) {
@@ -370,8 +435,7 @@
   }
 
   .video-player-container {
-    height: 35vh;
-    min-height: 150px;
+    padding-bottom: 75%; /* Adjust for smaller screens */
   }
 
   .video-modal-header {
@@ -390,5 +454,37 @@
 
   .error-icon {
     font-size: 40px !important;
+  }
+}
+
+/* Landscape mode on mobile - ADDED */
+@media (max-height: 500px) and (orientation: landscape) {
+  .video-modal-container {
+    max-height: 100vh;
+  }
+
+  .video-player-container {
+    padding-bottom: 90%;
+  }
+
+  .video-modal-content {
+    overflow: visible;
+    min-height: auto;
+  }
+}
+
+/* Very small screens with low height - ADDED */
+@media (max-height: 600px) {
+  .video-modal-container {
+    max-height: 98vh;
+  }
+
+  .video-player-container {
+    padding-bottom: 56.25%;
+  }
+
+  .video-modal-content {
+    overflow: visible;
+    min-height: 250px;
   }
 }

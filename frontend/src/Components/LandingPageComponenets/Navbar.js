@@ -30,6 +30,11 @@ function Navbar() {
                     <Link  className="link nav-link p-primary" to={'/'}>Home</Link>
                     <Link  className="link nav-link p-primary" to={'/explore'}>Explore</Link>
                     <Link  className="link nav-link p-primary" to={'/credit-purchase'}>Pricing</Link>
+                    {
+                        loggedIn && (
+                            <Link  className="link nav-link p-primary" to={'/u/stories'}>Stories</Link>
+                        )
+                    }
                     <Link  className="link nav-link p-primary" to={'/image-generation'}>Generation</Link>
                     <Link  className="link nav-link p-primary" to={'/image-to-prompt'}>Image to Prompt</Link>
                     </div>

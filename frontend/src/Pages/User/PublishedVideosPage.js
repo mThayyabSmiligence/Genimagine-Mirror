@@ -5,6 +5,7 @@ import VideoCard from "../../Components/Explore/VideoCard";
 import ExploreVideoPlayerModal from "../../Components/CommonComponents/ExploreVideoPlayerModal";
 import DeleteConfirmationModal from "../../Components/CommonComponents/DeleteConfirmationModal";
 import "../../Css/PublishedVideosPage.css";
+import VideoGenerationModal from "../../Components/StoriesComponent/VideoGenerationModal";
 
 function PublishedVideosPage() {
   const [videos, setVideos] = useState([]);
@@ -170,10 +171,19 @@ function PublishedVideosPage() {
       </div>
 
       {/* Video Player Modal */}
-      <ExploreVideoPlayerModal
+      <VideoGenerationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        video={selectedVideo}
+         videoData={
+          selectedVideo
+            ? {
+                ...selectedVideo,
+                id: selectedVideo.story_to_video_id,         
+                explore_video_id: selectedVideo.id,         
+              }
+            : null
+        }
+        storyId={selectedVideo?.story_id} 
       />
 
       {/* Delete Confirmation Modal */}

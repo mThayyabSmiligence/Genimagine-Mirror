@@ -403,57 +403,63 @@ function ExploreImageDetail() {
                         {/* </Slider> */}
                     </div>
                     {/* caption container */}
-                    <div className='image-caption p-2'>
-                        <div className="user-id-tag-outer-container d-flex justify-content-between align-items-center pb-1">
-                            <Link to={`/user/${imageData.user_id}`} className="user-id-tag d-flex align-items-center link">
-                                <img className="user-id-tag-image" src={anime} alt="anime"/>
-                                <p className="mb-0 me-1">{userData?.username||"user name"}</p>
-                            </Link>
-                            <div className="d-flex image-detail-options ">    
-                                {
-                                    isUsersImage&&
-                                    <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>
+                        <div className='image-caption p-2'>
+                            <div className="user-id-tag-outer-container d-flex justify-content-between align-items-center pb-1">
+                                <Link to={`/user/${imageData.user_id}`} className="user-id-tag d-flex align-items-center link">
+                                    <img className="user-id-tag-image" src={anime} alt="anime"/>
+                                    <p className="mb-0 me-1">{userData?.username||"user name"}</p>
+                                </Link>
+                                <div className="d-flex image-detail-options ">    
+                                    {
+                                        isUsersImage&&
+                                        <button onClick={handelEdit} className='edit-button  d-flex justify-content-center align-items-center me-2' id="published-image-edit-button"><EditIcon className=' icon'></EditIcon></button>
 
-                                }
-                                
-                                <button onClick={toggleCaptionOption} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
-                                {
-                                    imageCaptionOption && (
+                                    }
                                     
-                                    <div ref={dropdownRef} className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
-                                        <button title="user is already reported" disabled={imageData.isUserReported == true} onClick={() => setShowReportPopUp(true)} className='report-button d-flex'><OutlinedFlagIcon fontSize='small' className="flagicon"></OutlinedFlagIcon><span className="flex-1 report-text">Report</span></button>
-                                    </div>
-                                    
-                                )}
-                                {showReportPopUp && (
-                                    <ReportPopUp
+                                    {/* {location.pathname !== `/u/published-images/${published_id}` && ( */}
+                                    {!isUsersImage && (
+                                        <button onClick={toggleCaptionOption} className={`explore-caption-option d-flex justify-content-center align-items-center`} id="explore-detail-option-button"><MoreVertOutlinedIcon className="icon"></MoreVertOutlinedIcon></button>
+                                    )}
+                                    {
+                                        imageCaptionOption && (
+                                            
+                                        <div ref={dropdownRef} className={`caption-option-report-container ${isUsersImage&& "published-image"}`}>           
+                                            <button title="user is already reported" disabled={imageData.isUserReported == true} onClick={() => setShowReportPopUp(true)} className='report-button d-flex'><OutlinedFlagIcon fontSize='small' className="flagicon"></OutlinedFlagIcon><span className="flex-1 report-text">Report</span></button>
+                                        </div>
+                                        
+                                    )}
+                                    {showReportPopUp && (
+                                        <ReportPopUp
                                         reportReason = {reportReason}
                                         setReportReason = {setReportReason}
                                         handleReport = {handleReport}
                                         showReportPopUp = {showReportPopUp}
                                         onHide={() => setShowReportPopUp(false)}                                    
-                                    />
-                                )}
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                                
+                            {/* <div className='d-flex justify-content-between mb-1'>
+                                <h5 className='caption-header'>Caption :</h5>
+                                {
+                                    path=='/u/published-images'&&
+                                    <button onClick={handelEdit} className='edit-button edit-caption-button d-flex justify-content-center align-items-center'><EditIcon className='edit-icon'></EditIcon></button>
+                                    }
+                                    </div> */}
                             
-                        {/* <div className='d-flex justify-content-between mb-1'>
-                            <h5 className='caption-header'>Caption :</h5>
-                            {
-                                path=='/u/published-images'&&
-                            <button onClick={handelEdit} className='edit-button edit-caption-button d-flex justify-content-center align-items-center'><EditIcon className='edit-icon'></EditIcon></button>
-                            }
-                        </div> */}
-                          
-                        <div className='caption-text-container p-2'> 
-                            <div className="caption-header-container">
-                                <h6 className="h-6 text-start caption-header">Caption :</h6>
-                            </div>
-                            <div className='caption-text-inner-container'>
-                                <p className='m-0'>{imageData.caption}</p>
-                            </div>
+                        {
+                        imageData?.caption && (
+                                <div className='caption-text-container p-2'> 
+                                    <div className="caption-header-container">
+                                        <h6 className="h-6 text-start caption-header">Caption :</h6>
+                                    </div>
+                                    <div className='caption-text-inner-container'>
+                                        <p className='m-0'>{imageData.caption}</p>
+                                    </div>
+                                </div>
+                        )}
                         </div>
-                    </div>
 
                     <div className="explore-metrics d-flex justify-content-end">
                         <div className='user-like-container'>

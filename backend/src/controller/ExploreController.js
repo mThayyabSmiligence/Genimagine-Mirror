@@ -2,7 +2,7 @@
 const db = require('../config/connectDatabase')
 const cookie = require("cookie")
 const jwt = require("jsonwebtoken");
-const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService, deleteExploreImageByPublishedIdService, editCaptionService, ImageReportService } = require("../service/ExploreService");
+const { getAllExploreImagesService, getExploreImageByIdService, ViewExploreImageService, LikeExploreImageService, UnlikeExploreImageService, getExploreImageByUserIdService, publishToExploreService, getExploreImagesService, getExploreImagesByUserIdService, deleteExploreImageByPublishedIdService, editCaptionService, ImageReportService, videoReportService } = require("../service/ExploreService");
 
 exports.publishToExploreController=async(req,res)=>{
     const {image_id,caption}= req.body;
@@ -210,3 +210,33 @@ exports.ImageReportController = async(req, res)=>{
     const result = await ImageReportService(image_id, id, published_id, reason);
     return res.status(result.status).json(result);
 }
+
+exports.videoReportController = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { story_id, reason } = req.body;
+
+    if (!story_id || !reason) {
+      return res.status(400).json({
+        success: false,
+        message: "story_id and reason are required",
+        status: 400,
+        frontendMessage: "Please provide a valid story reference",
+      });
+    }
+
+    const result = await videoReportService({
+      story_id,
+      reason,
+      user_id: id,
+    });
+
+    return res.status(result.status).json(result);
+  } catch (e) {
+    console.error("Error in videoReportController:", e);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create or update video report",
+    });
+  }
+};
