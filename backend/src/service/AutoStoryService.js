@@ -4,6 +4,9 @@ const axios = require('axios');
 const { Scene, Character } = require('../models');
 const { extractValidJson } = require('../helper/JsonHelper');
 const { llama3BInstructText } = require('../API/CloudFlare.api');
+const autoStoryQueue = require('../queue/AutoStoryQueue');
+const { Op } = require('sequelize');
+const AppError = require('../utils/AppError');
 require('dotenv').config();
 
 
@@ -27,6 +30,25 @@ exports.createAutoStoryService = async (user_id, name, description, total_scenes
       }
 }
 
+
+exports.UpdateAutoStoryJobId= async(story_id,job_id)=>{
+  try{
+    const story =await Story.update({job_id},{where:{id:story_id}});
+    return{
+      success: true,
+      story,
+      message: 'Story created successfully',
+      status: 201
+    }
+  }catch(e){
+    console.error(e);
+    return{
+      success: false,
+      message: 'Failed to create story',
+      status: 500
+    }
+  }
+}
 exports.extractScenesAndCharactersService = async (description, no_of_scene) => {
 
     try{
@@ -155,3 +177,100 @@ exports.getStoryStatusService = async (story_id, user_id) => {
     return { success: false, message: 'Failed to fetch story', status: 500 };
   }
 }
+
+
+exports.stuckHandler= async()=>{
+
+  console.log("running the stuck handler")
+  try{
+    const stories = await Story.findAll({
+      where: {
+        status: {
+          [Op.in]: ['started', 'in_progress', 'generating_characters', 'generating_scenes']
+        },
+        updatedAt: {
+          [Op.lte]: new Date(Date.now() - 30 * 60 * 1000)
+        },
+        type: 'auto'
+      },
+      logging:console.log
+    });
+
+    console.log("stories :",stories)
+
+    for (const story of stories) {
+      let new_job_id;
+      if(story.job_id){
+        new_job_id = await RestartAutoStoryWorker(story.id,story.job_id,story.user_id);
+      }else{
+        new_job_id = await RestartAutoStoryWorker(story.id,null,story.user_id);
+      }
+
+      if(new_job_id){
+          await this.UpdateAutoStoryJobId(story.id,new_job_id);
+      }else{
+        await Story.update({ status: 'failed' }, { where: { id: story.id } });
+      }
+    }
+
+  }
+  catch(err){
+    console.error("error in Auto Story Stuck handler",err)
+    console.error("error message",err.message)
+  }
+}
+
+exports.manuallStruckAutoStoryRestartService=async(story_id,user_id)=>{
+  try{
+    const story = await Story.findOne({ where: { id: story_id , user_id , type:'auto'} });
+    if(!story){
+      throw new AppError("Story not found",404);
+    }
+    if(story.status=="completed"){
+      throw new AppError("Story already completed",400);
+    }
+    if(story.status!="failed" &&  story.updatedAt > new Date(Date.now() - 30 * 60 * 1000)){
+      throw new AppError("Story not failed and still in progress, if the progress seems stuck in the same status, it will be resolved automatically within 30 minutes to 1 hour",400);
+    }
+    const new_job_id = await RestartAutoStoryWorker(story_id,null,user_id);
+    if(!new_job_id){
+      throw new AppError("Failed to restart story");
+    }
+    await this.UpdateAutoStoryJobId(story_id,new_job_id);
+
+  }catch(e){
+    console.error(e);
+    if(e instanceof AppError){
+      throw e;
+    }
+    throw new AppError(e.message||"Failed to restart story");
+  }
+  
+}
+
+const RestartAutoStoryWorker = async (story_id,job_id=null,user_id) => {
+  try {
+    if(job_id){
+      const job = await autoStoryQueue.getJob(job_id);
+      if(!job){
+        throw new Error("Job not found");
+      }
+      const jobId = job.id;
+      
+      if (jobId) {
+        await autoStoryQueue.remove(jobId);
+      }
+    }
+
+    const newJob = await autoStoryQueue.add("generateStory", { storyId: story_id , userId: user_id });  
+    console.log("restarted the queue for story: ",story_id," with new job id: ",newJob.id);
+    return newJob.id;
+  } catch (error) {
+    console.error('Error restarting worker:', error);
+    return{
+      success: false,
+      message: error.message || 'Failed to restart worker',
+      status: 500
+    }
+  }
+};
