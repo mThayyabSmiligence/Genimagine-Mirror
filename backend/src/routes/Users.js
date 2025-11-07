@@ -14,7 +14,7 @@ const { createCharacterController, addExpressionController, addPoseController, g
 const { generateSceneController, getScenesController, generateLayeredSceneController, getScenesByStoryController, deleteSceneByIdController, regenerateSceneController } = require('../controller/SceneController');
 const { createStoryController, getUserStoriesController, getStoryByIdController, updateStoryController, deleteStoryController } = require('../controller/StoryController');
 const characterUpload= require('../middle_ware/uploadCharacter');
-const { createAutoStoryController, getstatus, getStoryStatus } = require('../controller/AutoStoryController');
+const { createAutoStoryController, getstatus, getStoryStatus, manuallStruckAutoStoryRestartController } = require('../controller/AutoStoryController');
 
 const { createStoryToVideoController, getStoryToVideoController, getStoryToVideoByStoryIdController, deleteStoryToVideoByStoryIdController, addLanguageStoryToVideoController } = require('../controller/StoryToVideoController');
 
@@ -135,5 +135,7 @@ router.delete("/published-videos/:video_id", deletePublishedVideoController);
 
 // report video
 router.post("/report-video", videoReportController);
+
+router.post('/restart-failed-story/:id',manuallStruckAutoStoryRestartController)
 
 module.exports = router;
