@@ -191,7 +191,7 @@ exports.getUserPublishedVideosService = async (user_id) => {
         {
           model: StoryToVideo,
           as: "videoData",
-          attributes: ["video_url", "video_path", "status",'subtitle_tracks', 'audio_tracks'],
+          attributes: [["id", "story_to_video"], "video_url", "video_path", "status",'subtitle_tracks', 'audio_tracks'],
           required: true,
         },
       ],
@@ -199,7 +199,7 @@ exports.getUserPublishedVideosService = async (user_id) => {
       order: [["createdAt", "DESC"]],
       subQuery: false,
     });
-
+    console.log("vikdro",videos)
     // Format response
     const formattedVideos = formatteVideoDate(videos)
 
@@ -265,6 +265,7 @@ const formatteVideoDate=(videos)=>{
       const videoJson = video.toJSON();
       return {
         id: videoJson.id,
+        story_to_video_id : videoJson.videoData?.story_to_video,
         user_id: videoJson.user_id,
         story_id: videoJson.story_id,
         title: videoJson.story?.name || null,

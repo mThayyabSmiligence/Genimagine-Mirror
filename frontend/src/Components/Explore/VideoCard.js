@@ -59,14 +59,16 @@ const VideoCard = ({ video, onPlay, loggedIn }) => {
           />
 
           {/* Report Flag Icon Button */}
-          <button
-            className="video-report-button"
-            onClick={handleFlagClick}
-            title="Report this video"
-            aria-label="Report video"
-          >
-            <OutlinedFlagIcon sx={{ fontSize: 20 }} />
-          </button>
+          {location.pathname !== "/u/published-videos" && (
+            <button
+              className="video-report-button"
+              onClick={handleFlagClick}
+              title="Report this video"
+              aria-label="Report video"
+            >
+              <OutlinedFlagIcon sx={{ fontSize: 20 }} />
+            </button>
+          )}
 
           {/* Overlay with Play Button */}
           <div className="video-card-overlay">

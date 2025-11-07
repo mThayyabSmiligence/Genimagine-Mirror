@@ -174,7 +174,15 @@ function PublishedVideosPage() {
       <VideoGenerationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        videoData={selectedVideo}
+         videoData={
+          selectedVideo
+            ? {
+                ...selectedVideo,
+                id: selectedVideo.story_to_video_id,         
+                explore_video_id: selectedVideo.id,         
+              }
+            : null
+        }
         storyId={selectedVideo?.story_id} 
       />
 
