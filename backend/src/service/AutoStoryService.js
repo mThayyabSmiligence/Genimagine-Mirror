@@ -232,6 +232,8 @@ exports.manuallStruckAutoStoryRestartService=async(story_id,user_id)=>{
     if(story.status!="failed" &&  story.updatedAt > new Date(Date.now() - 30 * 60 * 1000)){
       throw new AppError("Story not failed and still in progress, if the progress seems stuck in the same status, it will be resolved automatically within 30 minutes to 1 hour",400);
     }
+    story.status="started";
+    await story.save();
     const new_job_id = await RestartAutoStoryWorker(story_id,null,user_id);
     if(!new_job_id){
       throw new AppError("Failed to restart story");
