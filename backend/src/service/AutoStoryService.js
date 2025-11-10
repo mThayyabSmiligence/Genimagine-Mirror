@@ -240,6 +240,12 @@ exports.manuallStruckAutoStoryRestartService=async(story_id,user_id)=>{
     }
     await this.UpdateAutoStoryJobId(story_id,new_job_id);
 
+    return{
+      success: true,
+      message: 'Story restarted successfully',
+      status: 201
+    }
+
   }catch(e){
     console.error(e);
     if(e instanceof AppError){

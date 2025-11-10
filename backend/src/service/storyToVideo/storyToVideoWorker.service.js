@@ -182,6 +182,31 @@ const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
             throw new StoryToVideoError('StoryToVideo not found', 404,storyToVideoId)
         }
 
+        let audio_tracks = safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
+
+        let languageExits = audio_tracks.find((audio_track) => audio_track.language === language);
+        if(languageExits&&(languageExits.status === "done"||languageExits.status === "in-progress")){
+            throw new AppError('Language already '+languageExits.status, 400)
+        }
+        if(languageExits&&languageExits.status === "failed"){
+            audio_tracks = audio_tracks.filter((audio_track) => audio_track.language !== language);
+        }
+        
+        const startAudioObject =
+            {
+                "status": "in-progress",
+                "language": language
+            }
+
+        console.log("audio tracks",audio_tracks);
+    
+        
+        audio_tracks=[...audio_tracks,startAudioObject];
+        storyToVideo.audio_tracks=audio_tracks;
+        console.log("updated audio strack",audio_tracks);
+        await storyToVideo.save();
+
+        // return;
         console.log("startAddLanguageStoryToVideoWorker is starting2");
         let narrations = safeJsonParse(storyToVideo.narrations,storyToVideo.narrations);
         const englishNarrations =narrations.find((narration) => narration.language === 'en');
@@ -229,8 +254,15 @@ const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
             }
             let audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
 
+            const updatedAudioTracks=audio_tracks.map((audio_track) => {
+                if(audio_track.language === language){
+                    audio_track.status="failed";
+                }
+                return audio_track;
+            });
+
             audio_tracks.push(failedAudioTrack);
-            storyToVideo.adio_tracks=audio_tracks;
+            storyToVideo.audio_tracks=updatedAudioTracks;
             await storyToVideo.save();
             throw new AppError('Failed to generate audio', 500)
         };
@@ -260,10 +292,14 @@ const startAddLanguageStoryToVideoWorker = async (storyToVideoId,language) => {
         };
         
 
-        let audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
+        audio_tracks= safeJsonParse(storyToVideo.audio_tracks,storyToVideo.audio_tracks);
 
-        
-        audio_tracks=[...audio_tracks,new_audio_track];
+        audio_tracks=audio_tracks.map((audio_track) => {
+            if(audio_track.language === language){
+               return new_audio_track;
+            }
+            return audio_track;
+        });
         storyToVideo.audio_tracks=audio_tracks;
         await storyToVideo.save();
 
