@@ -170,7 +170,7 @@ const worker = new Worker(
           }
         }
 
-      if(story.status=="generating-characters"||story.status=="generating-scenes"){
+      if(story.status=="generating-characters"||story.status=="generating-scenes"||story.status=="partially-completed"){
 
         story.status = "generating-scenes";
         await story.save();

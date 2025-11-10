@@ -103,13 +103,25 @@ exports.deleteStoryToVideoByStoryIdService = async (storyId, userId) => {
 
 exports.addLanguageStoryToVideoCheck = async (storyToVideoId,language) => {
     const storyToVideo = await StoryToVideo.findOne({ where: { id: storyToVideoId } });
+    
     if (!storyToVideo) {
         throw new AppError('StoryToVideo not found', 404)
     }
-
+    
     if(getLanguageLabel(language) === language){
         throw new AppError('Language not supported', 409)
     }
+    
+    const story = await Story.findOne({ where: { id: storyToVideo.story_id } });
+
+    if (!story) {
+        throw new AppError('Story not found', 404)
+    }
+
+    if(story.status !== "completed"){
+        throw new AppError('Story not completed', 409)
+    }
+
     return true;
 }
 // exports.startStoryToVideoWorker = async (storyToVideoId) => {
