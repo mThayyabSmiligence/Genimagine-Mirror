@@ -5,7 +5,6 @@ import { axiosPrivate } from '../../API\'s/axios';
 // Video generate component
 import VideoGenerationModal from '../../Components/StoriesComponent/VideoGenerationModal';
 
-
 // Material UI Icons
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -19,6 +18,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import LoopRoundedIcon from '@mui/icons-material/LoopRounded'; // NEW: Import for retry button
 import '../../Css/CreateScenes.css';
 import { toast } from 'react-toastify';
 import DeleteConfirmationModal from '../../Components/CommonComponents/DeleteConfirmationModal';
@@ -33,7 +33,6 @@ function CreateScenes() {
   
   // Modal state for video generation
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  // const [videoModalMode, setVideoModalMode] = useState('language-selection');
 
   // Video status checking states
   const [existingVideoStatus, setExistingVideoStatus] = useState(null);
@@ -58,11 +57,45 @@ function CreateScenes() {
     lastSceneCount: 0
   });
 
+  // NEW: Retry state
+  const [isRetrying, setIsRetrying] = useState(false);
+
   // Use useRef for polling interval to avoid stale closures
   const statusPollingRef = useRef(null);
   const videoPollingRef = useRef(null);
 
   const { storyid } = useParams(); 
+
+  // NEW: Retry handler function
+  const handleRetryFailedStory = async () => {
+    setIsRetrying(true);
+    
+    try {
+      const response = await axiosPrivate.post(`/restart-failed-story/${storyid}`);
+      
+      if (response.data.success) {
+        toast.success('Story generation restarted successfully!');
+        
+        // Reset auto-gen state to show starting/in-progress state
+        setAutoGenState(prev => ({
+          ...prev,
+          status: 'in-progress',
+          isActive: true
+        }));
+        
+        // Start polling again
+        checkStoryStatus();
+        
+      } else {
+        toast.error(response.data.message || 'Failed to restart story generation');
+      }
+    } catch (error) {
+      console.error('Error restarting failed story:', error);
+      toast.error(error.response?.data?.message || 'Failed to restart story generation. Please try again.');
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   // Check existing video status
   const checkExistingVideoStatus = useCallback(async () => {
@@ -150,7 +183,7 @@ function CreateScenes() {
     try {
       setVideoGenerationInProgress(true);
       
-      const response = await axiosPrivate.post(`/story-to-video/${storyid}`,);
+      const response = await axiosPrivate.post(`/story-to-video/${storyid}`);
       
       if (response.data) {
         setExistingVideoStatus(response.data.status);
@@ -163,17 +196,6 @@ function CreateScenes() {
       setVideoGenerationInProgress(false);
     }
   };
-
-  // Handle generate video button click
-  // const handleGenerateVideo = () => {
-  //   if (generatedScenes.length === 0) {
-  //     showToast("No scenes available to generate video", 'error');
-  //     return;
-  //   }
-    
-  //   setVideoModalMode('language-selection');
-  //   setIsVideoModalOpen(true);
-  // };
 
   // Handle view video button click - ALWAYS fetches fresh video data
   const handleViewVideo = async () => {
@@ -451,21 +473,52 @@ function CreateScenes() {
     </div>
   );
 
-  const AutoGenerationFailed = () => (
-    <div className="auto-generation-failed">
-      <div className="failed-header">
-        <div className="failed-icon">
-          <span className="failed-emoji">❌</span>
-        </div>
-        <div className="failed-content">
-          <h3 className="failed-title">Scene Generation Failed</h3>
-          <p className="failed-message">
-            Something went wrong during the automated scene generation. You can create scenes manually using the form above.
-          </p>
+  // UPDATED: Auto Generation Failed or Partially Completed Component with Retry
+  const AutoGenerationFailedOrPartial = () => {
+    const isPartiallyCompleted = autoGenState.status === 'partially-completed';
+    
+    return (
+      <div className={`auto-generation-failed ${isPartiallyCompleted ? 'partial' : ''}`}>
+        <div className="failed-header">
+          <div className="failed-icon">
+            <span className="failed-emoji">{isPartiallyCompleted ? '⚠️' : '❌'}</span>
+          </div>
+          <div className="failed-content">
+            <h3 className="failed-title">
+              {isPartiallyCompleted ? 'Scene Generation Partially Completed' : 'Scene Generation Failed'}
+            </h3>
+            <p className="failed-message">
+              {isPartiallyCompleted 
+                ? 'The automated scene generation completed with some errors. You can retry to complete the generation or continue manually.'
+                : 'Something went wrong during the automated scene generation. You can retry automatic generation or create scenes manually using the form above.'
+              }
+            </p>
+            
+            {/* NEW: Retry Button */}
+            <div className="failed-actions">
+              <button 
+                className="btn-retry"
+                onClick={handleRetryFailedStory}
+                disabled={isRetrying}
+              >
+                {isRetrying ? (
+                  <>
+                    <div className="retry-spinner"></div>
+                    Retrying...
+                  </>
+                ) : (
+                  <>
+                    <LoopRoundedIcon className="icon-sm" />
+                    Retry Generation
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const StoryGenerationCompleted = () => (
     <div className="story-generation-completed">
@@ -693,9 +746,9 @@ function CreateScenes() {
         <StoryGenerationCompleted />
       )}
 
-      {/* Show failed state - ONLY for auto stories */}
-      {storyType === 'auto' && autoGenState.status === 'failed' && (
-        <AutoGenerationFailed />
+      {/* UPDATED: Show failed OR partially completed state - ONLY for auto stories */}
+      {storyType === 'auto' && ['failed', 'partially-completed'].includes(autoGenState.status) && (
+        <AutoGenerationFailedOrPartial />
       )}
 
       {/* Show "Characters not completed" ONLY for auto stories until generating-scenes */}
@@ -1061,7 +1114,6 @@ function CreateScenes() {
         storyId={storyid}
         generatedScenes={generatedScenes}
         onVideoComplete={handleVideoGenerationComplete}
-        // modalMode={videoModalMode}
         onLanguageSelect={handleLanguageSelect}
         videoData={existingVideoData}
       />

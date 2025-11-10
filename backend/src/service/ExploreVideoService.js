@@ -1,8 +1,9 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, where, Op } = require('sequelize');
 const ExploreVideo = require("../models/ExploreVideo");
 const StoryToVideo = require("../models/StoryToVideo");
 const Story = require("../models/Story");
 const Scene = require("../models/Scene");
+const VideoReport = require('../models/VideoReport');
 
 
 exports.publishVideoToExplore = async ({ story_id, user_id }) => {
@@ -67,27 +68,243 @@ exports.publishVideoToExplore = async ({ story_id, user_id }) => {
 
 
 
+// exports.getExploreVideosService = async (page, user_id) => {
+//   try {
+//     const pageNumber = parseInt(page, 10) || 1;
+//     const pageSize = 10;
+//     const offset = (pageNumber - 1) * pageSize;
+
+//     let videos;
+
+//     // if (user_id == 0) {
+//     //   // Unauthenticated user (no report data)
+//     //   videos = await ExploreVideo.findAll({
+//     //     attributes: [
+//     //       "id",
+//     //       "user_id",
+//     //       "story_id",
+//     //       "createdAt",
+//     //       [
+//     //         Sequelize.fn(
+//     //           "COALESCE",
+//     //           Sequelize.col("story.thumbnail"),
+//     //           Sequelize.fn("MIN", Sequelize.col("story->scenes.image_url"))
+//     //         ),
+//     //         "thumbnail"
+//     //       ],
+//     //       [Sequelize.col("videoData.video_url"), "video_url"],
+//     //       [Sequelize.col("videoData.video_path"), "video_path"],
+//     //       [Sequelize.col("videoData.status"), "video_status"],
+//     //       [Sequelize.col("videoData.id"), "video_id"]
+//     //     ],
+//     //     include: [
+//     //       {
+//     //         model: Story,
+//     //         as: "story",
+//     //         attributes: [],
+//     //         include: [
+//     //           {
+//     //             model: Scene,
+//     //             as: "scenes",
+//     //             attributes: [],
+//     //             required: false,
+//     //             where: { deleted_at: null },
+//     //           },
+//     //         ],
+//     //       },
+//     //       {
+//     //         model: StoryToVideo,
+//     //         as: "videoData",
+//     //         attributes: [],
+//     //         required: true,
+//     //       },
+//     //     ],
+//     //     group: ["ExploreVideo.id", "story.id", "videoData.id"],
+//     //     order: [["createdAt", "DESC"]],
+//     //     limit: pageSize,
+//     //     offset: offset,
+//     //     subQuery: false,
+//     //   });
+//     // } else {
+//     //   // Authenticated user: also aggregate report data
+//     //   videos = await ExploreVideo.findAll({
+//     //     attributes: [
+//     //       "id",
+//     //       "user_id",
+//     //       "story_id",
+//     //       "createdAt",
+//     //       [
+//     //         Sequelize.fn(
+//     //           "COALESCE",
+//     //           Sequelize.col("story.thumbnail"),
+//     //           Sequelize.fn("MIN", Sequelize.col("story->scenes.image_url"))
+//     //         ),
+//     //         "thumbnail"
+//     //       ],
+//     //       // ✅ Aggregate report info to satisfy ONLY_FULL_GROUP_BY
+//     //       [
+//     //         Sequelize.fn("GROUP_CONCAT", Sequelize.col("published_reports.report_id")),
+//     //         "report_ids"
+//     //       ],
+//     //       [
+//     //         Sequelize.fn("GROUP_CONCAT", Sequelize.col("published_reports.report_details")),
+//     //         "report_details"
+//     //       ],
+//     //       [Sequelize.col("videoData.video_url"), "video_url"],
+//     //       [Sequelize.col("videoData.video_path"), "video_path"],
+//     //       [Sequelize.col("videoData.status"), "video_status"],
+//     //       [Sequelize.col("videoData.id"), "video_id"]
+//     //     ],
+//     //     include: [
+//     //       {
+//     //         model: Story,
+//     //         as: "story",
+//     //         attributes: [],
+//     //         include: [
+//     //           {
+//     //             model: Scene,
+//     //             as: "scenes",
+//     //             attributes: [],
+//     //             required: false,
+//     //             where: { deleted_at: null },
+//     //           },
+//     //         ],
+//     //       },
+//     //       {
+//     //         model: StoryToVideo,
+//     //         as: "videoData",
+//     //         attributes: [],
+//     //         required: true,
+//     //       },
+//     //       {
+//     //         model: VideoReport,
+//     //         as: "published_reports",
+//     //         attributes: [],
+//     //         required: false,
+//     //       },
+//     //     ],
+//     //     group: ["ExploreVideo.id", "story.id", "videoData.id"], // ✅ Correct grouping
+//     //     order: [["createdAt", "DESC"]],
+//     //     limit: pageSize,
+//     //     offset: offset,
+//     //     subQuery: false,
+//     //   });
+//     // }
+
+//      videos = await ExploreVideo.findAll({
+//       attributes: [
+//         "id",
+//         "user_id",
+//         "story_id",
+//         "createdAt",
+//         // Use COALESCE to get story thumbnail or first scene image
+//         [
+//           Sequelize.fn(
+//             "COALESCE",
+//             Sequelize.col("story.thumbnail"),
+//             Sequelize.fn("MIN", Sequelize.col("story.scenes.image_url"))
+//           ),
+//           "thumbnail"
+//         ],
+//       ],
+//       include: [
+//         {
+//           model: Story,
+//           as: "story",
+//           attributes: ["name", "thumbnail"],
+//           required: true,
+//           include: [
+//             {
+//               model: Scene,
+//               as: "scenes",
+//               attributes: [],
+//               required: false,
+//               where: { deleted_at: null },
+//             },
+//           ],
+//         },
+//         {
+//           model: StoryToVideo,
+//           as: "videoData",
+//           attributes: ["video_url", "video_path", "status", 'id','subtitle_tracks', 'audio_tracks'],
+//           required: true,
+//         },
+//       ],
+//       group: ["ExploreVideo.id", "story.id", "videoData.id"],
+//       order: [["createdAt", "DESC"]],
+//       limit: pageSize,
+//       offset: offset,
+//       subQuery: false,
+//     });
+
+//     if (videos.length === 0) {
+//       return {
+//         status: 404,
+//         message: "No videos found",
+//         success: false,
+//       };
+//     }
+//     console.log("unformateed videos:",videos)
+
+//     // ✅ Format response
+//     let formattedVideos = formatteVideoDate(videos);
+
+//     // ✅ Mark videos reported by current user
+//     // if (user_id != 0) {
+//     //   formattedVideos = formattedVideos.map(video => {
+//     //     const reports = video.report_details
+//     //       ? JSON.parse(`[${video.report_details}]`.replace(/}\s*,\s*{/g, '},{')) // normalize JSON if multiple reports
+//     //       : [];
+
+//     //     const isUserReported = reports.some(r => r?.user_id == user_id);
+//     //     return {
+//     //       ...video,
+//     //       isUserReported,
+//     //     };
+//     //   });
+//     // }
+
+//     return {
+//       status: 200,
+//       message: "Videos fetched successfully",
+//       success: true,
+//       videos: formattedVideos,
+//       pagination: {
+//         currentPage: pageNumber,
+//         pageSize,
+//         nextPage: videos.length === pageSize ? pageNumber + 1 : null,
+//       },
+//     };
+
+//   } catch (err) {
+//     console.error("Error fetching explore videos:", err);
+//     return {
+//       status: 500,
+//       message: "Internal server error",
+//       success: false,
+//     };
+//   }
+// };
 exports.getExploreVideosService = async (page, user_id) => {
   try {
     const pageNumber = parseInt(page, 10) || 1;
     const pageSize = 10;
     const offset = (pageNumber - 1) * pageSize;
 
-    // Fetch videos with aggregated thumbnail from scenes
+    // 🔹 Fetch Explore videos (same as your current working code)
     const videos = await ExploreVideo.findAll({
       attributes: [
         "id",
         "user_id",
         "story_id",
         "createdAt",
-        // Use COALESCE to get story thumbnail or first scene image
         [
           Sequelize.fn(
             "COALESCE",
             Sequelize.col("story.thumbnail"),
             Sequelize.fn("MIN", Sequelize.col("story.scenes.image_url"))
           ),
-          "thumbnail"
+          "thumbnail",
         ],
       ],
       include: [
@@ -109,14 +326,21 @@ exports.getExploreVideosService = async (page, user_id) => {
         {
           model: StoryToVideo,
           as: "videoData",
-          attributes: ["video_url", "video_path", "status", 'id','subtitle_tracks', 'audio_tracks'],
+          attributes: [
+            "video_url",
+            "video_path",
+            "status",
+            "id",
+            "subtitle_tracks",
+            "audio_tracks",
+          ],
           required: true,
         },
       ],
       group: ["ExploreVideo.id", "story.id", "videoData.id"],
       order: [["createdAt", "DESC"]],
       limit: pageSize,
-      offset: offset,
+      offset,
       subQuery: false,
     });
 
@@ -128,9 +352,47 @@ exports.getExploreVideosService = async (page, user_id) => {
       };
     }
 
-    // Format response
-    const formattedVideos = formatteVideoDate(videos)
-    console.log("formatted videos: ",formattedVideos)
+    // Format data
+    let formattedVideos = formatteVideoDate(videos);
+
+    console.log("uaer is",user_id)
+    // 🔹 If user is logged in, find which videos they've reported
+    if (user_id && user_id != 0) {
+      console.log("test")
+      const videoIds= formattedVideos.map(video=>video.id)
+      
+      console.log("videoids :",videoIds)
+
+      const explore_reports= await VideoReport.findAll({
+        where:{
+          published_id:{
+            [Op.in]:videoIds
+          }
+        },
+      })
+      // console.log("explore reports:",explore_reports)
+
+      const reportedVideoIds=explore_reports.map(video_report=>{
+        const report_details=video_report.report_details;
+        // console.log("report details :",report_details)
+        if(report_details){
+          const user_report= report_details.find(report=>
+            report.user_id==user_id
+          )
+          if(user_report){
+            return video_report.published_id;
+          }
+        }
+      })
+
+      // 🔹 Mark reported videos
+      formattedVideos = formattedVideos.map(video => ({
+        ...video,
+        isUserReported: reportedVideoIds.includes(video.id),
+      }));
+    }
+
+    console.log("updated formattted data:", formattedVideos )
 
     return {
       status: 200,
@@ -139,7 +401,7 @@ exports.getExploreVideosService = async (page, user_id) => {
       videos: formattedVideos,
       pagination: {
         currentPage: pageNumber,
-        pageSize: pageSize,
+        pageSize,
         nextPage: videos.length === pageSize ? pageNumber + 1 : null,
       },
     };
@@ -152,6 +414,7 @@ exports.getExploreVideosService = async (page, user_id) => {
     };
   }
 };
+
 
 exports.getUserPublishedVideosService = async (user_id) => {
   try {

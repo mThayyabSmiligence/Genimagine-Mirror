@@ -18,6 +18,7 @@ import { axiosPrivate } from '../../API\'s/axios';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import DeleteConfirmationModal from '../../Components/CommonComponents/DeleteConfirmationModal';
 
+
 function CreateCharacters() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +40,12 @@ function CreateCharacters() {
   const [generatedCharacter, setGeneratedCharacter] = useState(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [imageRefresh, setImageRefresh] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false); // NEW: Retry state
+
 
   // Story type state
   const [storyType, setStoryType] = useState(null); // 'auto' or 'manual'
+
 
   // Auto-generation state
   const [autoGenState, setAutoGenState] = useState({
@@ -53,6 +57,7 @@ function CreateCharacters() {
     lastCharacterCount: 0
   });
 
+
   // Use useRef for polling interval to avoid stale closures
   const statusPollingRef = useRef(null);
   
@@ -60,7 +65,9 @@ function CreateCharacters() {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   const isNextEnabled = characters.length >= 1;
+
 
   // Character Generation Starting Component
   const CharacterGenerationStarting = () => (
@@ -80,6 +87,7 @@ function CreateCharacters() {
     </div>
   );
 
+
   // Character Generation In Progress Component
   const CharacterGenerationInProgress = () => (
     <div className="character-generation-in-progress">
@@ -98,6 +106,7 @@ function CreateCharacters() {
     </div>
   );
 
+
   // Simple Loading Spinner Component
   const SimpleLoadingSpinner = () => (
     <div className="simple-loading-container">
@@ -106,22 +115,54 @@ function CreateCharacters() {
     </div>
   );
 
-  // Auto Generation Failed Component
-  const AutoGenerationFailed = () => (
-    <div className="auto-generation-failed">
-      <div className="failed-header">
-        <div className="failed-icon">
-          <span className="failed-emoji">❌</span>
-        </div>
-        <div className="failed-content">
-          <h3 className="failed-title">Story Generation Failed</h3>
-          <p className="failed-message">
-            Something went wrong during the automated generation process. You can create characters and scenes manually.
-          </p>
+
+  // UPDATED: Auto Generation Failed or Partially Completed Component with Retry
+  const AutoGenerationFailedOrPartial = () => {
+    const isPartiallyCompleted = autoGenState.status === 'partially-completed';
+    
+    return (
+      <div className={`auto-generation-failed ${isPartiallyCompleted ? 'partial' : ''}`}>
+        <div className="failed-header">
+          <div className="failed-icon">
+            <span className="failed-emoji">{isPartiallyCompleted ? '⚠️' : '❌'}</span>
+          </div>
+          <div className="failed-content">
+            <h3 className="failed-title">
+              {isPartiallyCompleted ? 'Story Generation Partially Completed' : 'Story Generation Failed'}
+            </h3>
+            <p className="failed-message">
+              {isPartiallyCompleted 
+                ? 'The automated generation process completed with some errors. You can retry to complete the generation or continue manually.'
+                : 'Something went wrong during the automated generation process. You can retry automatic generation or create characters and scenes manually.'
+              }
+            </p>
+            
+            {/* NEW: Retry Button */}
+            <div className="failed-actions">
+              <button 
+                className="btn-retry"
+                onClick={handleRetryFailedStory}
+                disabled={isRetrying}
+              >
+                {isRetrying ? (
+                  <>
+                    <div className="retry-spinner"></div>
+                    Retrying...
+                  </>
+                ) : (
+                  <>
+                    <LoopRoundedIcon className="icon-sm" />
+                    Retry Generation
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+
 
   // Simple Loading Character Card Component with spinner
   const LoadingCharacterCard = ({ characterNumber }) => (
@@ -148,6 +189,39 @@ function CreateCharacters() {
     </div>
   );
 
+
+  // NEW: Retry handler function
+  const handleRetryFailedStory = async () => {
+    setIsRetrying(true);
+    
+    try {
+      const response = await axiosPrivate.post(`/restart-failed-story/${id}`);
+      
+      if (response.data.success) {
+        toast.success('Story generation restarted successfully!');
+        
+        // Reset auto-gen state to show starting/in-progress state
+        setAutoGenState(prev => ({
+          ...prev,
+          status: 'in-progress',
+          isActive: true
+        }));
+        
+        // Start polling again
+        checkStoryStatus();
+        
+      } else {
+        toast.error(response.data.message || 'Failed to restart story generation');
+      }
+    } catch (error) {
+      console.error('Error restarting failed story:', error);
+      toast.error(error.response?.data?.message || 'Failed to restart story generation. Please try again.');
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+
   // FIXED: Fetch story info to determine type
   const fetchStoryInfo = useCallback(async () => {
     try {
@@ -163,6 +237,7 @@ function CreateCharacters() {
       setStoryType('manual'); // Default to manual on error
     }
   }, [id]);
+
 
   // Fetch existing characters function
   const fetchExistingCharacters = useCallback(async () => {
@@ -181,6 +256,7 @@ function CreateCharacters() {
       console.error('Error fetching characters:', err);
     }
   }, [id]);
+
 
   // UPDATED: Status checking function - ONLY for auto stories
   const checkStoryStatus = useCallback(async () => {
@@ -212,6 +288,7 @@ function CreateCharacters() {
           return newState;
         });
 
+
         // UPDATED: Stop polling and show toast for completed, failed, OR partially-completed
         if (['completed', 'failed', 'partially-completed'].includes(statusData.status)) {
           // Clear the interval immediately
@@ -224,7 +301,7 @@ function CreateCharacters() {
           // UPDATED: Use localStorage to persist toast flags across page navigations
           const completedToastKey = `story-${id}-completed-toast-shown`;
           const failedToastKey = `story-${id}-failed-toast-shown`;
-          const partiallyCompletedToastKey = `story-${id}-partially-completed-toast-shown`; // NEW
+          const partiallyCompletedToastKey = `story-${id}-partially-completed-toast-shown`;
           
           // Show completed toast only once per story
           if (statusData.status === 'completed' && !localStorage.getItem(completedToastKey)) {
@@ -254,6 +331,7 @@ function CreateCharacters() {
     }
   }, [id, storyType, fetchExistingCharacters]); // Add storyType dependency
 
+
   // FIXED: Modified useEffect for initialization
   useEffect(() => {
     const initializeComponent = async () => {
@@ -261,8 +339,10 @@ function CreateCharacters() {
         setLoading(true);
         setError(null);
 
+
         // First, fetch story info to determine type
         await fetchStoryInfo();
+
 
         // Fetch existing characters
         await fetchExistingCharacters();
@@ -276,7 +356,9 @@ function CreateCharacters() {
       }
     };
 
+
     initializeComponent();
+
 
     // Cleanup function
     return () => {
@@ -288,6 +370,7 @@ function CreateCharacters() {
     };
   }, [id, fetchStoryInfo, fetchExistingCharacters]); // Remove checkStoryStatus from here
 
+
   // NEW: Check status after story type is determined
   useEffect(() => {
     if (storyType === 'auto') {
@@ -295,9 +378,11 @@ function CreateCharacters() {
     }
   }, [storyType, checkStoryStatus]);
 
+
   // UPDATED: Separate useEffect to handle polling based on status changes - ONLY for auto stories
   useEffect(() => {
     if (storyType !== 'auto') return; // Skip polling for manual stories
+
 
     // UPDATED: Removed 'partially-completed' from polling conditions
     const shouldPoll = ['in-progress', 'generating-characters', 'generating-scenes'].includes(autoGenState.status);
@@ -313,6 +398,7 @@ function CreateCharacters() {
       statusPollingRef.current = null;
     }
 
+
     // Cleanup when status changes
     return () => {
       if (!shouldPoll && statusPollingRef.current) {
@@ -321,6 +407,7 @@ function CreateCharacters() {
       }
     };
   }, [autoGenState.status, checkStoryStatus, storyType]); // Add storyType dependency
+
 
   // FIXED: Calculate how many loading cards to show - ONLY for auto stories
   const getLoadingCharacterCards = () => {
@@ -339,11 +426,13 @@ function CreateCharacters() {
     return loadingCards;
   };
 
+
   const handleCreateCharacter = async () => {
     if (!newCharacter.name.trim()) {
       toast.error("Please enter a character name");
       return;
     }
+
 
     setIsGenerating(true);
     
@@ -353,6 +442,7 @@ function CreateCharacters() {
         description: newCharacter.description,
         story_id: parseInt(id)
       });
+
 
       if (response.data.success) {
         const newGeneratedCharacter = {
@@ -376,8 +466,10 @@ function CreateCharacters() {
     }
   };
 
+
   const handleRegenerateImage = async () => {
     if (!generatedCharacter) return;
+
 
     setIsRegenerating(true);
     
@@ -387,6 +479,7 @@ function CreateCharacters() {
         name: newCharacter.name,
         description: newCharacter.description
       });
+
 
       if (response.data.success) {
         const updatedCharacter = {
@@ -412,6 +505,7 @@ function CreateCharacters() {
           )
         );
 
+
         if (selectedCharacter && selectedCharacter.id === generatedCharacter.id) {
           setSelectedCharacter({
             ...selectedCharacter,
@@ -433,6 +527,7 @@ function CreateCharacters() {
     }
   };
 
+
   const handleEditClick = (character) => {
     setIsNewCharacter(false);
     setIsEditMode(true);
@@ -442,9 +537,11 @@ function CreateCharacters() {
       description: character.description || ""
     });
 
+
     setGeneratedCharacter(character);
     setIsCreateDialogOpen(true);
   };
+
 
   const handleOpenRegenerateMode = (character) => {
     setIsNewCharacter(false);
@@ -455,16 +552,19 @@ function CreateCharacters() {
       description: character.description || ""
     });
 
+
     setGeneratedCharacter(character);
     setShowCharacterPreview(false);
     setIsCreateDialogOpen(true);
   };
+
 
   const handleRegenerateCharacter = async () => {
     if (!editingCharacter || !newCharacter.name.trim()) {
       toast.error("Please enter a character name");
       return;
     }
+
 
     setIsGenerating(true);
     
@@ -474,6 +574,7 @@ function CreateCharacters() {
         name: newCharacter.name.trim(),
         description: newCharacter.description
       });
+
 
       if (response.data.success) {
         const updatedCharacter = {
@@ -501,6 +602,7 @@ function CreateCharacters() {
           )
         );
 
+
         if (selectedCharacter && selectedCharacter.id === editingCharacter.id) {
           setSelectedCharacter({
             ...selectedCharacter,
@@ -521,6 +623,7 @@ function CreateCharacters() {
       setIsGenerating(false);
     }
   };
+
 
   const handleNext = () => {
     if (generatedCharacter) {
@@ -553,10 +656,12 @@ function CreateCharacters() {
     closeDialog();
   };
 
+
   const handleDeleteClick = (character) => {
     setCharacterToDelete(character);
     setShowDeleteModal(true);
   };
+
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
@@ -564,11 +669,14 @@ function CreateCharacters() {
     setIsDeleting(false);
   };
 
+
   const handleConfirmDelete = async () => {
     if (!characterToDelete) return;
 
+
     setIsDeleting(true);
     const character_id = characterToDelete.id; 
+
 
     try {
       const response = await axiosPrivate.post(`/delete-character`, {
@@ -577,6 +685,7 @@ function CreateCharacters() {
       setCharacters(characters.filter(
         character => character.id !== character_id
       ));
+
 
       toast.success("Character deleted successfully!");
       handleCloseDeleteModal();
@@ -588,6 +697,7 @@ function CreateCharacters() {
     }
   };
 
+
   const closeDialog = () => {
     setIsCreateDialogOpen(false);
     setIsEditMode(false);
@@ -598,21 +708,25 @@ function CreateCharacters() {
     setImageRefresh(0);
   };
 
+
   const handleNextBtn = () => {
     if (isNextEnabled) {
       navigate(`/u/scenes/create/${id}`)
     }
   };
 
+
   const handleCharacterClick = (character) => {
     setSelectedCharacter(character);
     setShowCharacterPreview(true);
   };
 
+
   const closeCharacterPreview = () => {
     setShowCharacterPreview(false);
     setSelectedCharacter(null);
   };
+
 
   return (
     <div className="characters-container mt-5">
@@ -626,10 +740,12 @@ function CreateCharacters() {
         </div>
       </div>
 
-      {/* Show failed state - ONLY for auto stories */}
-      {storyType === 'auto' && autoGenState.status === 'failed' && (
-        <AutoGenerationFailed />
+
+      {/* UPDATED: Show failed OR partially completed state - ONLY for auto stories */}
+      {storyType === 'auto' && ['failed', 'partially-completed'].includes(autoGenState.status) && (
+        <AutoGenerationFailedOrPartial />
       )}
+
 
       {/* Show loading spinner while fetching data */}
       {loading ? (
@@ -648,6 +764,7 @@ function CreateCharacters() {
             </button>
           </div>
 
+
           {/* FIXED: Show different states based on story type and auto-generation status */}
           {storyType === 'auto' && autoGenState.status === 'started' ? (
             <CharacterGenerationStarting />
@@ -657,8 +774,8 @@ function CreateCharacters() {
             <>
               {/* Characters Grid - Show for manual stories OR completed/failed auto stories */}
               <div className="characters-grid">
-                {/* Create New Character Card - Hide during active auto generation, show for manual stories and failed auto stories */}
-                {(storyType === 'manual' || !autoGenState.isActive || autoGenState.status === 'failed') && (
+                {/* UPDATED: Create New Character Card - Show for manual stories, failed, or partially-completed auto stories */}
+                {(storyType === 'manual' || !autoGenState.isActive || ['failed', 'partially-completed'].includes(autoGenState.status)) && (
                   <div
                     className="create-character-card"
                     onClick={() => {
@@ -677,6 +794,7 @@ function CreateCharacters() {
                     </div>
                   </div>
                 )}
+
 
                 {/* Character Cards */}
                 {Array.isArray(characters) && characters.length > 0 && characters.map((character) => (
@@ -710,7 +828,7 @@ function CreateCharacters() {
                     
                     <div className="character-footer">
                       <div className="character-actions">
-                        {/* UPDATED: Edit Button - Disabled during active auto generation (UPDATED LOGIC) */}
+                        {/* UPDATED: Edit Button - Disabled during active auto generation */}
                         {storyType === 'auto' && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) && autoGenState.isActive ? (
                           <button 
                             className="character-preview-action-btn disabled" 
@@ -732,7 +850,7 @@ function CreateCharacters() {
                           </button>
                         )}
                         
-                        {/* UPDATED: Delete Button - Disabled during active auto generation (UPDATED LOGIC) */}
+                        {/* UPDATED: Delete Button - Disabled during active auto generation */}
                         {storyType === 'auto' && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status) && autoGenState.isActive ? (
                           <button 
                             className="character-preview-action-btn action-danger disabled" 
@@ -758,12 +876,14 @@ function CreateCharacters() {
                   </div>
                 ))}
 
+
                 {/* Loading Character Cards - Show dynamically based on status - ONLY for auto stories */}
                 {getLoadingCharacterCards()}
               </div>
 
-              {/* Empty State - Only show when no characters and not auto-generating */}
-              {characters.length === 0 && (storyType === 'manual' || !autoGenState.isActive) && (
+
+              {/* UPDATED: Empty State - Show when no characters and not auto-generating */}
+              {characters.length === 0 && (storyType === 'manual' || !autoGenState.isActive || ['failed', 'partially-completed'].includes(autoGenState.status)) && (
                 <div className="empty-state">
                   <div className="empty-icon">
                     <PeopleOutlineIcon className="icon-xxl" />
@@ -778,6 +898,7 @@ function CreateCharacters() {
           )}
         </>
       )}
+
 
       {/* Create Character Dialog */}
       {isCreateDialogOpen && (
@@ -798,6 +919,7 @@ function CreateCharacters() {
               </p>
             </div>
 
+
             {/* Body */}
             <div className="dialog-body">
               {/* Character Name */}
@@ -814,6 +936,7 @@ function CreateCharacters() {
                 />
               </div>
 
+
               {/* Character Description */}
               <div className="form-group">
                 <label className="form-label">Character Description</label>
@@ -827,6 +950,7 @@ function CreateCharacters() {
                   placeholder="Describe your character..."
                 />
               </div>
+
 
               {/* Generated Character Image */}
               {generatedCharacter && (
@@ -855,6 +979,7 @@ function CreateCharacters() {
                   </div>
                 </div>
               )}
+
 
               {/* Action Buttons */}
               <div className="dialog-actions">
@@ -912,6 +1037,7 @@ function CreateCharacters() {
         </div>
       )}
 
+
       {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
@@ -921,6 +1047,7 @@ function CreateCharacters() {
         itemName={characterToDelete?.name}
         itemType="character"
       />
+
 
       {/* Character Preview Modal */}
       {showCharacterPreview && selectedCharacter && (
@@ -973,5 +1100,6 @@ function CreateCharacters() {
     </div>
   );
 }
+
 
 export default CreateCharacters;

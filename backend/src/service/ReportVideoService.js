@@ -1,5 +1,6 @@
 const { Sequelize, VideoReport, StoryToVideo, ExploreVideo, Story, Scene, Users, Character } = require("../models");
 const sequelize = require("../config/database");
+const { Op } = require('sequelize');
 const { banUserService, suspendUserService, warnUser } = require("./UserService");
 
 const formatReportedVideos = (reports) => {
@@ -25,6 +26,11 @@ const formatReportedVideos = (reports) => {
 exports.getAllReportedVideosService = async () => {
   try {
     const reports = await VideoReport.findAll({
+      where: {
+        action_type: {
+          [Op.ne]: 'no_action'  // Exclude reports with action_type = 'no_action'
+        }
+      },
       order: [["reported_at", "DESC"]],
       attributes: [
         "report_id",

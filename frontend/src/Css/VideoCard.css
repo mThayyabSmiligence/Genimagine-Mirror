@@ -154,6 +154,18 @@
   transform: scale(0.95);
 }
 
+/* Reported state - disabled with low opacity */
+.video-report-button.reported {
+  opacity: 0.3 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.video-card-wrapper:hover .video-report-button.reported {
+  opacity: 0.3 !important;
+  transform: scale(1);
+  color: #6b7280;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
