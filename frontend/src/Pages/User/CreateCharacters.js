@@ -203,7 +203,7 @@ function CreateCharacters() {
         // Reset auto-gen state to show starting/in-progress state
         setAutoGenState(prev => ({
           ...prev,
-          status: 'in-progress',
+          status: null,
           isActive: true
         }));
         

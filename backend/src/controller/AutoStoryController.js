@@ -38,5 +38,5 @@ exports.manuallStruckAutoStoryRestartController=asyncHandler( async(req,res)=>{
     const {id} = req.params;
     const user_id = req.user.id;
     const result = await manuallStruckAutoStoryRestartService(id,user_id);
-    return res.status(result.status).json(result);
+    return res.status(200).json(result);
 })

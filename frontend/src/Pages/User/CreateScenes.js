@@ -79,9 +79,11 @@ function CreateScenes() {
         // Reset auto-gen state to show starting/in-progress state
         setAutoGenState(prev => ({
           ...prev,
-          status: 'in-progress',
+          status:'generating-scenes',
           isActive: true
         }));
+
+        await fetchExistingScenes();
         
         // Start polling again
         checkStoryStatus();
@@ -1046,9 +1048,51 @@ function CreateScenes() {
                           </div>
                         </div>
                       ) : (
+                        // UPDATED: Show placeholder with same regenerate button style when no image
                         <div className="scene-image-placeholder">
+                          {regeneratingSceneId === scene.id && (
+                            <div className="simple-loading-overlay">
+                              <div className="simple-spinner"></div>
+                              <p>Generating...</p>
+                            </div>
+                          )}
                           <div className="image-overlay"></div>
                           <p className="no-image-text">No image available</p>
+                          
+                          {/* UPDATED: Same style regenerate button as when image exists */}
+                          <div className="image-actions">
+                            <button 
+                              className={`image-action-btn ${
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? 'disabled' 
+                                  : ''
+                              }`}
+                              title={
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status))
+                                  ? "Generate not available during story generation"
+                                  : (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                  ? "Generate not available during video generation"
+                                  : "Generate Scene Image"
+                              }
+                              onClick={() => {
+                                if (
+                                  (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                  (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                                ) {
+                                  return;
+                                }
+                                handleRegenerateScene(scene.id, scene.prompt);
+                              }}
+                              disabled={
+                                regeneratingSceneId === scene.id || 
+                                (storyType === "auto" && autoGenState.status && !["completed", "partially-completed", "failed"].includes(autoGenState.status)) ||
+                                (videoGenerationInProgress || ['in-progress', 'generating-audio', 'generating-video'].includes(existingVideoStatus))
+                              }
+                            >
+                              <RefreshIcon className="icon-xs" />
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
