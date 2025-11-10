@@ -1,6 +1,7 @@
 const autoStoryQueue = require("../queue/AutoStoryQueue");
 const numberQueue = require("../queue/TestQueue");
 const { createAutoStoryService, extractScenesAndCharactersService, printNumbers, getStatusService, getStoryStatusService, UpdateAutoStoryJobId, manuallStruckAutoStoryRestartService } = require("../service/AutoStoryService");
+const asyncHandler = require("../utils/asyncHandler");
 
 exports.createAutoStoryController = async (req, res) => {
     const {name,description, total_scenes, style_id}= req.body;
@@ -33,9 +34,9 @@ exports.getStoryStatus = async (req, res) => {
     return res.status(result.status).json(result);
 }
 
-exports.manuallStruckAutoStoryRestartController=async(req,res)=>{
+exports.manuallStruckAutoStoryRestartController=asyncHandler( async(req,res)=>{
     const {id} = req.params;
     const user_id = req.user.id;
     const result = await manuallStruckAutoStoryRestartService(id,user_id);
     return res.status(result.status).json(result);
-}
+})
