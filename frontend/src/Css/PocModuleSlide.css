@@ -1,0 +1,116 @@
+/* Spacing utility (similar to Bootstrap's mt-5) */
+.mt-5 {
+  margin-top: 2rem;
+}
+
+/* Card wrapper – similar feel to video card */
+.poc-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: default;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.poc-card-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Thumbnail container (16:9 layout like video) */
+.poc-card-thumbnail {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+  background: #000;
+}
+
+/* Placeholder "image" – you can replace with <img> later */
+.poc-card-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f9fafb;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.02em;
+  transition: transform 0.5s ease;
+}
+
+.poc-card-wrapper:hover .poc-card-image-placeholder {
+  transform: scale(1.05);
+}
+
+/* Overlay with badge */
+.poc-card-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 12px;
+}
+
+.poc-card-badge {
+  background: rgba(15, 23, 42, 0.85);
+  color: #f9fafb;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Content area */
+.poc-card-content {
+  padding: 16px 18px 18px 18px;
+  background: #ffffff;
+}
+
+.poc-card-title {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.poc-card-description {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .poc-card-wrapper {
+    margin: 0 16px;
+  }
+
+  .poc-card-title {
+    font-size: 16px;
+  }
+
+  .poc-card-description {
+    font-size: 13px;
+  }
+
+  .poc-card-image-placeholder {
+    font-size: 16px;
+  }
+}

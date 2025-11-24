@@ -71,6 +71,9 @@ import CreateScenes from './Pages/User/CreateScenes';
 import PublishedVideosPage from './Pages/User/PublishedVideosPage';
 import PostsPage from './Pages/User/PostsPage';
 import ReportVideoDetail from './Pages/Moderator/ReportVideoDetail';
+import DocumentToVideo from './Pages/Poc/DocumentToVideo';
+import PocModuleSlide from './Pages/Poc/PocModuleSlide';
+
 
 
 function App() {
@@ -158,6 +161,8 @@ function App() {
               
                 <Route path="image-generation" element={<GuestContentPage></GuestContentPage>}></Route>
                 <Route path="image-to-prompt" element={<ImageToPrompt></ImageToPrompt>}></Route>
+                <Route path="learn" element={<DocumentToVideo></DocumentToVideo>}></Route>
+                <Route path="poc-modules" element={<PocModuleSlide></PocModuleSlide>}></Route>
                 <Route path="explore" element={<ExplorePage></ExplorePage>}></Route>
                 <Route path="explore/image/:published_id" element={<ExploreImageDetail></ExploreImageDetail>}></Route>
                 <Route path='credit-shop'></Route>

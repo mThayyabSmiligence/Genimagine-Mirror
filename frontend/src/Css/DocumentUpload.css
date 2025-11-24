@@ -1,0 +1,52 @@
+/* When a PDF file is selected */
+.upload-area.has-file {
+  padding: 24px;
+  border-style: solid;
+  border-color: #8b5cf6;
+  background-color: #ffffff;
+}
+
+/* Uploaded file info box */
+.uploaded-file {
+  width: 100%;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px 18px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.uploaded-file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.file-hint {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 10px;
+}
+
+.upload-error-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #dc2626;
+}

@@ -19,6 +19,11 @@ const { createAutoStoryController, getstatus, getStoryStatus, manuallStruckAutoS
 const { createStoryToVideoController, getStoryToVideoController, getStoryToVideoByStoryIdController, deleteStoryToVideoByStoryIdController, addLanguageStoryToVideoController } = require('../controller/StoryToVideoController');
 
 const { publishVideoToExploreController, getUserPublishedVideosController, deletePublishedVideoController } = require('../controller/ExploreVideoController');
+const uploadSingle = require('../middle_ware/UploadSingle');
+const uploadSingleFile = require('../controller/UploadController');
+const UploadSingle = require('../middle_ware/UploadSingle');
+
+
 
 const router = express.Router();
 
@@ -137,5 +142,8 @@ router.delete("/published-videos/:video_id", deletePublishedVideoController);
 router.post("/report-video", videoReportController);
 
 router.post('/restart-failed-story/:id',manuallStruckAutoStoryRestartController)
+
+// upload pdf,docs,txt files
+router.post("/upload-pdf", UploadSingle, uploadSingleFile);
 
 module.exports = router;

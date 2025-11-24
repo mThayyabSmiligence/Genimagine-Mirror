@@ -37,6 +37,7 @@ function Navbar() {
                     }
                     <Link  className="link nav-link p-primary" to={'/image-generation'}>Generation</Link>
                     <Link  className="link nav-link p-primary" to={'/image-to-prompt'}>Image to Prompt</Link>
+                    <Link  className="link nav-link p-primary" to={'/learn?poc'}>Learn-poc?</Link>
                     </div>
                     <div className='sign-in d-flex align-items-center justify-content-center'>
                     {loggedIn ? (
