@@ -20,6 +20,20 @@ db.ExploreVideo = require("./ExploreVideo")
 db.VideoReport = require("./VideoReport"); 
 db.Users = require("./Users")
 
+db.AiLearningSpec= require("./ai_learning/AiLearningSpec")
+db.AiLearningJob= require("./ai_learning/AiLearningJob")
+db.AiLearningModule= require("./ai_learning/AiLearningModule")
+db.AiLearningObjective= require('./ai_learning/AiLearningObjectives')
+db.AiLearningSpecModule= require('./ai_learning/AiLearningSpecModule')
+db.AiLearningVideo= require('./ai_learning/AiLearningVideo')
+db.AiLearningSlide= require('./ai_learning/AiLearningSlide')
+
+
+
+// ***************************************************************
+//  Associations
+// ***************************************************************
+
 // Define associations with alias
 db.Story.hasMany(db.Character, { foreignKey: "story_id", as: "characters" });
 db.Character.belongsTo(db.Story, { foreignKey: "story_id", as: "story" });
@@ -67,7 +81,6 @@ db.VideoReport.belongsTo(db.StoryToVideo, { foreignKey: "video_id", as: "video" 
 // VideoReport ↔ ExploreVideo (reported video from Explore section)
 db.ExploreVideo.hasMany(db.VideoReport, { foreignKey: "published_id", as: "published_reports" });
 db.VideoReport.belongsTo(db.ExploreVideo, { foreignKey: "published_id", as: "published_video" });
-
 // Each ExploreVideo belongs to one User (the uploader)
 db.ExploreVideo.belongsTo(db.Users, {
   foreignKey: "user_id",
@@ -79,5 +92,9 @@ db.Users.hasMany(db.ExploreVideo, {
   foreignKey: "user_id",
   as: "uploaded_videos"
 });
+
+//=========================
+// 🔗 New Associations for Ai Learning
+// ==========================
 
 module.exports = db;
