@@ -1,3 +1,4 @@
+require("dotenv").config({ path: require("path").resolve(__dirname, "../config.env") });
 const { uploadFile } = require("../API/S3.api")
 const crypto = require('crypto');
 const AppError = require("../utils/AppError");
@@ -8,6 +9,7 @@ const iv = Buffer.from(process.env.IV || '1234567890123456', 'hex');
 
 const fs = require('fs');
 
+const s3AiLearningBasePath = process.env.S3_AI_LEARNING_BASE_PATH;
 
 function encryptId(id) {
   return crypto.createHash('sha256').update(id.toString()).digest('hex').slice(0, 16);
@@ -49,6 +51,12 @@ exports.uploadAudio = async(image , path)=>{
     const upload = await uploadFile(image,path,"audio/mpeg");
     return upload
 }
+
+exports.uploadPdf = async(file , path)=>{
+    const upload = await uploadFile(file,path,"application/pdf");
+    return upload
+}
+
 
 exports.uploadStoryToVideo = async(video,story_id,video_id)=>{
 
@@ -123,3 +131,11 @@ exports.uploadAudioTrack = async (audio,storyToVideoId, language) => {
         );
     }
 };
+
+exports.uploadAiLearningPdf = async(file,user_id,spec_id)=>{
+
+    const path = s3AiLearningBasePath+"/orginal-pdf/"+encryptId(user_id.toString())+"/"+encryptId(spec_id.toString());
+    const buffer = file.buffer;
+    const upload = await this.uploadPdf(buffer,path);
+    return upload
+}

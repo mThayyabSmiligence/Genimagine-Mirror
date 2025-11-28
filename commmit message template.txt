@@ -1,0 +1,79 @@
+Backend updates and database changes
+
+
+
+Functional Chaange explain
+    *added api to start create the ai Learning
+    *finished till saving SpecModules
+    *added api to get spec for user
+
+Backend:
+	New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+ 		-AiLearningQueue.js(new file)
+ 			*added queue for AiLearning
+        -Users.js(route)-apis
+            */create-ai-learning- post - to create ai learning
+            */get-ai-learning- get - to get ai learning ny user id
+ 		-S3Service.js(new file)
+ 			*added function to upload pdf
+			*added function to upload AiLearing Pdf
+        -AiLearning.service.js
+            * just ignore it 
+        -AiLearningWorker.service.js
+            * startAiLearningWorker- the full worker logic
+                -finidhed till saving the module and spec id in specModule table
+ 		-S3Service.js(new file)
+ 			*added function to upload pdf
+			*added function to upload AiLearing Pdf   
+        -specUnderstanding.service.js
+            *generateCandidateModules - generate the modules for given text
+            *contstructPrompt - give uesr and sytem query it return the prompt to give to llms
+            *getSystemPrompt- give generation type and it gives system prompt
+        -documentPrasing.service.js
+            *isPageNumberLine - give line and it checks if the line is page no line
+            *stripHeadersAndFooters - gets rid of header and foot in pdf
+            *cleanExtractedText- cleans the extarcted text form pdf
+            *downloadPdfToBuffer- downlods pdf wtih url
+            *parseDocumentForSpec- give url it give the clean extracterd text from pdf
+        -moduleUpload.service.js
+            *saveAiLearningModules - bulk saves the modules
+        -specGet.service.js
+            *getAiLearningByUserIdService - get specs by User id
+        -specUpload.service.js
+            *creatNewAiLearning_Tech_Full - service to create spec and call start start the  queue
+        -specModuleUpload.service.js
+            *saveSpecModules - saves the spec modules for a spec
+        -AiLearningWorker.js
+            *woker for AiLearing queque
+            *it calls startAiLearnignWorker from the AiLearingWorker.service.js
+            
+    Changed:
+        -JobLifeCycle.service.js
+            *createNewAiLearningQueue - added logic to add the queue
+            *updateJobStatus - added validation and now accepts error message if any
+
+
+Db:
+    New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+
+
+    Changed:
+        -AiLearningJob
+            *status - changed the status enum values
+            *error_message - made defualt value to null
+        -AiLearningSpec
+            *original_name - removed allowNull false
+            *storage_url - removed allowNull false
+            *mime_type - removed allowNull false
+            *status - changed the status enum values
+            *storage_path - added
+
+Env:
+    New:
+        -S3_AI_LEARNING_BASE_PATH - base path for ai learinig in s3 cloud

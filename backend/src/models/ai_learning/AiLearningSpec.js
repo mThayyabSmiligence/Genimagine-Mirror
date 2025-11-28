@@ -12,6 +12,9 @@ const sequelize = require("../../config/database");
 //language: string
 //status: string
 //error_message: text
+//learning_type: string
+//created_at: date
+//updated_at: date
 const AiLearningSpec = sequelize.define(
     "AiLearningSpec",
     {
@@ -35,24 +38,24 @@ const AiLearningSpec = sequelize.define(
             allowNull: false 
         },
         original_name: { 
-            type: DataTypes.STRING(255), 
-            allowNull: false 
+            type: DataTypes.STRING(255)
         },
         storage_url: { 
             type: DataTypes.STRING(512), 
-            allowNull: false 
+        },
+        storage_path: { 
+            type: DataTypes.STRING(512), 
         },
         mime_type: { 
-            type: DataTypes.STRING(100), 
-            allowNull: false 
+            type: DataTypes.STRING(100)
         },
         language: { 
             type: DataTypes.STRING(20), 
             defaultValue: "en" 
         },
         status: {
-            type: DataTypes.ENUM("UPLOADED", "PROCESSING", "READY", "FAILED"),
-            defaultValue: "UPLOADED",
+            type: DataTypes.ENUM("Pending", "Processing","Creating-Modules","Generating-Module-Content" ,"Completed", "Failed"),
+            defaultValue: "Pending",
             allowNull: false,
         },
         error_message: { 
