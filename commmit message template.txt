@@ -1,5 +1,38 @@
+#######################################
+Template
+#######################################
 Backend updates and database changes
 
+
+
+Functional Chaange explain
+    *added api to start create the ai Learning
+    *finished till saving SpecModules
+    *added api to get spec for user
+
+Backend:
+    New:
+            -AiLearningController.js(new file)
+                *added controller to create Ai Learning
+                *added controller to get AI Learning by user id
+     		-AiLearningQueue.js(new file)
+     			*added queue for AiLearning
+    Changed:
+        -JobLifeCycle.service.js
+            *createNewAiLearningQueue - added logic to add the queue
+            *updateJobStatus - added validation and now accepts error message if any
+
+Db:
+    New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+
+
+#######################################
+28-11-2025
+#######################################
+Backend updates and database changes
 
 
 Functional Chaange explain
@@ -77,3 +110,26 @@ Db:
 Env:
     New:
         -S3_AI_LEARNING_BASE_PATH - base path for ai learinig in s3 cloud
+
+
+#######################################
+1-12-2025
+#######################################
+Backend updates changes
+
+
+
+Functional Chaange explain
+    *added module content generation in the ai learning flow
+
+Backend:
+    New:
+            -modulePipeline.service.js(new file)
+                *added the function that calls llm for each module to generate the content
+     		-generateModuleContent.service.js(new file)
+     			*added a fucntion that calls llms when module data is given
+    Changed:
+        -AiLearingWorker.service.js
+            *startAiLearningWorker - added module content generation flow
+
+
