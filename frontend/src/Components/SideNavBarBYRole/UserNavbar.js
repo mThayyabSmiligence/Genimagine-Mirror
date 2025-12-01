@@ -22,6 +22,7 @@ import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import { BookOpenText } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
 import { Compass } from 'lucide-react';
+import { ListVideo } from 'lucide-react';
 
 
 import socket from '../../utils/socket'
@@ -281,6 +282,14 @@ export default function UserNavbar() {
 
                                 <BookOpenText/>
                                 <div to={"/u/stories" } className='link nav-options ms-1'>Stories</div>
+                            </div>
+                        </Link>
+
+                        <Link to={"/u/learning-videos" } className='link'  id='learning-videos-link'>
+                            <div className={`nav-list-item d-flex align-items-center ${path=="/u/learning-videos"&&'active'}`}>
+
+                                <ListVideo/>
+                                <div to={"/u/learning-videos" } className='link nav-options ms-1'>Learning Videos</div>
                             </div>
                         </Link>
                         </>

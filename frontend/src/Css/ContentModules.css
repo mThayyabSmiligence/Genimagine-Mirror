@@ -1,0 +1,136 @@
+.modules-page-container {
+  background: #fafbfc;
+  padding: 2.5rem 2rem 0 2rem;
+  min-height: 100vh;
+}
+
+.modules-header {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #23282f;
+  margin-bottom: 0.7rem;
+  letter-spacing: -1px;
+}
+
+.modules-subtitle {
+  font-size: 1.1rem;
+  color: #717b9e;
+  margin-bottom: 2rem;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.2rem;
+}
+
+/* .module-lesson-card {
+  background: #f3f6fb;
+  border-radius: 1.15rem;
+  box-shadow: 0 6px 24px rgba(19,27,35,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 0;
+  transition: box-shadow 0.22s, background 0.22s;
+}
+
+.module-lesson-card:hover {
+  box-shadow: 0 10px 40px rgba(102,126,234,0.17);
+  
+} */
+
+.module-lesson-card {
+  background: #f3f6fb;
+  border-radius: 1.15rem;
+  box-shadow: 0 6px 24px rgba(19,27,35,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 0;
+  transition: 
+    box-shadow 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease;   /* ✅ add this */
+  transform: translateY(0); /* base state */
+}
+
+.module-lesson-card:hover {
+  box-shadow: 0 10px 40px rgba(102,126,234,0.17);
+  transform: translateY(-6px); /* ✅ move up on Y axis */
+  /* background: #e9eeff; */
+}
+
+
+.module-lesson-thumbnail {
+  background: linear-gradient(133deg, #dadced 35%, #c6cbf7 100%);
+  position: relative;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.15rem 1.15rem 0 0;
+}
+
+/* .play-icon {
+  background: #fff;
+  color: #6c65ea;
+  border-radius: 50%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.13);
+  z-index: 2;
+  position: absolute;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+} */
+
+/* .module-lesson-card:hover .play-icon {
+  background: #764ba2;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(102,126,234,0.19);
+} */
+
+/* .module-lesson-time {
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: #22223b;
+  color: #fff;
+  border-radius: 10px;
+  padding: 5px 13px;
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  letter-spacing: 0.4px;
+  z-index: 3;
+} */
+
+.module-lesson-info {
+  padding: 17px 18px 13px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.module-lesson-title {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: #23282f;
+  line-height: 1.35;
+  margin-bottom: 0.2rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 650px) {
+  .modules-header { font-size: 1.5rem; }
+  .modules-grid { gap: 1.2rem; }
+  .module-lesson-thumbnail { height: 82px; }
+  .play-icon { font-size: 1.2rem; padding: 0.7rem;}
+  .module-lesson-info { padding: 11px 9px 8px 9px; }
+}

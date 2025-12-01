@@ -71,6 +71,10 @@ import CreateScenes from './Pages/User/CreateScenes';
 import PublishedVideosPage from './Pages/User/PublishedVideosPage';
 import PostsPage from './Pages/User/PostsPage';
 import ReportVideoDetail from './Pages/Moderator/ReportVideoDetail';
+import LearningVideos from './Pages/User/LearningVideos';
+import ContentType from './Pages/User/ContentType';
+import ContentInput from './Pages/User/ContentInput';
+import ContentModules from './Pages/User/ContentModules';
 
 
 function App() {
@@ -179,6 +183,10 @@ function App() {
                   <Route path='stories/edit/:id' element={<CreateStories></CreateStories>}></Route>
                   <Route path='stories/:id/characters' element={<CreateCharacters></CreateCharacters>}></Route>
                   <Route path='scenes/create/:storyid' element={<CreateScenes></CreateScenes>}></Route>
+                  <Route path='learning-videos' element={<LearningVideos></LearningVideos>}></Route>
+                  <Route path='content-type' element={<ContentType></ContentType>}></Route>
+                  <Route path='content-input' element={<ContentInput></ContentInput>}></Route>
+                  <Route path='content-modules/:contentId' element={<ContentModules></ContentModules>}></Route>
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
