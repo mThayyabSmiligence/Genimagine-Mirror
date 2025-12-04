@@ -1,0 +1,90 @@
+.doc-upload-card {
+  border: 2px dashed #cbd5e1;
+  border-radius: 1rem;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.doc-upload-card:hover {
+  border-color: #667eea;
+}
+.doc-file-input {
+  display: none;
+}
+.doc-upload-label {
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.doc-upload-icon-bg {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+}
+.doc-upload-icon-bg svg {
+  color: #fff !important;
+}
+.doc-upload-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+}
+.doc-upload-info {
+  font-size: 0.95rem;
+  color: #64748b;
+}
+.doc-upload-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.doc-file-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #22223b;
+}
+.doc-file-size {
+  font-size: 0.93rem;
+  color: #64748b;
+  margin-left: 8px;
+}
+.doc-remove-btn {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #e53e3e;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  width: 28px;
+  height: 28px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.doc-remove-btn:hover {
+  background: #ffeeee;
+  border-color: #e53e3e;
+}
+
+.doc-upload-card.drag-active {
+  border-color: #5a67d8;
+  background: #f6f8fa;
+  /* Optional: add shadow or highlight */
+}

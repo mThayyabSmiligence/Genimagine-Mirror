@@ -1,0 +1,161 @@
+:root {
+  --card-bg: #fff;
+  --border-accent: #e2e8f0;
+  --gradient-start: #667eea;
+  --gradient-end: #764ba2;
+  --icon-bg: rgba(102, 126, 234, 0.12);
+  --icon-hover-bg: rgba(102, 126, 234, 0.22);
+  --text-main: #1a202c;
+  --text-secondary: #718096;
+  --radius-lg: 12px;
+  --shadow: 0 4px 16px rgba(102,126,234,0.08);
+}
+
+.learning-videos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+  /* padding: 2rem 1rem; */
+  background: #f8fafc;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.5rem 0;
+}
+.page-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+
+
+/* Grid for module cards */
+.modules-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.8rem;
+}
+
+.module-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-accent);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* padding: 2.2rem 1.1rem 1.6rem 1.1rem; */
+  /* justify-content: center; */
+  padding: 12px 15px 12px 15px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s, border 0.2s;
+  cursor: pointer;
+}
+
+.module-card:hover, .create-module-card:hover {
+  box-shadow: 0 8px 28px rgba(102,126,234,0.15);
+  border-color: var(--gradient-start);
+  transform: translateY(-2px);
+}
+
+/* Card Icon */
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  /* flex-direction: column; */
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+  width: 100%;
+}
+
+.icon-play, .icon-add {
+  background: var(--icon-bg);
+  color: var(--gradient-start);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  margin-bottom: 0.3rem;
+}
+.create-module-card:hover .icon-add {
+  background: var(--icon-hover-bg);
+  transform: scale(1.08);
+}
+
+.lessons-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  border-radius: 11px;
+  padding: 4px 14px;
+  font-size: 0.97rem;
+}
+.lessons-label {
+  color: var(--text-secondary);
+}
+.lessons-count {
+  color: var(--gradient-end);
+  font-weight: 600;
+}
+
+.module-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.module-title {
+  font-size: 1.19rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+}
+.module-description {
+  font-size: 0.99rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.1rem;
+}
+
+.continue-btn {
+  width: 90%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.67rem 0 0 0;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.22);
+}
+.continue-btn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 4px 12px rgba(102,126,234,0.33);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .modules-list { grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+}
+@media (max-width: 600px) {
+  .learning-videos-container { padding: 0.8rem 0.2rem; }
+  .modules-list { grid-template-columns: 1fr; gap: 0.55rem; }
+  .module-card { padding: 1.2rem 0.5rem; }
+  .page-title { font-size: 1.35rem; }
+}

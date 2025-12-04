@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
 import "../../Css/VideoCard.css";
 import { axiosNoAUth, axiosPrivate } from "../../API's/axios";
 import ReportPopUp from "../CommonComponents/ReportPopUp";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { toast } from 'react-toastify';
 
 const VideoCard = ({ video, onPlay, loggedIn }) => {
   const [showReportPopUp, setShowReportPopUp] = useState(false);
   const [reportReason, setReportReason] = useState("");
+  const [isReported, setIsReported] = useState(video.isUserReported || false);
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsReported(video.isUserReported || false);
+  }, [video.isUserReported]);
+
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -20,8 +26,15 @@ const VideoCard = ({ video, onPlay, loggedIn }) => {
   const handleFlagClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (isReported) {
+      toast.info("You have already reported this video");
+      return;
+    }
+    
     setShowReportPopUp(true);
   };
+
 
   const handleReport = async () => {
     try {
@@ -32,14 +45,21 @@ const VideoCard = ({ video, onPlay, loggedIn }) => {
 
       const response = await axiosPrivate.post('/report-video', {
         story_id: video.story_id,
-        reason: reportReason || "violence"
+        reason: reportReason
       });
 
       if (response.data.success) {
-        console.log("Video reported successfully");
+        toast.success("Video reported successfully");
+        setIsReported(true);
         setReportReason("");
       }
     } catch (error) {
+      if (error.response?.status === 409) {
+        toast.info("You have already reported this video");
+        setIsReported(true);
+      } else {
+        toast.error("Failed to report video. Please try again.");
+      }
       console.error("Error reporting video:", error);
     }
   };
@@ -47,7 +67,6 @@ const VideoCard = ({ video, onPlay, loggedIn }) => {
   return (
     <>
       <div className="video-card-wrapper" onClick={handleClick}>
-        {/* Thumbnail Container */}
         <div className="video-card-thumbnail">
           <img
             src={video.thumbnail || 'https://via.placeholder.com/400x300?text=No+Thumbnail'}
@@ -58,19 +77,17 @@ const VideoCard = ({ video, onPlay, loggedIn }) => {
             }}
           />
 
-          {/* Report Flag Icon Button */}
           {location.pathname !== "/u/published-videos" && (
             <button
-              className="video-report-button"
+              className={`video-report-button ${isReported ? 'reported' : ''}`}
               onClick={handleFlagClick}
-              title="Report this video"
+              title={isReported ? "Already reported" : "Report this video"}
               aria-label="Report video"
             >
               <OutlinedFlagIcon sx={{ fontSize: 20 }} />
             </button>
           )}
 
-          {/* Overlay with Play Button */}
           <div className="video-card-overlay">
             <div className="video-play-button-wrapper">
               <div className="video-play-button">

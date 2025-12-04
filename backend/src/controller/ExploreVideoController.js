@@ -37,18 +37,7 @@ exports.getAllExploreVideosController = async (req, res) => {
     let cookies = null;
     let token = null;
     let decodeToken = null;
-    let userId = 0;
-
-    try {
-      const cookies1 = cookie.parse(req.headers.cookie);
-      cookies = cookies1;
-      const token1 = cookies.token;
-      token = token1;
-      decodeToken = jwt.decode(token);
-      userId = decodeToken.id;
-    } catch (err) {
-      // User not logged in
-    }
+    let userId = req?.user?.id||0;
 
     const response = await getExploreVideosService(page, userId);
 
