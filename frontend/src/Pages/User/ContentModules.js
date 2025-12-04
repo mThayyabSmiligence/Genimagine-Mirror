@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import "../../Css/ContentModules.css";
 import { ModuleViewer } from "../../Components/LearningVideos/ModuleViewer";
+import { useNavigate } from "react-router-dom";
 
 
-const SAMPLE_MODULES = [
+export const SAMPLE_MODULES = [
   {
     id: 1,
     title: "Introduction to the Module",
@@ -84,7 +85,8 @@ const SAMPLE_MODULES = [
 
 function ContentModules() {
   const [modules] = useState(SAMPLE_MODULES);
-  const [selectedModule, setSelectedModule] = useState(null);
+  // const [selectedModule, setSelectedModule] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <div className="modules-page-container mt-3">
@@ -100,7 +102,8 @@ function ContentModules() {
           <div
             key={module.id}
             className="module-lesson-card"
-            onClick={() => setSelectedModule(module)}
+            // onClick={() => setSelectedModule(module)}
+            onClick={() => navigate(`/u/modules/${module.id}`)}
           >
             <div className="module-lesson-thumbnail">
               {module.thumbnail && (
@@ -115,12 +118,12 @@ function ContentModules() {
         ))}
       </div>
 
-      {selectedModule && (
+      {/* {selectedModule && (
         <ModuleViewer
           module={selectedModule}
           onClose={() => setSelectedModule(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }

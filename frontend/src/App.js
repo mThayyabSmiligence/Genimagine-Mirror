@@ -75,6 +75,7 @@ import LearningVideos from './Pages/User/LearningVideos';
 import ContentType from './Pages/User/ContentType';
 import ContentInput from './Pages/User/ContentInput';
 import ContentModules from './Pages/User/ContentModules';
+import ModuleDetailPage from './Pages/User/ModuleDetailPage';
 
 
 function App() {
@@ -187,6 +188,7 @@ function App() {
                   <Route path='content-type' element={<ContentType></ContentType>}></Route>
                   <Route path='content-input' element={<ContentInput></ContentInput>}></Route>
                   <Route path='content-modules/:contentId' element={<ContentModules></ContentModules>}></Route>
+                   <Route path="modules/:id" element={<ModuleDetailPage />} />
                 </Route>
                 <Route path='credit-purchase' element={<CreditPurchasePage></CreditPurchasePage>}></Route>
 
