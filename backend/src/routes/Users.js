@@ -19,6 +19,9 @@ const { createAutoStoryController, getstatus, getStoryStatus, manuallStruckAutoS
 const { createStoryToVideoController, getStoryToVideoController, getStoryToVideoByStoryIdController, deleteStoryToVideoByStoryIdController, addLanguageStoryToVideoController } = require('../controller/StoryToVideoController');
 
 const { publishVideoToExploreController, getUserPublishedVideosController, deletePublishedVideoController } = require('../controller/ExploreVideoController');
+const { uploadPdf } = require('../service/multerUpload.service');
+const { createAiLearingPocController } = require('../controller/AiLearingPocCOntroller');
+const { createAiLearningController, getAiLearningByUserIdController } = require('../controller/AiLearningController');
 
 const router = express.Router();
 
@@ -136,6 +139,14 @@ router.delete("/published-videos/:video_id", deletePublishedVideoController);
 // report video
 router.post("/report-video", videoReportController);
 
-router.post('/restart-failed-story/:id',manuallStruckAutoStoryRestartController)
+router.post('/restart-failed-story/:id',manuallStruckAutoStoryRestartController);
+
+//ai learing poc
+router.post('/create-ai-learning-poc',uploadPdf,createAiLearingPocController);
+
+//ai learning
+router.post('/create-ai-learning',uploadPdf,createAiLearningController);
+
+router.get('/get-ai-learning',getAiLearningByUserIdController);
 
 module.exports = router;

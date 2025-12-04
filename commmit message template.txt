@@ -1,0 +1,200 @@
+#######################################
+Template
+#######################################
+Backend updates and database changes
+
+
+
+Functional Chaange explain
+    *added api to start create the ai Learning
+    *finished till saving SpecModules
+    *added api to get spec for user
+
+Backend:
+    New:
+            -AiLearningController.js(new file)
+                *added controller to create Ai Learning
+                *added controller to get AI Learning by user id
+     		-AiLearningQueue.js(new file)
+     			*added queue for AiLearning
+    Changed:
+        -JobLifeCycle.service.js
+            *createNewAiLearningQueue - added logic to add the queue
+            *updateJobStatus - added validation and now accepts error message if any
+
+Db:
+    New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+
+
+#######################################
+28-11-2025
+#######################################
+Backend updates and database changes
+
+
+Functional Chaange explain
+    *added api to start create the ai Learning
+    *finished till saving SpecModules
+    *added api to get spec for user
+
+Backend:
+	New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+ 		-AiLearningQueue.js(new file)
+ 			*added queue for AiLearning
+        -Users.js(route)-apis
+            */create-ai-learning- post - to create ai learning
+            */get-ai-learning- get - to get ai learning ny user id
+ 		-S3Service.js(new file)
+ 			*added function to upload pdf
+			*added function to upload AiLearing Pdf
+        -AiLearning.service.js
+            * just ignore it 
+        -AiLearningWorker.service.js
+            * startAiLearningWorker- the full worker logic
+                -finidhed till saving the module and spec id in specModule table
+ 		-S3Service.js(new file)
+ 			*added function to upload pdf
+			*added function to upload AiLearing Pdf   
+        -specUnderstanding.service.js
+            *generateCandidateModules - generate the modules for given text
+            *contstructPrompt - give uesr and sytem query it return the prompt to give to llms
+            *getSystemPrompt- give generation type and it gives system prompt
+        -documentPrasing.service.js
+            *isPageNumberLine - give line and it checks if the line is page no line
+            *stripHeadersAndFooters - gets rid of header and foot in pdf
+            *cleanExtractedText- cleans the extarcted text form pdf
+            *downloadPdfToBuffer- downlods pdf wtih url
+            *parseDocumentForSpec- give url it give the clean extracterd text from pdf
+        -moduleUpload.service.js
+            *saveAiLearningModules - bulk saves the modules
+        -specGet.service.js
+            *getAiLearningByUserIdService - get specs by User id
+        -specUpload.service.js
+            *creatNewAiLearning_Tech_Full - service to create spec and call start start the  queue
+        -specModuleUpload.service.js
+            *saveSpecModules - saves the spec modules for a spec
+        -AiLearningWorker.js
+            *woker for AiLearing queque
+            *it calls startAiLearnignWorker from the AiLearingWorker.service.js
+            
+    Changed:
+        -JobLifeCycle.service.js
+            *createNewAiLearningQueue - added logic to add the queue
+            *updateJobStatus - added validation and now accepts error message if any
+
+
+Db:
+    New:
+		-AiLearningController.js(new file)
+			*added controller to create Ai Learning
+			*added controller to get AI Learning by user id
+
+
+    Changed:
+        -AiLearningJob
+            *status - changed the status enum values
+            *error_message - made defualt value to null
+        -AiLearningSpec
+            *original_name - removed allowNull false
+            *storage_url - removed allowNull false
+            *mime_type - removed allowNull false
+            *status - changed the status enum values
+            *storage_path - added
+
+Env:
+    New:
+        -S3_AI_LEARNING_BASE_PATH - base path for ai learinig in s3 cloud
+
+
+#######################################
+1-12-2025
+#######################################
+Backend updates changes
+
+
+
+Functional Chaange explain
+    *added module content generation in the ai learning flow
+
+Backend:
+    New:
+            -modulePipeline.service.js(new file)
+                *added the function that calls llm for each module to generate the content
+     		-generateModuleContent.service.js(new file)
+     			*added a fucntion that calls llms when module data is given
+    Changed:
+        -AiLearingWorker.service.js
+            *startAiLearningWorker - added module content generation flow
+
+
+#######################################
+4-12-2025
+#######################################
+Backend updates changes
+
+
+
+Functional Chaange explain
+    *added flow to convert the module content and learing objective to images
+
+Backend:
+    New:
+        -tempFileSaver.helper.js(new file)
+            *saveTempFileToOutput- to save the temp file 
+            *getTempAiLearningOutputPath- to save the AiLearning ourput temp file 
+            *ensureTempDirExist- make sure the subfolder exits if not creates it
+        -S3Service.js
+            *uploadAiLearningSlideImage - to upload ailearning slide image in s3
+            *deleteS3File - to delete the files from the s3 with file path(key) or url
+        -LearningObjectiveUpload.js(new file)
+            *bulkSaveLearningObjectives - to bulk save the learning objectives
+        -slideCreat.service.js
+            *moduleToPages -
+                ->gets all the blocks to a learning objective and separates into pages
+            *getSlideHtml -
+                ->converts a page content to html
+            *convertToHtmlToImage -
+                ->converts a html page to image
+        -slidesUpload.service.js
+            *createSlideForSpec -
+                ->to create the slides for a spec 
+            *createSlideForModule -
+                ->to create the slides for a Module
+            *generateSlide -
+                ->to create the slides for  each learning objective
+            
+
+        
+
+
+     		
+    Changed:
+        -AiLearingWorker.service.js
+            *startAiLearningWorker -
+                ->added console log to track the process
+                ->added slide creation from the content generated to the flow
+        -generateModuleContent.service.js
+            *generateModuleContent -
+                ->increased the token limit for llm content generation
+                ->added error handling
+        -modulePipeline.service.js
+            *generateCandidateModulesContent -
+                ->changed the fucntion such that it stores the content in the database instead of saving in json
+        -moduleUpload.service.js
+            *saveAiLearningModules -
+                ->just commented a console log 
+
+
+        
+
+
+Db:
+    New:
+		-AiLearningObjective.js
+			*content - to store the content blocks

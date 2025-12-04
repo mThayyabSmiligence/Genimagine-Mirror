@@ -1,4 +1,5 @@
-const { uploadFile } = require("../API/S3.api")
+require("dotenv").config({ path: require("path").resolve(__dirname, "../config.env") });
+const { uploadFile, deleteFile } = require("../API/S3.api")
 const crypto = require('crypto');
 const AppError = require("../utils/AppError");
 const StoryToVideoError = require("../utils/StoryToVideoError");
@@ -8,6 +9,7 @@ const iv = Buffer.from(process.env.IV || '1234567890123456', 'hex');
 
 const fs = require('fs');
 
+const s3AiLearningBasePath = process.env.S3_AI_LEARNING_BASE_PATH;
 
 function encryptId(id) {
   return crypto.createHash('sha256').update(id.toString()).digest('hex').slice(0, 16);
@@ -49,6 +51,12 @@ exports.uploadAudio = async(image , path)=>{
     const upload = await uploadFile(image,path,"audio/mpeg");
     return upload
 }
+
+exports.uploadPdf = async(file , path)=>{
+    const upload = await uploadFile(file,path,"application/pdf");
+    return upload
+}
+
 
 exports.uploadStoryToVideo = async(video,story_id,video_id)=>{
 
@@ -123,3 +131,61 @@ exports.uploadAudioTrack = async (audio,storyToVideoId, language) => {
         );
     }
 };
+
+exports.uploadAiLearningPdf = async(file,user_id,spec_id)=>{
+
+    const path = s3AiLearningBasePath+"/orginal-pdf/"+encryptId(user_id.toString())+"/"+encryptId(spec_id.toString());
+    const buffer = file.buffer;
+    const upload = await this.uploadPdf(buffer,path);
+    return upload
+}
+
+exports.uploadAiLearningSlideImage = async(filePath,user_id,spec_id,module_id,objective_id,index)=>{
+    try{
+        const buffer = await fs.promises.readFile(filePath);
+
+        const path = `${s3AiLearningBasePath}/slides/${encryptId(user_id.toString())}/${encryptId(spec_id.toString())}/${encryptId(module_id.toString())}_${encryptId(objective_id.toString())}_${index}.png`;
+        const upload = await this.uploadImage(buffer,path);
+        if(upload.success === false){
+            throw new AppError(upload.message || "Slide image upload failed", 500)
+        }
+
+        // clean up local temp file best-effort
+        fs.promises.unlink(filePath).catch(() => {});
+
+        return {
+            ...upload,
+            path
+        }
+    }
+    catch(err){
+        throw new AppError(err.message||"Something went wrong with uploading ai learning slide image", 500)
+    }
+
+}
+
+/**
+ * Delete a single S3 file. Accepts a key or full URL and normalizes to the key.
+ * @param {string} filePath
+ */
+exports.deleteS3File = async (filePath) => {
+    if (!filePath) {
+        return { success: false, message: "Invalid file path", path: filePath };
+    }
+
+    let key = filePath;
+    if (/^https?:\/\//i.test(filePath)) {
+        try {
+            const url = new URL(filePath);
+            key = url.pathname.startsWith("/") ? url.pathname.slice(1) : url.pathname;
+        } catch (err) {
+            return { success: false, message: "Invalid file URL", path: filePath };
+        }
+    }
+
+    const result = await deleteFile(key);
+    return { ...result, path: key };
+
+};
+
+
