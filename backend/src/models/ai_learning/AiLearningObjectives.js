@@ -27,6 +27,7 @@ const AiLearningObjective = sequelize.define(
         prerequisites: { type: DataTypes.TEXT },
         est_minutes: { type: DataTypes.INTEGER.UNSIGNED },
         order_index: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
+        content: { type: DataTypes.JSON, defaultValue: {} },
     },
     {
         tableName: "learning_objectives",

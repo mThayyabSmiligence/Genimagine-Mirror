@@ -133,3 +133,68 @@ Backend:
             *startAiLearningWorker - added module content generation flow
 
 
+#######################################
+4-12-2025
+#######################################
+Backend updates changes
+
+
+
+Functional Chaange explain
+    *added flow to convert the module content and learing objective to images
+
+Backend:
+    New:
+        -tempFileSaver.helper.js(new file)
+            *saveTempFileToOutput- to save the temp file 
+            *getTempAiLearningOutputPath- to save the AiLearning ourput temp file 
+            *ensureTempDirExist- make sure the subfolder exits if not creates it
+        -S3Service.js
+            *uploadAiLearningSlideImage - to upload ailearning slide image in s3
+            *deleteS3File - to delete the files from the s3 with file path(key) or url
+        -LearningObjectiveUpload.js(new file)
+            *bulkSaveLearningObjectives - to bulk save the learning objectives
+        -slideCreat.service.js
+            *moduleToPages -
+                ->gets all the blocks to a learning objective and separates into pages
+            *getSlideHtml -
+                ->converts a page content to html
+            *convertToHtmlToImage -
+                ->converts a html page to image
+        -slidesUpload.service.js
+            *createSlideForSpec -
+                ->to create the slides for a spec 
+            *createSlideForModule -
+                ->to create the slides for a Module
+            *generateSlide -
+                ->to create the slides for  each learning objective
+            
+
+        
+
+
+     		
+    Changed:
+        -AiLearingWorker.service.js
+            *startAiLearningWorker -
+                ->added console log to track the process
+                ->added slide creation from the content generated to the flow
+        -generateModuleContent.service.js
+            *generateModuleContent -
+                ->increased the token limit for llm content generation
+                ->added error handling
+        -modulePipeline.service.js
+            *generateCandidateModulesContent -
+                ->changed the fucntion such that it stores the content in the database instead of saving in json
+        -moduleUpload.service.js
+            *saveAiLearningModules -
+                ->just commented a console log 
+
+
+        
+
+
+Db:
+    New:
+		-AiLearningObjective.js
+			*content - to store the content blocks

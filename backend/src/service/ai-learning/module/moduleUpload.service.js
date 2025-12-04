@@ -22,7 +22,7 @@ const saveAiLearningModules = async ({modules,user_id,spec_id,job_id}) =>{
             canonical_key: slug(module.title) + ':' + module.difficulty
         }))
         const savedModules = await AiLearningModule.bulkCreate(modulesToSave);
-        console.log("saved modules:",savedModules);
+        // console.log("saved modules:",savedModules);
         return savedModules;
     }catch(err){
         throw new AppError(err.message||"Something went wrong with saving ai learning modules", 500)

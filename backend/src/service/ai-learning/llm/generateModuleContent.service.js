@@ -1,5 +1,6 @@
 const { llama3BInstructText } = require("../../../API/CloudFlare.api");
 const { extractValidJson } = require("../../../helper/JsonHelper");
+const AppError = require("../../../utils/AppError");
 
 const generateModuleContent = async (module_data) => {
     try {
@@ -21,9 +22,16 @@ const generateModuleContent = async (module_data) => {
             }
         ]
 
-        const response = await llama3BInstructText(fullprompt,max_tokens=5000);
+        const response = await llama3BInstructText(fullprompt, (max_tokens = 7000));
         const validJson = extractValidJson(response);
-        console.log("response",validJson);
+
+        if (!Array.isArray(validJson) || validJson.length === 0) {
+          throw new AppError(
+            `Module content generation failed: invalid JSON for module ${module_data.id || module_data.title}`,
+            500
+          );
+        }
+        // console.log("response",validJson);
         return validJson;
     } catch (error) {
         console.error('Error generating module content:', error);
@@ -41,7 +49,7 @@ INPUT:
 
 YOUR TASK:
 Generate **4 to 5 learning objectives** for this module.
-For each learning objective, generate a **continuous flow of instructional content**, represented as a list of “blocks”.
+For each learning objective, generate a **continuous flow of instructional content**, represented as a list of “blocks” and each learning module shuod atleast contain 6 to 8 blocks.
 
 You DO NOT create slides.  
 You ONLY create blocks.  
