@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { snapToNearestSDXLSize } from './sdxlResolutions.js';
 
 // const axios = require('axios')
 
@@ -132,6 +133,8 @@ export const generateImageWithStability = async (inputs, res) => {
 
   if (!apiKey) throw new Error('Missing Stability API key.');
 
+  const { width, height } = snapToNearestSDXLSize(inputs.width, inputs.height);
+
   const response = await fetch(
     `${apiHost}/v1/generation/${engineId}/text-to-image`,
     {
@@ -144,8 +147,10 @@ export const generateImageWithStability = async (inputs, res) => {
       body: JSON.stringify({
         text_prompts: [{ text: inputs.prompt }],
         cfg_scale: 7,
-        height: inputs.height,
-        width: inputs.width,
+        height, 
+        // inputs.height,
+        width, 
+        // inputs.width,
         steps: 30,
         samples: 1,
       }),

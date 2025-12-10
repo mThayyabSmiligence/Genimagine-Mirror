@@ -26,11 +26,15 @@ const generateModuleContent = async (module_data) => {
         const validJson = extractValidJson(response);
 
         if (!Array.isArray(validJson) || validJson.length === 0) {
-          throw new AppError(
-            `Module content generation failed: invalid JSON for module ${module_data.id || module_data.title}`,
-            500
-          );
+          // throw new AppError(
+          //   `Module content generation failed: invalid JSON for module ${module_data.id || module_data.title}`,
+          //   500
+          // );
+          return false;
         }
+
+        
+        
         // console.log("response",validJson);
         return validJson;
     } catch (error) {

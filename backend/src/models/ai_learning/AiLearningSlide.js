@@ -32,8 +32,7 @@ const AiLearningSlide = sequelize.define(
   {
     tableName: "slides",
     schema: "ai_learning",
-    timestamps: true,
-    indexes: [{ unique: true, fields: ["module_id", "slide_no"] }],
+    timestamps: true
   }
 );
 

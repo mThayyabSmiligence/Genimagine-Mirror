@@ -18,8 +18,8 @@ module.exports = (connection)=>{
         await startAiLearningWorker(id, userId, trackingId);
         
         console.log(`Processing AiLearning: ${id}`);
-    }, { connection, concurrency: 1 });
-
+    }, { connection, concurrency: 1, lockDuration: 1000 * 60 * 10, maxStalledCount: 20, });
+    
     worker.on("completed", async job => {
         console.log(`Job ${job.id} completed`);
         try{

@@ -23,14 +23,45 @@ const generateCandidateModulesContent = async ({modules,user_id,spec_id,job_id})
             const moduleData = modules[i]?.dataValues || modules[i];
             console.log("generating module content for module:", moduleData.id || moduleData.title);
 
-            const module_content = await generateModuleContent(moduleData);
+            let extractCount = 0;
+            let module_content = null;
+            let MAX_EXTRACT_ATTEMPTS = 5;
+
+            while (extractCount < MAX_EXTRACT_ATTEMPTS) {
+                if (extractCount > 0) {
+                    console.log(`Retrying module content generation... Attempt ${extractCount + 1}`);
+                }
+
+                module_content = await generateModuleContent(moduleData);
+                console.log("module content:", module_content)
+
+
+                if (Array.isArray(module_content) && module_content.length > 0) {
+                    break;
+                }
+
+                extractCount++;
+
+                // if (!Array.isArray(module_content) || module_content.length === 0) {
+                //     throw new AppError(
+                //     `Module content empty/invalid for module ${moduleData.id || moduleData.title}`,
+                //     500
+                //     );
+                // }
+            } 
+
             if (!Array.isArray(module_content) || module_content.length === 0) {
                 throw new AppError(
-                `Module content empty/invalid for module ${moduleData.id || moduleData.title}`,
-                500
+                    `Failed to generate module content after ${MAX_EXTRACT_ATTEMPTS} attempts for ${moduleData.id || moduleData.title}`,
+                    500
                 );
             }
 
+            // console.log(`Module ${moduleData.id || moduleData.title}:`, module_content);
+
+            // if (!module_content || !Array.isArray(module_content) || module_content.length === 0) {
+            //     throw new AppError(`Failed to generate module content after 5 attempts for ${moduleData.id || moduleData.title}`, 500);
+            // }
             await bulkSaveLearningObjectives({ module_content, module_id: moduleData.id });
 
             // const fileSuffix = moduleData?.id || slug(moduleData?.title) || i;
