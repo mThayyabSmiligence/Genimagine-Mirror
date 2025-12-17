@@ -40,10 +40,12 @@ const moduleToPages = module => {
   const blocks = moduleContentToBlocks(module);
   const pages = [];
   let cursor = 0;
+  let pageNo = 0; 
 
   // ---- First slide ----
   const firstSlideBlocks = blocks.slice(0, MAX_BLOCKS_FIRST_SLIDE);
   pages.push({
+    pageNo: pageNo++,
     pageTopic: module.title,
     description: module.description, // only here
     blocks: firstSlideBlocks
@@ -54,6 +56,7 @@ const moduleToPages = module => {
   while (cursor < blocks.length) {
     const pageBlocks = blocks.slice(cursor, cursor + MAX_BLOCKS_PER_SLIDE);
     pages.push({
+      pageNo: pageNo++,
       pageTopic: module.title,
       // no description on subsequent pages
       blocks: pageBlocks
@@ -61,6 +64,7 @@ const moduleToPages = module => {
     cursor += pageBlocks.length;
   }
 
+  console.log("pages are here//...", pages)
   return pages;
 }
 

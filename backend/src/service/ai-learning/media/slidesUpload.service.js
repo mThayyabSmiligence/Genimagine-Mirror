@@ -2,17 +2,19 @@ const { AiLearningSpec, AiLearningSpecModule, AiLearningObjective, AiLearningSli
 const AppError = require("../../../utils/AppError")
 const { uploadAiLearningSlideImage } = require("../../S3Service")
 const { moduleToPages, getSlideHtml, convertToHtmlToImage } = require("./slidesCreat.service")
+const {saveToRedis, getFromRedis, deleteFromRedis} = require("../../../helper/redis.helper")
+const {} = require("../llm/generateNarration.service");
 const fs = require("fs")
 
 const createSlideForSpec = async (spec_id,user_id) => {
     try {
         const specsModules = await AiLearningSpecModule.findAll({where:{spec_id}})
 
-        const createMoules = specsModules.map(async specModule=> {
-            console.log("creating slide for module: ", specModule.module_id),
+        for (const specModule of specsModules) {
+            // console.log("creating slide for module: ", specModule.module_id),
             await createSlideForModule(specModule.module_id,spec_id,user_id)
             console.log("slide created for module: ", specModule.module_id)
-        })
+        }
     }
     catch (err) {
          throw new AppError(err.message||"Something went wrong with creating new slide", 500)
@@ -21,6 +23,7 @@ const createSlideForSpec = async (spec_id,user_id) => {
 const path = require("path");
 // ...
 const createSlideForModule = async (module_id,spec_id,user_id) => {
+  console.log("creating slide for module: ", module_id)
   try {
     const learningObjectives = await AiLearningObjective.findAll({ where: { module_id } });
     console.log("learnig", learningObjectives)
@@ -55,6 +58,13 @@ const generateSlide = async (learningObjective,spec_id,user_id,slideCounter) => 
 
     const pages = moduleToPages(normalizedLearningObjectives);
 
+    console.log("storing pages to redis...")
+    const storePagesOnRedis =await saveToRedis(`ai_learning:lo:${learningObjective.id}:pages`,pages);
+    
+    if(!storePagesOnRedis.success){
+      console.log("error storing pages to redis", storePagesOnRedis.message)
+    }
+    
     // const existingSlidesCount = await AiLearningSlide.count({
     //   where: { module_id: learningObjective.module_id }
     // });
@@ -87,10 +97,7 @@ const generateSlide = async (learningObjective,spec_id,user_id,slideCounter) => 
 
       console.log("slide saved to db successfully");
       
-      // await updateSlideUrl(upload.fileUrl,learningObjective.id)
       
-      //  const filePath = path.join(slidesDir, `${learningObjective.module_id}_${learningObjective.id}_${i}.html`);
-      //   await fs.promises.writeFile(filePath, html);
       return slideCounter;
     }
   } catch (err) {
@@ -121,6 +128,8 @@ const saveSlide = async (slide) => {
     throw new AppError(err.message || "Something went wrong with creating new slide", 500);
   }
 };
+
+
 
 module.exports={
     createSlideForSpec,

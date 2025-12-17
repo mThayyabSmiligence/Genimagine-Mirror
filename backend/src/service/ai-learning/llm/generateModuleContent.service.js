@@ -3,6 +3,9 @@ const { extractValidJson } = require("../../../helper/JsonHelper");
 const AppError = require("../../../utils/AppError");
 
 const generateModuleContent = async (module_data) => {
+    const MAX_ATTEMPTS = 5;
+    let attempt = 0;
+    let response = null;
     try {
         const user_prompt={
             "title": module_data.title,
@@ -22,7 +25,49 @@ const generateModuleContent = async (module_data) => {
             }
         ]
 
-        const response = await llama3BInstructText(fullprompt, (max_tokens = 7000));
+        
+
+        // const response = await llama3BInstructText(fullprompt, (max_tokens = 7000));
+
+
+        while (attempt < MAX_ATTEMPTS) {
+            try {
+                if (attempt > 0) {
+                    console.log(
+                        `Retrying llama API call... Attempt ${attempt + 1}`
+                    );
+                }
+
+                response = await llama3BInstructText(fullprompt, 7000);
+
+                if (!response) {
+                    throw new Error("Empty response from llama API");
+                }
+
+                break; // ✅ success → exit retry loop
+
+            } catch (error) {
+                console.error(
+                    `Llama API failed (Attempt ${attempt + 1}):`,
+                    error.message
+                );
+
+                attempt++;
+
+                // optional small delay
+                await new Promise(res => setTimeout(res, 1000));
+            }
+        }
+
+        // ❌ All retries failed
+        if (!response) {
+            throw new AppError(
+                `LLaMA API failed after ${MAX_ATTEMPTS} attempts for ${module_data.id || module_data.title}`,
+                500
+            );
+        }
+
+
         const validJson = extractValidJson(response);
 
         if (!Array.isArray(validJson) || validJson.length === 0) {

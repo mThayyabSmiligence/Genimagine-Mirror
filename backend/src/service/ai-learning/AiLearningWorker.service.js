@@ -2,6 +2,7 @@ const { AiLearningSpec } = require("../../models");
 const { generateCandidateModules } = require("./llm/specUnderstanding.service");
 const { parseDocumentForSpec } = require("./media/documentPrasing.service");
 const { createSlideForSpec } = require("./media/slidesUpload.service");
+const { createVideoForModules } = require("./media/videoCreate.service");
 const { generateCandidateModulesContent } = require("./module/modulePipeline.service");
 const { saveAiLearningModules } = require("./module/moduleUpload.service");
 const { saveSpecModules } = require("./spec_modules/SpecModuleUpload.service");
@@ -36,10 +37,13 @@ const startAiLearningWorker = async (spec_id, user_id, job_id) => {
         const modules_content = await generateCandidateModulesContent({modules:savedModules,user_id,spec_id,job_id});
         console.log("finished generating candidate modules content");
 
-
         console.log("creating slides");
         const generateSlides = await createSlideForSpec(spec_id,user_id);
         console.log("finished creating slides");
+
+        console.log("creating video");
+        const generateVideo = await createVideoForModules(spec_id, user_id);
+        console.log("finished creating videos");
 
     }catch(err){
         console.log(err)
