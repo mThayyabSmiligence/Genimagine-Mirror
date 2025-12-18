@@ -11,4 +11,4 @@ const mistralClient = axios.create({
   timeout: 20000
 });
 
-module.exports = mistralClient; 
+module.exports = mistralClient;
